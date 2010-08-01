@@ -37,13 +37,13 @@
 
 using namespace std;
 
-const int c_seqs_in_set = 32;
-const int c_max_sets = 32;
-/* number of sequences */
-const int c_max_sequence =  c_seqs_in_set * c_max_sets;
-
+const int c_max_track = 64;  // FIXME: use a list instead of a fixed number array?
 
 const int c_ppqn         = 192;  /* default - doesn't change */
+
+const int c_default_trigger_length_in_bars = 8; /* used when adding a new trigger */
+const long c_default_trigger_length = c_default_trigger_length_in_bars * 4 * c_ppqn;
+
 const int c_bpm          = 120;  /* default */
 const int c_maxBuses = 32;
 

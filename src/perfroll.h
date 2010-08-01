@@ -100,7 +100,7 @@ class perfroll : public Gtk::DrawingArea
     long         m_old_progress_ticks;
 
     int          m_4bar_offset;
-    int          m_sequence_offset;
+    int          m_track_offset;
 
     int          m_roll_length_ticks;
 
@@ -108,9 +108,9 @@ class perfroll : public Gtk::DrawingArea
 
     long         m_drop_tick;
     long         m_drop_tick_trigger_offset;
-    int          m_drop_sequence;
+    int          m_drop_track;
 
-    bool         m_sequence_active[c_max_sequence];
+    bool         m_track_active[c_max_track];
     
     Adjustment   *m_vadjust;
     Adjustment   *m_hadjust;
@@ -134,7 +134,7 @@ class perfroll : public Gtk::DrawingArea
 
     bool on_key_press_event(GdkEventKey* a_p0);
 
-    void convert_xy( int a_x, int a_y, long *a_ticks, int *a_seq);
+    void convert_xy( int a_x, int a_y, long *a_ticks, int *a_track);
     void convert_x( int a_x, long *a_ticks);
     void snap_x( int *a_x );
 
@@ -144,8 +144,8 @@ class perfroll : public Gtk::DrawingArea
 
    
 
-    void draw_sequence_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_sequence );
-    void draw_background_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_sequence );
+    void draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track );
+    void draw_background_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track );
 
     void draw_drawable_row( Glib::RefPtr<Gdk::Drawable> a_dest, Glib::RefPtr<Gdk::Drawable> a_src,  long a_y );
     
@@ -166,7 +166,7 @@ class perfroll : public Gtk::DrawingArea
 
     void draw_progress();
 
-    void redraw_dirty_sequences( void );
+    void redraw_dirty_tracks( void );
 
     perfroll( perform *a_perf, 
 	      Adjustment *a_hadjust,

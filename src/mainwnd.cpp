@@ -374,9 +374,9 @@ mainwnd::~mainwnd()
 bool
 mainwnd::timer_callback(  )
 {
-    m_perfroll->redraw_dirty_sequences();
+    m_perfroll->redraw_dirty_tracks();
     m_perfroll->draw_progress();
-    m_perfnames->redraw_dirty_sequences();
+    m_perfnames->redraw_dirty_tracks();
 
     long ticks = m_mainperf->get_tick();
 
@@ -626,7 +626,7 @@ void mainwnd::open_file(const Glib::ustring& fn)
     m_mainperf->clear_all();
 
     midifile f(fn);
-    result = f.parse(m_mainperf, 0);
+    result = f.parse(m_mainperf);
     m_modified = !result;
 
     if (!result) {
@@ -791,14 +791,6 @@ mainwnd::file_import_dialog( void )
     HButtonBox *btnbox = dialog.get_action_area();
     HBox hbox( false, 2 );
 
-    m_adjust_load_offset = manage( new Adjustment( 0, -(c_max_sets - 1),
-                c_max_sets - 1, 1 ));
-    m_spinbutton_load_offset = manage( new SpinButton( *m_adjust_load_offset ));
-    m_spinbutton_load_offset->set_editable( false );
-    m_spinbutton_load_offset->set_wrap( true );
-    hbox.pack_end(*m_spinbutton_load_offset, false, false );
-    hbox.pack_end(*(manage( new Label("Screen Set Offset"))), false, false, 4);
-
     btnbox->pack_start(hbox, false, false );
 
     dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
@@ -815,7 +807,7 @@ mainwnd::file_import_dialog( void )
        {
            try{
                midifile f( dialog.get_filename() );
-               f.parse( m_mainperf, (int) m_adjust_load_offset->get_value() );
+               f.parse( m_mainperf );
            }
            catch(...){
                Gtk::MessageDialog errdialog(*this,

@@ -52,7 +52,7 @@ class midifile
  
     ~midifile();
 
-    bool parse( perform *a_perf, int a_screen_set );
+    bool parse( perform *a_perf );
     bool write( perform *a_perf );
 
 };

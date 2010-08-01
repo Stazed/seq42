@@ -23,10 +23,10 @@
 #include "globals.h"
 #include "perform.h"
 
-class seqedit;
+class trackmenu;
 
-#ifndef SEQ42_MENU
-#define SEQ42_MENU
+#ifndef SEQ42_TRACKMENU
+#define SEQ42_TRACKMENU
 
 
 #include <gtkmm/button.h>
@@ -48,40 +48,39 @@ class seqedit;
 using namespace Gtk;
 
 
-class seqmenu : public virtual Glib::ObjectBase
+class trackmenu : public virtual Glib::ObjectBase
 {
 
  private: 
 
-    Menu         *m_menu;
-    perform      *m_mainperf;
-    sequence     m_clipboard;
+    Menu        *m_menu;
+    perform     *m_mainperf;
+    track       m_clipboard;
 
     void on_realize();
 
-    void seq_edit();
-    void seq_new();
+    void trk_new();
 
-    void seq_copy();   
-    void seq_cut();
-    void seq_paste(); 
+    void trk_copy();   
+    void trk_cut();
+    void trk_paste(); 
 
-    void seq_clear_perf();
+    void trk_clear_perf();
 
     void set_bus_and_midi_channel( int a_bus, int a_ch );
     void mute_all_tracks();
     
-    virtual void redraw( int a_sequence ) = 0;
+    virtual void redraw( int a_track ) = 0;
 
  protected:
    
-    int m_current_seq;
+    int m_current_trk;
     void popup_menu();
 
  public:
 
-    seqmenu( perform *a_p );
-    virtual ~seqmenu( ){ };
+    trackmenu( perform *a_p );
+    virtual ~trackmenu( ){ };
 };
 
 #endif

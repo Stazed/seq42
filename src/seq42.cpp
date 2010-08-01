@@ -274,7 +274,7 @@ main (int argc, char *argv[])
     if (global_filename != "") {
         /* import that midi file */
         midifile *f = new midifile(global_filename);
-        f->parse( &p, 0 );
+        f->parse( &p );
         delete f;
     }
 

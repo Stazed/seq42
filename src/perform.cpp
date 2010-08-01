@@ -35,10 +35,10 @@ using namespace Gtk;
 
 perform::perform()
 {
-    for (int i=0; i< c_max_sequence; i++) {
+    for (int i=0; i< c_max_track; i++) {
 
-        m_seqs[i] = NULL;
-        m_seqs_active[i] = false;
+        m_tracks[i] = NULL;
+        m_tracks_active[i] = false;
     }
 
     m_running = false;
@@ -170,22 +170,38 @@ void perform::clear_all( void )
 {
     reset_sequences();
 
-    for (int i=0; i< c_max_sequence; i++ ){
+    for (int i=0; i< c_max_track; i++ ){
 
-        if ( is_active(i) )
-            delete_sequence( i );
+        if ( is_active_track(i) )
+            delete_track( i );
     }
 }
 
+track* perform::get_track( int a_track )
+{
+    return m_tracks[a_track];
+}
+
+
+int perform::get_track_index( track *a_track )
+{
+    for (int i=0; i< c_max_track; i++ )
+    {    
+        if ( is_active_track(i) )
+            if(m_tracks[i] == a_track) {
+                return i;
+            }
+    }
+    return -1;
+}
 
 
 void perform::mute_all_tracks( void )
 {
-    for (int i=0; i< c_max_sequence; i++ )
+    for (int i=0; i< c_max_track; i++ )
     {    
-        if ( is_active(i) )
-            m_seqs[i]->set_song_mute( true );
-
+        if ( is_active_track(i) )
+            m_tracks[i]->set_song_mute( true );
     }
 }
 
@@ -204,9 +220,9 @@ perform::~perform()
     if (m_in_thread_launched )
         pthread_join( m_in_thread, NULL );
 
-    for (int i=0; i< c_max_sequence; i++ ){
-        if ( is_active(i) ){
-            delete m_seqs[i];
+    for (int i=0; i< c_max_track; i++ ){
+        if ( is_active_track(i) ){
+            delete m_tracks[i];
         }
     }
 }
@@ -261,23 +277,23 @@ long perform::get_right_tick( void )
 }
 
 
-void perform::add_sequence( sequence *a_seq, int a_perf )
+void perform::add_track( track *a_track, int a_pref )
 {
-    /* check for perferred */
-    if ( a_perf < c_max_sequence &&  
-            is_active(a_perf) == false &&
-            a_perf >= 0 ){
+    /* check for preferred */
+    if ( a_pref < c_max_track &&  
+            is_active_track(a_pref) == false &&
+            a_pref >= 0 ){
 
-        m_seqs[a_perf] = a_seq;
-        set_active(a_perf, true);
+        m_tracks[a_pref] = a_track;
+        set_active(a_pref, true);
 
     } else {
 
-        for (int i=a_perf; i< c_max_sequence; i++ ){
+        for (int i=a_pref; i< c_max_track; i++ ){
 
-            if ( is_active(i) == false ){
+            if ( is_active_track(i) == false ){
 
-                m_seqs[i] = a_seq;
+                m_tracks[i] = a_track;
                 set_active(i,true);
                 break;
             }
@@ -286,98 +302,77 @@ void perform::add_sequence( sequence *a_seq, int a_perf )
 }
 
 
-void perform::set_active( int a_sequence, bool a_active )
+void perform::set_active( int a_track, bool a_active )
 {
-    if ( a_sequence < 0 || a_sequence >= c_max_sequence )
+    if ( a_track < 0 || a_track >= c_max_track )
         return;
 
     //printf ("set_active %d\n", a_active );
 
-    if ( m_seqs_active[ a_sequence ] == true && a_active == false )
+    if ( m_tracks_active[ a_track ] == true && a_active == false )
     {
-        set_was_active(a_sequence);
+        set_was_active(a_track);
     }
 
-    m_seqs_active[ a_sequence ] = a_active;
+    m_tracks_active[ a_track ] = a_active;
 }
 
 
-void perform::set_was_active( int a_sequence )
+void perform::set_was_active( int a_track )
 {
-    if ( a_sequence < 0 || a_sequence >= c_max_sequence )
+    if ( a_track < 0 || a_track >= c_max_track )
         return;
 
     //printf( "was_active true\n" );
 
-    m_was_active_edit[ a_sequence ] = true;
-    m_was_active_perf[ a_sequence ] = true;
-    m_was_active_names[ a_sequence ] = true;
+    m_was_active_edit[ a_track ] = true;
+    m_was_active_perf[ a_track ] = true;
+    m_was_active_names[ a_track ] = true;
 }
 
 
 
-bool perform::is_active( int a_sequence )
+bool perform::is_active_track( int a_track )
 {
-    if ( a_sequence < 0 || a_sequence >= c_max_sequence )
+    if ( a_track < 0 || a_track >= c_max_track )
         return false;
 
-    return m_seqs_active[ a_sequence ];
+    return m_tracks_active[ a_track ];
 }
 
 
-bool perform::is_dirty_edit (int a_sequence)
+
+bool perform::is_dirty_perf (int a_track)
 {
-    if ( a_sequence < 0 || a_sequence >= c_max_sequence )
+    if ( a_track < 0 || a_track >= c_max_track )
         return false;
 
-    if ( is_active(a_sequence) )
+    if ( is_active_track(a_track) )
     {
-        return m_seqs[a_sequence]->is_dirty_edit();
+        return m_tracks[a_track]->is_dirty_perf();
     }
 
-    bool was_active = m_was_active_edit[ a_sequence ];
-    m_was_active_edit[ a_sequence ] = false;
+    bool was_active = m_was_active_perf[ a_track ];
+    m_was_active_perf[ a_track ] = false;
 
     return was_active;
 }
 
 
-bool perform::is_dirty_perf (int a_sequence)
+bool perform::is_dirty_names (int a_track)
 {
-    if ( a_sequence < 0 || a_sequence >= c_max_sequence )
+    if ( a_track < 0 || a_track >= c_max_track )
         return false;
 
-    if ( is_active(a_sequence) )
+    if ( is_active_track(a_track) )
     {
-        return m_seqs[a_sequence]->is_dirty_perf();
-    }
-
-    bool was_active = m_was_active_perf[ a_sequence ];
-    m_was_active_perf[ a_sequence ] = false;
-
-    return was_active;
-}
-
-
-bool perform::is_dirty_names (int a_sequence)
-{
-    if ( a_sequence < 0 || a_sequence >= c_max_sequence )
-        return false;
-
-    if ( is_active(a_sequence) )
-    {
-        return m_seqs[a_sequence]->is_dirty_names();
+        return m_tracks[a_track]->is_dirty_names();
     } 
 
-    bool was_active = m_was_active_names[ a_sequence ];
-    m_was_active_names[ a_sequence ] = false;
+    bool was_active = m_was_active_names[ a_track ];
+    m_was_active_names[ a_track ] = false;
 
     return was_active;
-}
-
-sequence* perform::get_sequence( int a_sequence )
-{
-    return m_seqs[a_sequence];
 }
 
 mastermidibus* perform::get_master_midi_bus( )
@@ -414,32 +409,32 @@ int  perform::get_bpm( )
 }
 
 
-void perform::delete_sequence( int a_num )
+void perform::delete_track( int a_num )
 {
     set_active(a_num, false);
 
-    if ( m_seqs[a_num] != NULL &&
-            !m_seqs[a_num]->get_editing() ){
+    if ( m_tracks[a_num] != NULL &&
+            !m_tracks[a_num]->get_editing() ){
 
-        m_seqs[a_num]->set_playing( false );
-        delete m_seqs[a_num];
+        m_tracks[a_num]->set_playing_off( );
+        delete m_tracks[a_num];
     }   
 }
 
 
-bool perform::is_sequence_in_edit( int a_num )
+bool perform::is_track_in_edit( int a_num )
 {
-    return ( m_seqs[a_num] != NULL &&
-            m_seqs[a_num]->get_editing());
+    return ( m_tracks[a_num] != NULL &&
+            m_tracks[a_num]->get_editing());
 
 }
 
 
-void perform::new_sequence( int a_sequence )
+void perform::new_track( int a_track )
 {
-    m_seqs[ a_sequence ] = new sequence();
-    m_seqs[ a_sequence ]->set_master_midi_bus( &m_master_bus );
-    set_active(a_sequence, true);
+    m_tracks[ a_track ] = new track();
+    m_tracks[ a_track ]->set_master_midi_bus( &m_master_bus );
+    set_active(a_track, true);
 
 }
 
@@ -447,13 +442,13 @@ void perform::new_sequence( int a_sequence )
 
 void perform::print()
 {
-    //   for( int i=0; i<m_numSeq; i++ ){
-
-    //printf("Sequence %d\n", i);
-    //m_seqs[i]->print();
-    // }
-
-    //  m_master_bus.print();
+    for (int i = 0; i < c_max_track; i++) {
+        if (is_active_track(i)) {
+            printf("Track %d\n", i);
+            m_tracks[i]->print();
+        } 
+    }
+    //m_master_bus.print();
 }
 
 
@@ -465,11 +460,11 @@ void perform::play( long a_tick )
     //printf( "play [%d]\n", a_tick );
 
     m_tick = a_tick;	
-    for (int i=0; i< c_max_sequence; i++ ){
+    for (int i=0; i< c_max_track; i++ ){
 
-        if ( is_active(i) ){
-            assert( m_seqs[i] );
-            m_seqs[i]->play( a_tick, m_playback_mode );
+        if ( is_active_track(i) ){
+            assert( m_tracks[i] );
+            m_tracks[i]->play( a_tick, m_playback_mode );
         } 
     }
 
@@ -480,21 +475,21 @@ void perform::play( long a_tick )
 
 void perform::set_orig_ticks( long a_tick  )
 {
-    for (int i=0; i< c_max_sequence; i++ ){
+    for (int i=0; i< c_max_track; i++ ){
 
-        if ( is_active(i) == true ){
-            assert( m_seqs[i] );
-            m_seqs[i]->set_orig_tick( a_tick );
+        if ( is_active_track(i) == true ){
+            assert( m_tracks[i] );
+            m_tracks[i]->set_orig_tick( a_tick );
         } 
     }
 }
 
 
-void perform::clear_sequence_triggers( int a_seq  )
+void perform::clear_track_triggers( int a_trk  )
 {
-    if ( is_active(a_seq) == true ){
-        assert( m_seqs[a_seq] );
-        m_seqs[a_seq]->clear_triggers( );
+    if ( is_active_track(a_trk) == true ){
+        assert( m_tracks[a_trk] );
+        m_tracks[a_trk]->clear_triggers( );
     } 
 }
 
@@ -505,11 +500,11 @@ void perform::move_triggers( bool a_direction )
 
         long distance = m_right_tick - m_left_tick;
 
-        for (int i=0; i< c_max_sequence; i++ ){
+        for (int i=0; i< c_max_track; i++ ){
 
-            if ( is_active(i) == true ){
-                assert( m_seqs[i] );
-                m_seqs[i]->move_triggers( m_left_tick, distance, a_direction );
+            if ( is_active_track(i) == true ){
+                assert( m_tracks[i] );
+                m_tracks[i]->move_triggers( m_left_tick, distance, a_direction );
             } 
         }
     }
@@ -518,11 +513,11 @@ void perform::move_triggers( bool a_direction )
 
 void perform::push_trigger_undo( void )
 {
-    for (int i=0; i< c_max_sequence; i++ ){
+    for (int i=0; i< c_max_track; i++ ){
 
-        if ( is_active(i) == true ){
-            assert( m_seqs[i] );
-            m_seqs[i]->push_trigger_undo( );
+        if ( is_active_track(i) == true ){
+            assert( m_tracks[i] );
+            m_tracks[i]->push_trigger_undo( );
         } 
     }
 }
@@ -530,22 +525,22 @@ void perform::push_trigger_undo( void )
 
 void perform::pop_trigger_undo( void )
 {
-    for (int i=0; i< c_max_sequence; i++ ){
+    for (int i=0; i< c_max_track; i++ ){
 
-        if ( is_active(i) == true ){
-            assert( m_seqs[i] );
-            m_seqs[i]->pop_trigger_undo( );
+        if ( is_active_track(i) == true ){
+            assert( m_tracks[i] );
+            m_tracks[i]->pop_trigger_undo( );
         } 
     }
 }
 
 void perform::pop_trigger_redo( void )
 {
-    for (int i=0; i< c_max_sequence; i++ ){
+    for (int i=0; i< c_max_track; i++ ){
 
-        if ( is_active(i) == true ){
-            assert( m_seqs[i] );
-            m_seqs[i]->pop_trigger_redo( );
+        if ( is_active_track(i) == true ){
+            assert( m_tracks[i] );
+            m_tracks[i]->pop_trigger_redo( );
         } 
     }
 }
@@ -558,11 +553,11 @@ void perform::copy_triggers( )
 
         long distance = m_right_tick - m_left_tick;
 
-        for (int i=0; i< c_max_sequence; i++ ){
+        for (int i=0; i< c_max_track; i++ ){
 
-            if ( is_active(i) == true ){
-                assert( m_seqs[i] );
-                m_seqs[i]->copy_triggers( m_left_tick, distance );
+            if ( is_active_track(i) == true ){
+                assert( m_tracks[i] );
+                m_tracks[i]->copy_triggers( m_left_tick, distance );
             } 
         }
     }
@@ -703,11 +698,10 @@ void perform::inner_stop()
 
 void perform::off_sequences(void)
 {
-    for (int i = 0; i < c_max_sequence; i++) {
-
-        if (is_active(i)) {
-            assert(m_seqs[i]);
-            m_seqs[i]->set_playing(false);
+    for (int i = 0; i < c_max_track; i++) {
+        if (is_active_track(i)) {
+            assert(m_tracks[i]);
+            m_tracks[i]->set_playing_off();
         } 
     }
 }
@@ -715,11 +709,11 @@ void perform::off_sequences(void)
 
 void perform::all_notes_off( void )
 {
-    for (int i=0; i< c_max_sequence; i++) {
+    for (int i=0; i< c_max_track; i++) {
 
-        if (is_active(i)) {
-            assert(m_seqs[i]);
-            m_seqs[i]->off_playing_notes();
+        if (is_active_track(i)) {
+            assert(m_tracks[i]);
+            m_tracks[i]->off_playing_notes();
         } 
     }
     /* flush the bus */
@@ -729,19 +723,10 @@ void perform::all_notes_off( void )
 
 void perform::reset_sequences(void)
 {
-    for (int i=0; i< c_max_sequence; i++) {
-
-        if (is_active(i)) {
-            assert( m_seqs[i] );
-
-            bool state = m_seqs[i]->get_playing();
-
-            m_seqs[i]->off_playing_notes();
-            m_seqs[i]->set_playing(false);
-            m_seqs[i]->zero_markers();
-
-            if (!m_playback_mode)
-                m_seqs[i]->set_playing(state);
+    for (int i=0; i< c_max_track; i++) {
+        if (is_active_track(i)) {
+            assert( m_tracks[i] );
+            m_tracks[i]->reset_sequences(m_playback_mode);
         } 
     }
     /* flush the bus */
@@ -785,12 +770,12 @@ long perform::get_max_trigger( void )
 {
     long ret = 0, t;
 
-    for (int i=0; i< c_max_sequence; i++ ){
+    for (int i=0; i< c_max_track; i++ ){
 
-        if ( is_active(i) == true ){
-            assert( m_seqs[i] );
+        if ( is_active_track(i) == true ){
+            assert( m_tracks[i] );
 
-            t = m_seqs[i]->get_max_trigger( );  
+            t = m_tracks[i]->get_max_trigger( );  
             if ( t > ret )
                 ret = t;
         } 

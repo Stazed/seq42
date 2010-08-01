@@ -21,7 +21,7 @@
 #include "font.h"
 
 
-perfnames::perfnames( perform *a_perf, Adjustment *a_vadjust ): DrawingArea(), seqmenu(a_perf)
+perfnames::perfnames( perform *a_perf, Adjustment *a_vadjust ): DrawingArea(), trackmenu(a_perf)
 {     
     m_mainperf = a_perf;
 
@@ -49,12 +49,12 @@ perfnames::perfnames( perform *a_perf, Adjustment *a_vadjust ): DrawingArea(), s
     m_vadjust = a_vadjust;
     m_vadjust->signal_value_changed().connect( mem_fun( *(this), &perfnames::change_vert ));
 
-    m_sequence_offset = 0;
+    m_track_offset = 0;
 
     set_double_buffered( false );
     
-    for( int i=0; i<c_max_sequence; ++i )
-        m_sequence_active[i]=false;
+    for( int i=0; i<c_max_track; ++i )
+        m_track_active[i]=false;
 
 }
 
@@ -74,7 +74,7 @@ perfnames::on_realize()
     
     m_pixmap = Gdk::Pixmap::create(m_window,
                                    c_names_x,
-                                   c_names_y  * c_max_sequence + 1,
+                                   c_names_y  * c_max_track + 1,
                                    -1);
 }
 
@@ -82,9 +82,9 @@ perfnames::on_realize()
 void
 perfnames::change_vert( )
 {   
-    if ( m_sequence_offset != (int) m_vadjust->get_value() ){
+    if ( m_track_offset != (int) m_vadjust->get_value() ){
         
-        m_sequence_offset = (int) m_vadjust->get_value();
+        m_track_offset = (int) m_vadjust->get_value();
         queue_draw();
     }
 }
@@ -102,18 +102,18 @@ perfnames::draw_area(){
 
 
 void 
-perfnames::redraw( int sequence )
+perfnames::redraw( int track )
 {
-    draw_sequence( sequence);
+    draw_track( track);
 }
 
 void
-perfnames::draw_sequence( int sequence )
+perfnames::draw_track( int track )
 {
 
-    int i = sequence - m_sequence_offset;
+    int i = track - m_track_offset;
     
-    if ( sequence < c_max_sequence ){
+    if ( track < c_max_track ){
 
    
         
@@ -125,7 +125,7 @@ perfnames::draw_sequence( int sequence )
                                  c_names_y + 1 );
 	    
 	    
-        if ( m_mainperf->is_active( sequence ))
+        if ( m_mainperf->is_active_track( track ))
             m_gc->set_foreground(m_white);
         else
             m_gc->set_foreground(m_grey);
@@ -136,14 +136,14 @@ perfnames::draw_sequence( int sequence )
                                  c_names_x-1,
                                  c_names_y - 1  );
 	    
-        if ( m_mainperf->is_active( sequence )){
+        if ( m_mainperf->is_active_track( track )){
 
-            m_sequence_active[sequence]=true;
+            m_track_active[track]=true;
 		
             /* names */
             char name[50];
             snprintf(name, sizeof(name), "%-16.16s", 
-                     m_mainperf->get_sequence(sequence)->get_name());
+                     m_mainperf->get_track(track)->get_name());
                 
             p_font_renderer->render_string_on_drawable(m_gc,
                                                        5,  
@@ -152,18 +152,16 @@ perfnames::draw_sequence( int sequence )
                 
             char str[20];
             snprintf(str, sizeof(str), 
-                     "%d-%d  %ld/%ld",
-                     m_mainperf->get_sequence(sequence)->get_midi_bus()+1, 
-                     m_mainperf->get_sequence(sequence)->get_midi_channel()+1,
-                     m_mainperf->get_sequence(sequence)->get_bpm(),
-                     m_mainperf->get_sequence(sequence)->get_bw() );
+                     "Bus %d - Chan %d",
+                     m_mainperf->get_track(track)->get_midi_bus()+1, 
+                     m_mainperf->get_track(track)->get_midi_channel()+1 );
                 
             p_font_renderer->render_string_on_drawable(m_gc,
                                                        5,  
                                                        c_names_y * i + 12,
                                                        m_window, str, font::BLACK );
 
-            bool muted = m_mainperf->get_sequence(sequence)->get_song_mute();
+            bool muted = m_mainperf->get_track(track)->get_song_mute();
 
             m_gc->set_foreground(m_black);
             m_window->draw_rectangle(m_gc,muted,
@@ -205,13 +203,13 @@ perfnames::draw_sequence( int sequence )
 bool
 perfnames::on_expose_event(GdkEventExpose* a_e)
 {
-    int seqs = (m_window_y / c_names_y) + 1;
+    int trks = (m_window_y / c_names_y) + 1;
     
-    for ( int i=0; i< seqs; i++ ){
+    for ( int i=0; i< trks; i++ ){
         
-	int sequence = i + m_sequence_offset;
+	int track = i + m_track_offset;
         
-        draw_sequence(sequence);
+        draw_track(track);
         
     }
     return true;
@@ -219,38 +217,38 @@ perfnames::on_expose_event(GdkEventExpose* a_e)
 
 
 void 
-perfnames::convert_y( int a_y, int *a_seq)
+perfnames::convert_y( int a_y, int *a_trk)
 {
-    *a_seq = a_y / c_names_y;
-    *a_seq  += m_sequence_offset;
+    *a_trk = a_y / c_names_y;
+    *a_trk  += m_track_offset;
 
-    if ( *a_seq >= c_max_sequence )
-	*a_seq = c_max_sequence - 1;
+    if ( *a_trk >= c_max_track )
+	*a_trk = c_max_track - 1;
     
-    if ( *a_seq < 0 )
-	*a_seq = 0;
+    if ( *a_trk < 0 )
+	*a_trk = 0;
 }
 
 
 bool
 perfnames::on_button_press_event(GdkEventButton *a_e)
 {
-    int sequence;
+    int track;
     
     /*int x = (int) a_e->x;*/
     int y = (int) a_e->y;
     
-    convert_y( y, &sequence );
+    convert_y( y, &track );
     
-    m_current_seq = sequence;
+    m_current_trk = track;
     
     /*      left mouse button     */
     if ( a_e->button == 1 ){
 
-        if ( m_mainperf->is_active( sequence )){
+        if ( m_mainperf->is_active_track( track )){
 
-            bool muted = m_mainperf->get_sequence(sequence)->get_song_mute();
-            m_mainperf->get_sequence(sequence)->set_song_mute( !muted );
+            bool muted = m_mainperf->get_track(track)->get_song_mute();
+            m_mainperf->get_track(track)->set_song_mute( !muted );
 
             queue_draw();
         }
@@ -300,7 +298,7 @@ perfnames::on_size_allocate(Gtk::Allocation &a_r )
 
 
 void
-perfnames::redraw_dirty_sequences( void )
+perfnames::redraw_dirty_tracks( void )
 {
     bool draw = false;
     
@@ -309,15 +307,15 @@ perfnames::redraw_dirty_sequences( void )
     
     for ( int y=y_s; y<=y_f; y++ ){
 
-        int seq = y + m_sequence_offset; // 4am
+        int trk = y + m_track_offset; // 4am
 
-        if ( seq < c_max_sequence){
+        if ( trk < c_max_track){
             
-                bool dirty = (m_mainperf->is_dirty_names( seq ));
+                bool dirty = (m_mainperf->is_dirty_names( trk ));
                 
                 if (dirty)
                 {
-                    draw_sequence( seq );
+                    draw_track( trk );
                     draw = true;
                 }
         }

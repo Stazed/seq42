@@ -23,8 +23,8 @@
 #define SEQ42_PERFNAME
 
 #include "perform.h"
-#include "sequence.h"
-#include "seqmenu.h"
+#include "track.h"
+#include "trackmenu.h"
 
 #include <gtkmm/button.h>
 #include <gtkmm/window.h>
@@ -45,7 +45,7 @@ using namespace Gtk;
 #include "globals.h"
 
 /* holds the left side piano */
-class perfnames : public virtual Gtk::DrawingArea, public virtual seqmenu
+class perfnames : public virtual Gtk::DrawingArea, public virtual trackmenu
 {
  private: 
 
@@ -61,9 +61,9 @@ class perfnames : public virtual Gtk::DrawingArea, public virtual seqmenu
 
     int m_window_x, m_window_y;
 
-    int          m_sequence_offset;
+    int          m_track_offset;
 
-    bool         m_sequence_active[c_max_sequence];
+    bool         m_track_active[c_max_track];
 
     void on_realize();
     bool on_expose_event(GdkEventExpose* a_ev);
@@ -77,15 +77,15 @@ class perfnames : public virtual Gtk::DrawingArea, public virtual seqmenu
  
     void convert_y( int a_y, int *a_note);
 
-    void draw_sequence( int a_sequence );
+    void draw_track( int a_track );
 
     void change_vert( void );
     
-    void redraw( int a_sequence );
+    void redraw( int a_track );
 
  public:
     
-    void redraw_dirty_sequences( void );
+    void redraw_dirty_tracks( void );
 
     perfnames( perform *a_perf,
 	       Adjustment *a_vadjust   );

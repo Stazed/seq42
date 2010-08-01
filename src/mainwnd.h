@@ -71,12 +71,6 @@ class mainwnd : public Gtk::Window
     SpinButton  *m_spinbutton_bpm;
     Adjustment  *m_adjust_bpm;
 
-    SpinButton  *m_spinbutton_ss;
-    Adjustment  *m_adjust_ss;
-
-    SpinButton  *m_spinbutton_load_offset;
-    Adjustment  *m_adjust_load_offset;
-
     sigc::connection   m_timeout_connect;
     
     Table *m_table;

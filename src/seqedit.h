@@ -84,8 +84,6 @@ class seqedit : public Gtk::Window
 
     /* length in measures */
     Menu       *m_menu_length;
-    Menu       *m_menu_midich;
-    Menu       *m_menu_midibus;
     Menu       *m_menu_data;
     Menu       *m_menu_key;
     Menu       *m_menu_scale;
@@ -129,11 +127,8 @@ class seqedit : public Gtk::Window
     Button      *m_button_sequence;
     Entry       *m_entry_sequence;
     
-    Button      *m_button_bus;
-    Entry       *m_entry_bus;
-    
-    Button      *m_button_channel;
-    Entry       *m_entry_channel;
+    Label       *m_label_track;
+    Entry       *m_entry_track;
     
     Button      *m_button_snap;
     Entry       *m_entry_snap;
@@ -199,8 +194,8 @@ class seqedit : public Gtk::Window
     int         m_key;
     static int  m_initial_key;
 
-    int         m_sequence;
-    static int  m_initial_sequence;
+    sequence        *m_bg_seq;
+    static sequence *m_initial_bg_seq;
 
     long        m_measures;
 
@@ -219,13 +214,10 @@ class seqedit : public Gtk::Window
     void apply_length( int a_bpm, int a_bw, int a_measures );
     long get_measures( void );
 
-    void set_midi_channel( int a_midichannel );
-    void set_midi_bus( int a_midibus );
-
     void set_scale( int a_scale );
     void set_key( int a_note );
 
-    void set_background_sequence( int a_seq );
+    void set_background_sequence( sequence *a_seq );
     
     void name_change_callback( void );
     void play_change_callback( void );
@@ -247,10 +239,8 @@ class seqedit : public Gtk::Window
     
     void popup_menu( Menu *a_menu );
     void popup_event_menu( void );                                                                                                                                                                                                                                                                                                
-    void popup_midibus_menu( void );
     void popup_sequence_menu( void );
     void popup_tool_menu( void );
-    void popup_midich_menu(void);
 
     Gtk::Image* create_menu_image( bool a_state = false );
     
@@ -264,6 +254,8 @@ class seqedit : public Gtk::Window
 
     void start_playing();
     void stop_playing();
+
+    void set_track_info( );
 
  public:
 

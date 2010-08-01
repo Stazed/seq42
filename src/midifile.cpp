@@ -80,7 +80,7 @@ midifile::read_var ()
 }
 
 
-bool midifile::parse (perform * a_perf, int a_screen_set)
+bool midifile::parse (perform * a_perf)
 {
     /* open binary file */
     ifstream file(m_name.c_str(), ios::in | ios::binary | ios::ate);
@@ -426,8 +426,7 @@ bool midifile::parse (perform * a_perf, int a_screen_set)
             }			/* while ( !done loading Trk chunk */
 
             /* the sequence has been filled, add it  */
-            //printf ( "add_sequence( %d )\n", perf + (a_screen_set * c_seqs_in_set));
-            a_perf->add_sequence (seq, perf + (a_screen_set * c_seqs_in_set));
+            a_perf->add_sequence (seq);
         }
 
         /* dont know what kind of chunk */
@@ -517,9 +516,9 @@ bool midifile::write (perform * a_perf)
     int numtracks = 0;
 
     /* get number of tracks */
-    for (i = 0; i < c_max_sequence; i++)
+    for (i = 0; i < c_max_track; i++)
     {
-        if (a_perf->is_active (i))
+        if (a_perf->is_active_track (i))
             numtracks++;
     }
 
@@ -540,7 +539,7 @@ bool midifile::write (perform * a_perf)
     for (int curTrack = 0; curTrack < c_max_sequence; curTrack++)
     {
 
-        if (a_perf->is_active (curTrack))
+        if (a_perf->is_active_track (curTrack))
         {
 
             //printf ("track[%d]\n", curTrack );

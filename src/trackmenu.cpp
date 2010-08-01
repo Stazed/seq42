@@ -18,14 +18,13 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "seqmenu.h"
-#include "seqedit.h"
+#include "trackmenu.h"
 #include "font.h"
 
 
 // Constructor
 
-seqmenu::seqmenu( perform *a_p  )
+trackmenu::trackmenu( perform *a_p  )
 {    
     using namespace Menu_Helpers;
 
@@ -39,7 +38,7 @@ seqmenu::seqmenu( perform *a_p  )
 
 
     void
-seqmenu::popup_menu( void )
+trackmenu::popup_menu( void )
 {
 
     using namespace Menu_Helpers;
@@ -49,23 +48,18 @@ seqmenu::popup_menu( void )
 
     m_menu = manage( new Menu());
 
-    if ( m_mainperf->is_active( m_current_seq )) {
-        m_menu->items().push_back(MenuElem("Edit...",
-                    mem_fun(*this, &seqmenu::seq_edit)));
-    } else {
+    if ( ! m_mainperf->is_active_track( m_current_trk )) {
         m_menu->items().push_back(MenuElem("New",
-                    mem_fun(*this, &seqmenu::seq_edit)));
+                    mem_fun(*this, &trackmenu::trk_new)));
     }
-
-
 
     m_menu->items().push_back(SeparatorElem());
 
-    if ( m_mainperf->is_active( m_current_seq )) {
-        m_menu->items().push_back(MenuElem("Cut", mem_fun(*this,&seqmenu::seq_cut)));
-        m_menu->items().push_back(MenuElem("Copy", mem_fun(*this,&seqmenu::seq_copy)));
+    if ( m_mainperf->is_active_track( m_current_trk )) {
+        m_menu->items().push_back(MenuElem("Cut", mem_fun(*this,&trackmenu::trk_cut)));
+        m_menu->items().push_back(MenuElem("Copy", mem_fun(*this,&trackmenu::trk_copy)));
     } else {
-        m_menu->items().push_back(MenuElem("Paste", mem_fun(*this,&seqmenu::seq_paste)));
+        m_menu->items().push_back(MenuElem("Paste", mem_fun(*this,&trackmenu::trk_paste)));
     }
 
     m_menu->items().push_back(SeparatorElem());
@@ -73,14 +67,14 @@ seqmenu::popup_menu( void )
     Menu *menu_song = manage( new Menu() );
     m_menu->items().push_back( MenuElem( "Song", *menu_song) );
     
-    if ( m_mainperf->is_active( m_current_seq ))
+    if ( m_mainperf->is_active_track( m_current_trk ))
     {
-        menu_song->items().push_back(MenuElem("Clear Song Data", mem_fun(*this,&seqmenu::seq_clear_perf)));
+        menu_song->items().push_back(MenuElem("Clear Song Data", mem_fun(*this,&trackmenu::trk_clear_perf)));
     }
     
-    menu_song->items().push_back(MenuElem("Mute All Tracks", mem_fun(*this,&seqmenu::mute_all_tracks)));
+    menu_song->items().push_back(MenuElem("Mute All Tracks", mem_fun(*this,&trackmenu::mute_all_tracks)));
     
-    if ( m_mainperf->is_active( m_current_seq )) {
+    if ( m_mainperf->is_active_track( m_current_trk )) {
         m_menu->items().push_back(SeparatorElem());
         Menu *menu_buses = manage( new Menu() );
 
@@ -109,7 +103,7 @@ seqmenu::popup_menu( void )
                 }
 
                 menu_channels->items().push_back(MenuElem(name, 
-                            sigc::bind(mem_fun(*this,&seqmenu::set_bus_and_midi_channel), 
+                            sigc::bind(mem_fun(*this,&trackmenu::set_bus_and_midi_channel), 
                                 i, j )));
             }
         }        
@@ -120,107 +114,79 @@ seqmenu::popup_menu( void )
 }
 
     void
-seqmenu::set_bus_and_midi_channel( int a_bus, int a_ch )
+trackmenu::set_bus_and_midi_channel( int a_bus, int a_ch )
 {
-    if ( m_mainperf->is_active( m_current_seq )) {
-        m_mainperf->get_sequence( m_current_seq )->set_midi_bus( a_bus );
-        m_mainperf->get_sequence( m_current_seq )->set_midi_channel( a_ch );
-        m_mainperf->get_sequence( m_current_seq )->set_dirty();
+    if ( m_mainperf->is_active_track( m_current_trk )) {
+        m_mainperf->get_track( m_current_trk )->set_midi_bus( a_bus );
+        m_mainperf->get_track( m_current_trk )->set_midi_channel( a_ch );
+        m_mainperf->get_track( m_current_trk )->set_dirty();
     }
 }
 
 void
-seqmenu::mute_all_tracks( void )
+trackmenu::mute_all_tracks( void )
 {
     m_mainperf->mute_all_tracks();
 }
 
 
-// Menu callback, Lanches Editor Window
+// Makes a New track 
 void 
-seqmenu::seq_edit(){
+trackmenu::trk_new(){
 
-    seqedit *seq_edit;
+    if ( ! m_mainperf->is_active_track( m_current_trk )){
 
-    if ( m_mainperf->is_active( m_current_seq )) {
-        if ( !m_mainperf->get_sequence( m_current_seq )->get_editing())
-        {
-            seq_edit = new seqedit( m_mainperf->get_sequence( m_current_seq ), 
-                    m_mainperf, 
-                    m_current_seq
-                    );
-        }
-        else {
-            m_mainperf->get_sequence( m_current_seq )->set_raise(true);
-        }
-    }
-    else {
-        this->seq_new();
-        seq_edit = new seqedit( m_mainperf->get_sequence( m_current_seq ), 
-                m_mainperf, 
-                m_current_seq
-                );
-    }    
-}
-
-// Makes a New sequence 
-void 
-seqmenu::seq_new(){
-
-    if ( ! m_mainperf->is_active( m_current_seq )){
-
-        m_mainperf->new_sequence( m_current_seq );
-        m_mainperf->get_sequence( m_current_seq )->set_dirty();
+        m_mainperf->new_track( m_current_trk );
+        m_mainperf->get_track( m_current_trk )->set_dirty();
 
     }
 }
 
-// Copies selected to clipboard sequence */
+// Copies selected to clipboard track */
 void 
-seqmenu::seq_copy(){
+trackmenu::trk_copy(){
 
-    if ( m_mainperf->is_active( m_current_seq ))
-        m_clipboard = *(m_mainperf->get_sequence( m_current_seq ));
+    if ( m_mainperf->is_active_track( m_current_trk ))
+        m_clipboard = *(m_mainperf->get_track( m_current_trk ));
 }
 
 // Deletes and Copies to Clipboard */
 void 
-seqmenu::seq_cut(){
+trackmenu::trk_cut(){
 
-    if ( m_mainperf->is_active( m_current_seq ) &&
-            !m_mainperf->is_sequence_in_edit( m_current_seq ) ){
+    if ( m_mainperf->is_active_track( m_current_trk ) &&
+            !m_mainperf->is_track_in_edit( m_current_trk ) ){
 
-        m_clipboard = *(m_mainperf->get_sequence( m_current_seq ));
-        m_mainperf->delete_sequence( m_current_seq );
-        redraw( m_current_seq );
+        m_clipboard = *(m_mainperf->get_track( m_current_trk ));
+        m_mainperf->delete_track( m_current_trk );
+        redraw( m_current_trk );
 
     }
 }
 
 // Puts clipboard into location
 void 
-seqmenu::seq_paste(){
+trackmenu::trk_paste(){
 
-    if ( ! m_mainperf->is_active( m_current_seq )){
+    if ( ! m_mainperf->is_active_track( m_current_trk )){
 
-        m_mainperf->new_sequence( m_current_seq  );
-        *(m_mainperf->get_sequence( m_current_seq )) = m_clipboard;
-
-        m_mainperf->get_sequence( m_current_seq )->set_dirty();
+        m_mainperf->new_track( m_current_trk  );
+        *(m_mainperf->get_track( m_current_trk )) = m_clipboard;
+        m_mainperf->get_track( m_current_trk )->set_dirty();
 
     }
 }
 
 
 void 
-seqmenu::seq_clear_perf(){
+trackmenu::trk_clear_perf(){
 
-    if ( m_mainperf->is_active( m_current_seq )){
+    if ( m_mainperf->is_active_track( m_current_trk )){
 
         m_mainperf->push_trigger_undo();
         
-        m_mainperf->clear_sequence_triggers( m_current_seq  );
-        m_mainperf->get_sequence( m_current_seq )->set_dirty();
+        m_mainperf->clear_track_triggers( m_current_trk  );
+        m_mainperf->get_track( m_current_trk )->set_dirty();
 
     }
 }

@@ -32,6 +32,8 @@ class sequence;
 #include "midibus.h"
 #include "globals.h"
 #include "mutex.h"
+#include "track.h"
+#include "trigger.h"
 
 enum draw_type
 {
@@ -41,87 +43,41 @@ enum draw_type
     DRAW_NOTE_OFF
 };
 
-/* used in playback */
-class trigger
-{
-public:
-    
-    long m_tick_start;
-    long m_tick_end;
-    
-    bool m_selected;
-    
-    long m_offset;
-    
-    trigger (){
-        m_tick_start = 0;
-        m_tick_end = 0;
-        m_offset = 0;
-        m_selected = false;
-    };
-    
-    bool operator< (trigger rhs){
-        
-        if (m_tick_start < rhs.m_tick_start)
-            return true;
-        
-        return false;
-    };
-};
-
 class sequence
 {
 
   private:
 
+    track *m_track;
+
     /* holds the events */
     list < event > m_list_event;
     static list < event > m_list_clipboard;
 
-    list < trigger > m_list_trigger;
-    trigger m_trigger_clipboard;
-
     stack < list < event > >m_list_undo;
     stack < list < event > >m_list_redo;
-    stack < list < trigger > >m_list_trigger_undo;
-    stack < list < trigger > >m_list_trigger_redo;
 
     /* markers */
     list < event >::iterator m_iterator_play;
     list < event >::iterator m_iterator_draw;
 
-    list < trigger >::iterator m_iterator_play_trigger;
-    list < trigger >::iterator m_iterator_draw_trigger;
-
-    /* contains the proper midi channel */
-    char m_midi_channel;
-    char m_bus;
-
-
-    /* song playback mode mute */
-    bool m_song_mute;
-
-    /* outputs to sequence to this Bus on midichannel */
-    mastermidibus *m_masterbus;
-
     /* map for noteon, used when muting, to shut off current 
        messages */
     int m_playing_notes[c_midi_notes];
 
+    /* outputs to sequence to this Bus on midichannel */
+    mastermidibus *m_masterbus;
+
     /* states */
-    bool m_was_playing;
     bool m_playing;
     bool m_recording;
     bool m_quanized_rec;
     bool m_thru;
 
-    bool m_trigger_copied;
-
     /* flag indicates that contents has changed from
        a recording */
     bool m_dirty_edit;
     bool m_dirty_perf;
-    bool m_dirty_names;
 
     /* anything editing currently ? */
     bool m_editing;
@@ -149,6 +105,8 @@ class sequence
 
     /* locking */
     mutex m_mutex;
+    void lock ();
+    void unlock ();
 
     /* used to idenfity which events are ours in the out queue */
     //unsigned char m_tag;
@@ -157,23 +115,17 @@ class sequence
        places it on our midibus */
     void put_event_on_bus (event * a_e);
 
-    /* resetes the location counters */
+    /* resets the location counters */
     void reset_loop (void);
 
     void remove_all (void);
 
-    /* mutex */
-    void lock ();
-    void unlock ();
-
     /* sets m_trigger_offset and wraps it to length */
     void set_trigger_offset (long a_trigger_offset);
-    void split_trigger( trigger &trig, long a_split_tick);
-    void adjust_trigger_offsets_to_legnth( long a_new_len );
-    long adjust_offset( long a_offset );
+    long get_trigger_offset (void);
+
     void remove( list<event>::iterator i );
     void remove( event* e );
-
 
   public:
 
@@ -185,17 +137,17 @@ class sequence
     void pop_undo (void);
     void pop_redo (void);
 
-    void push_trigger_undo (void);
-    void pop_trigger_undo (void);
-    void pop_trigger_redo (void);
-
     //
     //  Gets and Sets
     //
+    void set_track (track *a_track);
+    track *get_track (void);
 
-    /* name */
+
     void set_name (string a_name);
     void set_name (char *a_name);
+    /* returns string of name */
+    const char *get_name (void);
 
     void set_measures (long a_length_measures);
     long get_measures (void);
@@ -207,11 +159,6 @@ class sequence
     long get_bw (void);
     void set_rec_vol (long a_rec_vol);
 
-    void set_song_mute (bool a_mute);
-    bool get_song_mute (void);
-
-    /* returns string of name */
-    const char *get_name (void);
 
     void set_editing (bool a_edit)
     {
@@ -232,7 +179,7 @@ class sequence
 
 
     /* length in ticks */
-    void set_length (long a_len, bool a_adjust_triggers = true);
+    void set_length (long a_len);
     long get_length ();
 
     /* returns last tick played..  used by 
@@ -259,14 +206,9 @@ class sequence
     /* resets flag on call */
     bool is_dirty_edit ();
     bool is_dirty_perf ();
-    bool is_dirty_names ();
     
     void set_dirty_mp();
     void set_dirty();
-
-    /* midi channel */
-    unsigned char get_midi_channel ();
-    void set_midi_channel (unsigned char a_ch);
 
     /* dumps contents to stdout */
     void print ();
@@ -274,7 +216,7 @@ class sequence
 
     /* dumps notes from tick and prebuffers to
        ahead.  Called by sequencer thread - performance */
-    void play (long a_tick, bool a_playback_mode);
+    void play (long a_tick, trigger *a_trigger);
     void set_orig_tick (long a_tick);
 
     //
@@ -284,39 +226,11 @@ class sequence
     /* adds event to internal list */
     void add_event (const event * a_e);
 
-    void add_trigger (long a_tick, long a_length, long a_offset = 0, bool a_adjust_offset = true);
-    void split_trigger( long a_tick );
-    void grow_trigger (long a_tick_from, long a_tick_to, long a_length);
-    void del_trigger (long a_tick );
-    bool get_trigger_state (long a_tick);
-    bool select_trigger(long a_tick);
-    bool unselect_triggers (void);
-
-    bool intersectTriggers( long position, long& start, long& end );
     bool intersectNotes( long position, long position_note, long& start, long& end, long& note );
     bool intersectEvents( long posstart, long posend, long status, long& start );
 
-    void del_selected_trigger( void );
-    void cut_selected_trigger( void );
-    void copy_selected_trigger( void );
-    void paste_trigger( void );
-    
-    void move_selected_triggers_to(long a_tick, bool a_adjust_offset, int a_which=2);
-    long get_selected_trigger_start_tick( void );
-    long get_selected_trigger_end_tick( void );
-
-    long get_max_trigger (void);
-
-    void move_triggers (long a_start_tick, long a_distance, bool a_direction);
-    void copy_triggers (long a_start_tick, long a_distance);
-    void clear_triggers (void);
-
-
-    long get_trigger_offset (void);
-
-    /* sets the midibus to dump to */
-    void set_midi_bus (char a_mb);
     char get_midi_bus (void);
+    unsigned char get_midi_channel ();
 
     void set_master_midi_bus (mastermidibus * a_mmb);
 
@@ -416,7 +330,6 @@ class sequence
     /* resets draw marker so calls to getNextnoteEvent
        will start from the first */
     void reset_draw_marker (void);
-    void reset_draw_trigger_marker (void);
 
     /* each call seqdata( sequence *a_seq, int a_scale );fills the passed refrences with a 
        events elements, and returns true.  When it 
@@ -436,10 +349,6 @@ class sequence
 			 unsigned char *a_D1, bool * a_selected);
 
     bool get_next_event (unsigned char *a_status, unsigned char *a_cc);
-
-    bool get_next_trigger (long *a_tick_on,
-			   long *a_tick_off,
-			   bool * a_selected, long *a_tick_offset);
 
     sequence & operator= (const sequence & a_rhs);
 

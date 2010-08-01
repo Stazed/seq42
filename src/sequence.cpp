@@ -29,13 +29,10 @@ sequence::sequence( )
     m_editing       = false;
     m_raise         = false;
     m_playing       = false;
-    m_was_playing   = false;
     m_recording     = false;
     m_quanized_rec  = false;
     m_thru          = false;
 
-    m_trigger_copied = false;
-        
     m_time_beats_per_measure = 4;
     m_time_beat_width = 4;
     m_rec_vol = 0;
@@ -43,10 +40,8 @@ sequence::sequence( )
     //m_tag           = 0;
 
     m_name          = c_dummy;
-    m_bus           = 0;
     m_length        = 4 * c_ppqn;
     m_snap_tick     = c_ppqn / 4;
-    m_midi_channel  = 0;
   
     /* no notes are playing */
     for (int i=0; i< c_midi_notes; i++ )
@@ -57,10 +52,7 @@ sequence::sequence( )
     m_masterbus = NULL;
     m_dirty_edit = true;
     m_dirty_perf = true;
-    m_dirty_names = true;
     
-    m_song_mute = false;
-
     m_trigger_offset = 0;
 }
 
@@ -106,55 +98,6 @@ sequence::pop_redo( void )
 }
 
 void 
-sequence::push_trigger_undo( void )
-{
-    lock();
-    m_list_trigger_undo.push( m_list_trigger );
-
-    list<trigger>::iterator i;
-    
-    for ( i  = m_list_trigger_undo.top().begin();
-          i != m_list_trigger_undo.top().end(); i++ ){
-      (*i).m_selected = false;
-    }
-
-    
-    unlock();
-}
-
-
-void 
-sequence::pop_trigger_undo( void )
-{
-    lock();
-
-    if (m_list_trigger_undo.size() > 0 ){
-        m_list_trigger_redo.push( m_list_trigger );
-        m_list_trigger = m_list_trigger_undo.top();
-        m_list_trigger_undo.pop();
-    }
-
-    unlock();
-}
-
-
-void 
-sequence::pop_trigger_redo( void )
-{
-    lock();
-
-    if (m_list_trigger_redo.size() > 0 ){
-        m_list_trigger_undo.push( m_list_trigger );
-        m_list_trigger = m_list_trigger_redo.top();
-        m_list_trigger_redo.pop();
-    }
-
-    unlock();
-}
-
-
-
-void 
 sequence::set_master_midi_bus( mastermidibus *a_mmb )
 {
     lock();
@@ -164,18 +107,6 @@ sequence::set_master_midi_bus( mastermidibus *a_mmb )
     unlock();
 }
 
-
-void
-sequence::set_song_mute( bool a_mute )
-{
-    m_song_mute = a_mute;
-}
-
-bool
-sequence::get_song_mute( void )
-{
-    return m_song_mute;
-}
 
 void 
 sequence::set_bpm( long a_beats_per_measure )
@@ -246,101 +177,52 @@ sequence::set_orig_tick( long a_tick )
 }
 
 
+void
+sequence::set_trigger_offset( long a_trigger_offset )
+{
+    lock();
+
+    m_trigger_offset = (a_trigger_offset % m_length);
+    m_trigger_offset += m_length;
+    m_trigger_offset %= m_length;
+    
+    unlock();
+}
+
+
+long
+sequence::get_trigger_offset( void )
+{
+    return m_trigger_offset;
+}
+
 
 /* tick comes in as global tick */
-    void 
-sequence::play( long a_tick, bool a_playback_mode )
+/* a_trigger will be NULL if not in song mode */
+void 
+sequence::play(long a_tick, trigger *a_trigger)
 {
+    // FIXME: is m_last_tick set correctly going into this?
 
     lock();
 
-    //printf( "a_tick[%ld] a_playback[%d]\n", a_tick, a_playback_mode );
-
-    /* turns sequence off after we play in this frame */
-    bool trigger_turning_off = false;
-
-    long times_played  = m_last_tick / m_length;
-    long offset_base   = times_played * m_length; 
-
-    long start_tick = m_last_tick;
-    long end_tick = a_tick;
     long trigger_offset = 0;
-    
-    if (  m_song_mute )
-    {
-        set_playing(false);
-    }
-    else
-    {
+    long start_tick = a_tick - 1;
+    long end_tick = a_tick;
+    long times_played  = m_last_tick / m_length;
+    long offset_base   = times_played * m_length;
 
-        /* if we are using our in sequence on/off triggers */
-        if ( a_playback_mode ){
-
-            bool trigger_state = false;
-            long trigger_tick = 0;
-
-
-            list<trigger>::iterator i = m_list_trigger.begin();
-
-            while ( i != m_list_trigger.end()){
-
-                if ( (*i).m_tick_start <= end_tick ){
-                    trigger_state = true;
-                    trigger_tick = (*i).m_tick_start;
-                    trigger_offset = (*i).m_offset;
-                }
-
-                if ( (*i).m_tick_end <= end_tick ){
-                    trigger_state = false;
-                    trigger_tick = (*i).m_tick_end;
-                    trigger_offset = (*i).m_offset;
-                }
-
-                if ( (*i).m_tick_start >  end_tick ||
-                        (*i).m_tick_end   >  end_tick )
-                {
-                    break;
-                }
-
-                i++;
-            }
-
-            /* we had triggers in our slice and its not equal to current state */
-            if ( trigger_state != m_playing ){
-
-                //printf( "trigger %d\n", trigger_state );
-
-                /* we are turning on */
-                if ( trigger_state ){
-
-                    if ( trigger_tick < m_last_tick )
-                        start_tick = m_last_tick;
-                    else
-                        start_tick = trigger_tick;
-
-                    set_playing( true );
-
-                } else {
-
-                    /* we are on and turning off */
-                    end_tick = trigger_tick;
-                    trigger_turning_off = true;
-                }
-
-            }
-
-            if( m_list_trigger.size() == 0 && 
-                    m_playing ){
-
-                set_playing(false);
-
-            }
-
+    if(a_trigger) {
+        trigger_offset = a_trigger->m_offset;
+        // FIXME: does this even make sense?
+        if(a_trigger->m_tick_start > m_last_tick) {
+            start_tick = a_trigger->m_tick_start;
         }
+        // FIXME: do we need to adjust end_tick in any case?
     }
-
     set_trigger_offset(trigger_offset);
 
+    //printf( "sequence::play(a_tick=%ld)\n", a_tick);
     long start_tick_offset = (start_tick + m_length - m_trigger_offset);
     long end_tick_offset = (end_tick + m_length - m_trigger_offset);
 
@@ -351,8 +233,6 @@ sequence::play( long a_tick, bool a_playback_mode )
 
         while ( e != m_list_event.end()){
 
-
-            //printf ( "s[%ld] -> t[%ld] ", start_tick, end_tick  ); (*e).print();
             if ( ((*e).get_timestamp() + offset_base ) >= (start_tick_offset) &&
                     ((*e).get_timestamp() + offset_base ) <= (end_tick_offset) ){
 
@@ -376,22 +256,11 @@ sequence::play( long a_tick, bool a_playback_mode )
         }
     }
 
-    /* if our triggers said we should turn off */
-    if ( trigger_turning_off ){
-
-        set_playing( false );
-    }
-
     /* update for next frame */
     m_last_tick = end_tick + 1;
-    m_was_playing = m_playing;
 
     unlock();
 }
-
-
-
-
 
 
 
@@ -589,7 +458,7 @@ sequence::remove(list<event>::iterator i)
     if ( (*i).is_note_off()  &&
      m_playing_notes[ (*i).get_note()] > 0 ){
 
-        m_masterbus->play( m_bus, &(*i), m_midi_channel );
+        m_masterbus->play( get_midi_bus(), &(*i), get_midi_channel() );
         m_playing_notes[(*i).get_note()]--;
     }
     m_list_event.erase(i);
@@ -1718,7 +1587,7 @@ void
 sequence::set_dirty_mp()
 {
     //printf( "set_dirtymp\n" );
-    m_dirty_names =  m_dirty_perf = true; 
+    m_dirty_perf = true; 
 }
 
 
@@ -1726,22 +1595,9 @@ void
 sequence::set_dirty()
 {
     //printf( "set_dirty\n" );
-    m_dirty_names = m_dirty_perf = m_dirty_edit = true;
+    m_dirty_perf = m_dirty_edit = true;
 }
 
-
-bool
-sequence::is_dirty_names( )
-{
-    lock();
-
-    bool ret = m_dirty_names;
-    m_dirty_names = false;
-    
-    unlock();
-
-    return ret;
-}
 
 bool
 sequence::is_dirty_perf( )
@@ -1781,7 +1637,7 @@ sequence::play_note_on( int a_note )
 
     e.set_status( EVENT_NOTE_ON );
     e.set_data( a_note, 127 );
-    m_masterbus->play( m_bus, &e, m_midi_channel ); 
+    m_masterbus->play( get_midi_bus(), &e, get_midi_channel() ); 
 
     m_masterbus->flush();
 
@@ -1799,120 +1655,13 @@ sequence::play_note_off( int a_note )
 
     e.set_status( EVENT_NOTE_OFF );
     e.set_data( a_note, 127 );
-    m_masterbus->play( m_bus, &e, m_midi_channel ); 
+    m_masterbus->play( get_midi_bus(), &e, get_midi_channel() ); 
 
     m_masterbus->flush();
 
     unlock();
 }
 
-
-void 
-sequence::clear_triggers( void )
-{
-    lock();
-    m_list_trigger.clear();
-    unlock();
-}
-
-
-
-/* adds trigger, a_state = true, range is on.
-   a_state = false, range is off
-
-
-   is      ie     
-   <      ><        ><        >
-   es             ee
-   <               >
-   XX
-            
-   es ee
-   <   >
-   <>
-               
-   es    ee
-   <      >
-   <    >
-                
-   es     ee
-   <       >
-   <    >            
-*/ 
-void 
-sequence::add_trigger( long a_tick, long a_length, long a_offset, bool a_adjust_offset )
-{
-    lock();
-
-    trigger e;
-    
-    if ( a_adjust_offset )
-        e.m_offset = adjust_offset(a_offset);
-    else
-        e.m_offset = a_offset;
-    
-    e.m_selected = false;
-
-    e.m_tick_start  = a_tick;
-    e.m_tick_end    = a_tick + a_length - 1;
-
-    list<trigger>::iterator i = m_list_trigger.begin();
-
-    while ( i != m_list_trigger.end() ){
-
-        // Is it inside the new one ? erase
-        if ((*i).m_tick_start >= e.m_tick_start &&
-            (*i).m_tick_end   <= e.m_tick_end  )
-        {
-            //printf ( "erase start[%d] end[%d]\n", (*i).m_tick_start, (*i).m_tick_end );
-            m_list_trigger.erase(i);
-            i = m_list_trigger.begin();
-            continue;
-        }
-        // Is the e's end inside  ?
-        else if ( (*i).m_tick_end   >= e.m_tick_end &&
-                  (*i).m_tick_start <= e.m_tick_end )
-        {
-            (*i).m_tick_start = e.m_tick_end + 1;
-            //printf ( "mvstart start[%d] end[%d]\n", (*i).m_tick_start, (*i).m_tick_end );
-        }
-        // Is the last start inside the new end ?
-        else if ((*i).m_tick_end   >= e.m_tick_start &&
-                 (*i).m_tick_start <= e.m_tick_start )
-        {
-            (*i).m_tick_end = e.m_tick_start - 1;
-            //printf ( "mvend start[%d] end[%d]\n", (*i).m_tick_start, (*i).m_tick_end );
-        }
-
-        ++i;
-    }
-
-    m_list_trigger.push_front( e );
-    m_list_trigger.sort();
-    
-    unlock();
-}
-
-bool sequence::intersectTriggers( long position, long& start, long& end )
-{
-    lock();
-    
-    list<trigger>::iterator i = m_list_trigger.begin();
-    while ( i != m_list_trigger.end() )
-    {
-        if ((*i).m_tick_start <= position && position <= (*i).m_tick_end)
-        {
-            start = (*i).m_tick_start;
-            end = (*i).m_tick_end;
-            unlock();
-            return true;
-        }
-        ++i;
-    }
-    
-    unlock();
-    return false;
-}
 
 bool sequence::intersectNotes( long position, long position_note, long& start, long& end, long& note )
 {
@@ -1976,707 +1725,6 @@ bool sequence::intersectEvents( long posstart, long posend, long status, long& s
 }
 
 
-void
-sequence::grow_trigger (long a_tick_from, long a_tick_to, long a_length)
-{
-    lock();
-
-    list<trigger>::iterator i = m_list_trigger.begin();
-    
-    while ( i != m_list_trigger.end() ){
-        
-        // Find our pair
-        if ((*i).m_tick_start <= a_tick_from &&
-            (*i).m_tick_end   >= a_tick_from  )
-        {
-            long start = (*i).m_tick_start;
-            long end   = (*i).m_tick_end;
-            
-            if ( a_tick_to < start )
-            {
-                start = a_tick_to;
-            }
-            
-            if ( (a_tick_to + a_length - 1) > end )
-            {
-                end = (a_tick_to + a_length - 1);
-            }
-            
-            add_trigger( start, end - start + 1, (*i).m_offset );
-            break;
-        }
-        ++i;
-    }
-    
-    unlock();
-}
-
-
-void 
-sequence::del_trigger( long a_tick )
-{
-    lock();
-
-    list<trigger>::iterator i = m_list_trigger.begin();
-
-    while ( i != m_list_trigger.end() ){
-        if ((*i).m_tick_start <= a_tick &&
-            (*i).m_tick_end   >= a_tick ){
-            
-            m_list_trigger.erase(i);
-            break;
-        }
-        ++i;
-    }
-
-    unlock();
-}
-
-void
-sequence::set_trigger_offset( long a_trigger_offset )
-{
-    lock();
-
-    m_trigger_offset = (a_trigger_offset % m_length);
-    m_trigger_offset += m_length;
-    m_trigger_offset %= m_length;
-    
-    unlock();
-}
-
-
-long
-sequence::get_trigger_offset( void )
-{
-    return m_trigger_offset;
-}
-
-void
-sequence::split_trigger( trigger &trig, long a_split_tick)
-{
-    lock();
-
-    long new_tick_end   = trig.m_tick_end;
-    long new_tick_start = a_split_tick;
-    
-    trig.m_tick_end = a_split_tick - 1;
-    
-    long length = new_tick_end - new_tick_start;
-    if ( length > 1 )
-        add_trigger( new_tick_start, length + 1, trig.m_offset );
-    
-    unlock();
-}
-
-#if 0
-/*
-  |...|...|...|...|...|...|...
-
-  0123456789abcdef0123456789abcdef
-  [      ][      ][      ][      ][      ][
-
-  [  ][      ][  ][][][][][      ]  [  ][  ]
-  0   4       4   0 7 4 2 0         6   2  
-  0   4       4   0 1 4 6 0         2   6 inverse offset
-
-  [              ][              ][              ]
-  [  ][      ][  ][][][][][      ]  [  ][  ]
-  0   c       4   0 f c a 8         e   a
-  0   4       c   0 1 4 6 8         2   6  inverse offset
-
-  [                              ][
-  [  ][      ][  ][][][][][      ]  [  ][  ]
-  k   g f c a 8
-  0   4       c   g h k m n       inverse offset
-
-  0123456789abcdefghijklmonpq
-  ponmlkjihgfedcba9876543210
-  0fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210
-
-*/
-
-#endif
-
-
-void
-sequence::adjust_trigger_offsets_to_legnth( long a_new_len )
-{
-    lock();
-    
-    // for all triggers, and undo triggers
-    list<trigger>::iterator i = m_list_trigger.begin();
-    
-    while ( i != m_list_trigger.end() ){
-
-        i->m_offset = adjust_offset( i->m_offset );
-        i->m_offset = m_length - i->m_offset; // flip
-        long inverse_offset = m_length - (i->m_tick_start % m_length);
-
-        long local_offset = (inverse_offset - i->m_offset);
-        local_offset %= m_length;
-
-        long inverse_offset_new = a_new_len - (i->m_tick_start % a_new_len);
-
-        long new_offset = inverse_offset_new - local_offset;
-
-        i->m_offset = (new_offset % a_new_len);
-        i->m_offset = a_new_len - i->m_offset;
-        
-        ++i;
-    }
-    
-    unlock();
-    
-}
-
-#if 0    
-
-... a
-[      ][      ]
-...
-... a
-...
-
-         
-    
-5   7    play
-3        offset
-8   10   play
-
-    
-
-X...X...X...X...X...X...X...X...X...X...
-L       R    
-[        ] [     ]  []  orig
-[                    ]
-        
-<<
-    [     ]    [  ][ ]  [] split on the R marker, shift first
-    [     ]        [     ]   
-    delete middle
-    [     ][ ]  []         move ticks
-    [     ][     ]
-
-    L       R        
-    [     ][ ] [     ]  [] split on L
-    [     ][             ]
-        
-    [     ]        [ ] [     ]  [] increase all after L
-    [     ]        [             ]
-
-        
-#endif
-
-    void
-    sequence::copy_triggers( long a_start_tick, 
-                             long a_distance  )
-{
-
-    long from_start_tick = a_start_tick + a_distance;
-    long from_end_tick = from_start_tick + a_distance - 1;
-
-    lock();
-
-    move_triggers( a_start_tick, 
-		   a_distance,
-		   true );
-    
-    list<trigger>::iterator i = m_list_trigger.begin();
-    while(  i != m_list_trigger.end() ){
-
-
-        
-	if ( (*i).m_tick_start >= from_start_tick &&
-             (*i).m_tick_start <= from_end_tick )
-        {
-            trigger e;
-            e.m_offset = (*i).m_offset;
-            e.m_selected = false;
-
-            e.m_tick_start  = (*i).m_tick_start - a_distance;
-        
-            if ((*i).m_tick_end   <= from_end_tick )
-            {
-                e.m_tick_end  = (*i).m_tick_end - a_distance;
-            }
-
-            if ((*i).m_tick_end   > from_end_tick )
-            {
-                e.m_tick_end = from_start_tick -1;
-            }
-
-            e.m_offset += (m_length - (a_distance % m_length));
-            e.m_offset %= m_length;
-
-            if ( e.m_offset < 0 )
-                e.m_offset += m_length;
-            
-            
-
-            m_list_trigger.push_front( e );
-        }
-
-        ++i;
-    }
-    
-    m_list_trigger.sort();
-    
-    unlock();
-
-}
-
-
-void
-sequence::split_trigger( long a_tick )
-{
-
-    lock();
-    
-    list<trigger>::iterator i = m_list_trigger.begin();
-    while(  i != m_list_trigger.end() ){
-
-        // trigger greater than L and R
-        if ( (*i).m_tick_start <= a_tick &&
-             (*i).m_tick_end >= a_tick )
-        {
-            //printf( "split trigger %ld %ld\n", (*i).m_tick_start, (*i).m_tick_end );
-            {
-                long tick = (*i).m_tick_end - (*i).m_tick_start;
-                tick += 1;
-                tick /= 2;
-                
-                split_trigger(*i, (*i).m_tick_start + tick);              
-                break;
-            }
-        }        
-        ++i;
-    }
-    unlock();
-}
-
-void 
-sequence::move_triggers( long a_start_tick, 
-			 long a_distance,
-			 bool a_direction )
-{
-
-    long a_end_tick = a_start_tick + a_distance;
-    //printf( "move_triggers() a_start_tick[%d] a_distance[%d] a_direction[%d]\n",
-    //        a_start_tick, a_distance, a_direction );
-    
-    lock();
-    
-    list<trigger>::iterator i = m_list_trigger.begin();
-    while(  i != m_list_trigger.end() ){
-
-        // trigger greater than L and R
-	if ( (*i).m_tick_start < a_start_tick &&
-             (*i).m_tick_end > a_start_tick )
-        {
-            if ( a_direction ) // forward
-            {
-                split_trigger(*i,a_start_tick);              
-            }
-            else // back
-            {
-                split_trigger(*i,a_end_tick);
-            }
-        }        
-        
-        // triggers on L
-	if ( (*i).m_tick_start < a_start_tick &&
-             (*i).m_tick_end > a_start_tick )
-        {
-            if ( a_direction ) // forward
-            {
-                split_trigger(*i,a_start_tick);           
-            }
-            else // back
-            {
-                (*i).m_tick_end = a_start_tick - 1;
-            }
-        }
-
-        // In betweens
-        if ( (*i).m_tick_start >= a_start_tick &&
-             (*i).m_tick_end <= a_end_tick &&
-             !a_direction )
-        {
-            m_list_trigger.erase(i);
-            i = m_list_trigger.begin();
-        }
-
-        // triggers on R
-	if ( (*i).m_tick_start < a_end_tick &&
-             (*i).m_tick_end > a_end_tick )
-        {
-            if ( !a_direction ) // forward
-            {
-                (*i).m_tick_start = a_end_tick;
-            }
-        }
-
-        ++i;
-    }
-
-
-    i = m_list_trigger.begin();
-    while(  i != m_list_trigger.end() ){
-
-        if ( a_direction ) // forward
-        {
-            if ( (*i).m_tick_start >= a_start_tick ){
-                (*i).m_tick_start += a_distance;
-                (*i).m_tick_end   += a_distance;
-                (*i).m_offset += a_distance;
-                (*i).m_offset %= m_length;
-                
-            }         
-        }
-        else // back
-        {
-            if ( (*i).m_tick_start >= a_end_tick ){
-                (*i).m_tick_start -= a_distance;
-                (*i).m_tick_end   -= a_distance;
-
-                (*i).m_offset += (m_length - (a_distance % m_length));
-                (*i).m_offset %= m_length;
-                
-            }  
-        }
-
-        (*i).m_offset = adjust_offset( (*i).m_offset );
-
-
-        ++i;
-    }
-    
-
- 
-    unlock();
-
-}
-
-long
-sequence::get_selected_trigger_start_tick( void )
-{
-    long ret = -1;
-    lock();
-
-    list<trigger>::iterator i = m_list_trigger.begin();
-    
-    while(  i != m_list_trigger.end() ){
-        
-	if ( i->m_selected ){
-            ret = i->m_tick_start;
-        }
-
-        ++i;
-    }
-    
-    unlock();
-
-    return ret;
-}
-
-long
-sequence::get_selected_trigger_end_tick( void )
-{
-    long ret = -1;
-    lock();
-
-    list<trigger>::iterator i = m_list_trigger.begin();
-    
-    while(  i != m_list_trigger.end() ){
-        
-	if ( i->m_selected ){
-
-            ret = i->m_tick_end;
-        }
-
-        ++i;
-    }
-    
-    unlock();
-
-    return ret;
-}
-
-
-void
-sequence::move_selected_triggers_to( long a_tick, bool a_adjust_offset, int a_which )
-{
-
-    lock();
-
-    long min_tick = 0;
-    long max_tick = 0x7ffffff;
-
-    list<trigger>::iterator i = m_list_trigger.begin();
-    list<trigger>::iterator s = m_list_trigger.begin();
-
-
-    // min_tick][0                1][max_tick
-    //                   2
-    
-    while(  i != m_list_trigger.end() ){
-        
-	if ( i->m_selected ){
-
-            s = i;
-
-            if (     i != m_list_trigger.end() &&
-                     ++i != m_list_trigger.end())
-            {
-                max_tick = (*i).m_tick_start - 1;
-            }
-
-            
-            // if we are moving the 0, use first as offset
-            // if we are moving the 1, use the last as the offset
-            // if we are moving both (2), use first as offset
-            
-            long a_delta_tick = 0;
-
-            if ( a_which == 1 )
-            {
-                a_delta_tick = a_tick - s->m_tick_end;
-            
-                if (  a_delta_tick > 0 &&
-                      (a_delta_tick + s->m_tick_end) > max_tick )
-                {
-                    a_delta_tick = ((max_tick) - s->m_tick_end);
-                }
-
-                // not past first         
-                if (  a_delta_tick < 0 &&
-                      (a_delta_tick + s->m_tick_end <= (s->m_tick_start + c_ppqn / 8 )))
-                {
-                    a_delta_tick = ((s->m_tick_start + c_ppqn / 8 ) - s->m_tick_end);
-                }
-            }
-
-            if ( a_which == 0 )
-            {
-                a_delta_tick = a_tick - s->m_tick_start;
-                
-                if (  a_delta_tick < 0 &&
-                      (a_delta_tick + s->m_tick_start) < min_tick )
-                {
-                    a_delta_tick = ((min_tick) - s->m_tick_start);
-                }
-
-                // not past last        
-                if (  a_delta_tick > 0 &&
-                      (a_delta_tick + s->m_tick_start >= (s->m_tick_end - c_ppqn / 8 )))
-                {
-                    a_delta_tick = ((s->m_tick_end - c_ppqn / 8 ) - s->m_tick_start);
-                }                
-            }
-         
-            if ( a_which == 2 )
-            {
-                a_delta_tick = a_tick - s->m_tick_start;
-                
-                if (  a_delta_tick < 0 &&
-                      (a_delta_tick + s->m_tick_start) < min_tick )
-                {
-                    a_delta_tick = ((min_tick) - s->m_tick_start);
-                }
-            
-                if ( a_delta_tick > 0 &&
-                     (a_delta_tick + s->m_tick_end) > max_tick )
-                {
-                    a_delta_tick = ((max_tick) - s->m_tick_end);
-                }
-            }
-            
-            if ( a_which == 0 || a_which == 2 )
-                s->m_tick_start += a_delta_tick;
-            
-            if ( a_which == 1 || a_which == 2 )
-                s->m_tick_end   += a_delta_tick;
-            
-            if ( a_adjust_offset ){
-                
-                s->m_offset += a_delta_tick;
-                s->m_offset = adjust_offset( s->m_offset );
-            }
-            
-            break;
-	}
-        else {
-            min_tick = (*i).m_tick_end + 1;
-        }
-
-        ++i;
-    }
-
-    unlock();
-}
-
-
-long
-sequence::get_max_trigger( void )
-{
-    lock();
-
-    long ret;
-
-    if ( m_list_trigger.size() > 0 )
-	ret = m_list_trigger.back().m_tick_end;
-    else
-	ret = 0;
-
-    unlock();
-
-    return ret;
-}
-
-long
-sequence::adjust_offset( long a_offset )
-{    
-    a_offset %= m_length;
-    
-    if ( a_offset < 0 )
-        a_offset += m_length;
-
-    return a_offset;
-}
-
-bool 
-sequence::get_trigger_state( long a_tick )
-{
-    lock();
-
-    bool ret = false;
-    list<trigger>::iterator i;
-
-    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ ){
-
-	if ( (*i).m_tick_start <= a_tick &&
-             (*i).m_tick_end >= a_tick){
-	    ret = true;
-            break;
-        }
-    }
-
-    unlock();
-
-    return ret;
-}
-
-
-
-bool 
-sequence::select_trigger( long a_tick )
-{
-    lock();
-
-    bool ret = false;
-    list<trigger>::iterator i;
-    
-    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ ){
-
-	if ( (*i).m_tick_start <= a_tick &&
-             (*i).m_tick_end   >= a_tick){
-            
-            (*i).m_selected = true;
-	    ret = true;
-        }        
-    }
-    
-    unlock();
-    
-    return ret;
-}
-
-
-bool 
-sequence::unselect_triggers( void )
-{
-    lock();
-
-    bool ret = false;
-    list<trigger>::iterator i;
-
-    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ ){
-        (*i).m_selected = false;
-    }
-
-    unlock();
-
-    return ret;
-}
-
-
-
-void
-sequence::del_selected_trigger( void )
-{
-    lock();
-    
-    list<trigger>::iterator i;
-    
-    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ ){
-
-        if ( i->m_selected ){
-            m_list_trigger.erase(i);
-            break;
-        }
-    }
-    
-    unlock();
-}
-
-
-void
-sequence::cut_selected_trigger( void )
-{
-    copy_selected_trigger();
-    del_selected_trigger();
-}
-
-
-void
-sequence::copy_selected_trigger( void )
-{
-    lock();
-    
-    list<trigger>::iterator i;
-    
-    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ ){
-        
-        if ( i->m_selected ){
-            m_trigger_clipboard = *i;
-            m_trigger_copied = true;
-            break;
-        }
-    }
-    
-    unlock();
-}
-
-
-void
-sequence::paste_trigger( void )
-{
-    if ( m_trigger_copied ){
-        long length =  m_trigger_clipboard.m_tick_end -
-            m_trigger_clipboard.m_tick_start + 1;
-        // paste at copy end
-        add_trigger( m_trigger_clipboard.m_tick_end + 1,
-                     length,
-                     m_trigger_clipboard.m_offset + length );
-        
-        m_trigger_clipboard.m_tick_start = m_trigger_clipboard.m_tick_end +1;
-        m_trigger_clipboard.m_tick_end = m_trigger_clipboard.m_tick_start + length - 1;
-        
-        m_trigger_clipboard.m_offset += length;
-        m_trigger_clipboard.m_offset = adjust_offset(m_trigger_clipboard.m_offset);
-    }
-}
-
 
 /* this refreshes the play marker to the LastTick */
 void 
@@ -2688,17 +1736,6 @@ sequence::reset_draw_marker( void )
     
     unlock();
 }
-
-void
-sequence::reset_draw_trigger_marker( void )
-{
-    lock();
-
-    m_iterator_draw_trigger = m_list_trigger.begin();
-
-    unlock();
-}
-
 
 int
 sequence::get_lowest_note_event( void )
@@ -2849,22 +1886,6 @@ sequence::get_next_event( unsigned char a_status,
     return false;
 }
 
-bool 
-sequence::get_next_trigger( long *a_tick_on, long *a_tick_off, bool *a_selected, long *a_offset )
-{
-    while (  m_iterator_draw_trigger  != m_list_trigger.end() ){ 
-
-	*a_tick_on  = (*m_iterator_draw_trigger).m_tick_start;
-        *a_selected = (*m_iterator_draw_trigger).m_selected;
-        *a_offset =   (*m_iterator_draw_trigger).m_offset;
-	*a_tick_off = (*m_iterator_draw_trigger).m_tick_end;
-	m_iterator_draw_trigger++;
-
-	return true;
-    }
-    return false;
-}
-
 
 void 
 sequence::remove_all( void )
@@ -2888,11 +1909,7 @@ sequence::operator= (const sequence& a_rhs)
     if (this != &a_rhs){
 
 	m_list_event   = a_rhs.m_list_event;
-	m_list_trigger   = a_rhs.m_list_trigger;
-
-	m_midi_channel = a_rhs.m_midi_channel;
 	m_masterbus    = a_rhs.m_masterbus;
-	m_bus          = a_rhs.m_bus;
 	m_name         = a_rhs.m_name;
 	m_length       = a_rhs.m_length;
 
@@ -2947,30 +1964,9 @@ sequence::get_last_tick( )
     return (m_last_tick + (m_length -  m_trigger_offset)) % m_length;
 }
 
-void
-sequence::set_midi_bus( char  a_mb )
-{
-    lock();
-    
-    /* off notes except initial */
-    off_playing_notes( );
-    
-    this->m_bus = a_mb;
-    set_dirty();
-
-    unlock();
-}
-
-char
-sequence::get_midi_bus(  )
-{
-    return this->m_bus;
-}
-
-
 
 void 
-sequence::set_length( long a_len, bool a_adjust_triggers )
+sequence::set_length( long a_len)
 {
     lock();
 
@@ -2982,9 +1978,6 @@ sequence::set_length( long a_len, bool a_adjust_triggers )
     if ( a_len < (c_ppqn / 4) )
         a_len = (c_ppqn /4);
 
-    if ( a_adjust_triggers )
-        adjust_trigger_offsets_to_legnth( a_len  );
-    
     m_length = a_len;
     
     verify_and_link();
@@ -3104,6 +2097,19 @@ sequence::get_thru( )
     return m_thru;
 }
 
+void 
+sequence::set_track( track *a_track )
+{
+    m_track = a_track;
+    set_dirty();
+}
+
+track * 
+sequence::get_track( void )
+{
+    return m_track;
+}
+
 
 /* sets sequence name */
 void 
@@ -3120,20 +2126,16 @@ sequence::set_name( string a_name )
     set_dirty_mp();
 }
 
-void 
-sequence::set_midi_channel( unsigned char a_ch )
+char
+sequence::get_midi_bus(  )
 {
-    lock();
-    off_playing_notes( );
-    m_midi_channel = a_ch;
-    set_dirty();
-    unlock();
+    return m_track->get_midi_bus();
 }
 
 unsigned char 
 sequence::get_midi_channel( )
 {
-    return m_midi_channel;
+    return m_track->get_midi_channel();
 }
 
 
@@ -3146,22 +2148,6 @@ sequence::print()
 	(*i).print();
     printf("events[%zd]\n\n",m_list_event.size());
 
-}
-
-
-void 
-sequence::print_triggers()
-{
-    printf("[%s]\n", m_name.c_str()  );
-
-    for( list<trigger>::iterator i = m_list_trigger.begin();
-         i != m_list_trigger.end(); i++ ){
-
-        /*long d= c_ppqn / 8;*/
-        
-        printf ("  tick_start[%ld] tick_end[%ld] off[%ld]\n", (*i).m_tick_start, (*i).m_tick_end, (*i).m_offset );
-
-    }
 }
 
 
@@ -3188,7 +2174,7 @@ sequence::put_event_on_bus( event *a_e )
     }
 
     if ( !skip ){
-        m_masterbus->play( m_bus, a_e,  m_midi_channel );   
+        m_masterbus->play( get_midi_bus(), a_e,  get_midi_channel() );   
     }
 
     m_masterbus->flush();
@@ -3212,7 +2198,7 @@ sequence::off_playing_notes()
             e.set_status( EVENT_NOTE_OFF );
             e.set_data( x, 0 );
 
-            m_masterbus->play( m_bus, &e, m_midi_channel ); 
+            m_masterbus->play( get_midi_bus(), &e, get_midi_channel() ); 
 
             m_playing_notes[x]--;
         }
@@ -3511,7 +2497,8 @@ sequence::fill_list( list<char> *a_list, int a_pos )
 	/* now that the timestamp is encoded, do the status and
 	   data */
 
-	a_list->push_front( e.m_status | m_midi_channel );
+    /* FIXME: move channel stuff to track */
+	a_list->push_front( e.m_status | get_midi_channel() );
 
 	switch( e.m_status & 0xF0 ){
 
@@ -3542,6 +2529,8 @@ sequence::fill_list( list<char> *a_list, int a_pos )
 	}
     }
 
+// FIXME: this needs to be refactored to take tracks into account
+/*
     int num_triggers = m_list_trigger.size();
     list<trigger>::iterator t = m_list_trigger.begin();
     list<trigger>::iterator p;
@@ -3565,14 +2554,16 @@ sequence::fill_list( list<char> *a_list, int a_pos )
         addLongList( a_list, (*t).m_offset ); 
 	t++;
     }
+*/
 
+    /* FIXME: move bus and channel stuff into track */
     /* bus */
     addListVar( a_list, 0 );
     a_list->push_front( 0xFF );
     a_list->push_front( 0x7F );
     a_list->push_front( 0x05 );
     addLongList( a_list, c_midibus );
-    a_list->push_front( m_bus  );
+    a_list->push_front( get_midi_bus()  );
 
     /* timesig */
     addListVar( a_list, 0 );
@@ -3589,7 +2580,7 @@ sequence::fill_list( list<char> *a_list, int a_pos )
     a_list->push_front( 0x7F );
     a_list->push_front( 0x05 );
     addLongList( a_list, c_midich );
-    a_list->push_front( m_midi_channel );
+    a_list->push_front( get_midi_channel() );
 
     delta_time = m_length - prev_timestamp;
  
@@ -3601,31 +2592,4 @@ sequence::fill_list( list<char> *a_list, int a_pos )
 
     unlock();
 }
-
-
-
-
-
-
-
-
-//     list<char> triggers;
-
-//     /* triggers */
-
-//     list<trigger>::iterator t;
-//     for ( t = m_list_trigger.begin(); t != m_list_trigger.end(); t++ ){
-
-// 	addLongList( &triggers, (*t).m_tick );
-// 	printf ( "[%ld]\n", (*t).m_tick );
-//     }    
-
-//     addListVar( a_list, 0 );
-//     a_list->push_front( 0xFF );
-//     a_list->push_front( 0x7F );
-
-//     a_list->push_front( 0x05 );
-//     addLongList( a_list, c_triggersmidibus );
-
-
 

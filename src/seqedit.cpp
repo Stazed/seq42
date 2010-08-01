@@ -62,7 +62,7 @@ int seqedit::m_initial_snap = c_ppqn / 4;
 int seqedit::m_initial_note_length = c_ppqn / 4;
 int seqedit::m_initial_scale = 0;
 int seqedit::m_initial_key = 0;
-int seqedit::m_initial_sequence = -1;
+sequence *seqedit::m_initial_bg_seq = NULL;
 
 
 // Actions
@@ -104,7 +104,7 @@ seqedit::seqedit( sequence *a_seq,
     m_note_length = m_initial_note_length;
     m_scale       = m_initial_scale;
     m_key         =   m_initial_key;
-    m_sequence    = m_initial_sequence;
+    m_bg_seq    = m_initial_bg_seq;
 
     m_mainperf = a_perf;
     // m_mainwid = a_mainwid;
@@ -170,8 +170,6 @@ seqedit::seqedit( sequence *a_seq,
     m_menu_bw = manage( new Menu() );
     m_menu_rec_vol = manage( new Menu() );
 
-    m_menu_midich = NULL;
-    m_menu_midibus = NULL;
     m_menu_sequences = NULL;
 
     m_menu_key = manage( new Menu());
@@ -302,15 +300,13 @@ seqedit::seqedit( sequence *a_seq,
     set_zoom( m_zoom );
     set_snap( m_snap );
     set_note_length( m_note_length );
-    set_background_sequence( m_sequence );
+    set_background_sequence( m_bg_seq );
 
 
     set_bpm( m_seq->get_bpm() );
     set_bw( m_seq->get_bw() );
     set_measures( get_measures() );
 
-    set_midi_channel( m_seq->get_midi_channel() );
-    set_midi_bus( m_seq->get_midi_bus() );
     set_data_type( EVENT_NOTE_ON );
 
     set_scale( m_scale );
@@ -318,6 +314,8 @@ seqedit::seqedit( sequence *a_seq,
 
     m_seqroll_wid->set_ignore_redraw(false);
     add_events(Gdk::SCROLL_MASK);
+
+    set_track_info();
 }
 
 
@@ -752,34 +750,14 @@ seqedit::fill_top_bar( void )
 
     m_hbox->pack_start( *(manage(new VSeparator( ))), false, false, 4);
     
-    /* midi bus */
-    m_button_bus = manage( new Button());
-    m_button_bus->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( bus_xpm  ))));
-    m_button_bus->signal_clicked().connect(
-            mem_fun( *this, &seqedit::popup_midibus_menu));
-    add_tooltip( m_button_bus, "Select Output Bus." );
-
-    m_entry_bus = manage( new Entry());
-    m_entry_bus->set_max_length(50);
-    m_entry_bus->set_width_chars(50);
-    m_entry_bus->set_editable( false );
-
-    m_hbox->pack_start( *m_button_bus , false, false );
-    m_hbox->pack_start( *m_entry_bus , true, true );
-
-    /* midi channel */
-    m_button_channel = manage( new Button());
-    m_button_channel->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( midi_xpm  ))));
-    m_button_channel->signal_clicked().connect(
-            mem_fun( *this, &seqedit::popup_midich_menu ));
-    add_tooltip( m_button_channel, "Select Midi channel." );
-    m_entry_channel = manage( new Entry());
-    m_entry_channel->set_width_chars(2);
-    m_entry_channel->set_editable( false );
-
-    m_hbox->pack_start( *m_button_channel , false, false );
-    m_hbox->pack_start( *m_entry_channel , false, false );
-
+    /* track info */
+    m_label_track = manage (new Label( "Track:" ));
+    m_hbox->pack_start( *m_label_track , false, false );
+    m_entry_track = manage( new Entry());
+    m_entry_track->set_max_length(50);
+    m_entry_track->set_width_chars(50);
+    m_entry_track->set_editable( false );
+    m_hbox->pack_start( *m_entry_track , true, true );
 
     /* undo */
     m_button_undo = manage( new Button());
@@ -921,56 +899,6 @@ seqedit::popup_menu(Menu *a_menu)
 
 
 void
-seqedit::popup_midibus_menu( void )
-{
-    using namespace Menu_Helpers;
-
-    m_menu_midibus = manage( new Menu());
-
-    /* midi buses */
-    mastermidibus *masterbus = m_mainperf->get_master_midi_bus();
-    for ( int i=0; i< masterbus->get_num_out_buses(); i++ ){
-        m_menu_midibus->items().push_back(MenuElem(
-                    masterbus->get_midi_out_bus_name(i),
-                    sigc::bind(mem_fun(*this,&seqedit::set_midi_bus), i)));
-    }
-
-    m_menu_midibus->popup(0,0);
-}
-
-void
-seqedit::popup_midich_menu( void )
-{
-    using namespace Menu_Helpers;
-
-    m_menu_midich = manage( new Menu());
-
-    int midi_bus = m_seq->get_midi_bus();
-
-    char b[16];
-    
-    /* midi channel menu */
-    for( int i=0; i<16; i++ ){
-        
-        snprintf( b, sizeof(b), "%d", i+1 );
-        std::string name = string(b);
-        int instrument = global_user_midi_bus_definitions[midi_bus].instrument[i]; 
-        if ( instrument >= 0 && instrument < c_maxBuses )
-        {
-            name = name + (string(" (") + 
-                           global_user_instrument_definitions[instrument].instrument + 
-                           string(")") );
-        }
-        m_menu_midich->items().push_back(MenuElem(name, 
-                    sigc::bind(mem_fun(*this,&seqedit::set_midi_channel), 
-                                                       i )));
-    }
-
-    m_menu_midich->popup(0,0);
-}
-
-
-void
 seqedit::popup_sequence_menu( void )
 {
     using namespace Menu_Helpers;
@@ -979,36 +907,35 @@ seqedit::popup_sequence_menu( void )
     m_menu_sequences = manage( new Menu());
 
     m_menu_sequences->items().push_back(MenuElem("Off",
-                sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), -1)));
+                sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), NULL)));
     m_menu_sequences->items().push_back( SeparatorElem( ));
 
-    for ( int ss=0; ss<c_max_sets; ++ss ){
+    for ( int t=0; t<c_max_track; ++t ){
+        if (! m_mainperf->is_active_track( t )){
+            continue;
+        }
+        track *a_track = m_mainperf->get_track(t);
 
-        Menu *menu_ss = NULL;  
+        Menu *menu_t = NULL;  
         bool inserted = false;
         
-        for ( int seq=0; seq<  c_seqs_in_set; seq++ ){
-
-            int i = ss * c_seqs_in_set + seq;
+        for ( int s=0; s< a_track->get_number_of_sequences(); s++ ){
 
             char name[30];
-            
-            if ( m_mainperf->is_active( i )){
 
-                if ( !inserted ){
-                    inserted = true;
-                    snprintf(name, sizeof(name), "[%d]", ss);
-                    menu_ss = manage( new Menu());
-                    m_menu_sequences->items().push_back(MenuElem(name,*menu_ss));
-                }
-                
-                sequence *seq = m_mainperf->get_sequence( i );                
-                snprintf(name, sizeof(name),"[%d] %.13s", i, seq->get_name());
-
-                menu_ss->items().push_back(MenuElem(name,
-                            sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), i)));
-                
+            if ( !inserted ){
+                inserted = true;
+                snprintf(name, sizeof(name), "[%d] %s", t, a_track->get_name());
+                menu_t = manage( new Menu());
+                m_menu_sequences->items().push_back(MenuElem(name,*menu_t));
             }
+            
+            sequence *a_seq = a_track->get_sequence( s );                
+            snprintf(name, sizeof(name),"[%d] %.13s", s, a_seq->get_name());
+
+            menu_t->items().push_back(MenuElem(name,
+                        sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), a_seq)));
+                
         }
     }
     
@@ -1017,26 +944,22 @@ seqedit::popup_sequence_menu( void )
 
 
 void
-seqedit::set_background_sequence( int a_seq )
+seqedit::set_background_sequence( sequence *a_seq )
 {
-    char name[30];
+    char name[60];
 
-    m_initial_sequence = m_sequence = a_seq;
+    m_initial_bg_seq = m_bg_seq = a_seq;
 
-    if ( a_seq == -1 || !m_mainperf->is_active( a_seq )){
+    if ( a_seq == NULL){
         m_entry_sequence->set_text("Off");
-         m_seqroll_wid->set_background_sequence( false, 0 );
-    }
-    
-    if ( m_mainperf->is_active( a_seq )){
-
-        sequence *seq = m_mainperf->get_sequence( a_seq );                
-        snprintf(name, sizeof(name),"[%d] %.13s", a_seq, seq->get_name());
+        m_seqroll_wid->set_background_sequence( false, NULL );
+    } else {
+        track *a_track = a_seq->get_track();
+        snprintf(name, sizeof(name),"[%d/%d] %.13s", m_mainperf->get_track_index(a_track)+1, a_track->get_sequence_index(a_seq)+1, a_seq->get_name());
         m_entry_sequence->set_text(name);
-
         m_seqroll_wid->set_background_sequence( true, a_seq );
-
     }
+
 }
 
 
@@ -1167,24 +1090,18 @@ seqedit::popup_event_menu( void )
     //m_option_midibus->set_history( m_seq->getMidiBus()->getID() );
 
 void 
-seqedit::set_midi_channel( int a_midichannel  )
+seqedit::set_track_info( )
 {
-    char b[10];
-
-    snprintf( b, sizeof(b), "%d", a_midichannel + 1);
+    char b[50];
+    snprintf( b, sizeof(b), "[%d] %s Bus %d - Chan %d",
+            m_mainperf->get_track_index(m_seq->get_track()) + 1,
+            m_seq->get_track()->get_name(),
+            m_seq->get_track()->get_midi_bus() + 1,
+            m_seq->get_track()->get_midi_channel() + 1);
     m_entry_channel->set_text(b);
-    m_seq->set_midi_channel( a_midichannel );
-    // m_mainwid->update_sequence_on_window( m_pos );
-}
 
-
-void 
-seqedit::set_midi_bus( int a_midibus )
-{
-    m_seq->set_midi_bus( a_midibus );
 	mastermidibus *mmb =  m_mainperf->get_master_midi_bus();
     m_entry_bus->set_text( mmb->get_midi_out_bus_name( a_midibus ));
-    // m_mainwid->update_sequence_on_window( m_pos );
 }
 
 

@@ -28,6 +28,7 @@ class perform;
 #include "midibus.h"
 #include "midifile.h"
 #include "sequence.h"
+#include "track.h"
 #ifndef __WIN32__
 #   include <unistd.h>
 #endif
@@ -45,13 +46,13 @@ class perform
 {
  private:
     /* vector of sequences */
-    sequence *m_seqs[c_max_sequence];
+    track *m_tracks[c_max_track];
 
-    bool m_seqs_active[ c_max_sequence ];
+    bool m_tracks_active[ c_max_track ];
 
-    bool m_was_active_edit[ c_max_sequence ];
-    bool m_was_active_perf[ c_max_sequence ];
-    bool m_was_active_names[ c_max_sequence ];
+    bool m_was_active_edit[ c_max_track ];
+    bool m_was_active_perf[ c_max_track ];
+    bool m_was_active_names[ c_max_track ];
     
     /* our midibus */
     mastermidibus m_master_bus;
@@ -129,11 +130,13 @@ class perform
     void init_jack( void );
     void deinit_jack( void );
     
-    void add_sequence( sequence *a_seq, int a_perf );
-    void delete_sequence( int a_num );
-    bool is_sequence_in_edit( int a_num );
+    void add_track( track *a_track, int a_pref );
+    void delete_track( int a_num );
+
+    bool is_track_in_edit( int a_num );
+    int get_track_index( track *a_track );
     
-    void clear_sequence_triggers( int a_seq  );
+    void clear_track_triggers( int a_num  );
 
     long get_tick( ) { return m_tick; };
 
@@ -165,20 +168,19 @@ class perform
     void off_sequences( void );
     void all_notes_off( void );
 
-    void set_active(int a_sequence, bool a_active);
-    void set_was_active( int a_sequence );
-    bool is_active(int a_sequence);
-    bool is_dirty_edit (int a_sequence);
+    void set_active(int a_track, bool a_active);
+    void set_was_active( int a_track );
+    bool is_active_track(int a_track);
     bool is_dirty_perf (int a_sequence);
     bool is_dirty_names (int a_sequence);
         
-    void new_sequence( int a_sequence );
+    void new_track( int a_track );
 
     /* plays all notes to Curent tick */
     void play( long a_tick );
     void set_orig_ticks( long a_tick  );
 
-    sequence * get_sequence( int a_sequence );
+    track * get_track( int a_track );
 
     void reset_sequences( void );
 
