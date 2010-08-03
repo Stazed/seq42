@@ -29,10 +29,11 @@ seq42_SOURCES = \
 	seqedit.cpp seqedit.h \
 	seqevent.cpp seqevent.h \
 	seqkeys.cpp seqkeys.h \
-	seqmenu.cpp seqmenu.h \
 	seqroll.cpp seqroll.h \
 	seqtime.cpp seqtime.h \
 	sequence.cpp sequence.h \
+	track.cpp track.h \
+	trackmenu.cpp trackmenu.h \
 	userfile.cpp userfile.h
 
 EXTRA_DIST = configwin32.h *.xpm 

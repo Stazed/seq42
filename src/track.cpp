@@ -1001,6 +1001,14 @@ track::get_next_trigger( long *a_tick_on, long *a_tick_off, bool *a_selected, lo
 }
 
 void 
+track::print()
+{
+    printf("[%s]\n", m_name.c_str()  );
+    // FIXME
+}
+
+
+void 
 track::print_triggers()
 {
     printf("[%s]\n", m_name.c_str()  );

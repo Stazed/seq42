@@ -41,7 +41,7 @@ const int c_max_track = 64;  // FIXME: use a list instead of a fixed number arra
 
 const int c_ppqn         = 192;  /* default - doesn't change */
 
-const int c_default_trigger_length_in_bars = 8; /* used when adding a new trigger */
+const int c_default_trigger_length_in_bars = 1; /* used when adding a new trigger */  // FIXME: allow changing this value via a menu in the mainwnd (similar to note length in seqedit.
 const long c_default_trigger_length = c_default_trigger_length_in_bars * 4 * c_ppqn;
 
 const int c_bpm          = 120;  /* default */

@@ -907,7 +907,7 @@ seqedit::popup_sequence_menu( void )
     m_menu_sequences = manage( new Menu());
 
     m_menu_sequences->items().push_back(MenuElem("Off",
-                sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), NULL)));
+                sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), (sequence *)NULL)));
     m_menu_sequences->items().push_back( SeparatorElem( ));
 
     for ( int t=0; t<c_max_track; ++t ){
@@ -1098,10 +1098,7 @@ seqedit::set_track_info( )
             m_seq->get_track()->get_name(),
             m_seq->get_track()->get_midi_bus() + 1,
             m_seq->get_track()->get_midi_channel() + 1);
-    m_entry_channel->set_text(b);
-
-	mastermidibus *mmb =  m_mainperf->get_master_midi_bus();
-    m_entry_bus->set_text( mmb->get_midi_out_bus_name( a_midibus ));
+    m_entry_track->set_text(b);
 }
 
 

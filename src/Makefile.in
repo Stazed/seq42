@@ -55,8 +55,8 @@ am_seq42_OBJECTS = configfile.$(OBJEXT) event.$(OBJEXT) font.$(OBJEXT) \
 	optionsfile.$(OBJEXT) perfnames.$(OBJEXT) perform.$(OBJEXT) \
 	perfroll.$(OBJEXT) perftime.$(OBJEXT) seq42.$(OBJEXT) \
 	seqdata.$(OBJEXT) seqedit.$(OBJEXT) seqevent.$(OBJEXT) \
-	seqkeys.$(OBJEXT) seqmenu.$(OBJEXT) seqroll.$(OBJEXT) \
-	seqtime.$(OBJEXT) sequence.$(OBJEXT) userfile.$(OBJEXT)
+	seqkeys.$(OBJEXT) seqroll.$(OBJEXT) \
+	seqtime.$(OBJEXT) sequence.$(OBJEXT) track.$(OBJEXT) trackmenu.$(OBJEXT) userfile.$(OBJEXT)
 seq42_OBJECTS = $(am_seq42_OBJECTS)
 am__DEPENDENCIES_1 =
 seq42_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -205,10 +205,11 @@ seq42_SOURCES = \
 	seqedit.cpp seqedit.h \
 	seqevent.cpp seqevent.h \
 	seqkeys.cpp seqkeys.h \
-	seqmenu.cpp seqmenu.h \
 	seqroll.cpp seqroll.h \
 	seqtime.cpp seqtime.h \
 	sequence.cpp sequence.h \
+	track.cpp track.h \
+	trackmenu.cpp trackmenu.h \
 	userfile.cpp userfile.h
 
 EXTRA_DIST = configwin32.h *.xpm 
@@ -333,10 +334,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/seqedit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/seqevent.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/seqkeys.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/seqmenu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/seqroll.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/seqtime.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sequence.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/track.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/trackmenu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/userfile.Po@am__quote@
 
 .cpp.o:

@@ -1104,16 +1104,16 @@ bool FruityPerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths
             if ( ths.m_moving )
             {
                 ths.m_mainperf->get_track( ths.m_drop_track )
-                              ->move_selected_triggers_to( tick, true );
+                              ->move_selected_triggers_to( tick );
             }
             if ( ths.m_growing )
             {
                 if ( ths.m_grow_direction )
                     ths.m_mainperf->get_track( ths.m_drop_track )
-                                  ->move_selected_triggers_to( tick, false, 0 );
+                                  ->move_selected_triggers_to( tick, 0 );
                 else
                     ths.m_mainperf->get_track( ths.m_drop_track )
-                                  ->move_selected_triggers_to( tick-1, false, 1 );
+                                  ->move_selected_triggers_to( tick-1, 1 );
             }
 
 
@@ -1333,16 +1333,16 @@ bool Seq42PerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths)
             if ( ths.m_moving )
             {
                 ths.m_mainperf->get_track( ths.m_drop_track )
-                              ->move_selected_triggers_to( tick, true );
+                              ->move_selected_triggers_to( tick );
             }
             if ( ths.m_growing )
             {
                 if ( ths.m_grow_direction )
                     ths.m_mainperf->get_track( ths.m_drop_track )
-                                  ->move_selected_triggers_to( tick, false, 0 );
+                                  ->move_selected_triggers_to( tick, 0 );
                 else
                     ths.m_mainperf->get_track( ths.m_drop_track )
-                                  ->move_selected_triggers_to( tick-1, false, 1 );
+                                  ->move_selected_triggers_to( tick-1, 1 );
             }
 
             

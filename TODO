@@ -15,6 +15,7 @@
     Set to True as soon as anything is modified.
     Add an is_modified() method that returns m_modified.
     Update mainwnd is_modified() to take perform's is_modified() into account.
+    Alternatively.... ditch all the modified stuff and look at the size of the undo stack to determine whether or not save dialog is needed.
 
 Seq24 stuff below......
 
