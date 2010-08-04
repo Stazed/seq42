@@ -65,9 +65,6 @@ class sequence
        messages */
     int m_playing_notes[c_midi_notes];
 
-    /* outputs to sequence to this Bus on midichannel */
-    mastermidibus *m_masterbus;
-
     /* states */
     bool m_playing;
     bool m_recording;
@@ -207,7 +204,6 @@ class sequence
     bool is_dirty_edit ();
     bool is_dirty_perf ();
     
-    void set_dirty_mp();
     void set_dirty();
 
     /* dumps contents to stdout */
@@ -232,7 +228,7 @@ class sequence
     char get_midi_bus (void);
     unsigned char get_midi_channel ();
 
-    void set_master_midi_bus (mastermidibus * a_mmb);
+    mastermidibus * get_master_midi_bus ();
 
     enum select_action_e
     {

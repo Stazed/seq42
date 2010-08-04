@@ -90,9 +90,7 @@ seqedit::menu_action_quantise( void )
 
 
 seqedit::seqedit( sequence *a_seq, 
-		  perform *a_perf,  
-		  // mainwid *a_mainwid, 
-		  int a_pos  )
+		  perform *a_perf)  
 {
     set_icon(Gdk::Pixbuf::create_from_xpm_data(seq_editor_xpm));
 
@@ -107,8 +105,6 @@ seqedit::seqedit( sequence *a_seq,
     m_bg_seq    = m_initial_bg_seq;
 
     m_mainperf = a_perf;
-    // m_mainwid = a_mainwid;
-    m_pos = a_pos;
 
     /* main window */
     std::string title = "seq42 - ";
@@ -152,7 +148,6 @@ seqedit::seqedit( sequence *a_seq,
                                            m_seqdata_wid,
                                            m_seqevent_wid,
                                            m_seqkeys_wid,
-                                           m_pos,
                                            m_hadjust,
                                            m_vadjust,
                                            m_toggle_play));
@@ -692,8 +687,8 @@ seqedit::fill_top_bar( void )
 {
      /* name */
     m_entry_name = manage( new Entry(  ));
-    m_entry_name->set_max_length(20);
-    m_entry_name->set_width_chars(20);
+    m_entry_name->set_max_length(32);
+    m_entry_name->set_width_chars(32);
     m_entry_name->set_text( m_seq->get_name());
     m_entry_name->select_region(0,0);
     m_entry_name->set_position(0);
@@ -751,6 +746,20 @@ seqedit::fill_top_bar( void )
     m_hbox->pack_start( *(manage(new VSeparator( ))), false, false, 4);
     
     /* track info */
+    m_label_bus = manage (new Label( "Bus:" ));
+    m_hbox->pack_start( *m_label_bus , false, false );
+    m_entry_bus = manage( new Entry());
+    m_entry_bus->set_max_length(2);
+    m_entry_bus->set_width_chars(2);
+    m_entry_bus->set_editable( false );
+    m_hbox->pack_start( *m_entry_bus , false, false );
+    m_label_channel = manage (new Label( "Ch:" ));
+    m_hbox->pack_start( *m_label_channel , false, false );
+    m_entry_channel = manage( new Entry());
+    m_entry_channel->set_max_length(2);
+    m_entry_channel->set_width_chars(2);
+    m_entry_channel->set_editable( false );
+    m_hbox->pack_start( *m_entry_channel , false, false );
     m_label_track = manage (new Label( "Track:" ));
     m_hbox->pack_start( *m_label_track , false, false );
     m_entry_track = manage( new Entry());
@@ -758,6 +767,7 @@ seqedit::fill_top_bar( void )
     m_entry_track->set_width_chars(50);
     m_entry_track->set_editable( false );
     m_hbox->pack_start( *m_entry_track , true, true );
+
 
     /* undo */
     m_button_undo = manage( new Button());
@@ -1093,12 +1103,16 @@ void
 seqedit::set_track_info( )
 {
     char b[50];
-    snprintf( b, sizeof(b), "[%d] %s Bus %d - Chan %d",
+    snprintf( b, sizeof(b), "[%d] %s",
             m_mainperf->get_track_index(m_seq->get_track()) + 1,
-            m_seq->get_track()->get_name(),
-            m_seq->get_track()->get_midi_bus() + 1,
-            m_seq->get_track()->get_midi_channel() + 1);
+            m_seq->get_track()->get_name());
     m_entry_track->set_text(b);
+    snprintf( b, sizeof(b), "%d",
+            m_seq->get_track()->get_midi_bus() + 1);
+    m_entry_bus->set_text(b);
+    snprintf( b, sizeof(b), "%d",
+            m_seq->get_track()->get_midi_channel() + 1);
+    m_entry_channel->set_text(b);
 }
 
 

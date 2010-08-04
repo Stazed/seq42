@@ -49,7 +49,6 @@ sequence::sequence( )
 
     m_last_tick = 0;
 
-    m_masterbus = NULL;
     m_dirty_edit = true;
     m_dirty_perf = true;
     
@@ -97,23 +96,13 @@ sequence::pop_redo( void )
     unlock();
 }
 
-void 
-sequence::set_master_midi_bus( mastermidibus *a_mmb )
-{
-    lock();
-
-    m_masterbus = a_mmb;
-
-    unlock();
-}
-
 
 void 
 sequence::set_bpm( long a_beats_per_measure )
 {
     lock();
     m_time_beats_per_measure = a_beats_per_measure;
-    set_dirty_mp();
+    set_dirty();
     unlock();
 }
 
@@ -128,7 +117,7 @@ sequence::set_bw( long a_beat_width )
 {
     lock();
     m_time_beat_width = a_beat_width;
-    set_dirty_mp();
+    set_dirty();
     unlock();
 }
 
@@ -458,7 +447,7 @@ sequence::remove(list<event>::iterator i)
     if ( (*i).is_note_off()  &&
      m_playing_notes[ (*i).get_note()] > 0 ){
 
-        m_masterbus->play( get_midi_bus(), &(*i), get_midi_channel() );
+        get_master_midi_bus()->play( get_midi_bus(), &(*i), get_midi_channel() );
         m_playing_notes[(*i).get_note()]--;
     }
     m_list_event.erase(i);
@@ -1584,14 +1573,6 @@ sequence::stream_event(  event *a_ev  )
 
 
 void
-sequence::set_dirty_mp()
-{
-    //printf( "set_dirtymp\n" );
-    m_dirty_perf = true; 
-}
-
-
-void
 sequence::set_dirty()
 {
     //printf( "set_dirty\n" );
@@ -1637,9 +1618,9 @@ sequence::play_note_on( int a_note )
 
     e.set_status( EVENT_NOTE_ON );
     e.set_data( a_note, 127 );
-    m_masterbus->play( get_midi_bus(), &e, get_midi_channel() ); 
+    get_master_midi_bus()->play( get_midi_bus(), &e, get_midi_channel() ); 
 
-    m_masterbus->flush();
+    get_master_midi_bus()->flush();
 
     unlock();
 }
@@ -1655,9 +1636,9 @@ sequence::play_note_off( int a_note )
 
     e.set_status( EVENT_NOTE_OFF );
     e.set_data( a_note, 127 );
-    m_masterbus->play( get_midi_bus(), &e, get_midi_channel() ); 
+    get_master_midi_bus()->play( get_midi_bus(), &e, get_midi_channel() ); 
 
-    m_masterbus->flush();
+    get_master_midi_bus()->flush();
 
     unlock();
 }
@@ -1909,7 +1890,6 @@ sequence::operator= (const sequence& a_rhs)
     if (this != &a_rhs){
 
 	m_list_event   = a_rhs.m_list_event;
-	m_masterbus    = a_rhs.m_masterbus;
 	m_name         = a_rhs.m_name;
 	m_length       = a_rhs.m_length;
 
@@ -2116,14 +2096,14 @@ void
 sequence::set_name( char *a_name )
 {
     m_name = a_name;
-    set_dirty_mp();
+    set_dirty();
 }
 
 void
 sequence::set_name( string a_name )
 {
     m_name = a_name;
-    set_dirty_mp();
+    set_dirty();
 }
 
 char
@@ -2137,6 +2117,13 @@ sequence::get_midi_channel( )
 {
     return m_track->get_midi_channel();
 }
+
+mastermidibus * 
+sequence::get_master_midi_bus( )
+{
+    return m_track->get_master_midi_bus();
+}
+
 
 
 void 
@@ -2155,6 +2142,7 @@ void
 sequence::put_event_on_bus( event *a_e )
 {
     lock();
+    mastermidibus * a_mmb = get_master_midi_bus();
 
     unsigned char note = a_e->get_note();
     bool skip = false;
@@ -2174,10 +2162,10 @@ sequence::put_event_on_bus( event *a_e )
     }
 
     if ( !skip ){
-        m_masterbus->play( get_midi_bus(), a_e,  get_midi_channel() );   
+        a_mmb->play( get_midi_bus(), a_e,  get_midi_channel() );   
     }
 
-    m_masterbus->flush();
+    a_mmb->flush();
     
     unlock();
 }
@@ -2187,6 +2175,7 @@ void
 sequence::off_playing_notes()
 {
     lock();
+    mastermidibus * a_mmb = get_master_midi_bus();
 
 
     event e;
@@ -2198,13 +2187,13 @@ sequence::off_playing_notes()
             e.set_status( EVENT_NOTE_OFF );
             e.set_data( x, 0 );
 
-            m_masterbus->play( get_midi_bus(), &e, get_midi_channel() ); 
+            a_mmb->play( get_midi_bus(), &e, get_midi_channel() ); 
 
             m_playing_notes[x]--;
         }
     }
     
-    m_masterbus->flush();
+    a_mmb->flush();
     
  
     unlock();

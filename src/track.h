@@ -112,6 +112,7 @@ class track
     char get_midi_bus (void); 
  
     void set_master_midi_bus (mastermidibus * a_mmb);
+    mastermidibus *get_master_midi_bus ();
 
     void set_dirty();
     /* signals that a redraw is needed from recording */
@@ -130,8 +131,10 @@ class track
     void split_trigger( long a_tick );
     void grow_trigger (long a_tick_from, long a_tick_to, long a_length);
     void del_trigger (long a_tick );
+    trigger *get_trigger(long a_tick);
     bool get_trigger_state (long a_tick);
-    bool get_trigger_sequence (long a_tick);
+    sequence *get_trigger_sequence (long a_tick);
+    void set_trigger_sequence (trigger *a_trigger, sequence *a_sequence);
     bool select_trigger(long a_tick);
     bool unselect_triggers (void);
     bool intersectTriggers( long position, long& start, long& end );

@@ -152,7 +152,7 @@ perfnames::draw_track( int track )
                 
             char str[20];
             snprintf(str, sizeof(str), 
-                     "Bus %d - Chan %d",
+                     "Bus %d Ch %d",
                      m_mainperf->get_track(track)->get_midi_bus()+1, 
                      m_mainperf->get_track(track)->get_midi_channel()+1 );
                 

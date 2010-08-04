@@ -36,7 +36,6 @@ seqroll::seqroll(perform *a_perf,
                  seqdata *a_seqdata_wid, 
                  seqevent *a_seqevent_wid,
                  seqkeys *a_seqkeys_wid,
-                 int a_pos, 
                  Adjustment *a_hadjust,
                  Adjustment *a_vadjust,
                  ToggleButton *a_toggle_play)
@@ -65,7 +64,6 @@ seqroll::seqroll(perform *a_perf,
     m_seqdata_wid = a_seqdata_wid;
     m_seqevent_wid = a_seqevent_wid;
     m_seqkeys_wid = a_seqkeys_wid;
-    m_pos = a_pos;
     m_toggle_play = a_toggle_play;
 
     m_clipboard = new sequence( );

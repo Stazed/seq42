@@ -110,8 +110,6 @@ class seqroll : public Gtk::DrawingArea
 
     ToggleButton *m_toggle_play;
 
-    int m_pos;
-
     /* one pixel == m_zoom ticks */
     int          m_zoom;
     int          m_snap;
@@ -238,7 +236,6 @@ class seqroll : public Gtk::DrawingArea
              seqdata *a_seqdata_wid, 
              seqevent *a_seqevent_wid,
              seqkeys *a_seqkeys_wid, 
-             int a_pos, 
              Adjustment *a_hadjust,
              Adjustment *a_vadjust,
              ToggleButton *a_toggle_play);

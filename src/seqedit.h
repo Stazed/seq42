@@ -129,6 +129,10 @@ class seqedit : public Gtk::Window
     
     Label       *m_label_track;
     Entry       *m_entry_track;
+    Label       *m_label_bus;
+    Entry       *m_entry_bus;
+    Label       *m_label_channel;
+    Entry       *m_entry_channel;
     
     Button      *m_button_snap;
     Entry       *m_entry_snap;
@@ -260,8 +264,7 @@ class seqedit : public Gtk::Window
  public:
 
     seqedit(sequence *a_seq, 
-	    perform *a_perf, 
-	    int a_pos);
+	    perform *a_perf);
 
     ~seqedit();
 

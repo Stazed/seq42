@@ -41,6 +41,8 @@
 #include "globals.h"
 #include "perform.h"
 #include "mutex.h"
+#include "track.h"
+#include "trigger.h"
 
 
 using namespace Gtk;
@@ -167,6 +169,10 @@ class perfroll : public Gtk::DrawingArea
     void draw_progress();
 
     void redraw_dirty_tracks( void );
+
+    /* Trigger menu callbacks */
+    void new_sequence(track *a_track, trigger *a_trigger);
+    void edit_sequence(trigger *a_trigger);
 
     perfroll( perform *a_perf, 
 	      Adjustment *a_hadjust,

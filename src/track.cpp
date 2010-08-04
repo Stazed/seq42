@@ -146,6 +146,16 @@ track::is_dirty_perf( )
     lock();
 
     bool ret = m_dirty_perf;
+    if(! ret) {
+        vector<sequence>::iterator iter = m_vector_sequence.begin();
+        while ( iter != m_vector_sequence.end()){
+            if(iter->is_dirty_perf()) {
+                ret = true;
+                break;
+            }
+            iter++;
+        }
+    }
     m_dirty_perf = false;
 
     unlock();
@@ -248,6 +258,12 @@ track::set_master_midi_bus( mastermidibus *a_mmb )
     m_masterbus = a_mmb;
 
     unlock();
+}
+
+mastermidibus *
+track::get_master_midi_bus()
+{
+    return m_masterbus;
 }
 
 
@@ -820,20 +836,20 @@ track::get_max_trigger( void )
     return ret;
 }
 
-bool 
-track::get_trigger_state( long a_tick )
+trigger * 
+track::get_trigger( long a_tick )
 {
     lock();
 
-    bool ret = false;
+    trigger *ret = NULL;
     list<trigger>::iterator i;
 
     for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ ){
 
 	if ( (*i).m_tick_start <= a_tick &&
              (*i).m_tick_end >= a_tick){
-	    ret = true;
-            break;
+	    ret = &(*i);
+        break;
         }
     }
 
@@ -843,27 +859,31 @@ track::get_trigger_state( long a_tick )
 }
 
 bool 
-track::get_trigger_sequence( long a_tick )
+track::get_trigger_state( long a_tick )
 {
-    lock();
-
-    sequence *seq = NULL;
-    list<trigger>::iterator i;
-
-    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ ){
-
-	if ( (*i).m_tick_start <= a_tick &&
-             (*i).m_tick_end >= a_tick){
-	        seq = i->m_sequence;
-            break;
-        }
-    }
-
-    unlock();
-
-    return seq;
+    trigger *a_trigger = get_trigger(a_tick);
+    return a_trigger != NULL;
 }
 
+sequence * 
+track::get_trigger_sequence( long a_tick )
+{
+    trigger *a_trigger = get_trigger(a_tick);
+    if(a_trigger == NULL) {
+        return NULL;
+    } else {
+        return a_trigger->m_sequence;
+    }
+}
+
+void 
+track::set_trigger_sequence( trigger *a_trigger, sequence *a_sequence )
+{
+    if(a_trigger != NULL) {
+        a_trigger->m_sequence = a_sequence;
+        set_dirty();
+    }
+}
 
 
 bool 

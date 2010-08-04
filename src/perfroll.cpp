@@ -19,6 +19,8 @@
 //-----------------------------------------------------------------------------
 #include "event.h"
 #include "perfroll.h"
+#include "seqedit.h"
+#include "font.h"
 
 const int c_perfroll_background_x = (c_ppqn * 4 * 16) / c_perf_scale_x;
 const int c_perfroll_size_box_w = 3;
@@ -378,90 +380,102 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
 
 		    m_gc->set_foreground(m_black);
     
-            if(seq != NULL) {
-	                long sequence_length = seq->get_length();
-	                int length_w = sequence_length / c_perf_scale_x;
-                    long length_marker_first_tick = ( tick_on - (tick_on % sequence_length) + (offset % sequence_length) - sequence_length);
+            char label[40];
+            int max_label = (w / 6)-1;
+            if(max_label < 0) max_label = 0;
+            if(max_label > 39) max_label = 39;
+            if(seq == NULL) {
+                strncpy(label, "Empty", max_label);
+            } else {
+                strncpy(label, seq->get_name(), max_label);
+	            long sequence_length = seq->get_length();
+	            int length_w = sequence_length / c_perf_scale_x;
+                long length_marker_first_tick = ( tick_on - (tick_on % sequence_length) + (offset % sequence_length) - sequence_length);
 
-                                      
-                    long tick_marker = length_marker_first_tick;
-                    
-                    while ( tick_marker < tick_off ){
+                                  
+                long tick_marker = length_marker_first_tick;
+                
+                while ( tick_marker < tick_off ){
 
-                        long tick_marker_x = (tick_marker / c_perf_scale_x) - x_offset;
+                    long tick_marker_x = (tick_marker / c_perf_scale_x) - x_offset;
 
-                        if ( tick_marker > tick_on ){
-                            
-                            m_gc->set_foreground(m_lt_grey);
-                            a_draw->draw_rectangle(m_gc,true,
-                                                   tick_marker_x,
-                                                   y+4,
-                                                   1,
-                                                   h-8 );   
-                        }
+                    if ( tick_marker > tick_on ){
                         
-                        int lowest_note = seq->get_lowest_note_event( );
-                        int highest_note = seq->get_highest_note_event( );
+                        m_gc->set_foreground(m_lt_grey);
+                        a_draw->draw_rectangle(m_gc,true,
+                                               tick_marker_x,
+                                               y+4,
+                                               1,
+                                               h-8 );   
+                    }
+                    
+                    int lowest_note = seq->get_lowest_note_event( );
+                    int highest_note = seq->get_highest_note_event( );
     
-                        int height = highest_note - lowest_note;
-                        height += 2;
+                    int height = highest_note - lowest_note;
+                    height += 2;
     
-                        int length = seq->get_length( );
+                    int length = seq->get_length( );
 
-                        long tick_s;
-                        long tick_f;
-                        int note;
+                    long tick_s;
+                    long tick_f;
+                    int note;
 	
-                        bool selected;
+                    bool selected;
     
-                        int velocity;
-                        draw_type dt;
+                    int velocity;
+                    draw_type dt;
     
-                        seq->reset_draw_marker();
+                    seq->reset_draw_marker();
     
-                        m_gc->set_foreground(m_black);
-                        while ( (dt = seq->get_next_note_event( &tick_s, &tick_f, &note, 
-                                                                &selected, &velocity )) != DRAW_FIN ){
+                    m_gc->set_foreground(m_black);
+                    while ( (dt = seq->get_next_note_event( &tick_s, &tick_f, &note, 
+                                                            &selected, &velocity )) != DRAW_FIN ){
 	
-                            int note_y = ((c_names_y-6) - 
-                                ((c_names_y-6)  * (note - lowest_note)) / height) + 1; 
+                        int note_y = ((c_names_y-6) - 
+                            ((c_names_y-6)  * (note - lowest_note)) / height) + 1; 
     
-                            int tick_s_x = ((tick_s * length_w)  / length) + tick_marker_x;
-                            int tick_f_x = ((tick_f * length_w)  / length) + tick_marker_x;
+                        int tick_s_x = ((tick_s * length_w)  / length) + tick_marker_x;
+                        int tick_f_x = ((tick_f * length_w)  / length) + tick_marker_x;
     
-                            if ( dt == DRAW_NOTE_ON || dt == DRAW_NOTE_OFF )
-                                tick_f_x = tick_s_x + 1;
-                            if ( tick_f_x <= tick_s_x )
-                                tick_f_x = tick_s_x + 1;
+                        if ( dt == DRAW_NOTE_ON || dt == DRAW_NOTE_OFF )
+                            tick_f_x = tick_s_x + 1;
+                        if ( tick_f_x <= tick_s_x )
+                            tick_f_x = tick_s_x + 1;
 
-                            if ( tick_s_x < x ){
-                                tick_s_x = x;
-                            }
-
-                            if ( tick_f_x > x + w ){
-                                tick_f_x = x + w;
-                            }
-
-                            /*
-                                    [           ]
-                             -----------
-                                             ---------
-                                   ----------------
-                         ------                      ------
-                            */
-                            
-                            if ( tick_f_x >= x && tick_s_x <= x+w )
-                                m_pixmap->draw_line(m_gc, tick_s_x,
-                                                    y + note_y,
-                                                    tick_f_x,  
-                                                    y + note_y );   
+                        if ( tick_s_x < x ){
+                            tick_s_x = x;
                         }
+
+                        if ( tick_f_x > x + w ){
+                            tick_f_x = x + w;
+                        }
+
+                        /*
+                                [           ]
+                         -----------
+                                         ---------
+                               ----------------
+                     ------                      ------
+                        */
+                        
+                        if ( tick_f_x >= x && tick_s_x <= x+w )
+                            m_pixmap->draw_line(m_gc, tick_s_x,
+                                                y + note_y,
+                                                tick_f_x,  
+                                                y + note_y );   
+                    }
 
                
-                        
-                        tick_marker += sequence_length;
+                    
+                    tick_marker += sequence_length;
 		    }   
 		    }   
+            label[max_label] = '\0';
+            p_font_renderer->render_string_on_drawable(m_gc,
+                                                       x+5,
+                                                       y+2,
+                                                       a_draw, label, font::BLACK );
 		}
 	    }
 	}
@@ -853,6 +867,21 @@ perfroll::on_size_request(GtkRequisition* a_r )
 }
 
 
+void
+perfroll::new_sequence( track *a_track, trigger *a_trigger )
+{
+    sequence *a_sequence = new sequence();
+    a_track->add_sequence(a_sequence);
+    a_track->set_trigger_sequence(a_trigger, a_sequence);
+    seqedit *seq_edit = new seqedit( a_sequence, m_mainperf );
+}
+
+void
+perfroll::edit_sequence( trigger *a_trigger )
+{
+    seqedit *seq_edit = new seqedit( a_trigger->m_sequence, m_mainperf );
+}
+
 
 
 //////////////////////////
@@ -1147,6 +1176,7 @@ Seq42PerfInput::set_adding( bool a_adding, perfroll& ths )
 bool
 Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 {
+    using namespace Menu_Helpers;
     ths.grab_focus( );
 
 
@@ -1246,7 +1276,23 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 
     /*     right mouse button      */
     if ( a_ev->button == 3 ){
-        set_adding( true, ths );
+        track *a_track = NULL;
+        trigger *a_trigger = NULL;
+        if ( ths.m_mainperf->is_active_track( ths.m_drop_track )){
+            a_track = ths.m_mainperf->get_track( ths.m_drop_track );
+            a_trigger = a_track->get_trigger( ths.m_drop_tick );
+        }
+        if(a_trigger == NULL) {
+            set_adding( true, ths );
+        } else {
+            Menu *menu_trigger =   manage( new Menu());
+            if(a_trigger->m_sequence) {
+                menu_trigger->items().push_back(MenuElem("Edit sequence", sigc::bind(mem_fun(ths,&perfroll::edit_sequence), a_trigger )));
+            }
+            menu_trigger->items().push_back(MenuElem("New sequence", sigc::bind(mem_fun(ths,&perfroll::new_sequence), a_track, a_trigger )));
+            // FIXME:add more options
+            menu_trigger->popup(0,0);
+        }
     }
 
     /* middle, split */
