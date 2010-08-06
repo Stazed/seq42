@@ -311,6 +311,7 @@ seqedit::seqedit( sequence *a_seq,
     add_events(Gdk::SCROLL_MASK);
 
     set_track_info();
+    m_seqroll_wid->redraw();
 }
 
 
@@ -935,13 +936,13 @@ seqedit::popup_sequence_menu( void )
 
             if ( !inserted ){
                 inserted = true;
-                snprintf(name, sizeof(name), "[%d] %s", t, a_track->get_name());
+                snprintf(name, sizeof(name), "[%d] %s", t+1, a_track->get_name());
                 menu_t = manage( new Menu());
                 m_menu_sequences->items().push_back(MenuElem(name,*menu_t));
             }
             
             sequence *a_seq = a_track->get_sequence( s );                
-            snprintf(name, sizeof(name),"[%d] %.13s", s, a_seq->get_name());
+            snprintf(name, sizeof(name),"[%d] %.13s", s+1, a_seq->get_name());
 
             menu_t->items().push_back(MenuElem(name,
                         sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), a_seq)));

@@ -964,6 +964,13 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
             stop_playing();
             return true;
         }
+        // FIXME: make key configurable?
+        else if (a_ev->keyval == GDK_F12) 
+        {
+            m_mainperf->print();
+            fflush( stdout );
+            return true;
+        }
     }
 
     return false;

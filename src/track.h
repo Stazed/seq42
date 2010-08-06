@@ -34,7 +34,7 @@ class track
   private:
 
     /* holds the sequences */
-    vector < sequence > m_vector_sequence;
+    vector < sequence *> m_vector_sequence;
     static sequence m_sequence_clipboard;
 
     /* holds the triggers */
@@ -82,7 +82,7 @@ class track
     void pop_trigger_undo (void);
     void pop_trigger_redo (void);
 
-    void add_sequence( sequence *a_seq );
+    sequence *new_sequence( );
     void delete_sequence( int a_num );
 
     sequence *get_sequence( int a_seq );
@@ -122,7 +122,6 @@ class track
 
     /* dumps contents to stdout */
     void print ();
-    void print_triggers();
     
     //
     // Selection and Manipulation

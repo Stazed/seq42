@@ -32,6 +32,12 @@ track::track( )
 }
 
 track::~track() {
+#ifdef COMMENT
+// FIXME
+    for(int i=0; i<m_vector_sequence.size(); i++) {
+        delete m_vector_sequence[i];
+    }
+#endif
 }
 
 void
@@ -109,20 +115,16 @@ sequence *
 track::get_sequence( int a_seq )
 {
     if ( a_seq < 0 || a_seq >= (int)m_vector_sequence.size() ) return NULL;
-    return &(m_vector_sequence[a_seq]);
+    return m_vector_sequence[a_seq];
 }
 
 int
 track::get_sequence_index( sequence *a_seq )
 {
-    int i = 0;
-    vector<sequence>::iterator iter = m_vector_sequence.begin();
-    while ( iter != m_vector_sequence.end()){
-        if(&(*iter) == a_seq) {
+    for(int i=0; i<m_vector_sequence.size(); i++) {
+        if(m_vector_sequence[i] == a_seq) {
             return i;
         }
-        iter++;
-        i++;
     }
     return -1;
 }
@@ -147,13 +149,11 @@ track::is_dirty_perf( )
 
     bool ret = m_dirty_perf;
     if(! ret) {
-        vector<sequence>::iterator iter = m_vector_sequence.begin();
-        while ( iter != m_vector_sequence.end()){
-            if(iter->is_dirty_perf()) {
+        for(int i=0; i<m_vector_sequence.size(); i++) {
+            if(m_vector_sequence[i]->is_dirty_perf()) {
                 ret = true;
                 break;
             }
-            iter++;
         }
     }
     m_dirty_perf = false;
@@ -167,12 +167,10 @@ bool
 track::get_editing( void )
 {
     // Return true if at least one of this track's sequences is being edited.
-    vector<sequence>::iterator iter = m_vector_sequence.begin();
-    while ( iter != m_vector_sequence.end()){
-        if(iter->get_editing()) {
+    for(int i=0; i<m_vector_sequence.size(); i++) {
+        if(m_vector_sequence[i]->get_editing()) {
             return true;
         }
-        iter++;
     }
     return false;
 }
@@ -181,24 +179,20 @@ void
 track::set_playing_off( void )
 {
     // Set playing off for all sequences.
-    vector<sequence>::iterator iter = m_vector_sequence.begin();
-    while ( iter != m_vector_sequence.end()){
-        iter->set_playing(false);
-        iter++;
+    for(int i=0; i<m_vector_sequence.size(); i++) {
+        m_vector_sequence[i]->set_playing(false);
     }
 }
 
 void
 track::reset_sequences(bool a_playback_mode)
 {
-    vector<sequence>::iterator iter = m_vector_sequence.begin();
-    while ( iter != m_vector_sequence.end()){
-        bool state = iter->get_playing();
-        iter->off_playing_notes();
-        iter->set_playing(false);
-        iter->zero_markers();
-        if (!a_playback_mode) iter->set_playing(state);
-        iter++;
+    for(int i=0; i<m_vector_sequence.size(); i++) {
+        bool state = m_vector_sequence[i]->get_playing();
+        m_vector_sequence[i]->off_playing_notes();
+        m_vector_sequence[i]->set_playing(false);
+        m_vector_sequence[i]->zero_markers();
+        if (!a_playback_mode) m_vector_sequence[i]->set_playing(state);
     }
 }
 
@@ -279,19 +273,22 @@ track::get_song_mute( void )
     return m_song_mute;
 }
 
-void
-track::add_sequence( sequence *a_seq)
+sequence *
+track::new_sequence( )
 {
+    sequence *a_seq = new sequence();
     a_seq->set_track(this);
-    m_vector_sequence.push_back(*a_seq);
+    m_vector_sequence.push_back(a_seq);
+    return a_seq;
 }
 
 void track::delete_sequence( int a_num )
 {
-    sequence a_seq = m_vector_sequence[a_num];
-    if( ! a_seq.get_editing() ) {
-        a_seq.set_playing( false );
-        m_vector_sequence.erase (m_vector_sequence.begin()+a_num);
+    sequence *a_seq = m_vector_sequence[a_num];
+    if( ! a_seq->get_editing() ) {
+        a_seq->set_playing( false );
+        delete a_seq;
+        m_vector_sequence.erase(m_vector_sequence.begin()+a_num);
     }
 }
 
@@ -302,34 +299,40 @@ track::play( long a_tick, bool a_playback_mode )
     //printf( "track::play(a_tick=%ld, a_playback=%d)\n", a_tick, a_playback_mode );
     lock();
 
+    trigger *active_trigger = NULL;
+    sequence *trigger_seq = NULL;
+
     if(a_playback_mode) {
         // Song mode
 
         list<trigger>::iterator i = m_list_trigger.begin();
         while ( i != m_list_trigger.end()){
-            if ( i->m_tick_end == a_tick ){
-                if(i->m_sequence) i->m_sequence->set_playing(false);
-            }
             if ( i->m_tick_start <= a_tick && i->m_tick_end > a_tick){
                 if(i->m_sequence) {
-                    i->m_sequence->set_playing(! m_song_mute);
-                    i->m_sequence->play(a_tick, &(*i));
+                    trigger_seq = i->m_sequence;
+                    active_trigger = &(*i);
+                    break;
                 }
-                break;
             }
-            if ( i->m_tick_end < a_tick ){
+            if ( i->m_tick_start > a_tick ){
                 break;
             }
             i++;
         }
 
-    } else {
-        // Live mode
-        vector<sequence>::iterator iter = m_vector_sequence.begin();
-        while ( iter != m_vector_sequence.end()){
-            iter->set_playing(! m_song_mute);
-            iter->play(a_tick, NULL);
-            iter++;
+    }
+
+    for(int i=0; i<m_vector_sequence.size(); i++) {
+        if(a_playback_mode) {
+            if(m_vector_sequence[i] == trigger_seq) {
+                m_vector_sequence[i]->set_playing(true);
+                m_vector_sequence[i]->play(a_tick, active_trigger);
+            } else {
+                m_vector_sequence[i]->set_playing(false);
+                m_vector_sequence[i]->play(a_tick, NULL);
+            }
+        } else {
+            m_vector_sequence[i]->play(a_tick, NULL);
         }
     }
 
@@ -515,6 +518,7 @@ track::copy_triggers( long a_start_tick,
              (*i).m_tick_start <= from_end_tick )
         {
             trigger e;
+            e.m_sequence = (*i).m_sequence;
             e.m_offset = (*i).m_offset;
             e.m_selected = false;
 
@@ -1023,23 +1027,25 @@ track::get_next_trigger( long *a_tick_on, long *a_tick_off, bool *a_selected, lo
 void 
 track::print()
 {
-    printf("[%s]\n", m_name.c_str()  );
-    // FIXME
-}
+    printf("name=[%s]\n", m_name.c_str()  );
+    printf("midi bus=[%d]\n", m_bus );
+    printf("midi channel=[%d]\n", m_midi_channel  );
+    printf("mute=[%d]\n", m_song_mute  );
 
-
-void 
-track::print_triggers()
-{
-    printf("[%s]\n", m_name.c_str()  );
-
-    for( list<trigger>::iterator i = m_list_trigger.begin();
-         i != m_list_trigger.end(); i++ ){
+    for(int i=0; i<m_vector_sequence.size(); i++) {
+        printf("sequence[%d] name=[%s]\n", i, m_vector_sequence[i]->get_name() );
+    }
+    int i=0;
+    for( list<trigger>::iterator iter = m_list_trigger.begin();
+         iter != m_list_trigger.end(); iter++ ){
 
         /*long d= c_ppqn / 8;*/
-        
-        printf ("  tick_start[%ld] tick_end[%ld] off[%ld]\n", (*i).m_tick_start, (*i).m_tick_end, (*i).m_offset );
-
+        char *seq_name = "NULL";
+        if(iter->m_sequence != NULL) {
+            seq_name = (char *) iter->m_sequence->get_name();
+        }
+        printf ("trigger[%d]: tick_start[%ld] tick_end[%ld] off[%ld] sequence=[%s]\n", i, (*iter).m_tick_start, (*iter).m_tick_end, (*iter).m_offset, seq_name );
+        i++;
     }
 }
 
@@ -1047,19 +1053,15 @@ track::print_triggers()
 void 
 track::set_orig_tick( long a_tick )
 {
-    vector<sequence>::iterator iter = m_vector_sequence.begin();
-    while ( iter != m_vector_sequence.end()){
-        iter->set_orig_tick(a_tick);
-        iter++;
+    for(int i=0; i<m_vector_sequence.size(); i++) {
+        m_vector_sequence[i]->set_orig_tick(a_tick);
     }
 }
 
 void 
 track::off_playing_notes()
 {
-    vector<sequence>::iterator iter = m_vector_sequence.begin();
-    while ( iter != m_vector_sequence.end()){
-        iter->off_playing_notes();
-        iter++;
+    for(int i=0; i<m_vector_sequence.size(); i++) {
+        m_vector_sequence[i]->off_playing_notes();
     }
 }

@@ -870,8 +870,7 @@ perfroll::on_size_request(GtkRequisition* a_r )
 void
 perfroll::new_sequence( track *a_track, trigger *a_trigger )
 {
-    sequence *a_sequence = new sequence();
-    a_track->add_sequence(a_sequence);
+    sequence *a_sequence = a_track->new_sequence();
     a_track->set_trigger_sequence(a_trigger, a_sequence);
     seqedit *seq_edit = new seqedit( a_sequence, m_mainperf );
 }
@@ -879,7 +878,18 @@ perfroll::new_sequence( track *a_track, trigger *a_trigger )
 void
 perfroll::edit_sequence( trigger *a_trigger )
 {
-    seqedit *seq_edit = new seqedit( a_trigger->m_sequence, m_mainperf );
+    sequence *a_seq = a_trigger->m_sequence;
+    if(a_seq->get_editing()) {
+        a_seq->set_raise(true);
+    } else {
+        seqedit *seq_edit = new seqedit( a_seq, m_mainperf );
+    }
+}
+
+void
+perfroll::set_trigger_sequence( track *a_track, trigger *a_trigger, sequence *a_sequence )
+{
+    a_track->set_trigger_sequence(a_trigger, a_sequence);
 }
 
 
@@ -1290,12 +1300,25 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
                 menu_trigger->items().push_back(MenuElem("Edit sequence", sigc::bind(mem_fun(ths,&perfroll::edit_sequence), a_trigger )));
             }
             menu_trigger->items().push_back(MenuElem("New sequence", sigc::bind(mem_fun(ths,&perfroll::new_sequence), a_track, a_trigger )));
+            if(a_track->get_number_of_sequences()) {
+                Menu *set_seq_menu = manage( new Menu());
+                for ( int s=0; s< a_track->get_number_of_sequences(); s++ ){
+                    char name[30];
+                    sequence *a_seq = a_track->get_sequence( s );
+                    snprintf(name, sizeof(name),"[%d] %.13s", s+1, a_seq->get_name());
+                    set_seq_menu->items().push_back(MenuElem(name,
+                        sigc::bind(mem_fun(ths, &perfroll::set_trigger_sequence), a_track, a_trigger, a_seq)));
+
+                }
+                menu_trigger->items().push_back(MenuElem("Set sequence", *set_seq_menu));
+            }
             // FIXME:add more options
             menu_trigger->popup(0,0);
         }
     }
 
     /* middle, split */
+/******************* FIXME: Never used this.... kill it?
     if ( a_ev->button == 2 )
     {
         long tick = ths.m_drop_tick;
@@ -1316,6 +1339,7 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
             }
         }
     }
+*******************/
     return true;
 }
 

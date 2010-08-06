@@ -191,15 +191,13 @@ sequence::get_trigger_offset( void )
 void 
 sequence::play(long a_tick, trigger *a_trigger)
 {
-    // FIXME: is m_last_tick set correctly going into this?
-
     lock();
 
-    long trigger_offset = 0;
-    long start_tick = a_tick - 1;
-    long end_tick = a_tick;
     long times_played  = m_last_tick / m_length;
     long offset_base   = times_played * m_length;
+    long trigger_offset = 0;
+    long start_tick = m_last_tick;
+    long end_tick = a_tick;
 
     if(a_trigger) {
         trigger_offset = a_trigger->m_offset;
@@ -216,7 +214,7 @@ sequence::play(long a_tick, trigger *a_trigger)
     long end_tick_offset = (end_tick + m_length - m_trigger_offset);
 
     /* play the notes in our frame */
-    if ( m_playing ){
+    if ( m_playing && ! m_track->get_song_mute() ){
 
         list<event>::iterator e = m_list_event.begin();
 
@@ -238,7 +236,6 @@ sequence::play(long a_tick, trigger *a_trigger)
 
             /* did we hit the end ? */
             if ( e == m_list_event.end() ){
-
                 e = m_list_event.begin();
                 offset_base += m_length;
             }
@@ -1992,12 +1989,14 @@ sequence::set_playing( bool a_p )
 
             /* turn on */
             m_playing = true;
+            printf("%s is turning on\n", get_name());
 
         } else {
 
             /* turn off */
             m_playing = false;
             off_playing_notes();
+            printf("%s is turning off\n", get_name());
 
         } 
 

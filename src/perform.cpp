@@ -442,9 +442,11 @@ void perform::new_track( int a_track )
 
 void perform::print()
 {
+    printf( "Dumping track data...\n");
     for (int i = 0; i < c_max_track; i++) {
         if (is_active_track(i)) {
-            printf("Track %d\n", i);
+            printf("--------------------\n");
+            printf("track[%d]\n", i);
             m_tracks[i]->print();
         } 
     }
