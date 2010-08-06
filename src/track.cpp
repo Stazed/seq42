@@ -20,7 +20,7 @@
 #include "track.h"
 #include <stdlib.h>
 
-track::track( )
+track::track()
 {
     m_name = c_dummy;
     m_bus = 0;
@@ -31,14 +31,82 @@ track::track( )
     m_dirty_names = true;
 }
 
+track::track(const track& other)
+{
+    copy(other);
+}
+
 track::~track() {
-#ifdef COMMENT
-// FIXME
+    free();
+}
+
+track&
+track::operator=(const track& other)
+{
+    printf("in track::operator=()\n");
+    lock();
+    if(this != &other)
+    {
+        free();
+        copy(other);
+    }
+    unlock();
+    return *this;
+}
+
+void
+track::free()
+{
+#if 0
     for(int i=0; i<m_vector_sequence.size(); i++) {
         delete m_vector_sequence[i];
     }
 #endif
 }
+
+void
+track::copy(const track& other)
+{
+    printf("in track::copy()\n");
+    m_name = other.m_name;
+    m_bus = other.m_bus;
+    m_midi_channel = other.m_midi_channel;
+    m_song_mute = false;
+    m_masterbus = other.m_masterbus;
+
+    m_dirty_perf = true;
+    m_dirty_names = true;
+
+    // Copy the other track's sequences.
+    for(int i=0; i<other.m_vector_sequence.size(); i++) {
+        sequence a_seq = *(other.m_vector_sequence[i]);
+        a_seq.set_track(this);
+        m_vector_sequence.push_back(&a_seq);
+    }
+
+    // Copy the other track's triggers, making sure they point to this track's corresponding sequences.
+    list<trigger>::const_iterator iter = other.m_list_trigger.begin();
+    while ( iter != other.m_list_trigger.end() ){
+        trigger a_trigger = *iter;
+        if(a_trigger.m_sequence != NULL) {
+            int index = -1;
+            for(int i=0; i<other.m_vector_sequence.size(); i++) {
+                if(other.m_vector_sequence[i] == a_trigger.m_sequence) {
+                    index = i;
+                    break;
+                }
+            }
+            if(index == -1) {
+                a_trigger.m_sequence = NULL;
+            } else {
+                a_trigger.m_sequence = m_vector_sequence[index];
+            }
+        }
+        m_list_trigger.push_back( a_trigger );
+
+    }
+}
+
 
 void
 track::set_dirty()

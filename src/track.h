@@ -63,20 +63,26 @@ class track
 
     bool m_trigger_copied;
 
-    void split_trigger( trigger &trig, long a_split_tick);
-
     bool m_dirty_perf;
     bool m_dirty_names;
 
     mutex m_mutex;
+
     void lock ();
     void unlock ();
+
+    void split_trigger( trigger &trig, long a_split_tick);
 
 
   public:
 
       track ();
+      track (const track& other);
      ~track ();
+    void free();
+    void copy(const track& other);
+    track& operator=(const track& other);
+
 
     void push_trigger_undo (void);
     void pop_trigger_undo (void);

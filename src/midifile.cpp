@@ -83,7 +83,7 @@ midifile::read_var ()
 bool midifile::parse (perform * a_perf)
 {
     printf("FIXME midifile::parse()\n");
-#ifdef COMMENT
+#if 0
 
     /* open binary file */
     ifstream file(m_name.c_str(), ios::in | ios::binary | ios::ate);
@@ -504,7 +504,7 @@ midifile::write_short (unsigned short a_x)
 bool midifile::write (perform * a_perf)
 {
     printf("FIXME midifile::write()\n");
-#ifdef COMMENT
+#if 0
     /* open binary file */
     ofstream file (m_name.c_str (), ios::out | ios::binary | ios::trunc);
 
