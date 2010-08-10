@@ -34,7 +34,7 @@ class track
   private:
 
     /* holds the sequences */
-    vector < sequence> m_vector_sequence;
+    vector < sequence *> m_vector_sequence;
     static sequence m_sequence_clipboard;
 
     /* holds the triggers */
