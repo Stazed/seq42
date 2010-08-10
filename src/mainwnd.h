@@ -119,7 +119,7 @@ class mainwnd : public Gtk::Window
     int m_bw;
     /* End variables that used to be in perfedit */
 
-    void file_import_dialog( void );
+    // void file_import_dialog( void );
     void options_dialog( void );
     void about_dialog( void );
 

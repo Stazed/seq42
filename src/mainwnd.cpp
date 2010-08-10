@@ -94,8 +94,8 @@ mainwnd::mainwnd(perform *a_p)
     m_menu_file->items().push_back(MenuElem("Save _as...",
                 mem_fun(*this, &mainwnd::file_save_as)));
     m_menu_file->items().push_back(SeparatorElem());
-    m_menu_file->items().push_back(MenuElem("_Import...",
-                mem_fun(*this, &mainwnd::file_import_dialog)));
+//    m_menu_file->items().push_back(MenuElem("_Import...",
+//                mem_fun(*this, &mainwnd::file_import_dialog)));
     m_menu_file->items().push_back(MenuElem("O_ptions...",
                 mem_fun(*this,&mainwnd::options_dialog)));
     m_menu_file->items().push_back(SeparatorElem());
@@ -564,9 +564,8 @@ void mainwnd::file_save_as()
     dialog.add_button(Gtk::Stock::SAVE, Gtk::RESPONSE_OK);
 
     Gtk::FileFilter filter_midi;
-    filter_midi.set_name("MIDI files");
-    filter_midi.add_pattern("*.midi");
-    filter_midi.add_pattern("*.mid");
+    filter_midi.set_name("Seq42 files");
+    filter_midi.add_pattern("*.s42");
     dialog.add_filter(filter_midi);
 
     Gtk::FileFilter filter_any;
@@ -586,14 +585,13 @@ void mainwnd::file_save_as()
             Gtk::FileFilter* current_filter = dialog.get_filter();
 
             if ((current_filter != NULL) &&
-                    (current_filter->get_name() == "MIDI files")) {
+                    (current_filter->get_name() == "Seq42 files")) {
 
-                // check for MIDI file extension; if missing, add .midi
+                // check for Seq42 file extension; if missing, add .s42
                 std::string suffix = fname.substr(
                         fname.find_last_of(".") + 1, std::string::npos);
                 toLower(suffix);
-                if ((suffix != "midi") && (suffix != "mid"))
-                    fname = fname + ".midi";
+                if (suffix != "s42") fname = fname + ".s42";
             }
 
             if (Glib::file_test(fname, Glib::FILE_TEST_EXISTS)) {
@@ -655,7 +653,7 @@ void mainwnd::file_open()
 
 void mainwnd::choose_file()
 {
-    Gtk::FileChooserDialog dialog("Open MIDI file",
+    Gtk::FileChooserDialog dialog("Open Seq42 file",
                       Gtk::FILE_CHOOSER_ACTION_OPEN);
     dialog.set_transient_for(*this);
 
@@ -663,9 +661,8 @@ void mainwnd::choose_file()
     dialog.add_button(Gtk::Stock::OPEN, Gtk::RESPONSE_OK);
 
     Gtk::FileFilter filter_midi;
-    filter_midi.set_name("MIDI files");
-    filter_midi.add_pattern("*.midi");
-    filter_midi.add_pattern("*.mid");
+    filter_midi.set_name("Seq42 files");
+    filter_midi.add_pattern("*.s42");
     dialog.add_filter(filter_midi);
 
     Gtk::FileFilter filter_any;
@@ -768,6 +765,7 @@ mainwnd::toLower(basic_string<char>& s) {
 }
 
 
+#if 0
 void
 mainwnd::file_import_dialog( void )
 {
@@ -833,6 +831,7 @@ mainwnd::file_import_dialog( void )
 
    }
 }
+#endif
 
 /*callback function*/
 void mainwnd::file_exit()

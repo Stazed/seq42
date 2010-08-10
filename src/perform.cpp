@@ -411,11 +411,9 @@ int  perform::get_bpm( )
 
 void perform::delete_track( int a_num )
 {
-    set_active(a_num, false);
-
     if ( m_tracks[a_num] != NULL &&
             !m_tracks[a_num]->get_editing() ){
-
+        set_active(a_num, false);
         m_tracks[a_num]->set_playing_off( );
         delete m_tracks[a_num];
     }   
@@ -446,7 +444,7 @@ void perform::print()
     for (int i = 0; i < c_max_track; i++) {
         if (is_active_track(i)) {
             printf("--------------------\n");
-            printf("track[%d]\n", i);
+            printf("track[%d] at %p\n", i, &(m_tracks[i]));
             m_tracks[i]->print();
         } 
     }

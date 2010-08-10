@@ -34,7 +34,7 @@ class track
   private:
 
     /* holds the sequences */
-    vector < sequence *> m_vector_sequence;
+    vector < sequence> m_vector_sequence;
     static sequence m_sequence_clipboard;
 
     /* holds the triggers */
@@ -77,10 +77,7 @@ class track
   public:
 
       track ();
-      track (const track& other);
      ~track ();
-    void free();
-    void copy(const track& other);
     track& operator=(const track& other);
 
 
@@ -88,7 +85,7 @@ class track
     void pop_trigger_undo (void);
     void pop_trigger_redo (void);
 
-    sequence *new_sequence( );
+    int new_sequence( );
     void delete_sequence( int a_num );
 
     sequence *get_sequence( int a_seq );
@@ -126,6 +123,9 @@ class track
     bool is_dirty_perf();
     bool is_dirty_names();
 
+    void set_sequences_dirty();
+    void fixup_sequence_tracks();
+
     /* dumps contents to stdout */
     void print ();
     
@@ -138,8 +138,9 @@ class track
     void del_trigger (long a_tick );
     trigger *get_trigger(long a_tick);
     bool get_trigger_state (long a_tick);
-    sequence *get_trigger_sequence (long a_tick);
-    void set_trigger_sequence (trigger *a_trigger, sequence *a_sequence);
+    sequence *get_trigger_sequence (trigger *a_trigger);
+    //void set_trigger_sequence (trigger *a_trigger, sequence *a_sequence);
+    void set_trigger_sequence (trigger *a_trigger, int a_sequence);
     bool select_trigger(long a_tick);
     bool unselect_triggers (void);
     bool intersectTriggers( long position, long& start, long& end );
@@ -161,7 +162,7 @@ class track
     void reset_draw_trigger_marker (void);
 
     // FIXME: Change API to just return a pointer to the next trigger (or a NULL pointer if no more triggers)?
-    bool get_next_trigger (long *a_tick_on, long *a_tick_off, bool * a_selected, long *a_tick_offset, sequence **a_seq);
+    bool get_next_trigger (long *a_tick_on, long *a_tick_off, bool * a_selected, long *a_tick_offset, int *a_seq_idx);
 
     /* Return true if at least one of this track's sequences is being edited. */
     bool get_editing( void );

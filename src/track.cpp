@@ -31,13 +31,7 @@ track::track()
     m_dirty_names = true;
 }
 
-track::track(const track& other)
-{
-    copy(other);
-}
-
 track::~track() {
-    free();
 }
 
 track&
@@ -47,72 +41,103 @@ track::operator=(const track& other)
     lock();
     if(this != &other)
     {
-        free();
-        copy(other);
-    }
-    unlock();
-    return *this;
-}
+        m_name = other.m_name;
+        m_bus = other.m_bus;
+        m_midi_channel = other.m_midi_channel;
+        m_song_mute = false;
+        m_masterbus = other.m_masterbus;
 
-void
-track::free()
-{
+        m_dirty_perf = false;
+        m_dirty_names = false;
+
+        // FIXME: will this simpler version (that doesn't use sequence pointers in the triggers) work?
+        m_list_trigger = other.m_list_trigger;
+        m_vector_sequence = other.m_vector_sequence;
+        for(int i=0; i<m_vector_sequence.size(); i++) {
+            m_vector_sequence[i].set_track(this);
+        }
+
 #if 0
-    for(int i=0; i<m_vector_sequence.size(); i++) {
-        delete m_vector_sequence[i];
-    }
-#endif
-}
+        printf("copying sequences...\n");
+        // Copy the other track's sequences.
+        m_vector_sequence.clear();
+        for(int i=0; i<other.m_vector_sequence.size(); i++) {
+            printf("other.sequence[%d] at %p\n", i, &(other.m_vector_sequence[i]));
+            sequence a_seq;
+            a_seq = other.m_vector_sequence[i];
+            m_vector_sequence.push_back(a_seq);
+            a_seq.set_track(this);
+        }
 
-void
-track::copy(const track& other)
-{
-    printf("in track::copy()\n");
-    m_name = other.m_name;
-    m_bus = other.m_bus;
-    m_midi_channel = other.m_midi_channel;
-    m_song_mute = false;
-    m_masterbus = other.m_masterbus;
+        // FIXME: delete this block after dev
+        for(int i=0; i<m_vector_sequence.size(); i++) {
+            printf("my sequence[%d] at %p name=\"%s\" (track=%p)\n", i, &(m_vector_sequence[i]), m_vector_sequence[i].get_name(), &(m_vector_sequence[i]), m_vector_sequence[i].get_track() );
+        }
 
-    m_dirty_perf = true;
-    m_dirty_names = true;
-
-    // Copy the other track's sequences.
-    for(int i=0; i<other.m_vector_sequence.size(); i++) {
-        sequence a_seq = *(other.m_vector_sequence[i]);
-        a_seq.set_track(this);
-        m_vector_sequence.push_back(&a_seq);
-    }
-
-    // Copy the other track's triggers, making sure they point to this track's corresponding sequences.
-    list<trigger>::const_iterator iter = other.m_list_trigger.begin();
-    while ( iter != other.m_list_trigger.end() ){
-        trigger a_trigger = *iter;
-        if(a_trigger.m_sequence != NULL) {
-            int index = -1;
-            for(int i=0; i<other.m_vector_sequence.size(); i++) {
-                if(other.m_vector_sequence[i] == a_trigger.m_sequence) {
-                    index = i;
-                    break;
+        printf("copying triggers...\n");
+        m_list_trigger.clear();
+        // Copy the other track's triggers, making sure they point to this track's corresponding sequences.
+        int idx = 0;
+        list<trigger>::const_iterator iter = other.m_list_trigger.begin();
+        while ( iter != other.m_list_trigger.end() ){
+            trigger a_trigger = *iter;
+            printf ("other trigger[%d] at %p: tick_start[%ld] tick_end[%ld] off[%ld] sequence=[%p]\n", idx, &(*iter), (*iter).m_tick_start, (*iter).m_tick_end, (*iter).m_offset, (*iter).m_sequence );
+            if(a_trigger.m_sequence != NULL) {
+                int index = -1;
+                for(int i=0; i<other.m_vector_sequence.size(); i++) {
+                    if(&(other.m_vector_sequence[i]) == a_trigger.m_sequence) {
+                        index = i;
+                        break;
+                    }
+                }
+                if(index == -1) {
+                    a_trigger.m_sequence = NULL;
+                } else {
+                    a_trigger.m_sequence = &(m_vector_sequence[index]);
                 }
             }
-            if(index == -1) {
-                a_trigger.m_sequence = NULL;
-            } else {
-                a_trigger.m_sequence = m_vector_sequence[index];
-            }
+            m_list_trigger.push_back( a_trigger );
+            iter++;
+            idx++;
         }
-        m_list_trigger.push_back( a_trigger );
 
+        // FIXME: delete this block after dev
+        idx = 0;
+        list<trigger>::iterator iter2 = m_list_trigger.begin();
+        while ( iter2 != m_list_trigger.end() ){
+            printf ("my trigger[%d] at %p: tick_start[%ld] tick_end[%ld] off[%ld] sequence=[%p]\n", idx, &(*iter2), (*iter2).m_tick_start, (*iter2).m_tick_end, (*iter2).m_offset, (*iter2).m_sequence );
+            iter2++;
+            idx++;
+        }
+#endif
     }
+    unlock();
+    printf("Done.\n");
+    return *this;
 }
-
 
 void
 track::set_dirty()
 {
     m_dirty_names =  m_dirty_perf = true;
 }
+
+void
+track::set_sequences_dirty()
+{
+    for(int i=0; i<m_vector_sequence.size(); i++) {
+        m_vector_sequence[i].set_dirty();
+    }
+}
+
+void
+track::fixup_sequence_tracks()
+{
+    for(int i=0; i<m_vector_sequence.size(); i++) {
+        m_vector_sequence[i].set_track(this);
+    }
+}
+
 
 void 
 track::lock( )
@@ -183,14 +208,15 @@ sequence *
 track::get_sequence( int a_seq )
 {
     if ( a_seq < 0 || a_seq >= (int)m_vector_sequence.size() ) return NULL;
-    return m_vector_sequence[a_seq];
+    m_vector_sequence[a_seq].set_track(this);
+    return &(m_vector_sequence[a_seq]);
 }
 
 int
 track::get_sequence_index( sequence *a_seq )
 {
     for(int i=0; i<m_vector_sequence.size(); i++) {
-        if(m_vector_sequence[i] == a_seq) {
+        if(&(m_vector_sequence[i]) == a_seq) {
             return i;
         }
     }
@@ -218,7 +244,7 @@ track::is_dirty_perf( )
     bool ret = m_dirty_perf;
     if(! ret) {
         for(int i=0; i<m_vector_sequence.size(); i++) {
-            if(m_vector_sequence[i]->is_dirty_perf()) {
+            if(m_vector_sequence[i].is_dirty_perf()) {
                 ret = true;
                 break;
             }
@@ -236,7 +262,7 @@ track::get_editing( void )
 {
     // Return true if at least one of this track's sequences is being edited.
     for(int i=0; i<m_vector_sequence.size(); i++) {
-        if(m_vector_sequence[i]->get_editing()) {
+        if(m_vector_sequence[i].get_editing()) {
             return true;
         }
     }
@@ -248,7 +274,7 @@ track::set_playing_off( void )
 {
     // Set playing off for all sequences.
     for(int i=0; i<m_vector_sequence.size(); i++) {
-        m_vector_sequence[i]->set_playing(false);
+        m_vector_sequence[i].set_playing(false);
     }
 }
 
@@ -256,11 +282,11 @@ void
 track::reset_sequences(bool a_playback_mode)
 {
     for(int i=0; i<m_vector_sequence.size(); i++) {
-        bool state = m_vector_sequence[i]->get_playing();
-        m_vector_sequence[i]->off_playing_notes();
-        m_vector_sequence[i]->set_playing(false);
-        m_vector_sequence[i]->zero_markers();
-        if (!a_playback_mode) m_vector_sequence[i]->set_playing(state);
+        bool state = m_vector_sequence[i].get_playing();
+        m_vector_sequence[i].off_playing_notes();
+        m_vector_sequence[i].set_playing(false);
+        m_vector_sequence[i].zero_markers();
+        if (!a_playback_mode) m_vector_sequence[i].set_playing(state);
     }
 }
 
@@ -341,21 +367,20 @@ track::get_song_mute( void )
     return m_song_mute;
 }
 
-sequence *
+int
 track::new_sequence( )
 {
-    sequence *a_seq = new sequence();
-    a_seq->set_track(this);
+    sequence a_seq;
+    a_seq.set_track(this);
     m_vector_sequence.push_back(a_seq);
-    return a_seq;
+    return  m_vector_sequence.size()-1;
 }
 
 void track::delete_sequence( int a_num )
 {
-    sequence *a_seq = m_vector_sequence[a_num];
-    if( ! a_seq->get_editing() ) {
-        a_seq->set_playing( false );
-        delete a_seq;
+    sequence a_seq = m_vector_sequence[a_num];
+    if( ! a_seq.get_editing() ) {
+        a_seq.set_playing( false );
         m_vector_sequence.erase(m_vector_sequence.begin()+a_num);
     }
 }
@@ -376,8 +401,9 @@ track::play( long a_tick, bool a_playback_mode )
         list<trigger>::iterator i = m_list_trigger.begin();
         while ( i != m_list_trigger.end()){
             if ( i->m_tick_start <= a_tick && i->m_tick_end > a_tick){
-                if(i->m_sequence) {
-                    trigger_seq = i->m_sequence;
+                if(i->m_sequence > -1) {
+                    //trigger_seq = i->m_sequence;
+                    trigger_seq = get_sequence( i->m_sequence );
                     active_trigger = &(*i);
                     break;
                 }
@@ -392,15 +418,15 @@ track::play( long a_tick, bool a_playback_mode )
 
     for(int i=0; i<m_vector_sequence.size(); i++) {
         if(a_playback_mode) {
-            if(m_vector_sequence[i] == trigger_seq) {
-                m_vector_sequence[i]->set_playing(true);
-                m_vector_sequence[i]->play(a_tick, active_trigger);
+            if(&(m_vector_sequence[i]) == trigger_seq) {
+                m_vector_sequence[i].set_playing(true);
+                m_vector_sequence[i].play(a_tick, active_trigger);
             } else {
-                m_vector_sequence[i]->set_playing(false);
-                m_vector_sequence[i]->play(a_tick, NULL);
+                m_vector_sequence[i].set_playing(false);
+                m_vector_sequence[i].play(a_tick, NULL);
             }
         } else {
-            m_vector_sequence[i]->play(a_tick, NULL);
+            m_vector_sequence[i].play(a_tick, NULL);
         }
     }
 
@@ -938,18 +964,17 @@ track::get_trigger_state( long a_tick )
 }
 
 sequence * 
-track::get_trigger_sequence( long a_tick )
+track::get_trigger_sequence( trigger *a_trigger )
 {
-    trigger *a_trigger = get_trigger(a_tick);
     if(a_trigger == NULL) {
         return NULL;
     } else {
-        return a_trigger->m_sequence;
+        return get_sequence(a_trigger->m_sequence);
     }
 }
 
-void 
-track::set_trigger_sequence( trigger *a_trigger, sequence *a_sequence )
+//void track::set_trigger_sequence( trigger *a_trigger, sequence *a_sequence )
+void track::set_trigger_sequence( trigger *a_trigger, int a_sequence )
 {
     if(a_trigger != NULL) {
         a_trigger->m_sequence = a_sequence;
@@ -1078,14 +1103,14 @@ track::reset_draw_trigger_marker( void )
 
 
 bool 
-track::get_next_trigger( long *a_tick_on, long *a_tick_off, bool *a_selected, long *a_offset, sequence **a_seq )
+track::get_next_trigger( long *a_tick_on, long *a_tick_off, bool *a_selected, long *a_offset, int *a_seq_idx )
 {
     while (  m_iterator_draw_trigger  != m_list_trigger.end() ){ 
 	    *a_tick_on  = (*m_iterator_draw_trigger).m_tick_start;
         *a_selected = (*m_iterator_draw_trigger).m_selected;
         *a_offset =   (*m_iterator_draw_trigger).m_offset;
 	    *a_tick_off = (*m_iterator_draw_trigger).m_tick_end;
-	    *a_seq = (*m_iterator_draw_trigger).m_sequence;
+	    *a_seq_idx =  (*m_iterator_draw_trigger).m_sequence;
 	    m_iterator_draw_trigger++;
 	    return true;
     }
@@ -1101,18 +1126,16 @@ track::print()
     printf("mute=[%d]\n", m_song_mute  );
 
     for(int i=0; i<m_vector_sequence.size(); i++) {
-        printf("sequence[%d] name=[%s]\n", i, m_vector_sequence[i]->get_name() );
+        printf("sequence[%d] address=%p name=\"%s\"\n", i, &(m_vector_sequence[i]), m_vector_sequence[i].get_name() );
+        //m_vector_sequence[i].print();
     }
     int i=0;
     for( list<trigger>::iterator iter = m_list_trigger.begin();
          iter != m_list_trigger.end(); iter++ ){
 
         /*long d= c_ppqn / 8;*/
-        char *seq_name = "NULL";
-        if(iter->m_sequence != NULL) {
-            seq_name = (char *) iter->m_sequence->get_name();
-        }
-        printf ("trigger[%d]: tick_start[%ld] tick_end[%ld] off[%ld] sequence=[%s]\n", i, (*iter).m_tick_start, (*iter).m_tick_end, (*iter).m_offset, seq_name );
+        //printf ("trigger[%d] address=%p tick_start[%ld] tick_end[%ld] off[%ld] sequence=[%p]\n", i, &(*iter), (*iter).m_tick_start, (*iter).m_tick_end, (*iter).m_offset, (*iter).m_sequence );
+        printf ("trigger[%d] address=%p tick_start[%ld] tick_end[%ld] off[%ld] sequence=[%d]\n", i, &(*iter), (*iter).m_tick_start, (*iter).m_tick_end, (*iter).m_offset, (*iter).m_sequence );
         i++;
     }
 }
@@ -1122,7 +1145,7 @@ void
 track::set_orig_tick( long a_tick )
 {
     for(int i=0; i<m_vector_sequence.size(); i++) {
-        m_vector_sequence[i]->set_orig_tick(a_tick);
+        m_vector_sequence[i].set_orig_tick(a_tick);
     }
 }
 
@@ -1130,6 +1153,6 @@ void
 track::off_playing_notes()
 {
     for(int i=0; i<m_vector_sequence.size(); i++) {
-        m_vector_sequence[i]->off_playing_notes();
+        m_vector_sequence[i].off_playing_notes();
     }
 }

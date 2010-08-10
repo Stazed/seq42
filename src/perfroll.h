@@ -172,8 +172,9 @@ class perfroll : public Gtk::DrawingArea
 
     /* Trigger menu callbacks */
     void new_sequence(track *a_track, trigger *a_trigger);
-    void edit_sequence(trigger *a_trigger);
-    void set_trigger_sequence( track *a_track, trigger *a_trigger, sequence *a_sequence );
+    void edit_sequence(track *a_track, trigger *a_trigger);
+    //void set_trigger_sequence( track *a_track, trigger *a_trigger, sequence *a_sequence );
+    void set_trigger_sequence( track *a_track, trigger *a_trigger, int a_sequence );
 
     perfroll( perform *a_perf, 
 	      Adjustment *a_hadjust,

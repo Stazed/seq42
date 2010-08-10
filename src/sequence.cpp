@@ -1896,6 +1896,8 @@ sequence::operator= (const sequence& a_rhs)
 
 	m_playing      = false;
 
+	m_track      = a_rhs.m_track;
+
 	/* no notes are playing */
 	for (int i=0; i< c_midi_notes; i++ )
 	    m_playing_notes[i] = 0;

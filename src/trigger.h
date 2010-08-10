@@ -34,14 +34,14 @@ public:
     long m_tick_end;
     bool m_selected;
     long m_offset;
-    sequence *m_sequence;
+    int m_sequence;
 
     trigger (){
         m_tick_start = 0;
         m_tick_end = 0;
         m_offset = 0;
         m_selected = false;
-        m_sequence = NULL;
+        m_sequence = -1;
     };
 
     bool operator< (trigger rhs){

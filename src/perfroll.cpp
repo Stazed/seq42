@@ -315,6 +315,7 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
     long tick_off;
     long offset;
     bool selected;
+    int seq_idx;
     sequence *seq;
 
     long tick_offset = m_4bar_offset * c_ppqn * 16;
@@ -332,7 +333,7 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
 	    
 	    a_track -= m_track_offset;
 	    
-	    while ( trk->get_next_trigger( &tick_on, &tick_off, &selected, &offset, &seq  )){
+	    while ( trk->get_next_trigger( &tick_on, &tick_off, &selected, &offset, &seq_idx )){
 	
             if ( tick_off > 0 ){    
 
@@ -384,6 +385,7 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
             int max_label = (w / 6)-1;
             if(max_label < 0) max_label = 0;
             if(max_label > 39) max_label = 39;
+            seq = trk->get_sequence(seq_idx);
             if(seq == NULL) {
                 strncpy(label, "Empty", max_label);
             } else {
@@ -870,15 +872,17 @@ perfroll::on_size_request(GtkRequisition* a_r )
 void
 perfroll::new_sequence( track *a_track, trigger *a_trigger )
 {
-    sequence *a_sequence = a_track->new_sequence();
-    a_track->set_trigger_sequence(a_trigger, a_sequence);
+    int seq_idx = a_track->new_sequence();
+    sequence *a_sequence = a_track->get_sequence(seq_idx);
+    //a_track->set_trigger_sequence(a_trigger, a_sequence);
+    a_track->set_trigger_sequence(a_trigger, seq_idx);
     seqedit *seq_edit = new seqedit( a_sequence, m_mainperf );
 }
 
 void
-perfroll::edit_sequence( trigger *a_trigger )
+perfroll::edit_sequence( track *a_track, trigger *a_trigger )
 {
-    sequence *a_seq = a_trigger->m_sequence;
+    sequence *a_seq = a_track->get_trigger_sequence(a_trigger);
     if(a_seq->get_editing()) {
         a_seq->set_raise(true);
     } else {
@@ -886,8 +890,8 @@ perfroll::edit_sequence( trigger *a_trigger )
     }
 }
 
-void
-perfroll::set_trigger_sequence( track *a_track, trigger *a_trigger, sequence *a_sequence )
+//void perfroll::set_trigger_sequence( track *a_track, trigger *a_trigger, sequence *a_sequence )
+void perfroll::set_trigger_sequence( track *a_track, trigger *a_trigger, int a_sequence )
 {
     a_track->set_trigger_sequence(a_trigger, a_sequence);
 }
@@ -1296,8 +1300,8 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
             set_adding( true, ths );
         } else {
             Menu *menu_trigger =   manage( new Menu());
-            if(a_trigger->m_sequence) {
-                menu_trigger->items().push_back(MenuElem("Edit sequence", sigc::bind(mem_fun(ths,&perfroll::edit_sequence), a_trigger )));
+            if(a_trigger->m_sequence > -1) {
+                menu_trigger->items().push_back(MenuElem("Edit sequence", sigc::bind(mem_fun(ths,&perfroll::edit_sequence), a_track, a_trigger )));
             }
             menu_trigger->items().push_back(MenuElem("New sequence", sigc::bind(mem_fun(ths,&perfroll::new_sequence), a_track, a_trigger )));
             if(a_track->get_number_of_sequences()) {
@@ -1306,8 +1310,10 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
                     char name[30];
                     sequence *a_seq = a_track->get_sequence( s );
                     snprintf(name, sizeof(name),"[%d] %.13s", s+1, a_seq->get_name());
+                    //set_seq_menu->items().push_back(MenuElem(name,
+                        //sigc::bind(mem_fun(ths, &perfroll::set_trigger_sequence), a_track, a_trigger, a_seq)));
                     set_seq_menu->items().push_back(MenuElem(name,
-                        sigc::bind(mem_fun(ths, &perfroll::set_trigger_sequence), a_track, a_trigger, a_seq)));
+                        sigc::bind(mem_fun(ths, &perfroll::set_trigger_sequence), a_track, a_trigger, s)));
 
                 }
                 menu_trigger->items().push_back(MenuElem("Set sequence", *set_seq_menu));
