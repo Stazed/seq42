@@ -270,15 +270,16 @@ main (int argc, char *argv[])
     p.launch_input_thread();
     p.launch_output_thread();
     p.init_jack();
-    
-    if (global_filename != "") {
-        /* import that midi file */
-        midifile *f = new midifile(global_filename);
-        f->parse( &p );
-        delete f;
-    }
 
     mainwnd seq42_window( &p );
+    
+    if (global_filename != "") {
+        //midifile *f = new midifile(global_filename);
+        //f->parse( &p );
+        //delete f;
+
+        p.load(global_filename);
+    }
 
 #ifdef LASH_SUPPORT
 	lash_driver->start( &p );

@@ -18,6 +18,8 @@
 //
 //-----------------------------------------------------------------------------
 
+// FIXME: re-use some of this code if I ever implement export to midi (or less likely, import from midi)
+
 #include "midifile.h"
 #include <iostream>
 

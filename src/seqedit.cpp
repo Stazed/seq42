@@ -109,6 +109,7 @@ seqedit::seqedit( sequence *a_seq,
     /* main window */
     std::string title = "seq42 - ";
     title.append(m_seq->get_name());
+    title.append(" (sequence)");
     set_title(title);
     set_size_request(700, 500);
 
@@ -688,8 +689,8 @@ seqedit::fill_top_bar( void )
 {
      /* name */
     m_entry_name = manage( new Entry(  ));
-    m_entry_name->set_max_length(32);
-    m_entry_name->set_width_chars(32);
+    m_entry_name->set_max_length(c_max_name);
+    m_entry_name->set_width_chars(c_max_name);
     m_entry_name->set_text( m_seq->get_name());
     m_entry_name->select_region(0,0);
     m_entry_name->set_position(0);
@@ -765,9 +766,9 @@ seqedit::fill_top_bar( void )
     m_hbox->pack_start( *m_label_track , false, false );
     m_entry_track = manage( new Entry());
     m_entry_track->set_max_length(50);
-    m_entry_track->set_width_chars(50);
+    m_entry_track->set_width_chars(22);
     m_entry_track->set_editable( false );
-    m_hbox->pack_start( *m_entry_track , true, true );
+    m_hbox->pack_start( *m_entry_track , false, false );
 
 
     /* undo */

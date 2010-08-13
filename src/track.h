@@ -51,6 +51,10 @@ class track
     /* track name */
     string m_name;
 
+    /* Is the track edit window open? */
+    bool m_editing;
+    bool m_raise;
+
     /* contains the proper midi channel */
     char m_midi_channel;
     char m_bus;
@@ -92,7 +96,7 @@ class track
     int get_sequence_index( sequence *a_sequence );
 
     // How many sequences does this track have?
-    int get_number_of_sequences(void);
+    unsigned int get_number_of_sequences(void);
 
 
 
@@ -165,7 +169,27 @@ class track
     bool get_next_trigger (long *a_tick_on, long *a_tick_off, bool * a_selected, long *a_tick_offset, int *a_seq_idx);
 
     /* Return true if at least one of this track's sequences is being edited. */
-    bool get_editing( void );
+    bool get_sequence_editing( void );
+
+    void set_editing( bool a_edit )
+    {
+        m_editing = a_edit;
+    };
+
+    bool get_editing( void )
+    {
+        return m_editing;
+    };
+
+    void set_raise( bool a_raise )
+    {
+        m_raise = a_raise;
+    };
+
+    bool get_raise( void )
+    {
+        return m_raise;
+    };
 
     void reset_sequences(bool a_playback_mode);
     void set_playing_off(void);
@@ -175,6 +199,9 @@ class track
 
     void play( long a_tick, bool a_playback_mode );
     void set_orig_tick (long a_tick);
+
+    bool save( ofstream *file );
+    bool load( ifstream *file );
 
 };
 

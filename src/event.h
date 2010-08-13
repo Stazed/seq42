@@ -152,6 +152,9 @@ class event
     bool operator> ( const unsigned long &rhslong );
 
     friend class sequence;
+
+    void save( ofstream *file );
+    void load( ifstream *file );
 };
 
 #endif

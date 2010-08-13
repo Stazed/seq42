@@ -22,6 +22,7 @@
 #include "midibus.h"
 #include "event.h"
 #include <stdio.h>
+#include <fstream>
 #ifndef __WIN32__
 #  include <time.h>
 #endif
@@ -412,7 +413,7 @@ int  perform::get_bpm( )
 void perform::delete_track( int a_num )
 {
     if ( m_tracks[a_num] != NULL &&
-            !m_tracks[a_num]->get_editing() ){
+            !is_track_in_edit(a_num) ){
         set_active(a_num, false);
         m_tracks[a_num]->set_playing_off( );
         delete m_tracks[a_num];
@@ -423,7 +424,8 @@ void perform::delete_track( int a_num )
 bool perform::is_track_in_edit( int a_num )
 {
     return ( m_tracks[a_num] != NULL &&
-            m_tracks[a_num]->get_editing());
+             ( m_tracks[a_num]->get_editing() ||  m_tracks[a_num]->get_sequence_editing() )
+           );
 
 }
 
@@ -1693,3 +1695,65 @@ int main ( void )
 
 
 #endif 
+
+
+bool
+perform::save( const Glib::ustring& a_filename )
+{
+    ofstream file (a_filename.c_str (), ios::out | ios::binary | ios::trunc);
+
+    if (!file.is_open ()) return false;
+
+    file.write((const char *) &c_file_version, sizeof(int));
+
+    int bpm = get_bpm();
+    file.write((const char *) &bpm, sizeof(int));
+
+    int active_tracks = 0;
+    for (int i=0; i< c_max_track; i++ ){
+        if ( is_active_track(i) ) active_tracks++;
+    }
+    file.write((const char *) &active_tracks, sizeof(int));
+
+    for (int i=0; i< c_max_track; i++ ){
+        if ( is_active_track(i) )
+        {
+            if(! get_track(i)->save(&file)) {
+                return false;
+            }
+        }
+    }
+
+    file.close();
+    return true;
+}
+
+bool
+perform::load( const Glib::ustring& a_filename )
+{
+    ifstream file (a_filename.c_str (), ios::in | ios::binary);
+
+    if (!file.is_open ()) return false;
+
+    int version;
+    file.read((char *) &version, sizeof(int));
+    // For now, the version will always be zero, so just ignore it.
+
+    int bpm;
+    file.read((char *) &bpm, sizeof(int));
+    set_bpm(bpm);
+
+    int active_tracks;
+    file.read((char *) &active_tracks, sizeof(int));
+
+    for (int i=0; i< active_tracks; i++ ){
+        new_track(i);
+        if(! get_track(i)->load(&file)) {
+            return false;
+        }
+    }
+
+    file.close();
+    return true;
+}
+

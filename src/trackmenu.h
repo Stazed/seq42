@@ -22,6 +22,7 @@
 
 #include "globals.h"
 #include "perform.h"
+#include "trackedit.h"
 
 class trackmenu;
 
@@ -56,6 +57,7 @@ class trackmenu : public virtual Glib::ObjectBase
     Menu        *m_menu;
     perform     *m_mainperf;
     track       m_clipboard;
+    bool m_something_to_paste;
 
     void on_realize();
 
@@ -64,6 +66,7 @@ class trackmenu : public virtual Glib::ObjectBase
     void trk_copy();   
     void trk_cut();
     void trk_paste(); 
+    void trk_edit(); 
 
     void trk_clear_perf();
 

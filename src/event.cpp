@@ -19,6 +19,7 @@
 //-----------------------------------------------------------------------------
 #include "event.h"
 #include "string.h"
+#include <fstream>
 
 event::event()
 {
@@ -397,4 +398,18 @@ bool
 event::is_marked( )
 {
     return m_marked;
+}
+
+void
+event::save(ofstream *file) {
+    file->write((const char *) &(m_timestamp), sizeof(long));
+    file->write((const char *) &(m_status), sizeof(char));
+    file->write((const char *) &(m_data), sizeof(char)*2);
+}
+
+void
+event::load(ifstream *file) {
+    file->read((char *) &(m_timestamp), sizeof(long));
+    file->read((char *) &(m_status), sizeof(char));
+    file->read((char *) &(m_data), sizeof(char)*2);
 }

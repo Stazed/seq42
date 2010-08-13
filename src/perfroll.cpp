@@ -876,7 +876,7 @@ perfroll::new_sequence( track *a_track, trigger *a_trigger )
     sequence *a_sequence = a_track->get_sequence(seq_idx);
     //a_track->set_trigger_sequence(a_trigger, a_sequence);
     a_track->set_trigger_sequence(a_trigger, seq_idx);
-    seqedit *seq_edit = new seqedit( a_sequence, m_mainperf );
+    new seqedit( a_sequence, m_mainperf );
 }
 
 void
@@ -886,7 +886,7 @@ perfroll::edit_sequence( track *a_track, trigger *a_trigger )
     if(a_seq->get_editing()) {
         a_seq->set_raise(true);
     } else {
-        seqedit *seq_edit = new seqedit( a_seq, m_mainperf );
+        new seqedit( a_seq, m_mainperf );
     }
 }
 
@@ -1300,6 +1300,7 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
             set_adding( true, ths );
         } else {
             Menu *menu_trigger =   manage( new Menu());
+            //menu_trigger->items().push_back(SeparatorElem());
             if(a_trigger->m_sequence > -1) {
                 menu_trigger->items().push_back(MenuElem("Edit sequence", sigc::bind(mem_fun(ths,&perfroll::edit_sequence), a_track, a_trigger )));
             }

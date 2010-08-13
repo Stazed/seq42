@@ -19,9 +19,12 @@
 ////-----------------------------------------------------------------------------
 #include "track.h"
 #include <stdlib.h>
+#include <fstream>
 
 track::track()
 {
+    m_editing = false;
+    m_raise = false;
     m_name = c_dummy;
     m_bus = 0;
     m_midi_channel = 0;
@@ -169,6 +172,13 @@ track::set_name( char *a_name )
     m_name = a_name;
     set_dirty();
 }
+void
+track::set_name( string a_name )
+{
+    m_name = a_name;
+    set_dirty();
+}
+
 
 void
 track::set_midi_channel( unsigned char a_ch )
@@ -204,7 +214,7 @@ track::get_midi_bus(  )
 
 
 
-int
+unsigned int
 track::get_number_of_sequences(void)
 {
     return m_vector_sequence.size();
@@ -264,7 +274,7 @@ track::is_dirty_perf( )
 }
 
 bool
-track::get_editing( void )
+track::get_sequence_editing( void )
 {
     // Return true if at least one of this track's sequences is being edited.
     for(int i=0; i<m_vector_sequence.size(); i++) {
@@ -451,12 +461,12 @@ track::clear_triggers( void )
 
 
 void 
-track::add_trigger( long a_tick, long a_length, long a_offset)
+track::add_trigger( long a_tick, long a_length, long a_offset )
 {
     lock();
 
     trigger e;
-    
+
     e.m_offset = a_offset;
     
     e.m_selected = false;
@@ -1162,4 +1172,71 @@ track::off_playing_notes()
     for(int i=0; i<m_vector_sequence.size(); i++) {
         m_vector_sequence[i]->off_playing_notes();
     }
+}
+
+bool
+track::save(ofstream *file) {
+    char name[c_max_name];
+    strncpy(name, m_name.c_str(), c_max_name);
+    file->write(name, sizeof(char)*c_max_name);
+
+    file->write((const char *) &m_bus, sizeof(char));
+
+    file->write((const char *) &m_midi_channel, sizeof(char));
+
+    unsigned int num_seqs = get_number_of_sequences();
+    file->write((const char *) &num_seqs, sizeof(int));
+    for(unsigned int i=0; i<m_vector_sequence.size(); i++) {
+        if(!  m_vector_sequence[i]->save(file)) {
+            return false;
+        }
+    }
+
+    unsigned int num_triggers = m_list_trigger.size();
+    file->write((const char *) &num_triggers, sizeof(int));
+    for( list<trigger>::iterator iter = m_list_trigger.begin();
+         iter != m_list_trigger.end(); iter++ )
+    {
+        file->write((const char *) &(iter->m_tick_start), sizeof(long));
+        file->write((const char *) &(iter->m_tick_end), sizeof(long));
+        file->write((const char *) &(iter->m_offset), sizeof(long));
+        file->write((const char *) &(iter->m_sequence), sizeof(int));
+    }
+    return true;
+}
+
+bool
+track::load(ifstream *file) {
+    char name[c_max_name+1];
+    file->read(name, sizeof(char)*c_max_name);
+    name[c_max_name] = '\0';
+    set_name(name);
+
+    file->read((char *) &m_bus, sizeof(char));
+
+    file->read((char *) &m_midi_channel, sizeof(char));
+
+    unsigned int num_seqs;
+    file->read((char *) &num_seqs, sizeof(int));
+
+    for (unsigned int i=0; i< num_seqs; i++ ){
+        new_sequence();
+        if(! get_sequence(i)->load(file)) {
+            return false;
+        }
+    }
+
+    unsigned int num_triggers;
+    file->read((char *) &num_triggers, sizeof(int));
+
+    for (unsigned int i=0; i< num_triggers; i++ ){
+        trigger e;
+        file->read((char *) &(e.m_tick_start), sizeof(long));
+        file->read((char *) &(e.m_tick_end), sizeof(long));
+        file->read((char *) &(e.m_offset), sizeof(long));
+        file->read((char *) &(e.m_sequence), sizeof(int));
+        m_list_trigger.push_back(e);
+    }
+
+    return true;
 }

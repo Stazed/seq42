@@ -63,7 +63,7 @@ mainwnd::mainwnd(perform *a_p)
 
     /* main window */
     update_window_title();
-    set_size_request(700, 400);
+    set_size_request(710, 322);
 
 #if GTK_MINOR_VERSION < 12
     m_tooltips = manage( new Tooltips() );
@@ -623,8 +623,11 @@ void mainwnd::open_file(const Glib::ustring& fn)
 
     m_mainperf->clear_all();
 
-    midifile f(fn);
-    result = f.parse(m_mainperf);
+    //midifile f(fn);
+    //result = f.parse(m_mainperf);
+
+    result = m_mainperf->load(fn);
+
     m_modified = !result;
 
     if (!result) {
@@ -693,8 +696,10 @@ bool mainwnd::save_file()
         return true;
     }
 
-    midifile f(global_filename);
-    result = f.write(m_mainperf);
+    //midifile f(global_filename);
+    //result = f.write(m_mainperf);
+
+    result = m_mainperf->save(global_filename);
 
     if (!result) {
         Gtk::MessageDialog errdialog(*this,
@@ -981,13 +986,13 @@ mainwnd::update_window_title()
     std::string title;
 
     if (global_filename == "")
-        title = ( PACKAGE ) + string( " - [unnamed]" );
+        title = ( PACKAGE ) + string( " - unnamed (song)" );
     else
         title =
             ( PACKAGE )
-            + string( " - [" )
+            + string( " - " )
             + Glib::filename_to_utf8(global_filename)
-            + string( "]" );
+            + string( " (song)" );
 
     set_title ( title.c_str());
 }

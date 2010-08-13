@@ -20,6 +20,7 @@
 #include "sequence.h"
 #include "seqedit.h"
 #include <stdlib.h>
+#include <fstream>
     
 list < event > sequence::m_list_clipboard;
 
@@ -2584,3 +2585,47 @@ sequence::fill_list( list<char> *a_list, int a_pos )
     unlock();
 }
 
+
+bool
+sequence::save(ofstream *file) {
+    char name[c_max_name];
+    strncpy(name, m_name.c_str(), c_max_name);
+    file->write(name, sizeof(char)*c_max_name);
+
+    file->write((const char *) &m_length, sizeof(long));
+    file->write((const char *) &m_time_beats_per_measure, sizeof(long));
+    file->write((const char *) &m_time_beat_width, sizeof(long));
+    
+    unsigned int num_events = m_list_event.size();
+    file->write((const char *) &num_events, sizeof(int));
+    for( list<event>::iterator iter = m_list_event.begin();
+         iter != m_list_event.end(); iter++ )
+    {
+        iter->save(file);
+    }
+
+    return true;
+}
+
+bool
+sequence::load(ifstream *file) {
+    char name[c_max_name+1];
+    file->read(name, sizeof(char)*c_max_name);
+    name[c_max_name] = '\0';
+    set_name(name);
+
+    file->read((char *) &m_length, sizeof(long));
+    file->read((char *) &m_time_beats_per_measure, sizeof(long));
+    file->read((char *) &m_time_beat_width, sizeof(long));
+
+    unsigned int num_events;
+    file->read((char *) &num_events, sizeof(int));
+
+    for (unsigned int i=0; i< num_events; i++ ){
+        event e;
+        e.load(file);
+        add_event(&e);
+    }
+
+    return true;
+}

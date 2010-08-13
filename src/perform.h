@@ -198,6 +198,9 @@ class perform
     
     long get_max_trigger( void );
 
+    bool save( const Glib::ustring& a_filename );
+    bool load( const Glib::ustring& a_filename );
+
     friend class midifile;
     friend class optionsfile;
     friend class options;
