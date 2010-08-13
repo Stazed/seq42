@@ -175,6 +175,7 @@ class perfroll : public Gtk::DrawingArea
     void edit_sequence(track *a_track, trigger *a_trigger);
     //void set_trigger_sequence( track *a_track, trigger *a_trigger, sequence *a_sequence );
     void set_trigger_sequence( track *a_track, trigger *a_trigger, int a_sequence );
+    void del_trigger( track *a_track, long a_tick );
 
     perfroll( perform *a_perf, 
 	      Adjustment *a_hadjust,

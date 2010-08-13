@@ -748,27 +748,30 @@ seqedit::fill_top_bar( void )
     m_hbox->pack_start( *(manage(new VSeparator( ))), false, false, 4);
     
     /* track info */
-    m_label_bus = manage (new Label( "Bus:" ));
+    m_button_track = manage( new Button());
+    m_button_track->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( midi_xpm  ))));
+    m_button_track->signal_clicked().connect(  mem_fun( *this, &seqedit::trk_edit));
+    add_tooltip( m_button_track, "Edit track." );
+    m_hbox->pack_start( *m_button_track , false, false );
+    m_entry_track = manage( new Entry());
+    m_entry_track->set_max_length(50);
+    m_entry_track->set_width_chars(22);
+    m_entry_track->set_editable( false );
+    m_hbox->pack_start( *m_entry_track , false, false );
+    m_label_bus = manage (new Label( "Bus" ));
     m_hbox->pack_start( *m_label_bus , false, false );
     m_entry_bus = manage( new Entry());
     m_entry_bus->set_max_length(2);
     m_entry_bus->set_width_chars(2);
     m_entry_bus->set_editable( false );
     m_hbox->pack_start( *m_entry_bus , false, false );
-    m_label_channel = manage (new Label( "Ch:" ));
+    m_label_channel = manage (new Label( "Ch" ));
     m_hbox->pack_start( *m_label_channel , false, false );
     m_entry_channel = manage( new Entry());
     m_entry_channel->set_max_length(2);
     m_entry_channel->set_width_chars(2);
     m_entry_channel->set_editable( false );
     m_hbox->pack_start( *m_entry_channel , false, false );
-    m_label_track = manage (new Label( "Track:" ));
-    m_hbox->pack_start( *m_label_track , false, false );
-    m_entry_track = manage( new Entry());
-    m_entry_track->set_max_length(50);
-    m_entry_track->set_width_chars(22);
-    m_entry_track->set_editable( false );
-    m_hbox->pack_start( *m_entry_track , false, false );
 
 
     /* undo */
@@ -1416,6 +1419,9 @@ seqedit::timeout( void )
     }
 
     m_seqroll_wid->draw_progress_on_window();
+
+    // FIXME: ick
+    set_track_info();
     
     return true;
 }
@@ -1508,4 +1514,15 @@ void
 seqedit::stop_playing( void )
 {
     m_seqroll_wid->stop_playing();
+}
+
+void
+seqedit::trk_edit()
+{
+    track *a_track = m_seq->get_track();
+    if(a_track->get_editing()) {
+        a_track->set_raise(true);
+    } else {
+        new trackedit(a_track);
+    }
 }

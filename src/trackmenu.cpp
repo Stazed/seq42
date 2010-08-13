@@ -56,7 +56,10 @@ trackmenu::popup_menu( void )
 
     if ( m_mainperf->is_active_track( m_current_trk )) {
         m_menu->items().push_back(MenuElem("Edit", mem_fun(*this,&trackmenu::trk_edit)));
-        m_menu->items().push_back(MenuElem("Cut", mem_fun(*this,&trackmenu::trk_cut)));
+        if(! m_mainperf->is_track_in_edit( m_current_trk ))
+        {
+            m_menu->items().push_back(MenuElem("Cut", mem_fun(*this,&trackmenu::trk_cut)));
+        }
         m_menu->items().push_back(MenuElem("Copy", mem_fun(*this,&trackmenu::trk_copy)));
     } else {
         if(m_something_to_paste) m_menu->items().push_back(MenuElem("Paste", mem_fun(*this,&trackmenu::trk_paste)));
@@ -140,7 +143,8 @@ trackmenu::trk_new(){
 
         m_mainperf->new_track( m_current_trk );
         m_mainperf->get_track( m_current_trk )->set_dirty();
-        trk_edit();
+        // FIXME: add a bool preference: "New track pops up edit window?"
+        //trk_edit();
 
     }
 }

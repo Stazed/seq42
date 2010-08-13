@@ -215,8 +215,8 @@ sequence::play(long a_tick, trigger *a_trigger)
     long end_tick_offset = (end_tick + m_length - m_trigger_offset);
 
     /* play the notes in our frame */
-    if ( m_playing && ! m_track->get_song_mute() ){
-
+    //if ( m_playing && !m_track->get_song_mute() ){
+    if ( m_playing ){
         list<event>::iterator e = m_list_event.begin();
 
         while ( e != m_list_event.end()){

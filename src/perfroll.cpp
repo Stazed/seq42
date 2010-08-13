@@ -897,6 +897,14 @@ void perfroll::set_trigger_sequence( track *a_track, trigger *a_trigger, int a_s
 }
 
 
+void
+perfroll::del_trigger( track *a_track, long a_tick )
+{
+    m_mainperf->push_trigger_undo();
+    a_track->del_trigger( a_tick );
+    a_track->set_dirty( );
+}
+
 
 //////////////////////////
 // interaction methods
@@ -1190,7 +1198,6 @@ Seq42PerfInput::set_adding( bool a_adding, perfroll& ths )
 bool
 Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 {
-    using namespace Menu_Helpers;
     ths.grab_focus( );
 
 
@@ -1298,29 +1305,6 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
         }
         if(a_trigger == NULL) {
             set_adding( true, ths );
-        } else {
-            Menu *menu_trigger =   manage( new Menu());
-            //menu_trigger->items().push_back(SeparatorElem());
-            if(a_trigger->m_sequence > -1) {
-                menu_trigger->items().push_back(MenuElem("Edit sequence", sigc::bind(mem_fun(ths,&perfroll::edit_sequence), a_track, a_trigger )));
-            }
-            menu_trigger->items().push_back(MenuElem("New sequence", sigc::bind(mem_fun(ths,&perfroll::new_sequence), a_track, a_trigger )));
-            if(a_track->get_number_of_sequences()) {
-                Menu *set_seq_menu = manage( new Menu());
-                for ( int s=0; s< a_track->get_number_of_sequences(); s++ ){
-                    char name[30];
-                    sequence *a_seq = a_track->get_sequence( s );
-                    snprintf(name, sizeof(name),"[%d] %.13s", s+1, a_seq->get_name());
-                    //set_seq_menu->items().push_back(MenuElem(name,
-                        //sigc::bind(mem_fun(ths, &perfroll::set_trigger_sequence), a_track, a_trigger, a_seq)));
-                    set_seq_menu->items().push_back(MenuElem(name,
-                        sigc::bind(mem_fun(ths, &perfroll::set_trigger_sequence), a_track, a_trigger, s)));
-
-                }
-                menu_trigger->items().push_back(MenuElem("Set sequence", *set_seq_menu));
-            }
-            // FIXME:add more options
-            menu_trigger->popup(0,0);
         }
     }
 
@@ -1352,6 +1336,8 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 
 bool Seq42PerfInput::on_button_release_event(GdkEventButton* a_ev, perfroll& ths)
 {
+    using namespace Menu_Helpers;
+
     if ( a_ev->button == 1 ){
 
         if ( m_adding ){
@@ -1360,8 +1346,45 @@ bool Seq42PerfInput::on_button_release_event(GdkEventButton* a_ev, perfroll& ths
     }
 
     if ( a_ev->button == 3 ){
-	m_adding_pressed = false;
- 	set_adding( false, ths );
+        if(m_adding)
+        {
+	        m_adding_pressed = false;
+ 	        set_adding( false, ths );
+        }
+        else
+        {
+            track *a_track = NULL;
+            trigger *a_trigger = NULL;
+            if ( ths.m_mainperf->is_active_track( ths.m_drop_track )){
+                a_track = ths.m_mainperf->get_track( ths.m_drop_track );
+                a_trigger = a_track->get_trigger( ths.m_drop_tick );
+            }
+            if(a_trigger != NULL) {
+                Menu *menu_trigger =   manage( new Menu());
+                //menu_trigger->items().push_back(SeparatorElem());
+                if(a_trigger->m_sequence > -1) {
+                    menu_trigger->items().push_back(MenuElem("Edit sequence", sigc::bind(mem_fun(ths,&perfroll::edit_sequence), a_track, a_trigger )));
+                }
+                menu_trigger->items().push_back(MenuElem("New sequence", sigc::bind(mem_fun(ths,&perfroll::new_sequence), a_track, a_trigger )));
+                if(a_track->get_number_of_sequences()) {
+                    Menu *set_seq_menu = manage( new Menu());
+                    for ( int s=0; s< a_track->get_number_of_sequences(); s++ ){
+                        char name[30];
+                        sequence *a_seq = a_track->get_sequence( s );
+                        snprintf(name, sizeof(name),"[%d] %.13s", s+1, a_seq->get_name());
+                        //set_seq_menu->items().push_back(MenuElem(name,
+                            //sigc::bind(mem_fun(ths, &perfroll::set_trigger_sequence), a_track, a_trigger, a_seq)));
+                        set_seq_menu->items().push_back(MenuElem(name,
+                            sigc::bind(mem_fun(ths, &perfroll::set_trigger_sequence), a_track, a_trigger, s)));
+
+                    }
+                    menu_trigger->items().push_back(MenuElem("Set sequence", *set_seq_menu));
+                }
+                menu_trigger->items().push_back(MenuElem("Delete trigger", sigc::bind(mem_fun(ths,&perfroll::del_trigger), a_track, ths.m_drop_tick )));
+                // FIXME:add more options
+                menu_trigger->popup(0,0);
+            }
+        }
     }
     
     ths.m_moving = false;

@@ -83,6 +83,7 @@ class track
       track ();
      ~track ();
     track& operator=(const track& other);
+    void free ();
 
 
     void push_trigger_undo (void);

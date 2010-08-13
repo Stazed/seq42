@@ -28,6 +28,7 @@
 #include "seqtime.h"
 #include "seqevent.h"
 #include "perform.h"
+#include "trackedit.h"
 
 #include <gtkmm/adjustment.h>
 #include <gtkmm/button.h>
@@ -127,7 +128,7 @@ class seqedit : public Gtk::Window
     Button      *m_button_sequence;
     Entry       *m_entry_sequence;
     
-    Label       *m_label_track;
+    Button      *m_button_track;
     Entry       *m_entry_track;
     Label       *m_label_bus;
     Entry       *m_entry_bus;
@@ -242,7 +243,7 @@ class seqedit : public Gtk::Window
     void menu_action_quantise( void );
     
     void popup_menu( Menu *a_menu );
-    void popup_event_menu( void );                                                                                                                                                                                                                                                                                                
+    void popup_event_menu( void );
     void popup_sequence_menu( void );
     void popup_tool_menu( void );
 
@@ -261,6 +262,8 @@ class seqedit : public Gtk::Window
 
     void set_track_info( );
 
+    void trk_edit();
+
  public:
 
     seqedit(sequence *a_seq, 
@@ -272,6 +275,7 @@ class seqedit : public Gtk::Window
     bool on_delete_event(GdkEventAny *a_event);
     bool on_scroll_event(GdkEventScroll* a_ev);
     bool on_key_press_event(GdkEventKey* a_ev);
+
 };
 
 

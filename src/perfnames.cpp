@@ -139,27 +139,27 @@ perfnames::draw_track( int track )
         if ( m_mainperf->is_active_track( track )){
 
             m_track_active[track]=true;
-		
-            /* names */
-            char name[50];
-            snprintf(name, sizeof(name), "%-16.16s", 
-                     m_mainperf->get_track(track)->get_name());
-                
-            p_font_renderer->render_string_on_drawable(m_gc,
-                                                       5,  
-                                                       c_names_y * i + 2,
-                                                       m_window, name, font::BLACK );
                 
             char str[20];
             snprintf(str, sizeof(str), 
-                     "Bus %d Ch %d",
+                     "[%d] Bus %d Ch %d",
+                     track + 1,
                      m_mainperf->get_track(track)->get_midi_bus()+1, 
                      m_mainperf->get_track(track)->get_midi_channel()+1 );
                 
             p_font_renderer->render_string_on_drawable(m_gc,
                                                        5,  
-                                                       c_names_y * i + 12,
+                                                       c_names_y * i + 2,
                                                        m_window, str, font::BLACK );
+		
+            char name[20];
+            snprintf(name, sizeof(name), "%-16.16s", 
+                     m_mainperf->get_track(track)->get_name());
+                
+            p_font_renderer->render_string_on_drawable(m_gc,
+                                                       5,  
+                                                       c_names_y * i + 12,
+                                                       m_window, name, font::BLACK );
 
             bool muted = m_mainperf->get_track(track)->get_song_mute();
 

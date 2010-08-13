@@ -3,19 +3,51 @@
     (aka "performance") editor (perfedit) instead of the pattern grid (mainwid).
 [x] Removed a lot of live looping stuff (like mute groups, queuing, etc)
 [x] Added loop toggle kb shortcut
-[ ] Refactor data structures and UI such that a performance has a list
+[x] Refactor data structures and UI such that a performance has a list
     of "tracks".  Split some of the seq24 sequence class out into track.
     Track should have a midi port and channel, name, mute status, and a list of
     sequences.  Sequence should no longer have midi port and channel; instead
     it should send midi data to its track's port and channel.
     Will also need to update file saving and loading.
+
+[x] Change seqedit such that there is a button (use midi.xpm) that opens the
+    track edit window
+
+[ ] Add function to trigger menu to copy an existing sequence (from any track)
+
 [ ] Add function to mute all tracks, unmute all tracks, and toggle/invert
     the mute status of all tracks.  (see existing perform::mute_all_tracks)
+
+[ ] Add to Edit menu a new action "View sequence list" which opens a new window
+    with a TreeView widget of all tracks.  Each track can be expanded to list 
+    all of the sequences.  Right-clicking a sequence pops up a menu with 
+    options to Edit and Delete.  When Delete is selected, check if the sequence 
+    is assigned to at least one trigger... if so, ask the user if they're sure.
+
+[ ] Add to Edit menu a new action "Delete all untriggered sequences"
+
+[ ] Add to Edit menu a new action "Pack track list" (shifts all active tracks 
+    to the top of the track list).  After this change, change the file save 
+    format such that each active track in the file includes an index int. 
+    Loading a file should put each track back in the same slot (allowing for
+    empty slots b/w tracks).
+
+[ ] Enhance perform-level undo/redo such that all perform/track level changes
+    can be undone/redone: changing a trigger's sequence, adding a track,
+    cutting/copying/pasting a track, editing a track.
+
+[ ] Get rid of all the "dirty" stuff.  Instead make perform keep track 
+    of the open windows.  It can then notify them whenever a specific track
+    or sequence has changed.  Perform could also maintain a pointer to the 
+    background sequence (for seqedit and seqroll), and be sure to set it to
+    null if the sequence is deleted.
+
 [ ] Add m_modified bool to perform (and possibly also sequence and track).
     Set to True as soon as anything is modified.
     Add an is_modified() method that returns m_modified.
     Update mainwnd is_modified() to take perform's is_modified() into account.
-    Alternatively.... ditch all the modified stuff and look at the size of the undo stack to determine whether or not save dialog is needed.
+    Alternatively.... ditch all the modified stuff and look at the size of the
+    undo stack to determine whether or not save dialog is needed.
 
 Seq24 stuff below......
 

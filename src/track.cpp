@@ -36,6 +36,12 @@ track::track()
 
 track::~track() {
     printf("in ~track()\n");
+    free();
+}
+
+void
+track::free() {
+    printf("in free()\n");
     for(int i=0; i<m_vector_sequence.size(); i++) {
         delete m_vector_sequence[i];
     }
@@ -48,6 +54,8 @@ track::operator=(const track& other)
     lock();
     if(this != &other)
     {
+        free();
+
         m_name = other.m_name;
         m_bus = other.m_bus;
         m_midi_channel = other.m_midi_channel;
@@ -76,49 +84,6 @@ track::operator=(const track& other)
             a_seq->set_track(this);
             m_vector_sequence.push_back(a_seq);
         }
-
-        // FIXME: delete this block after dev
-        for(int i=0; i<m_vector_sequence.size(); i++) {
-            printf("my sequence[%d] at %p name=\"%s\" (track=%p)\n", i, m_vector_sequence[i], m_vector_sequence[i]->get_name(), m_vector_sequence[i], m_vector_sequence[i]->get_track() );
-        }
-
-#if 0
-        printf("copying triggers...\n");
-        m_list_trigger.clear();
-        // Copy the other track's triggers, making sure they point to this track's corresponding sequences.
-        int idx = 0;
-        list<trigger>::const_iterator iter = other.m_list_trigger.begin();
-        while ( iter != other.m_list_trigger.end() ){
-            trigger a_trigger = *iter;
-            printf ("other trigger[%d] at %p: tick_start[%ld] tick_end[%ld] off[%ld] sequence=[%p]\n", idx, &(*iter), (*iter).m_tick_start, (*iter).m_tick_end, (*iter).m_offset, (*iter).m_sequence );
-            if(a_trigger.m_sequence != NULL) {
-                int index = -1;
-                for(int i=0; i<other.m_vector_sequence.size(); i++) {
-                    if(&(other.m_vector_sequence[i]) == a_trigger.m_sequence) {
-                        index = i;
-                        break;
-                    }
-                }
-                if(index == -1) {
-                    a_trigger.m_sequence = NULL;
-                } else {
-                    a_trigger.m_sequence = &(m_vector_sequence[index]);
-                }
-            }
-            m_list_trigger.push_back( a_trigger );
-            iter++;
-            idx++;
-        }
-
-        // FIXME: delete this block after dev
-        idx = 0;
-        list<trigger>::iterator iter2 = m_list_trigger.begin();
-        while ( iter2 != m_list_trigger.end() ){
-            printf ("my trigger[%d] at %p: tick_start[%ld] tick_end[%ld] off[%ld] sequence=[%p]\n", idx, &(*iter2), (*iter2).m_tick_start, (*iter2).m_tick_end, (*iter2).m_offset, (*iter2).m_sequence );
-            iter2++;
-            idx++;
-        }
-#endif
     }
     unlock();
     printf("Done.\n");
@@ -435,8 +400,9 @@ track::play( long a_tick, bool a_playback_mode )
 
     for(int i=0; i<m_vector_sequence.size(); i++) {
         if(a_playback_mode) {
+
             if(m_vector_sequence[i] == trigger_seq) {
-                m_vector_sequence[i]->set_playing(true);
+                m_vector_sequence[i]->set_playing(! m_song_mute);
                 m_vector_sequence[i]->play(a_tick, active_trigger);
             } else {
                 m_vector_sequence[i]->set_playing(false);
