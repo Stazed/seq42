@@ -946,7 +946,7 @@ seqedit::popup_sequence_menu( void )
             }
             
             sequence *a_seq = a_track->get_sequence( s );                
-            snprintf(name, sizeof(name),"[%d] %.13s", s+1, a_seq->get_name());
+            snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
 
             menu_t->items().push_back(MenuElem(name,
                         sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), a_seq)));
@@ -970,7 +970,7 @@ seqedit::set_background_sequence( sequence *a_seq )
         m_seqroll_wid->set_background_sequence( false, NULL );
     } else {
         track *a_track = a_seq->get_track();
-        snprintf(name, sizeof(name),"[%d/%d] %.13s", m_mainperf->get_track_index(a_track)+1, a_track->get_sequence_index(a_seq)+1, a_seq->get_name());
+        snprintf(name, sizeof(name),"[%d/%d] %s", m_mainperf->get_track_index(a_track)+1, a_track->get_sequence_index(a_seq)+1, a_seq->get_name());
         m_entry_sequence->set_text(name);
         m_seqroll_wid->set_background_sequence( true, a_seq );
     }

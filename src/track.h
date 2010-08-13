@@ -128,9 +128,6 @@ class track
     bool is_dirty_perf();
     bool is_dirty_names();
 
-    void set_sequences_dirty();
-    void fixup_sequence_tracks();
-
     /* dumps contents to stdout */
     void print ();
     

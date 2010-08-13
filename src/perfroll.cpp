@@ -128,7 +128,6 @@ perfroll::on_realize()
     
     /* and fill the background ( dotted lines n' such ) */
     fill_background_pixmap();
-    
 
 }
 
@@ -524,6 +523,7 @@ void perfroll::draw_background_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_tra
                                  c_perfroll_background_x,
                                  c_names_y );
 
+
     }
 
     
@@ -540,23 +540,8 @@ perfroll::on_expose_event(GdkEventExpose* e)
     int y_f = (e->area.y  + e->area.height) / c_names_y;
     
     for ( int y=y_s; y<=y_f; y++ ){
-
-        /*
-	for ( int x=x_s; x<=x_f; x++ ){
-	    
-	    m_pixmap->draw_drawable(m_gc, m_background,
-				 0,
-				 0,
-				 x * c_perfroll_background_x,
-				 c_names_y * y,
-				 c_perfroll_background_x,
-				 c_names_y );
-	}
-
-        */
-        
         draw_background_on(m_pixmap, y + m_track_offset );
-	draw_track_on(m_pixmap, y + m_track_offset );
+	    draw_track_on(m_pixmap, y + m_track_offset );
     }
 
     m_window->draw_drawable( m_gc, m_pixmap,
@@ -873,8 +858,27 @@ void
 perfroll::new_sequence( track *a_track, trigger *a_trigger )
 {
     int seq_idx = a_track->new_sequence();
+    m_mainperf->push_trigger_undo();
     sequence *a_sequence = a_track->get_sequence(seq_idx);
     //a_track->set_trigger_sequence(a_trigger, a_sequence);
+    a_track->set_trigger_sequence(a_trigger, seq_idx);
+    new seqedit( a_sequence, m_mainperf );
+}
+
+void
+perfroll::copy_sequence( track *a_track, trigger *a_trigger, sequence *a_seq )
+{
+    bool same_track = a_track == a_seq->get_track();
+    int seq_idx = a_track->new_sequence();
+    m_mainperf->push_trigger_undo();
+    sequence *a_sequence = a_track->get_sequence(seq_idx);
+    *a_sequence = *a_seq;
+    a_sequence->set_track(a_track);
+    if(same_track) {
+        char new_name[c_max_name+1];
+        snprintf(new_name, sizeof(new_name), "%s copy", a_sequence->get_name());
+        a_sequence->set_name( new_name );
+    }
     a_track->set_trigger_sequence(a_trigger, seq_idx);
     new seqedit( a_sequence, m_mainperf );
 }
@@ -893,6 +897,7 @@ perfroll::edit_sequence( track *a_track, trigger *a_trigger )
 //void perfroll::set_trigger_sequence( track *a_track, trigger *a_trigger, sequence *a_sequence )
 void perfroll::set_trigger_sequence( track *a_track, trigger *a_trigger, int a_sequence )
 {
+    m_mainperf->push_trigger_undo();
     a_track->set_trigger_sequence(a_trigger, a_sequence);
 }
 
@@ -1371,7 +1376,7 @@ bool Seq42PerfInput::on_button_release_event(GdkEventButton* a_ev, perfroll& ths
                     for ( int s=0; s< a_track->get_number_of_sequences(); s++ ){
                         char name[30];
                         sequence *a_seq = a_track->get_sequence( s );
-                        snprintf(name, sizeof(name),"[%d] %.13s", s+1, a_seq->get_name());
+                        snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
                         //set_seq_menu->items().push_back(MenuElem(name,
                             //sigc::bind(mem_fun(ths, &perfroll::set_trigger_sequence), a_track, a_trigger, a_seq)));
                         set_seq_menu->items().push_back(MenuElem(name,
@@ -1381,7 +1386,40 @@ bool Seq42PerfInput::on_button_release_event(GdkEventButton* a_ev, perfroll& ths
                     menu_trigger->items().push_back(MenuElem("Set sequence", *set_seq_menu));
                 }
                 menu_trigger->items().push_back(MenuElem("Delete trigger", sigc::bind(mem_fun(ths,&perfroll::del_trigger), a_track, ths.m_drop_tick )));
-                // FIXME:add more options
+
+
+                Menu *copy_seq_menu = NULL;
+                for ( int t=0; t<c_max_track; ++t ){
+                        if (! ths.m_mainperf->is_active_track( t )){
+                            continue;
+                        }
+                    track *some_track = ths.m_mainperf->get_track(t);
+
+                    Menu *menu_t = NULL;
+                    bool inserted = false;
+                    for ( int s=0; s< some_track->get_number_of_sequences(); s++ ){
+                        char name[30];
+                        if ( !inserted ){
+                            if(copy_seq_menu == NULL) {
+                                copy_seq_menu = manage( new Menu());
+                            }
+                            inserted = true;
+                            snprintf(name, sizeof(name), "[%d] %s", t+1, some_track->get_name());
+                            menu_t = manage( new Menu());
+                            copy_seq_menu->items().push_back(MenuElem(name, *menu_t));
+                        }
+
+                        sequence *a_seq = some_track->get_sequence( s );
+                        snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
+                        menu_t->items().push_back(MenuElem(name,
+                            sigc::bind(mem_fun(ths, &perfroll::copy_sequence), a_track, a_trigger, a_seq)));
+
+                    }
+                }
+                if(copy_seq_menu != NULL) {
+                    menu_trigger->items().push_back(MenuElem("Copy sequence", *copy_seq_menu));
+                }
+
                 menu_trigger->popup(0,0);
             }
         }

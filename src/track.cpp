@@ -96,23 +96,6 @@ track::set_dirty()
     m_dirty_names =  m_dirty_perf = true;
 }
 
-void
-track::set_sequences_dirty()
-{
-    for(int i=0; i<m_vector_sequence.size(); i++) {
-        m_vector_sequence[i]->set_dirty();
-    }
-}
-
-void
-track::fixup_sequence_tracks()
-{
-    for(int i=0; i<m_vector_sequence.size(); i++) {
-        m_vector_sequence[i]->set_track(this);
-    }
-}
-
-
 void 
 track::lock( )
 {

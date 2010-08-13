@@ -13,7 +13,7 @@
 [x] Change seqedit such that there is a button (use midi.xpm) that opens the
     track edit window
 
-[ ] Add function to trigger menu to copy an existing sequence (from any track)
+[x] Add function to trigger menu to copy an existing sequence (from any track)
 
 [ ] Add function to mute all tracks, unmute all tracks, and toggle/invert
     the mute status of all tracks.  (see existing perform::mute_all_tracks)
@@ -33,8 +33,11 @@
     empty slots b/w tracks).
 
 [ ] Enhance perform-level undo/redo such that all perform/track level changes
-    can be undone/redone: changing a trigger's sequence, adding a track,
-    cutting/copying/pasting a track, editing a track.
+    can be undone/redone: adding a track, cutting/copying/pasting a track, editing a track.
+    This would require a more sophisticated approach.
+    Current approach pushes state of all triggers for all active tracks onto an undo stack.
+    Instead would need to create some sort of "action memento" objects that contain enough
+    infomation to be able to call the appropriate methods to undo the last change.
 
 [ ] Get rid of all the "dirty" stuff.  Instead make perform keep track 
     of the open windows.  It can then notify them whenever a specific track
@@ -46,7 +49,7 @@
     Set to True as soon as anything is modified.
     Add an is_modified() method that returns m_modified.
     Update mainwnd is_modified() to take perform's is_modified() into account.
-    Alternatively.... ditch all the modified stuff and look at the size of the
+    Alternatively (if undo/redo is made more robust).... ditch all the modified stuff and look at the size of the
     undo stack to determine whether or not save dialog is needed.
 
 Seq24 stuff below......

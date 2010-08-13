@@ -181,11 +181,7 @@ trackmenu::trk_paste(){
     {
         m_mainperf->new_track( m_current_trk  );
         *(m_mainperf->get_track( m_current_trk )) = m_clipboard;
-        // FIXME: are all of the following really necessary?
-        // If not, the methods in track could be deleted.
-        m_mainperf->get_track( m_current_trk )->fixup_sequence_tracks();
         m_mainperf->get_track( m_current_trk )->set_dirty();
-        m_mainperf->get_track( m_current_trk )->set_sequences_dirty();
     }
 }
 
