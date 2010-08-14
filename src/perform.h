@@ -41,6 +41,12 @@ class perform;
 #include <jack/transport.h>
 #endif
 
+enum mute_op
+{
+    MUTE_TOGGLE = -1,
+    MUTE_OFF = 0,
+    MUTE_ON = 1
+};
 
 class perform
 {
@@ -189,7 +195,7 @@ class perform
 
     void set_looping( bool a_looping ){ m_looping = a_looping; };
  
-    void mute_all_tracks( void );
+    void set_song_mute( mute_op op );
 
     mastermidibus* get_master_midi_bus( );
     

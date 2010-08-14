@@ -689,8 +689,8 @@ seqedit::fill_top_bar( void )
 {
      /* name */
     m_entry_name = manage( new Entry(  ));
-    m_entry_name->set_max_length(c_max_name);
-    m_entry_name->set_width_chars(c_max_name);
+    m_entry_name->set_max_length(c_max_seq_name);
+    m_entry_name->set_width_chars(c_max_seq_name);
     m_entry_name->set_text( m_seq->get_name());
     m_entry_name->select_region(0,0);
     m_entry_name->set_position(0);
@@ -925,6 +925,7 @@ seqedit::popup_sequence_menu( void )
                 sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), (sequence *)NULL)));
     m_menu_sequences->items().push_back( SeparatorElem( ));
 
+    char name[40];
     for ( int t=0; t<c_max_track; ++t ){
         if (! m_mainperf->is_active_track( t )){
             continue;
@@ -935,9 +936,6 @@ seqedit::popup_sequence_menu( void )
         bool inserted = false;
         
         for ( int s=0; s< a_track->get_number_of_sequences(); s++ ){
-
-            char name[30];
-
             if ( !inserted ){
                 inserted = true;
                 snprintf(name, sizeof(name), "[%d] %s", t+1, a_track->get_name());

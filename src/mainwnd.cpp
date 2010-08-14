@@ -105,6 +105,17 @@ mainwnd::mainwnd(perform *a_p)
 
 
     /* edit menu items */
+    m_menu_edit->items().push_back(MenuElem("_Mute all tracks",
+                sigc::bind(mem_fun(*this, &mainwnd::set_song_mute), MUTE_ON)));
+
+    m_menu_edit->items().push_back(MenuElem("_Unmute all tracks",
+                sigc::bind(mem_fun(*this, &mainwnd::set_song_mute), MUTE_OFF)));
+
+    m_menu_edit->items().push_back(MenuElem("_Toggle mute for all tracks",
+                sigc::bind(mem_fun(*this, &mainwnd::set_song_mute), MUTE_TOGGLE)));
+
+    m_menu_edit->items().push_back(SeparatorElem());
+
     m_menu_edit->items().push_back(MenuElem("_Increase grid size",
                 mem_fun(*this, &mainwnd::grow)));
 
@@ -515,6 +526,11 @@ mainwnd::grow()
 }
 
 
+void
+mainwnd::set_song_mute(mute_op op)
+{
+    m_mainperf->set_song_mute(op);
+}
 
 void
 mainwnd::options_dialog( void )

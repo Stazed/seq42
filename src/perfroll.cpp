@@ -875,7 +875,7 @@ perfroll::copy_sequence( track *a_track, trigger *a_trigger, sequence *a_seq )
     *a_sequence = *a_seq;
     a_sequence->set_track(a_track);
     if(same_track) {
-        char new_name[c_max_name+1];
+        char new_name[c_max_seq_name+1];
         snprintf(new_name, sizeof(new_name), "%s copy", a_sequence->get_name());
         a_sequence->set_name( new_name );
     }
@@ -1372,9 +1372,9 @@ bool Seq42PerfInput::on_button_release_event(GdkEventButton* a_ev, perfroll& ths
                 }
                 menu_trigger->items().push_back(MenuElem("New sequence", sigc::bind(mem_fun(ths,&perfroll::new_sequence), a_track, a_trigger )));
                 if(a_track->get_number_of_sequences()) {
+                    char name[40];
                     Menu *set_seq_menu = manage( new Menu());
                     for ( int s=0; s< a_track->get_number_of_sequences(); s++ ){
-                        char name[30];
                         sequence *a_seq = a_track->get_sequence( s );
                         snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
                         //set_seq_menu->items().push_back(MenuElem(name,
@@ -1389,6 +1389,7 @@ bool Seq42PerfInput::on_button_release_event(GdkEventButton* a_ev, perfroll& ths
 
 
                 Menu *copy_seq_menu = NULL;
+                char name[40];
                 for ( int t=0; t<c_max_track; ++t ){
                         if (! ths.m_mainperf->is_active_track( t )){
                             continue;
@@ -1398,7 +1399,6 @@ bool Seq42PerfInput::on_button_release_event(GdkEventButton* a_ev, perfroll& ths
                     Menu *menu_t = NULL;
                     bool inserted = false;
                     for ( int s=0; s< some_track->get_number_of_sequences(); s++ ){
-                        char name[30];
                         if ( !inserted ){
                             if(copy_seq_menu == NULL) {
                                 copy_seq_menu = manage( new Menu());

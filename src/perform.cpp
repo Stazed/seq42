@@ -197,15 +197,22 @@ int perform::get_track_index( track *a_track )
 }
 
 
-void perform::mute_all_tracks( void )
+void perform::set_song_mute( mute_op op  )
 {
     for (int i=0; i< c_max_track; i++ )
     {    
         if ( is_active_track(i) )
-            m_tracks[i]->set_song_mute( true );
+        {
+            if(op == MUTE_ON) {
+                m_tracks[i]->set_song_mute( true );
+            } else if(op == MUTE_OFF) {
+                m_tracks[i]->set_song_mute( false );
+            } else if(op == MUTE_TOGGLE) {
+                m_tracks[i]->set_song_mute( ! m_tracks[i]->get_song_mute() );
+            }
+        }
     }
 }
-
 
 perform::~perform()
 {

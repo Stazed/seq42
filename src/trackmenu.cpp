@@ -65,20 +65,6 @@ trackmenu::popup_menu( void )
         if(m_something_to_paste) m_menu->items().push_back(MenuElem("Paste", mem_fun(*this,&trackmenu::trk_paste)));
     }
 
-#if 0
-    m_menu->items().push_back(SeparatorElem());
-    
-    Menu *menu_song = manage( new Menu() );
-    m_menu->items().push_back( MenuElem( "Song", *menu_song) );
-    
-    if ( m_mainperf->is_active_track( m_current_trk ))
-    {
-        menu_song->items().push_back(MenuElem("Clear Song Data", mem_fun(*this,&trackmenu::trk_clear_perf)));
-    }
-    
-    menu_song->items().push_back(MenuElem("Mute All Tracks", mem_fun(*this,&trackmenu::mute_all_tracks)));
-#endif
-    
     if ( m_mainperf->is_active_track( m_current_trk )) {
         m_menu->items().push_back(SeparatorElem());
         Menu *menu_buses = manage( new Menu() );
@@ -128,13 +114,6 @@ trackmenu::set_bus_and_midi_channel( int a_bus, int a_ch )
     }
 }
 
-void
-trackmenu::mute_all_tracks( void )
-{
-    m_mainperf->mute_all_tracks();
-}
-
-
 // Makes a New track 
 void 
 trackmenu::trk_new(){
@@ -144,7 +123,7 @@ trackmenu::trk_new(){
         m_mainperf->new_track( m_current_trk );
         m_mainperf->get_track( m_current_trk )->set_dirty();
         // FIXME: add a bool preference: "New track pops up edit window?"
-        //trk_edit();
+        trk_edit();
 
     }
 }

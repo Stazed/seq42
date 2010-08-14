@@ -15,7 +15,7 @@
 
 [x] Add function to trigger menu to copy an existing sequence (from any track)
 
-[ ] Add function to mute all tracks, unmute all tracks, and toggle/invert
+[x] Add function to mute all tracks, unmute all tracks, and toggle/invert
     the mute status of all tracks.  (see existing perform::mute_all_tracks)
 
 [ ] Add to Edit menu a new action "View sequence list" which opens a new window
@@ -51,6 +51,10 @@
     Update mainwnd is_modified() to take perform's is_modified() into account.
     Alternatively (if undo/redo is made more robust).... ditch all the modified stuff and look at the size of the
     undo stack to determine whether or not save dialog is needed.
+
+[ ] Add option to Load dialog and method that appends the tracks of a file to the current
+    performance.  Handy for copying sequences from another song.  You could even have a 
+    file that contains re-usable sequences (like various drum rolls or CC patterns).
 
 Seq24 stuff below......
 

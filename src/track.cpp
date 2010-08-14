@@ -323,6 +323,7 @@ void
 track::set_song_mute( bool a_mute )
 {
     m_song_mute = a_mute;
+    m_dirty_names = true;
 }
 
 bool
@@ -1125,9 +1126,9 @@ track::off_playing_notes()
 
 bool
 track::save(ofstream *file) {
-    char name[c_max_name];
-    strncpy(name, m_name.c_str(), c_max_name);
-    file->write(name, sizeof(char)*c_max_name);
+    char name[c_max_track_name];
+    strncpy(name, m_name.c_str(), c_max_track_name);
+    file->write(name, sizeof(char)*c_max_track_name);
 
     file->write((const char *) &m_bus, sizeof(char));
 
@@ -1156,9 +1157,9 @@ track::save(ofstream *file) {
 
 bool
 track::load(ifstream *file) {
-    char name[c_max_name+1];
-    file->read(name, sizeof(char)*c_max_name);
-    name[c_max_name] = '\0';
+    char name[c_max_track_name+1];
+    file->read(name, sizeof(char)*c_max_track_name);
+    name[c_max_track_name] = '\0';
     set_name(name);
 
     file->read((char *) &m_bus, sizeof(char));

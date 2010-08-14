@@ -39,7 +39,8 @@ using namespace std;
 
 const int c_file_version = 0;  // Version of our save file format.  Increment this if whenever the format of the save file changes.
 
-const int c_max_name = 16;  // used for track and sequence names
+const int c_max_track_name = 16;
+const int c_max_seq_name = 32;
 
 const int c_max_track = 64;  // FIXME: use a list instead of a fixed number array?
 
