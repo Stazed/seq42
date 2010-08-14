@@ -33,6 +33,7 @@ seq42_SOURCES = \
 	seqtime.cpp seqtime.h \
 	sequence.cpp sequence.h \
 	track.cpp track.h \
+	trackedit.cpp trackedit.h \
 	trackmenu.cpp trackmenu.h \
 	userfile.cpp userfile.h
 

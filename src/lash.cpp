@@ -23,8 +23,6 @@
 #include <gtkmm.h>
 
 #include "lash.h"
-#include "midifile.h"
-
 
 lash::lash(int *argc, char ***argv)
 {
@@ -90,12 +88,10 @@ lash::handle_event(lash_event_t* ev)
     std::string     str    = (c_str == NULL) ? "" : c_str;
 
     if (type == LASH_Save_File) {
-        midifile f(str + "/seq42.mid");
-        f.write(m_perform);
+        m_perform->save(str + "/song.s42");
         lash_send_event(m_client, lash_event_new_with_type(LASH_Save_File));
     } else if (type == LASH_Restore_File) {
-        midifile f(str + "/seq42.mid");
-        f.parse(m_perform, 0);
+        m_perform->load(str + "/song.s42");
         lash_send_event(m_client, lash_event_new_with_type(LASH_Restore_File));
     } else if (type == LASH_Quit) {
         m_client = NULL;
