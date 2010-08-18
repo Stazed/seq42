@@ -55,9 +55,9 @@ am_seq42_OBJECTS = configfile.$(OBJEXT) event.$(OBJEXT) font.$(OBJEXT) \
 	optionsfile.$(OBJEXT) perfnames.$(OBJEXT) perform.$(OBJEXT) \
 	perfroll.$(OBJEXT) perftime.$(OBJEXT) seq42.$(OBJEXT) \
 	seqdata.$(OBJEXT) seqedit.$(OBJEXT) seqevent.$(OBJEXT) \
-	seqkeys.$(OBJEXT) seqroll.$(OBJEXT) seqtime.$(OBJEXT) \
-	sequence.$(OBJEXT) track.$(OBJEXT) trackedit.$(OBJEXT) \
-	trackmenu.$(OBJEXT) userfile.$(OBJEXT)
+	seqkeys.$(OBJEXT) seqlist.$(OBJEXT) seqroll.$(OBJEXT) \
+	seqtime.$(OBJEXT) sequence.$(OBJEXT) track.$(OBJEXT) \
+	trackedit.$(OBJEXT) trackmenu.$(OBJEXT) userfile.$(OBJEXT)
 seq42_OBJECTS = $(am_seq42_OBJECTS)
 am__DEPENDENCIES_1 =
 seq42_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -206,6 +206,7 @@ seq42_SOURCES = \
 	seqedit.cpp seqedit.h \
 	seqevent.cpp seqevent.h \
 	seqkeys.cpp seqkeys.h \
+	seqlist.cpp seqlist.h \
 	seqroll.cpp seqroll.h \
 	seqtime.cpp seqtime.h \
 	sequence.cpp sequence.h \
@@ -336,6 +337,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/seqedit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/seqevent.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/seqkeys.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/seqlist.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/seqroll.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/seqtime.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sequence.Po@am__quote@

@@ -42,6 +42,8 @@ perform::perform()
         m_tracks_active[i] = false;
     }
 
+    m_seqlist_open = false;
+    m_seqlist_raise = false;
     m_running = false;
     m_looping = false;
     m_inputing = true;
@@ -178,9 +180,22 @@ void perform::clear_all( void )
     }
 }
 
-track* perform::get_track( int a_track )
+track* perform::get_track( int a_trk )
 {
-    return m_tracks[a_track];
+    return m_tracks[a_trk];
+}
+
+sequence* perform::get_sequence( int a_trk, int a_seq )
+{
+    track *a_track = m_tracks[a_trk];
+    if(a_track == NULL)
+    {
+        return NULL;
+    }
+    else
+    {
+        return a_track->get_sequence(a_seq);
+    }
 }
 
 

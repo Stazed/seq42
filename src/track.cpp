@@ -32,6 +32,7 @@ track::track()
 
     m_dirty_perf = true;
     m_dirty_names = true;
+    m_dirty_seqlist = true;
 }
 
 track::~track() {
@@ -64,6 +65,7 @@ track::operator=(const track& other)
 
         m_dirty_perf = false;
         m_dirty_names = false;
+        m_dirty_seqlist = false;
 
         m_list_trigger = other.m_list_trigger;
 
@@ -93,7 +95,7 @@ track::operator=(const track& other)
 void
 track::set_dirty()
 {
-    m_dirty_names =  m_dirty_perf = true;
+    m_dirty_names =  m_dirty_perf = m_dirty_seqlist = true;
 }
 
 void 
@@ -215,6 +217,27 @@ track::is_dirty_perf( )
         }
     }
     m_dirty_perf = false;
+
+    unlock();
+
+    return ret;
+}
+
+bool
+track::is_dirty_seqlist( )
+{
+    lock();
+
+    bool ret = m_dirty_seqlist;
+    if(! ret) {
+        for(int i=0; i<m_vector_sequence.size(); i++) {
+            if(m_vector_sequence[i]->is_dirty_seqlist()) {
+                ret = true;
+                break;
+            }
+        }
+    }
+    m_dirty_seqlist = false;
 
     unlock();
 
@@ -346,8 +369,16 @@ void track::delete_sequence( int a_num )
     sequence *a_seq = m_vector_sequence[a_num];
     if( ! a_seq->get_editing() ) {
         a_seq->set_playing( false );
+        list<trigger>::iterator i = m_list_trigger.begin();
+        while ( i != m_list_trigger.end()){
+            if(i->m_sequence == a_num) {
+                i->m_sequence = -1;
+            }
+            i++;
+        }
         delete a_seq;
         m_vector_sequence.erase(m_vector_sequence.begin()+a_num);
+        set_dirty();
     }
 }
 
@@ -398,6 +429,20 @@ track::play( long a_tick, bool a_playback_mode )
     }
 
     unlock();
+}
+
+int
+track::get_trigger_count_for_seqidx(int a_seq)
+{
+    int count = 0;
+    list<trigger>::iterator i = m_list_trigger.begin();
+    while ( i != m_list_trigger.end()){
+        if(i->m_sequence == a_seq) {
+            count++;
+        }
+        i++;
+    }
+    return count;
 }
 
 

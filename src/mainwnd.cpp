@@ -26,6 +26,7 @@
 #include "midifile.h"
 #include "sequence.h"
 #include "font.h"
+#include "seqlist.h"
 
 #include "seq42.xpm"
 #include "seq42_32.xpm"
@@ -105,6 +106,9 @@ mainwnd::mainwnd(perform *a_p)
 
 
     /* edit menu items */
+    m_menu_edit->items().push_back(MenuElem("_Sequence list",
+                mem_fun(*this, &mainwnd::open_seqlist)));
+
     m_menu_edit->items().push_back(MenuElem("_Mute all tracks",
                 sigc::bind(mem_fun(*this, &mainwnd::set_song_mute), MUTE_ON)));
 
@@ -523,6 +527,19 @@ mainwnd::grow()
 {
     m_perfroll->increment_size();
     m_perftime->increment_size();
+}
+
+void
+mainwnd::open_seqlist()
+{
+    if(m_mainperf->get_seqlist_open())
+    {
+        m_mainperf->set_seqlist_raise(true);
+    }
+    else
+    {
+        new seqlist(m_mainperf);
+    }
 }
 
 

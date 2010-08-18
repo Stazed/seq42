@@ -55,6 +55,8 @@ class perform
     track *m_tracks[c_max_track];
 
     bool m_tracks_active[ c_max_track ];
+    bool m_seqlist_open;
+    bool m_seqlist_raise;
 
     bool m_was_active_edit[ c_max_track ];
     bool m_was_active_perf[ c_max_track ];
@@ -186,7 +188,8 @@ class perform
     void play( long a_tick );
     void set_orig_ticks( long a_tick  );
 
-    track * get_track( int a_track );
+    track *get_track( int a_trk );
+    sequence *get_sequence( int a_trk, int a_seq );
 
     void reset_sequences( void );
 
@@ -210,6 +213,26 @@ class perform
     friend class midifile;
     friend class optionsfile;
     friend class options;
+
+    void set_seqlist_open( bool a_edit )
+    {
+        m_seqlist_open = a_edit;
+    };
+
+    bool get_seqlist_open( void )
+    {
+        return m_seqlist_open;
+    };
+
+    void set_seqlist_raise( bool a_raise )
+    {
+        m_seqlist_raise = a_raise;
+    };
+
+    bool get_seqlist_raise( void )
+    {
+        return m_seqlist_raise;
+    };
 
 #ifdef JACK_SUPPORT
 

@@ -29,6 +29,7 @@ seq42_SOURCES = \
 	seqedit.cpp seqedit.h \
 	seqevent.cpp seqevent.h \
 	seqkeys.cpp seqkeys.h \
+	seqlist.cpp seqlist.h \
 	seqroll.cpp seqroll.h \
 	seqtime.cpp seqtime.h \
 	sequence.cpp sequence.h \

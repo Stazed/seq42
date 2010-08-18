@@ -152,6 +152,7 @@ class mainwnd : public Gtk::Window
     void set_guides( void );
 
     void grow (void);
+    void open_seqlist (void);
     void set_song_mute(mute_op op);
 
     void set_looped (void);

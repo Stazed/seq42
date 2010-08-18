@@ -69,6 +69,7 @@ class track
 
     bool m_dirty_perf;
     bool m_dirty_names;
+    bool m_dirty_seqlist;
 
     mutex m_mutex;
 
@@ -100,7 +101,6 @@ class track
     unsigned int get_number_of_sequences(void);
 
 
-
     //
     //  Gets and Sets
     //
@@ -127,6 +127,7 @@ class track
     /* resets flag on call */
     bool is_dirty_perf();
     bool is_dirty_names();
+    bool is_dirty_seqlist();
 
     /* dumps contents to stdout */
     void print ();
@@ -155,6 +156,7 @@ class track
     long get_selected_trigger_end_tick( void );
 
     long get_max_trigger (void);
+    int get_trigger_count_for_seqidx(int a_seq);
 
     void move_triggers (long a_start_tick, long a_distance, bool a_direction);
     void copy_triggers (long a_start_tick, long a_distance);
