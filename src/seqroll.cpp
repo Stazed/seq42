@@ -1060,30 +1060,17 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
     // allow toggling when the same key is mapped to both triggers (i.e. SPACEBAR)
     bool dont_toggle = m_perform->m_key_start != m_perform->m_key_stop;
     if ( a_p0->keyval ==  m_perform->m_key_start && (dont_toggle || !is_pattern_playing) ){
-        m_perform->position_jack( false );
-        m_perform->start( false );
-        m_perform->start_jack( );
+        start_playing();
         is_pattern_playing=true;
+        return true;
     }
     else if ( a_p0->keyval ==  m_perform->m_key_stop && (dont_toggle || is_pattern_playing) ){
-        m_perform->stop_jack();
-        m_perform->stop();
+        stop_playing();
         is_pattern_playing=false;
+        return true;
     }
 
     if ( a_p0->type == GDK_KEY_PRESS ){
-        if ( a_p0->keyval == m_perform->m_key_start )
-        {
-            start_playing();
-            return true;
-        }
-
-        if ( a_p0->keyval == m_perform->m_key_stop )
-        {
-            stop_playing();
-            return true;
-        }
-
         if ( a_p0->keyval ==  GDK_Delete || a_p0->keyval == GDK_BackSpace ){
 
             m_seq->push_undo();

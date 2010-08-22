@@ -44,10 +44,10 @@
 #define HAVE_UNISTD_H 1
 
 /* Define to enable JACK driver */
-/* #undef JACK_SUPPORT */
+#define JACK_SUPPORT 1
 
 /* Define to enable LASH support */
-/* #undef LASH_SUPPORT */
+#define LASH_SUPPORT 1
 
 /* Name of package */
 #define PACKAGE "seq42"

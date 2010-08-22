@@ -33,6 +33,8 @@ track::track()
     m_dirty_perf = true;
     m_dirty_names = true;
     m_dirty_seqlist = true;
+
+    m_default_velocity = 100;
 }
 
 track::~track() {
@@ -273,7 +275,9 @@ track::reset_sequences(bool a_playback_mode)
         m_vector_sequence[i]->off_playing_notes();
         m_vector_sequence[i]->set_playing(false);
         m_vector_sequence[i]->zero_markers();
-        if (!a_playback_mode) m_vector_sequence[i]->set_playing(state);
+        // FIXME: does this make sense?  
+        //if (!a_playback_mode) m_vector_sequence[i]->set_playing(state);
+        m_vector_sequence[i]->set_playing(state);
     }
 }
 
@@ -373,6 +377,10 @@ void track::delete_sequence( int a_num )
         while ( i != m_list_trigger.end()){
             if(i->m_sequence == a_num) {
                 i->m_sequence = -1;
+            }
+            else if(i->m_sequence > a_num)
+            {
+                i->m_sequence--;
             }
             i++;
         }
@@ -1234,4 +1242,18 @@ track::load(ifstream *file) {
     }
 
     return true;
+}
+
+void 
+track::set_default_velocity( long a_vel )
+{
+    lock();
+    m_default_velocity = a_vel;
+    unlock();
+}
+
+long 
+track::get_default_velocity( )
+{
+    return m_default_velocity;
 }

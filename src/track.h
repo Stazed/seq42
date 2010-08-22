@@ -65,6 +65,8 @@ class track
     /* outputs to sequence to this Bus on midichannel */
     mastermidibus *m_masterbus;
 
+    long m_default_velocity;
+
     bool m_trigger_copied;
 
     bool m_dirty_perf;
@@ -121,6 +123,9 @@ class track
  
     void set_master_midi_bus (mastermidibus * a_mmb);
     mastermidibus *get_master_midi_bus ();
+
+    void set_default_velocity(long a_vel);
+    long get_default_velocity();
 
     void set_dirty();
     /* signals that a redraw is needed from recording */

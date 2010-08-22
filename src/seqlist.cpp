@@ -21,6 +21,9 @@
 #include "seqlist.h"
 #include "seqedit.h"
 
+#include "stop.xpm"
+#include "play2.xpm"
+
 seqlist::seqlist (perform *a_perf)
 {
     m_perf = a_perf;
@@ -30,7 +33,23 @@ seqlist::seqlist (perform *a_perf)
     set_size_request(458, 200);
     set_border_width( 2 );
 
-    add(m_ScrolledWindow);
+    m_vbox = manage( new VBox( false, 2 ));
+    add(*m_vbox);
+
+    m_hbox = manage( new HBox( false, 2 ));
+    /* Stop and play buttons */
+    m_button_stop = manage( new Button( ));
+    m_button_stop->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( stop_xpm ))));
+    m_button_stop->signal_clicked().connect( mem_fun(*this,&seqlist::stop_playing));
+    m_hbox->pack_start(*m_button_stop, false, false);
+    m_button_play = manage( new Button() );
+    m_button_play->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( play2_xpm  ))));
+    m_button_play->signal_clicked().connect(  mem_fun( *this, &seqlist::start_playing));
+    m_hbox->pack_start(*m_button_play, false, false);
+
+    m_vbox->pack_start(m_ScrolledWindow);
+    m_vbox->pack_start(*m_hbox, Gtk::PACK_SHRINK);
+
     //Only show the scrollbars when they are necessary:
     m_ScrolledWindow.set_policy(Gtk::POLICY_AUTOMATIC, Gtk::POLICY_AUTOMATIC);
     m_ScrolledWindow.add(m_TreeView);
@@ -197,4 +216,40 @@ seqlist::del_seq( track *a_track, int a_seq )
     {
     }
     a_track->delete_sequence( a_seq );
+}
+
+void
+seqlist::start_playing( void )
+{
+    global_jack_start_mode = false;  // set live mode
+    m_perf->position_jack( false );
+    m_perf->start( false );
+    m_perf->start_jack( );
+}
+
+void
+seqlist::stop_playing( void )
+{
+    m_perf->stop_jack();
+    m_perf->stop();
+}
+
+bool
+seqlist::on_key_press_event(GdkEventKey* a_p0)
+{
+    // the start/end key may be the same key (i.e. SPACEBAR)
+    // allow toggling when the same key is mapped to both triggers (i.e. SPACEBAR)
+    bool dont_toggle = m_perf->m_key_start != m_perf->m_key_stop;
+    if ( a_p0->keyval ==  m_perf->m_key_start && (dont_toggle || !is_pattern_playing) ){
+        start_playing();
+        is_pattern_playing=true;
+        return true;
+    }
+    else if ( a_p0->keyval ==  m_perf->m_key_stop && (dont_toggle || is_pattern_playing) ){
+        stop_playing();
+        is_pattern_playing=false;
+        return true;
+    }
+
+    return false;
 }

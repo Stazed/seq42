@@ -55,16 +55,25 @@ class seqlist : public Gtk::Window
     TreeView m_TreeView;
     Glib::RefPtr<Gtk::ListStore> m_refTreeModel;
 
+    VBox       *m_vbox;
+    HBox       *m_hbox;
+    Button     *m_button_stop;
+    Button     *m_button_play;
+
     void update_model( );
     void popup_seq_menu( void );
     void edit_seq( sequence *a_seq );
     void del_seq( track *a_track, int a_seq );
+
+    void start_playing();
+    void stop_playing();
 
     void on_realize();
     bool timeout( void );
 
     bool on_delete_event(GdkEventAny *a_event);
     bool on_button_release_event(GdkEventButton* a_e);
+    bool on_key_press_event(GdkEventKey* a_p0);
 
     sequence * get_selected_sequence();
     bool get_selected_playing_state();

@@ -30,33 +30,7 @@
 #include "perform.h"
 #include "trackedit.h"
 
-#include <gtkmm/adjustment.h>
-#include <gtkmm/button.h>
-#include <gtkmm/window.h>
-#include <gtkmm/accelgroup.h>
-#include <gtkmm/box.h>
-#include <gtkmm/main.h>
-#include <gtkmm/menu.h>
-#include <gtkmm/menubar.h>
-#include <gtkmm/eventbox.h>
-#include <gtkmm/window.h>
-#include <gtkmm/table.h>
-#include <gtkmm/drawingarea.h>
-#include <gtkmm/widget.h>
-#include <gtkmm/scrollbar.h>
-#include <gtkmm/viewport.h>
-#include <gtkmm/combo.h>
-#include <gtkmm/label.h>
-#include <gtkmm/toolbar.h>
-#include <gtkmm/optionmenu.h> 
-#include <gtkmm/togglebutton.h>
-#include <gtkmm/invisible.h>
-#include <gtkmm/separator.h> 
-#include <gtkmm/image.h>
-#include <gtkmm/tooltips.h>
-#include <gtkmm/invisible.h>
-#include <gtkmm/image.h>
-
+#include <gtkmm.h>
 #include <sigc++/bind.h>
 
 #include <list>
@@ -93,7 +67,9 @@ class seqedit : public Gtk::Window
     /* time signature, beats per measure, beat width */
     Menu       *m_menu_bpm;
     Menu       *m_menu_bw;
-    Menu       *m_menu_rec_vol;
+
+    SpinButton  *m_spinbutton_vel;
+    Adjustment  *m_adjust_vel;
 
 
     sequence   *m_seq;
@@ -167,8 +143,6 @@ class seqedit : public Gtk::Window
     Button      *m_button_stop;
     Button      *m_button_play;
     
-    Button	*m_button_rec_vol;
-
     ToggleButton *m_toggle_play;
     ToggleButton *m_toggle_record;
     ToggleButton *m_toggle_q_rec;
@@ -214,7 +188,6 @@ class seqedit : public Gtk::Window
 
     void set_bpm( int a_beats_per_measure );
     void set_bw( int a_beat_width );
-    void set_rec_vol( int a_rec_vol );
     void set_measures( int a_length_measures  );
     void apply_length( int a_bpm, int a_bw, int a_measures );
     long get_measures( void );
@@ -231,6 +204,8 @@ class seqedit : public Gtk::Window
     void thru_change_callback( void );
     void undo_callback( void );
     void redo_callback( void );
+
+    void adj_callback_vel( );
 
     void set_data_type( unsigned char a_status, 
 			unsigned char a_control = 0 );

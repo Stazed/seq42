@@ -36,7 +36,6 @@ sequence::sequence( )
 
     m_time_beats_per_measure = 4;
     m_time_beat_width = 4;
-    m_rec_vol = 0;
 
     //m_tag           = 0;
 
@@ -120,14 +119,6 @@ sequence::set_bw( long a_beat_width )
     lock();
     m_time_beat_width = a_beat_width;
     set_dirty();
-    unlock();
-}
-
-void 
-sequence::set_rec_vol( long a_rec_vol )
-{
-    lock();
-    m_rec_vol = a_rec_vol;
     unlock();
 }
 
@@ -1463,13 +1454,13 @@ sequence::add_note( long a_tick, long a_length, int a_note, bool a_paint)
             e.paint();
         
         e.set_status( EVENT_NOTE_ON );
-        e.set_data( a_note, 100 );
+        e.set_data( a_note, m_track->get_default_velocity() );
         e.set_timestamp( a_tick );
 
         add_event( &e );
 
         e.set_status( EVENT_NOTE_OFF );
-        e.set_data( a_note, 100 );
+        e.set_data( a_note, m_track->get_default_velocity() );
         e.set_timestamp( a_tick + a_length );
 
         add_event( &e );
@@ -1629,7 +1620,7 @@ sequence::play_note_on( int a_note )
     event e;
 
     e.set_status( EVENT_NOTE_ON );
-    e.set_data( a_note, 127 );
+    e.set_data( a_note, m_track->get_default_velocity() );
     get_master_midi_bus()->play( get_midi_bus(), &e, get_midi_channel() ); 
 
     get_master_midi_bus()->flush();
@@ -1647,7 +1638,7 @@ sequence::play_note_off( int a_note )
     event e;
 
     e.set_status( EVENT_NOTE_OFF );
-    e.set_data( a_note, 127 );
+    e.set_data( a_note, m_track->get_default_velocity() );
     get_master_midi_bus()->play( get_midi_bus(), &e, get_midi_channel() ); 
 
     get_master_midi_bus()->flush();

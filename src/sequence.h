@@ -99,7 +99,6 @@ class sequence
     //long m_length_measures;
     long m_time_beats_per_measure;
     long m_time_beat_width;
-    long m_rec_vol;
 
     /* locking */
     mutex m_mutex;
