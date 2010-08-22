@@ -1987,7 +1987,7 @@ sequence::get_length( )
 
 
 void 
-sequence::set_playing( bool a_p )
+sequence::set_playing( bool a_p, bool set_dirty_seqlist )
 {
     lock();
 
@@ -2008,10 +2008,8 @@ sequence::set_playing( bool a_p )
             printf("%s is turning off\n", get_name());
 
         } 
-
-        //printf( "set_dirty\n");
         set_dirty();
-        m_dirty_seqlist = true;
+        if(set_dirty_seqlist) m_dirty_seqlist = true;
     }
     
     unlock();

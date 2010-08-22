@@ -59,9 +59,9 @@ seqlist::seqlist (perform *a_perf)
     m_TreeView.set_model(m_refTreeModel);
     m_TreeView.set_rules_hint(true);
 
-    m_TreeView.append_column("Trk#", m_Columns.m_trk_num);
+    m_TreeView.append_column("Trk", m_Columns.m_trk_num);
     m_TreeView.append_column("Trk Name", m_Columns.m_trk_name);
-    m_TreeView.append_column("Seq#", m_Columns.m_seq_num);
+    m_TreeView.append_column("Seq", m_Columns.m_seq_num);
     m_TreeView.append_column("Seq Name", m_Columns.m_seq_name);
     m_TreeView.append_column_editable("Playing", m_Columns.m_playing);
     m_TreeView.append_column("Triggers", m_Columns.m_triggers);
@@ -127,7 +127,7 @@ seqlist::on_button_release_event(GdkEventButton* a_e)
     if(a_seq != NULL)
     {
         if ( a_e->button == 1 ){
-            a_seq->set_playing(get_selected_playing_state());
+            a_seq->set_playing(get_selected_playing_state(), false);
         }
         else if ( a_e->button == 3 ){
             using namespace Menu_Helpers;

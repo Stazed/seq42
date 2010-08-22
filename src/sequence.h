@@ -186,7 +186,7 @@ class sequence
     /* sets state.  when playing,
        and sequencer is running, notes
        get dumped to the alsa buffers */
-    void set_playing (bool);
+    void set_playing (bool a_p, bool set_dirty_seqlist=true);
     bool get_playing ();
     void toggle_playing ();
 
