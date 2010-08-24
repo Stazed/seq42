@@ -47,6 +47,10 @@ seqlist::seqlist (perform *a_perf)
     m_button_play->signal_clicked().connect(  mem_fun( *this, &seqlist::start_playing));
     m_hbox->pack_start(*m_button_play, false, false);
 
+    m_button_all_off = manage( new Button("All Off") );
+    m_button_all_off->signal_clicked().connect(  mem_fun( *this, &seqlist::off_sequences));
+    m_hbox->pack_end(*m_button_all_off, false, false);
+
     m_vbox->pack_start(m_ScrolledWindow);
     m_vbox->pack_start(*m_hbox, Gtk::PACK_SHRINK);
 
@@ -232,6 +236,12 @@ seqlist::stop_playing( void )
 {
     m_perf->stop_jack();
     m_perf->stop();
+}
+
+void
+seqlist::off_sequences( void )
+{
+    m_perf->off_sequences();
 }
 
 bool

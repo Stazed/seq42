@@ -24,6 +24,8 @@
     options to Edit and Delete.  When Delete is selected, check if the sequence 
     is assigned to at least one trigger... if so, ask the user if they're sure.
 
+[ ] Add a transpose parameter to trigger?  
+
 [ ] Clean up is_pattern_playing stuff and consolidate global key (start, stop, loop, bpm, etc) handling.
 
 [ ] Add to Edit menu a new action "Delete all untriggered sequences"

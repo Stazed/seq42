@@ -59,6 +59,7 @@ class seqlist : public Gtk::Window
     HBox       *m_hbox;
     Button     *m_button_stop;
     Button     *m_button_play;
+    Button     *m_button_all_off;
 
     void update_model( );
     void popup_seq_menu( void );
@@ -67,6 +68,7 @@ class seqlist : public Gtk::Window
 
     void start_playing();
     void stop_playing();
+    void off_sequences();
 
     void on_realize();
     bool timeout( void );
