@@ -38,13 +38,13 @@ track::track()
 }
 
 track::~track() {
-    printf("in ~track()\n");
+    //printf("in ~track()\n");
     free();
 }
 
 void
 track::free() {
-    printf("in free()\n");
+    //printf("in free()\n");
     for(int i=0; i<m_vector_sequence.size(); i++) {
         delete m_vector_sequence[i];
     }
@@ -53,7 +53,7 @@ track::free() {
 track&
 track::operator=(const track& other)
 {
-    printf("in track::operator=()\n");
+    //printf("in track::operator=()\n");
     lock();
     if(this != &other)
     {
@@ -78,11 +78,11 @@ track::operator=(const track& other)
         }
 #endif
 
-        printf("copying sequences...\n");
+        //printf("copying sequences...\n");
         // Copy the other track's sequences.
         m_vector_sequence.clear();
         for(int i=0; i<other.m_vector_sequence.size(); i++) {
-            printf("other.sequence[%d] at %p\n", i, other.m_vector_sequence[i]);
+            //printf("other.sequence[%d] at %p\n", i, other.m_vector_sequence[i]);
             sequence *a_seq = new sequence();
             *a_seq = *(other.m_vector_sequence[i]);
             a_seq->set_track(this);
@@ -90,7 +90,6 @@ track::operator=(const track& other)
         }
     }
     unlock();
-    printf("Done.\n");
     return *this;
 }
 
