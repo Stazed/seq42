@@ -19,6 +19,7 @@
 //-----------------------------------------------------------------------------
 
 #include "trackmenu.h"
+#include "seqedit.h"
 #include "font.h"
 
 
@@ -56,6 +57,7 @@ trackmenu::popup_menu( void )
 
     if ( m_mainperf->is_active_track( m_current_trk )) {
         m_menu->items().push_back(MenuElem("Edit", mem_fun(*this,&trackmenu::trk_edit)));
+        m_menu->items().push_back(MenuElem("New sequence", mem_fun(*this,&trackmenu::new_sequence)));
         if(! m_mainperf->is_track_in_edit( m_current_trk ))
         {
             m_menu->items().push_back(MenuElem("Cut", mem_fun(*this,&trackmenu::trk_cut)));
@@ -175,6 +177,14 @@ trackmenu::trk_edit(){
             new trackedit(a_track);
         }
     }
+}
+
+void 
+trackmenu::new_sequence(){
+    track *a_track = m_mainperf->get_track( m_current_trk );
+    int seq_idx = a_track->new_sequence();
+    sequence *a_sequence = a_track->get_sequence(seq_idx);
+    new seqedit( a_sequence, m_mainperf );
 }
 
 

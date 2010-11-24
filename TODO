@@ -18,11 +18,15 @@
 [x] Add function to mute all tracks, unmute all tracks, and toggle/invert
     the mute status of all tracks.  (see existing perform::mute_all_tracks)
 
-[ ] Add to Edit menu a new action "View sequence list" which opens a new window
+[x] Add to Edit menu a new action "View sequence list" which opens a new window
     with a TreeView widget of all tracks.  Each track can be expanded to list 
     all of the sequences.  Right-clicking a sequence pops up a menu with 
     options to Edit and Delete.  When Delete is selected, check if the sequence 
     is assigned to at least one trigger... if so, ask the user if they're sure.
+
+[x] Add a "New sequence" option to track menu.  Creates a new sequence and pops up edit window.  Doesn't deal with triggers at all.
+
+[ ] Add a transpose flag to track (True by default) and a global transpose value to the song/perf.  When playing, use the global transpose value for tracks that enable transposition.   Add some UI (a dropdown in the main window... and maybe keyboard shortcuts).
 
 [ ] Add a transpose parameter to trigger?  
 

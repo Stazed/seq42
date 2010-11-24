@@ -1998,14 +1998,14 @@ sequence::set_playing( bool a_p, bool set_dirty_seqlist )
 
             /* turn on */
             m_playing = true;
-            printf("%s is turning on\n", get_name());
+            //printf("%s is turning on\n", get_name());
 
         } else {
 
             /* turn off */
             m_playing = false;
             off_playing_notes();
-            printf("%s is turning off\n", get_name());
+            //printf("%s is turning off\n", get_name());
 
         } 
         set_dirty();
