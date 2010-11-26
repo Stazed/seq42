@@ -105,7 +105,8 @@ seqroll::seqroll(perform *a_perf,
     m_scroll_offset_x = 0;
     m_scroll_offset_y = 0;
 
-    m_background_sequence = NULL;
+    m_background_track = 0;
+    m_background_sequence = 0;
     m_drawing_background_seq = false;
 
     set_double_buffered( false );
@@ -115,9 +116,10 @@ seqroll::seqroll(perform *a_perf,
 
 
 void
-seqroll::set_background_sequence( bool a_state, sequence *a_seq )
+seqroll::set_background_sequence( bool a_state, int a_trk, int a_seq )
 {
     m_drawing_background_seq = a_state;
+    m_background_track = a_trk;
     m_background_sequence = a_seq;
 
     if ( m_ignore_redraw )
@@ -567,9 +569,8 @@ void seqroll::draw_events_on( Glib::RefPtr<Gdk::Drawable> a_draw ) {
 
         if ( method == 0 && m_drawing_background_seq  ){
 
-            if ( m_background_sequence ){
-                seq =m_background_sequence;
-            } else {
+            seq = m_perform->get_sequence( m_background_track, m_background_sequence );
+            if ( seq == NULL ) {
                 method++;
             }
         } else if ( method == 0 ){

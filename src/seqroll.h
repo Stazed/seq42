@@ -156,7 +156,8 @@ class seqroll : public Gtk::DrawingArea
     int m_scroll_offset_x;
     int m_scroll_offset_y;
 
-    sequence *m_background_sequence;
+    int m_background_track;
+    int m_background_sequence;
     bool m_drawing_background_seq;
 
     bool m_ignore_redraw;
@@ -229,7 +230,7 @@ class seqroll : public Gtk::DrawingArea
 
     void start_paste( );
     
-    void set_background_sequence( bool a_state, sequence *a_seq );
+    void set_background_sequence( bool a_state, int a_trk, int a_seq );
 
     seqroll( perform *a_perf,
              sequence *a_seq, int a_zoom, int a_snap, 

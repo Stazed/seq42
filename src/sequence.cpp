@@ -1887,7 +1887,7 @@ sequence::remove_all( void )
 sequence& 
 sequence::operator= (const sequence& a_rhs)
 {
-    printf("in sequence::operator=()\n");
+    //printf("in sequence::operator=()\n");
     lock();
 
     /* dont copy to self */

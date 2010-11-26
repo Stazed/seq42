@@ -173,8 +173,10 @@ class seqedit : public Gtk::Window
     int         m_key;
     static int  m_initial_key;
 
-    sequence        *m_bg_seq;
-    static sequence *m_initial_bg_seq;
+    int        m_bg_seq;
+    static int m_initial_bg_seq;
+    int        m_bg_trk;
+    static int m_initial_bg_trk;
 
     long        m_measures;
 
@@ -195,7 +197,7 @@ class seqedit : public Gtk::Window
     void set_scale( int a_scale );
     void set_key( int a_note );
 
-    void set_background_sequence( sequence *a_seq );
+    void set_background_sequence( int a_trk, int a_seq );
     
     void name_change_callback( void );
     void play_change_callback( void );

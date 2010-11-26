@@ -61,7 +61,8 @@ int seqedit::m_initial_snap = c_ppqn / 4;
 int seqedit::m_initial_note_length = c_ppqn / 4;
 int seqedit::m_initial_scale = 0;
 int seqedit::m_initial_key = 0;
-sequence *seqedit::m_initial_bg_seq = NULL;
+int seqedit::m_initial_bg_seq = -1;
+int seqedit::m_initial_bg_trk = -1;
 
 
 // Actions
@@ -102,6 +103,7 @@ seqedit::seqedit( sequence *a_seq,
     m_scale       = m_initial_scale;
     m_key         =   m_initial_key;
     m_bg_seq    = m_initial_bg_seq;
+    m_bg_trk    = m_initial_bg_trk;
 
     m_mainperf = a_perf;
 
@@ -289,7 +291,7 @@ seqedit::seqedit( sequence *a_seq,
     set_zoom( m_zoom );
     set_snap( m_snap );
     set_note_length( m_note_length );
-    set_background_sequence( m_bg_seq );
+    set_background_sequence( m_bg_trk, m_bg_seq );
 
 
     set_bpm( m_seq->get_bpm() );
@@ -903,7 +905,7 @@ seqedit::popup_sequence_menu( void )
     m_menu_sequences = manage( new Menu());
 
     m_menu_sequences->items().push_back(MenuElem("Off",
-                sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), (sequence *)NULL)));
+                sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), -1, -1)));
     m_menu_sequences->items().push_back( SeparatorElem( ));
 
     char name[40];
@@ -928,7 +930,7 @@ seqedit::popup_sequence_menu( void )
             snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
 
             menu_t->items().push_back(MenuElem(name,
-                        sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), a_seq)));
+                        sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), t, s)));
                 
         }
     }
@@ -938,20 +940,22 @@ seqedit::popup_sequence_menu( void )
 
 
 void
-seqedit::set_background_sequence( sequence *a_seq )
+seqedit::set_background_sequence( int a_trk, int a_seq )
 {
     char name[60];
 
+    m_initial_bg_trk = m_bg_trk = a_trk;
     m_initial_bg_seq = m_bg_seq = a_seq;
 
-    if ( a_seq == NULL){
+    sequence *seq = m_mainperf->get_sequence(a_trk, a_seq);
+
+    if ( seq == NULL){
         m_entry_sequence->set_text("Off");
-        m_seqroll_wid->set_background_sequence( false, NULL );
+        m_seqroll_wid->set_background_sequence( false, -1, -1 );
     } else {
-        track *a_track = a_seq->get_track();
-        snprintf(name, sizeof(name),"[%d/%d] %s", m_mainperf->get_track_index(a_track)+1, a_track->get_sequence_index(a_seq)+1, a_seq->get_name());
+        snprintf(name, sizeof(name),"[%d/%d] %s", a_trk+1, a_seq+1, seq->get_name());
         m_entry_sequence->set_text(name);
-        m_seqroll_wid->set_background_sequence( true, a_seq );
+        m_seqroll_wid->set_background_sequence( true, a_trk, a_seq );
     }
 
 }

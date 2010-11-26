@@ -162,7 +162,7 @@ trackedit::popup_midibus_menu( void )
     mastermidibus *masterbus = m_track->get_master_midi_bus();
     for ( int i=0; i< masterbus->get_num_out_buses(); i++ ){
         m_menu_midibus->items().push_back(MenuElem(masterbus->get_midi_out_bus_name(i),
-                                                   SigC::bind(mem_fun(*this,&trackedit::set_midi_bus), i)));
+                                                   sigc::bind(mem_fun(*this,&trackedit::set_midi_bus), i)));
     }
 
     m_menu_midibus->popup(0,0);
@@ -192,7 +192,7 @@ trackedit::popup_midich_menu( void )
                            string(")") );
         }
         m_menu_midich->items().push_back(MenuElem(name,
-                                                  SigC::bind(mem_fun(*this,&trackedit::set_midi_channel),
+                                                  sigc::bind(mem_fun(*this,&trackedit::set_midi_channel),
                                                        i )));
     }
 
