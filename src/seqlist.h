@@ -64,6 +64,7 @@ class seqlist : public Gtk::Window
     void update_model( );
     void popup_seq_menu( void );
     void edit_seq( sequence *a_seq );
+    void copy_seq( sequence *a_seq );
     void del_seq( track *a_track, int a_seq );
 
     void start_playing();

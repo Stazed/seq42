@@ -138,6 +138,7 @@ seqlist::on_button_release_event(GdkEventButton* a_e)
             track *a_track = a_seq->get_track();
             Menu *menu = manage( new Menu());
             menu->items().push_back(MenuElem("Edit", sigc::bind(mem_fun(*this,&seqlist::edit_seq), a_seq )));
+            menu->items().push_back(MenuElem("Copy", sigc::bind(mem_fun(*this,&seqlist::copy_seq), a_seq )));
             menu->items().push_back(MenuElem("Delete", sigc::bind(mem_fun(*this,&seqlist::del_seq), a_track, a_track->get_sequence_index(a_seq) )));
             menu->popup(0,0);
         }
@@ -210,6 +211,19 @@ seqlist::edit_seq( sequence *a_seq )
     } else {
         new seqedit( a_seq, m_perf );
     }
+}
+
+void
+seqlist::copy_seq( sequence *a_seq )
+{
+    track *a_track = a_seq->get_track();
+    int seq_idx = a_track->new_sequence();
+    sequence *new_seq = a_track->get_sequence(seq_idx);
+    *new_seq = *a_seq;
+    char new_name[c_max_seq_name+1];
+    snprintf(new_name, sizeof(new_name), "%s copy", new_seq->get_name());
+    new_seq->set_name( new_name );
+    new seqedit( new_seq, m_perf );
 }
 
 void
