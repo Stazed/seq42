@@ -189,6 +189,15 @@ mainwnd::mainwnd(perform *a_p)
     m_table->attach( *m_hbox,  0, 1, 3, 4,  Gtk::FILL, Gtk::SHRINK, 0, 2 );
     m_table->attach( *m_hscroll, 1, 2, 3, 4, Gtk::FILL | Gtk::EXPAND, Gtk::SHRINK  );
 
+
+    m_button_mode = manage( new ToggleButton( "song mode" ) );
+    m_button_mode->signal_toggled().connect(  mem_fun( *this, &mainwnd::set_song_mode ));
+    add_tooltip( m_button_mode, "Toggle song mode (or live/sequence mode)." );
+    if(global_jack_start_mode) {
+        m_button_mode->set_active( true );
+    }
+
+
     m_menu_snap =   manage( new Menu());
     m_menu_snap->items().push_back(MenuElem("1/1",     sigc::bind(mem_fun(*this,&mainwnd::set_snap), 1  )));
     m_menu_snap->items().push_back(MenuElem("1/2",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 2  )));
@@ -318,6 +327,8 @@ mainwnd::mainwnd(perform *a_p)
 
     m_hlbox->pack_start( *(manage(new VSeparator( ))), false, false, 4);
 
+    m_hlbox->pack_start(*m_button_mode, false, false );
+
     m_hlbox->pack_start(*m_spinbutton_bpm, false, false );
     m_hlbox->pack_start(*(manage( new Label( "bpm" ))), false, false, 4);
 
@@ -422,10 +433,18 @@ mainwnd::redo( void )
 void
 mainwnd::start_playing( void )
 {
-    global_jack_start_mode = true;  // set song mode
-    m_mainperf->position_jack( true );
-    m_mainperf->start_jack( );
-    m_mainperf->start( true );
+    // Sam decided to no longer auto switch mode.
+    //global_jack_start_mode = true;  // set song mode
+
+    if(global_jack_start_mode) {
+        m_mainperf->position_jack( true );
+        m_mainperf->start_jack( );
+        m_mainperf->start( true );
+    } else {
+        m_mainperf->position_jack( false );
+        m_mainperf->start( false );
+        m_mainperf->start_jack( );
+    }
 }
 
 void
@@ -472,6 +491,20 @@ mainwnd::toggle_looped( void )
     // Note that this will trigger the button signal callback.
     m_button_loop->set_active( ! m_button_loop->get_active() );
 }
+
+void
+mainwnd::set_song_mode( void )
+{
+    global_jack_start_mode = m_button_mode->get_active();
+}
+
+void
+mainwnd::toggle_song_mode( void )
+{
+    // Note that this will trigger the button signal callback.
+    m_button_mode->set_active( ! m_button_mode->get_active() );
+}
+
 
 
 void

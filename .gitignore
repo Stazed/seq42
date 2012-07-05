@@ -1,0 +1,10 @@
+*.o
+/Makefile
+/config.log
+/config.status
+/man/Makefile
+/src/Makefile
+/src/pangommconfig.h
+/src/stamp-h1
+/src/.deps
+/src/seq42

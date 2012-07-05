@@ -28,9 +28,24 @@
 
 [x] Add a Copy item to the seqlist popup menu (copies the seq and opens it in the seqeditor)
 
-[ ] Add a transpose flag to track (True by default) and a global transpose value to the song/perf.  When playing, use the global transpose value for tracks that enable transposition.   Add some UI (a dropdown in the main window... and maybe keyboard shortcuts).
+[ ] change window title
+from: "seq42 - NAME (TYPE)"
+to:   "seq42 TYPE - NAME"
 
-[ ] Add a transpose parameter to trigger?  
+example: "seq42 - untitled (track)"  ->  "seq42 track - untitled"
+
+
+[ ] Add a transpose flag to track (True by default) and a global transpose value to the song/perf.  When playing, use the global transpose value for tracks that enable transposition.   Add some UI (a dropdown in the main window... and maybe keyboard shortcuts).
+   [ ] Add a song level function to apply the current transpose value... 
+   Iterates thru all transposable tracks and changes the pitch values for all patterns... finally sets global transpose value to 0.
+
+
+[ ] Change bpm from int to float... and allow one decimal place in UI (134.5 for example)
+
+[X] Don't switch song/live mode automatically anymore.  Show mode in main window (with a toggle button).
+[ ] Also add a configurage keystroke to toggle mode.
+
+[ ] Show midi bus and channel in sequence list.
 
 [ ] Clean up is_pattern_playing stuff and consolidate global key (start, stop, loop, bpm, etc) handling.
 
@@ -65,6 +80,11 @@
 [ ] Add option to Load dialog and method that appends the tracks of a file to the current
     performance.  Handy for copying sequences from another song.  You could even have a 
     file that contains re-usable sequences (like various drum rolls or CC patterns).
+
+[ ] In trigger popup menu, if the trigger has a pattern, add an option to set the pattern's play flag (if it's off) or unset it (if on).  Only show the option if not in song mode.
+
+[ ] Add new song function to create triggers between the left and right markers for the 
+patterns that currently have their play flag on.
 
 Seq24 stuff below......
 

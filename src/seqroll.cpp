@@ -1188,12 +1188,20 @@ seqroll::on_scroll_event( GdkEventScroll* a_ev )
 void
 seqroll::start_playing( void )
 {
-    global_jack_start_mode = false;  // set live mode
-    m_seq->set_playing( true );
-    m_toggle_play->set_active( true );
-    m_perform->position_jack( false );
-    m_perform->start( false );
-    m_perform->start_jack( );
+    // Sam decided not to automatically set live mode and playing flag.
+    //global_jack_start_mode = false;  // set live mode
+    //m_seq->set_playing( true );
+    //m_toggle_play->set_active( true );
+
+    if(global_jack_start_mode) {
+        m_perform->position_jack( true );
+        m_perform->start_jack( );
+        m_perform->start( true );
+    } else {
+        m_perform->position_jack( false );
+        m_perform->start( false );
+        m_perform->start_jack( );
+    }
 }
 
 void

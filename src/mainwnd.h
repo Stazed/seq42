@@ -92,6 +92,8 @@ class mainwnd : public Gtk::Window
 
     ToggleButton *m_button_loop;
 
+    ToggleButton *m_button_mode;
+
     Button *m_button_expand;
     Button *m_button_collapse;
     Button *m_button_copy;
@@ -157,6 +159,9 @@ class mainwnd : public Gtk::Window
 
     void set_looped (void);
     void toggle_looped (void);
+
+    void set_song_mode (void);
+    void toggle_song_mode (void);
 
     void expand (void);
     void collapse (void);
