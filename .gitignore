@@ -1,4 +1,5 @@
 *.o
+/autom4te.cache
 /Makefile
 /config.log
 /config.status
@@ -7,4 +8,5 @@
 /src/pangommconfig.h
 /src/stamp-h1
 /src/.deps
+/src/config.h
 /src/seq42
