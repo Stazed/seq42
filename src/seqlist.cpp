@@ -187,6 +187,8 @@ seqlist::timeout( void )
         raise();
     }
 
+    bool need_update = false;
+
     // FIXME: instead of polling for dirt... move to a model where the mainwnd
     // sends us notification events.
     for(int i=0; i< c_max_track; i++ ){
@@ -194,10 +196,12 @@ seqlist::timeout( void )
             track *a_track =  m_perf->get_track( i );
             if(a_track->is_dirty_seqlist())
             {
-                update_model();
-                break;
+                need_update = true;
             }
         }
+    }
+    if(need_update) {
+        update_model();
     }
     return true;
 }

@@ -234,7 +234,6 @@ track::is_dirty_seqlist( )
         for(int i=0; i<m_vector_sequence.size(); i++) {
             if(m_vector_sequence[i]->is_dirty_seqlist()) {
                 ret = true;
-                break;
             }
         }
     }
