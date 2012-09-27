@@ -62,6 +62,8 @@ class track
     /* song playback mode mute */
     bool m_song_mute;
 
+    bool m_transposable;
+
     /* outputs to sequence to this Bus on midichannel */
     mastermidibus *m_masterbus;
 
@@ -113,6 +115,9 @@ class track
 
     void set_song_mute (bool a_mute);
     bool get_song_mute (void);
+
+    void set_transposable (bool a_xpose);
+    bool get_transposable (void);
 
     /* midi channel */
     unsigned char get_midi_channel ();
@@ -206,7 +211,9 @@ class track
     void set_orig_tick (long a_tick);
 
     bool save( ofstream *file );
-    bool load( ifstream *file );
+    bool load( ifstream *file, int version );
+
+    void apply_song_transpose (void);
 
 };
 

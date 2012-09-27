@@ -206,6 +206,12 @@ sequence::play(long a_tick, trigger *a_trigger)
     long start_tick_offset = (start_tick + m_length - m_trigger_offset);
     long end_tick_offset = (end_tick + m_length - m_trigger_offset);
 
+    int transpose = get_master_midi_bus()->get_transpose();
+    if (! m_track->get_transposable()) {
+        transpose = 0;
+    }
+    event transposed_event;
+
     /* play the notes in our frame */
     //if ( m_playing && !m_track->get_song_mute() ){
     if ( m_playing ){
@@ -215,9 +221,21 @@ sequence::play(long a_tick, trigger *a_trigger)
 
             if ( ((*e).get_timestamp() + offset_base ) >= (start_tick_offset) &&
                     ((*e).get_timestamp() + offset_base ) <= (end_tick_offset) ){
-
-                put_event_on_bus( &(*e) );
-                //printf( "bus: ");(*e).print();
+                if(
+                    transpose &&
+                    ((*e).is_note_on() || (*e).is_note_off())
+                )
+                {
+                    transposed_event.set_timestamp((*e).get_timestamp());
+                    transposed_event.set_status((*e).get_status());
+                    transposed_event.set_note((*e).get_note()+transpose);
+                    transposed_event.set_note_velocity((*e).get_note_velocity());
+                    put_event_on_bus( &transposed_event );
+                    //printf( "event: ");transposed_event.print();
+                } else {
+                    put_event_on_bus( &(*e) );
+                    //printf( "event: ");(*e).print();
+                }
             }
 
             else if ( ((*e).get_timestamp() + offset_base) >  end_tick_offset ){
@@ -2614,7 +2632,7 @@ sequence::save(ofstream *file) {
 }
 
 bool
-sequence::load(ifstream *file) {
+sequence::load(ifstream *file, int version) {
     char name[c_max_seq_name+1];
     file->read(name, sizeof(char)*c_max_seq_name);
     name[c_max_seq_name] = '\0';
@@ -2634,4 +2652,27 @@ sequence::load(ifstream *file) {
     }
 
     return true;
+}
+
+void
+sequence::apply_song_transpose()
+{
+    int transpose = get_master_midi_bus()->get_transpose();
+    if (! m_track->get_transposable()) {
+        transpose = 0;
+    }
+    if(! transpose) {
+        return;
+    }
+    lock();
+    for( list<event>::iterator iter = m_list_event.begin();
+         iter != m_list_event.end(); iter++ )
+    {
+        if ((*iter).is_note_on() || (*iter).is_note_off())
+        {
+            (*iter).set_note((*iter).get_note()+transpose);
+        }
+    }
+    set_dirty();
+    unlock();
 }

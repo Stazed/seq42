@@ -32,6 +32,7 @@
 #include <gtkmm/label.h>
 #include <gtkmm/entry.h>
 #include <gtkmm/tooltips.h>
+#include <gtkmm/checkbutton.h>
 
 #include <sigc++/bind.h>
 
@@ -53,6 +54,7 @@ class trackedit : public Gtk::Window
     VBox *m_vbox; 
     HBox *m_hbox; 
     HBox *m_hbox2; 
+    HBox *m_hbox3; 
     Label *m_label_name;
     Entry *m_entry_name;
     Menu *m_menu_midich;
@@ -61,12 +63,15 @@ class trackedit : public Gtk::Window
     Entry  *m_entry_bus;
     Button *m_button_channel;
     Entry  *m_entry_channel;
+    CheckButton *m_check_transposable;
 
     void name_change_callback();
     void set_midi_channel( int a_midichannel );
     void set_midi_bus( int a_midibus );
     void popup_midibus_menu( void );
     void popup_midich_menu( void );
+
+    void transposable_change_callback(CheckButton *a_button);
 
     void on_realize();
     bool timeout( void );

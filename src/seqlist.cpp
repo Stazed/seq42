@@ -80,7 +80,7 @@ seqlist::seqlist (perform *a_perf)
     m_TreeView.signal_button_release_event().connect(sigc::mem_fun(*this, &seqlist::on_button_release_event), true );
 
     m_perf->set_seqlist_open(true);
-    update_model();
+    //update_model();
     show_all();
 }
 

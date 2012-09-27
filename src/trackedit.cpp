@@ -41,7 +41,7 @@ trackedit::trackedit (track *a_track)
     title.append(m_track->get_name());
     title.append(" (track)");
     set_title(title);
-    set_size_request(400, 100);
+    set_size_request(400, 120);
 
     m_track->set_editing(true);
 
@@ -95,6 +95,18 @@ trackedit::trackedit (track *a_track)
     m_hbox2->pack_start( *m_button_channel , false, false );
     m_hbox2->pack_start( *m_entry_channel , false, false );
 
+    
+    m_hbox3 = manage (new HBox ());
+    m_hbox3->set_border_width (6);
+    m_vbox->pack_start (*m_hbox3, false, false);
+
+    m_check_transposable = manage( new CheckButton( "Transposable" ));
+    m_check_transposable->set_active(m_track->get_transposable());
+    m_check_transposable->signal_toggled ().
+        connect (bind
+                (mem_fun (*this, &trackedit::transposable_change_callback), 
+                 m_check_transposable));
+    m_hbox3->pack_start( *m_check_transposable, false, false );
 
     this->add( *m_vbox );
     show_all();
@@ -215,4 +227,10 @@ trackedit::set_midi_bus( int a_midibus )
     m_track->set_midi_bus( a_midibus );
     mastermidibus *mmb =  m_track->get_master_midi_bus();
     m_entry_bus->set_text( mmb->get_midi_out_bus_name( a_midibus ));
+}
+
+void
+trackedit::transposable_change_callback(CheckButton *a_button)
+{
+    m_track->set_transposable(a_button->get_active());
 }

@@ -89,7 +89,6 @@ class midibus
     /* last tick */
     long m_lasttick;
 
-
     /* locking */
     mutex m_mutex;
 
@@ -208,6 +207,9 @@ class mastermidibus
     bool m_dumping_input;
     sequence *m_seq;
 
+    /* current note transpose value (for all transposable tracks) */
+    int m_transpose;
+
     /* locking */
     mutex m_mutex;
 
@@ -239,6 +241,9 @@ class mastermidibus
     
     string get_midi_out_bus_name( int a_bus );
     string get_midi_in_bus_name( int a_bus );
+
+    void set_transpose( int a_transpose ) { m_transpose = a_transpose; }
+    int get_transpose( void) { return m_transpose; }
     
     void print();
     void flush(); 

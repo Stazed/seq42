@@ -359,7 +359,9 @@ class sequence
     void transpose_notes (int a_steps, int a_scale);
 
     bool save( ofstream *file );
-    bool load( ifstream *file );
+    bool load( ifstream *file, int version );
+
+    void apply_song_transpose (void);
 };
 
 #endif

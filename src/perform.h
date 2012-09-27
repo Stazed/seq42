@@ -234,6 +234,8 @@ class perform
         return m_seqlist_raise;
     };
 
+    void apply_song_transpose (void);
+
 #ifdef JACK_SUPPORT
 
     friend int jack_sync_callback(jack_transport_state_t state, 

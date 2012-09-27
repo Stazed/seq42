@@ -90,6 +90,10 @@ class mainwnd : public Gtk::Window
     Button *m_button_snap;
     Entry *m_entry_snap;
 
+    Menu *m_menu_xpose;
+    Button *m_button_xpose;
+    Entry *m_entry_xpose;
+
     ToggleButton *m_button_loop;
 
     ToggleButton *m_button_mode;
@@ -153,6 +157,8 @@ class mainwnd : public Gtk::Window
 
     void set_guides( void );
 
+    void apply_song_transpose (void);
+
     void grow (void);
     void open_seqlist (void);
     void set_song_mute(mute_op op);
@@ -172,6 +178,8 @@ class mainwnd : public Gtk::Window
     void popup_menu (Menu * a_menu);
 
     /* End method that used to be in perfedit */
+
+    void set_xpose (int a_xpose);
 
  public:
 

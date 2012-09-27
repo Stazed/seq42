@@ -28,7 +28,6 @@
 #include "font.h"
 #include "seqlist.h"
 
-#include "seq42.xpm"
 #include "seq42_32.xpm"
 #include "play2.xpm"
 #include "stop.xpm"
@@ -120,6 +119,10 @@ mainwnd::mainwnd(perform *a_p)
 
     m_menu_edit->items().push_back(SeparatorElem());
 
+    // FIXME: disable if transpose==0
+    m_menu_edit->items().push_back(MenuElem("_Apply song transpose",
+                mem_fun(*this, &mainwnd::apply_song_transpose)));
+
     m_menu_edit->items().push_back(MenuElem("_Increase grid size",
                 mem_fun(*this, &mainwnd::grow)));
 
@@ -132,11 +135,37 @@ mainwnd::mainwnd(perform *a_p)
 
 
     /* top line items */
-    HBox *hbox1 = manage( new HBox( false, 0 ) );
-    hbox1->set_border_width( 10 );
-    hbox1->pack_start(*manage(new Image(
-                    Gdk::Pixbuf::create_from_xpm_data(seq42_xpm))),
-            false, false);
+    HBox *hbox1 = manage( new HBox( false, 2 ) );
+    hbox1->set_border_width( 2 );
+
+    m_button_loop = manage( new ToggleButton() );
+    m_button_loop->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( loop_xpm ))));
+    m_button_loop->signal_toggled().connect(  mem_fun( *this, &mainwnd::set_looped ));
+    add_tooltip( m_button_loop, "Play looped between L and R." );
+
+
+    m_button_stop = manage( new Button() );
+    m_button_stop->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( stop_xpm ))));
+    m_button_stop->signal_clicked().connect( mem_fun( *this, &mainwnd::stop_playing));
+    add_tooltip( m_button_stop, "Stop playing." );
+
+    m_button_play = manage( new Button() );
+    m_button_play->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( play2_xpm ))));
+    m_button_play->signal_clicked().connect(  mem_fun( *this, &mainwnd::start_playing));
+    add_tooltip( m_button_play, "Begin playing at L marker." );
+
+    m_button_mode = manage( new ToggleButton( "song mode" ) );
+    m_button_mode->signal_toggled().connect(  mem_fun( *this, &mainwnd::set_song_mode ));
+    add_tooltip( m_button_mode, "Toggle song mode (or live/sequence mode)." );
+    if(global_jack_start_mode) {
+        m_button_mode->set_active( true );
+    }
+
+    hbox1->pack_start( *m_button_stop , false, false );
+    hbox1->pack_start( *m_button_play , false, false );
+    hbox1->pack_start( *m_button_loop , false, false );
+    hbox1->pack_start(*m_button_mode, false, false );
+
 
     // adjust placement...
     VBox *vbox_b = manage( new VBox() );
@@ -189,13 +218,27 @@ mainwnd::mainwnd(perform *a_p)
     m_table->attach( *m_hbox,  0, 1, 3, 4,  Gtk::FILL, Gtk::SHRINK, 0, 2 );
     m_table->attach( *m_hscroll, 1, 2, 3, 4, Gtk::FILL | Gtk::EXPAND, Gtk::SHRINK  );
 
+    m_menu_xpose =   manage( new Menu());
+    char num[11];
+    for ( int i=-12; i<=12; ++i) {
 
-    m_button_mode = manage( new ToggleButton( "song mode" ) );
-    m_button_mode->signal_toggled().connect(  mem_fun( *this, &mainwnd::set_song_mode ));
-    add_tooltip( m_button_mode, "Toggle song mode (or live/sequence mode)." );
-    if(global_jack_start_mode) {
-        m_button_mode->set_active( true );
+        if (i){
+            snprintf(num, sizeof(num), "%+d [%s]", i, c_interval_text[abs(i)]);
+        } else {
+            snprintf(num, sizeof(num), "0 [normal]");
+        }
+        m_menu_xpose->items().push_front( MenuElem( num,
+                    sigc::bind(mem_fun(*this,&mainwnd::set_xpose),
+                        i )));
     }
+
+    m_button_xpose = manage( new Button("transpose"));
+    //m_button_xpose->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( xpose_xpm ))));
+    m_button_xpose->signal_clicked().connect(  bind<Menu *>( mem_fun( *this, &mainwnd::popup_menu), m_menu_xpose  ));
+    add_tooltip( m_button_xpose, "Song transpose" );
+    m_entry_xpose = manage( new Entry());
+    m_entry_xpose->set_size_request( 40, -1 );
+    m_entry_xpose->set_editable( false );
 
 
     m_menu_snap =   manage( new Menu());
@@ -297,37 +340,12 @@ mainwnd::mainwnd(perform *a_p)
     add_tooltip( m_button_copy, "Expand and copy between L and R markers." );
 
 
-    m_button_loop = manage( new ToggleButton() );
-    m_button_loop->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( loop_xpm ))));
-    m_button_loop->signal_toggled().connect(  mem_fun( *this, &mainwnd::set_looped ));
-    add_tooltip( m_button_loop, "Play looped between L and R." );
-
-
-    m_button_stop = manage( new Button() );
-    m_button_stop->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( stop_xpm ))));
-    m_button_stop->signal_clicked().connect( mem_fun( *this, &mainwnd::stop_playing));
-    add_tooltip( m_button_stop, "Stop playing." );
-
-    m_button_play = manage( new Button() );
-    m_button_play->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( play2_xpm ))));
-    m_button_play->signal_clicked().connect(  mem_fun( *this, &mainwnd::start_playing));
-    add_tooltip( m_button_play, "Begin playing at L marker." );
-
-
     m_hlbox->pack_end( *m_button_copy , false, false );
     m_hlbox->pack_end( *m_button_expand , false, false );
     m_hlbox->pack_end( *m_button_collapse , false, false );
     m_hlbox->pack_end( *m_button_redo , false, false );
     m_hlbox->pack_end( *m_button_undo , false, false );
 
-
-    m_hlbox->pack_start( *m_button_stop , false, false );
-    m_hlbox->pack_start( *m_button_play , false, false );
-    m_hlbox->pack_start( *m_button_loop , false, false );
-
-    m_hlbox->pack_start( *(manage(new VSeparator( ))), false, false, 4);
-
-    m_hlbox->pack_start(*m_button_mode, false, false );
 
     m_hlbox->pack_start(*m_spinbutton_bpm, false, false );
     m_hlbox->pack_start(*(manage( new Label( "bpm" ))), false, false, 4);
@@ -345,6 +363,9 @@ mainwnd::mainwnd(perform *a_p)
 
     m_hlbox->pack_start( *m_button_snap , false, false );
     m_hlbox->pack_start( *m_entry_snap , false, false );
+
+    m_hlbox->pack_start( *m_button_xpose , false, false );
+    m_hlbox->pack_start( *m_entry_xpose , false, false );
 
     Button w;
     m_hlbox->set_focus_child( w ); // clear the focus
@@ -370,6 +391,7 @@ mainwnd::mainwnd(perform *a_p)
     set_snap( 4 );
     set_bpm( 4 );
     set_bw( 4 );
+    set_xpose( 0 );
 
     m_perfroll->init_before_show();
 
@@ -556,10 +578,28 @@ void mainwnd::set_bw( int a_beat_width )
 }
 
 void
+mainwnd::set_xpose( int a_xpose  )
+{
+    char b[11];
+    snprintf( b, sizeof(b), "%+d", a_xpose );
+    m_entry_xpose->set_text(b);
+
+    m_mainperf->all_notes_off();
+    m_mainperf->get_master_midi_bus()->set_transpose(a_xpose);
+}
+
+void
 mainwnd::grow()
 {
     m_perfroll->increment_size();
     m_perftime->increment_size();
+}
+
+void
+mainwnd::apply_song_transpose()
+{
+    m_mainperf->apply_song_transpose();
+    set_xpose(0);
 }
 
 void

@@ -1759,7 +1759,6 @@ perform::load( const Glib::ustring& a_filename )
 
     int version;
     file.read((char *) &version, sizeof(int));
-    // For now, the version will always be zero, so just ignore it.
 
     int bpm;
     file.read((char *) &bpm, sizeof(int));
@@ -1770,7 +1769,7 @@ perform::load( const Glib::ustring& a_filename )
 
     for (int i=0; i< active_tracks; i++ ){
         new_track(i);
-        if(! get_track(i)->load(&file)) {
+        if(! get_track(i)->load(&file, version)) {
             return false;
         }
     }
@@ -1779,3 +1778,13 @@ perform::load( const Glib::ustring& a_filename )
     return true;
 }
 
+void
+perform::apply_song_transpose()
+{
+    for (int i=0; i< c_max_track; i++ ){
+        if ( is_active_track(i) )
+        {
+            get_track(i)->apply_song_transpose();
+        }
+    }
+}

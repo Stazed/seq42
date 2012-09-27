@@ -29,6 +29,7 @@ track::track()
     m_bus = 0;
     m_midi_channel = 0;
     m_song_mute = false;
+    m_transposable = true;
 
     m_dirty_perf = true;
     m_dirty_names = true;
@@ -63,6 +64,7 @@ track::operator=(const track& other)
         m_bus = other.m_bus;
         m_midi_channel = other.m_midi_channel;
         m_song_mute = false;
+        m_transposable = other.m_transposable;
         m_masterbus = other.m_masterbus;
 
         m_dirty_perf = false;
@@ -355,6 +357,18 @@ bool
 track::get_song_mute( void )
 {
     return m_song_mute;
+}
+
+void
+track::set_transposable( bool a_xpose )
+{
+    m_transposable = a_xpose;
+}
+
+bool
+track::get_transposable( void )
+{
+    return m_transposable;
 }
 
 int
@@ -1142,10 +1156,11 @@ track::print()
     printf("midi bus=[%d]\n", m_bus );
     printf("midi channel=[%d]\n", m_midi_channel  );
     printf("mute=[%d]\n", m_song_mute  );
+    printf("transposable=[%d]\n", m_transposable  );
 
     for(int i=0; i<m_vector_sequence.size(); i++) {
         printf("sequence[%d] address=%p name=\"%s\"\n", i, m_vector_sequence[i], m_vector_sequence[i]->get_name() );
-        //m_vector_sequence[i]->print();
+        m_vector_sequence[i]->print();
     }
     int i=0;
     for( list<trigger>::iterator iter = m_list_trigger.begin();
@@ -1185,6 +1200,8 @@ track::save(ofstream *file) {
 
     file->write((const char *) &m_midi_channel, sizeof(char));
 
+    file->write((const char *) &m_transposable, sizeof(bool));
+
     unsigned int num_seqs = get_number_of_sequences();
     file->write((const char *) &num_seqs, sizeof(int));
     for(unsigned int i=0; i<m_vector_sequence.size(); i++) {
@@ -1207,7 +1224,7 @@ track::save(ofstream *file) {
 }
 
 bool
-track::load(ifstream *file) {
+track::load(ifstream *file, int version) {
     char name[c_max_track_name+1];
     file->read(name, sizeof(char)*c_max_track_name);
     name[c_max_track_name] = '\0';
@@ -1217,12 +1234,17 @@ track::load(ifstream *file) {
 
     file->read((char *) &m_midi_channel, sizeof(char));
 
+    // The m_transposable didn't exist for version==0 files.
+    if(version > 0) {
+        file->read((char *) &m_transposable, sizeof(bool));
+    }
+
     unsigned int num_seqs;
     file->read((char *) &num_seqs, sizeof(int));
 
     for (unsigned int i=0; i< num_seqs; i++ ){
         new_sequence();
-        if(! get_sequence(i)->load(file)) {
+        if(! get_sequence(i)->load(file, version)) {
             return false;
         }
     }
@@ -1254,4 +1276,14 @@ long
 track::get_default_velocity( )
 {
     return m_default_velocity;
+}
+
+void
+track::apply_song_transpose()
+{
+    if(m_transposable) {
+        for(unsigned int i=0; i<m_vector_sequence.size(); i++) {
+            m_vector_sequence[i]->apply_song_transpose();
+        }
+    }
 }
