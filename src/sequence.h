@@ -84,6 +84,8 @@ class sequence
     /* named sequence */
     string m_name;
 
+    int m_swing_mode;
+
     /* where were we */
     long m_last_tick;
 
@@ -145,6 +147,13 @@ class sequence
     void set_name (char *a_name);
     /* returns string of name */
     const char *get_name (void);
+
+    void set_swing_mode (int a_mode) {
+        m_swing_mode = a_mode;
+    }
+    int get_swing_mode (void) {
+        return m_swing_mode;
+    }
 
     void set_measures (long a_length_measures);
     long get_measures (void);

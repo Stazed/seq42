@@ -37,7 +37,12 @@
 
 using namespace std;
 
-const int c_file_version = 1;  // Version of our save file format.  Increment this whenever the format of the save file changes.
+const int c_file_version = 2;  // Version of our save file format.  Increment this whenever the format of the save file changes.
+/* Version history:
+0 - initial seq42 file format
+1 - added transposable to track
+2 - added swing amount to perform and swing_mode to sequence
+*/
 
 const int c_max_track_name = 16;
 const int c_max_seq_name = 32;
@@ -45,12 +50,23 @@ const int c_max_seq_name = 32;
 const int c_max_track = 64;  // FIXME: use a list instead of a fixed number array?
 
 const int c_ppqn         = 192;  /* default - doesn't change */
+const int c_ppwn         = c_ppqn * 4;  // whole note
+const int c_ppen         = c_ppqn / 2;  // eigth note
+const int c_ppsn         = c_ppqn / 4;  // 16th note
 
-const int c_default_trigger_length_in_bars = 1; /* used when adding a new trigger */  // FIXME: allow changing this value via a menu in the mainwnd (similar to note length in seqedit.
+const int c_note_off_margin = 2;  // # ticks to shave off end of painted notes
+
+const int c_default_trigger_length_in_bars = 1; /* used when adding a new trigger */
 const long c_default_trigger_length = c_default_trigger_length_in_bars * 4 * c_ppqn;
 
 const int c_bpm          = 120;  /* default */
 const int c_maxBuses = 32;
+
+const int c_max_swing_amount = 24;
+// constants for sequence swing modes (int value is the amount to divide c_ppqn by to obtain note length)
+const int c_no_swing = 0;
+const int c_swing_eighths  = 2;
+const int c_swing_sixteenths = 4;
 
 /* trigger width in milliseconds */
 const int c_thread_trigger_width_ms = 4;

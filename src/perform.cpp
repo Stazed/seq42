@@ -60,7 +60,6 @@ perform::perform()
     m_right_tick = c_ppqn * 16;
     m_starting_tick = 0;
 
-
     m_key_bpm_up = GDK_apostrophe;
     m_key_bpm_dn = GDK_semicolon;
 
@@ -431,6 +430,28 @@ int  perform::get_bpm( )
     return  m_master_bus.get_bpm( );
 }
 
+void perform::set_swing_amount8(int a_swing_amount)
+{
+    m_master_bus.set_swing_amount8( a_swing_amount );
+}
+
+
+int  perform::get_swing_amount8( )
+{
+    return m_master_bus.get_swing_amount8();
+}
+
+void perform::set_swing_amount16(int a_swing_amount)
+{
+    m_master_bus.set_swing_amount16( a_swing_amount );
+}
+
+
+int  perform::get_swing_amount16( )
+{
+    return m_master_bus.get_swing_amount16();
+}
+
 
 void perform::delete_track( int a_num )
 {
@@ -457,7 +478,6 @@ void perform::new_track( int a_track )
     m_tracks[ a_track ] = new track();
     m_tracks[ a_track ]->set_master_midi_bus( &m_master_bus );
     set_active(a_track, true);
-
 }
 
 
@@ -465,6 +485,9 @@ void perform::new_track( int a_track )
 void perform::print()
 {
     printf( "Dumping track data...\n");
+    printf("bpm[%d]\n", get_bpm());
+    printf("swing8[%d]\n", get_swing_amount8());
+    printf("swing16[%d]\n", get_swing_amount16());
     for (int i = 0; i < c_max_track; i++) {
         if (is_active_track(i)) {
             printf("--------------------\n");
@@ -1731,6 +1754,11 @@ perform::save( const Glib::ustring& a_filename )
     int bpm = get_bpm();
     file.write((const char *) &bpm, sizeof(int));
 
+    int swing_amount8 = get_swing_amount8();
+    file.write((const char *) &swing_amount8, sizeof(int));
+    int swing_amount16 = get_swing_amount16();
+    file.write((const char *) &swing_amount16, sizeof(int));
+
     int active_tracks = 0;
     for (int i=0; i< c_max_track; i++ ){
         if ( is_active_track(i) ) active_tracks++;
@@ -1763,6 +1791,17 @@ perform::load( const Glib::ustring& a_filename )
     int bpm;
     file.read((char *) &bpm, sizeof(int));
     set_bpm(bpm);
+
+    int swing_amount8 = 0;
+    if(version > 1) {
+        file.read((char *) &swing_amount8, sizeof(int));
+    }
+    set_swing_amount8(swing_amount8);
+    int swing_amount16 = 0;
+    if(version > 1) {
+        file.read((char *) &swing_amount16, sizeof(int));
+    }
+    set_swing_amount16(swing_amount16);
 
     int active_tracks;
     file.read((char *) &active_tracks, sizeof(int));

@@ -61,7 +61,7 @@ class perform
     bool m_was_active_edit[ c_max_track ];
     bool m_was_active_perf[ c_max_track ];
     bool m_was_active_names[ c_max_track ];
-    
+
     /* our midibus */
     mastermidibus m_master_bus;
 
@@ -195,6 +195,11 @@ class perform
 
     void set_bpm(int a_bpm);
     int  get_bpm( );
+
+    void set_swing_amount8(int a_swing_amount);
+    int  get_swing_amount8( );
+    void set_swing_amount16(int a_swing_amount);
+    int  get_swing_amount16( );
 
     void set_looping( bool a_looping ){ m_looping = a_looping; };
  
