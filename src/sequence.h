@@ -357,6 +357,7 @@ class sequence
 			 long a_snap_tick, int a_divide, bool a_linked =
 			 false);
     void transpose_notes (int a_steps, int a_scale);
+    void shift_notes (int a_ticks);  // move selected notes later/earlier in time
 
     bool save( ofstream *file );
     bool load( ifstream *file, int version );

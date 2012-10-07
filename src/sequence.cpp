@@ -2345,6 +2345,59 @@ sequence::transpose_notes( int a_steps, int a_scale )
 }
 
 
+void
+sequence::shift_notes( int a_ticks )
+{
+    event e;
+
+    list<event> shifted_events;
+
+    lock();
+
+    mark_selected();
+    
+    list<event>::iterator i;
+
+    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+
+	/* is it being moved ? */
+	if ( ((*i).get_status() ==  EVENT_NOTE_ON ||
+              (*i).get_status() ==  EVENT_NOTE_OFF) &&
+             (*i).is_marked() ){
+
+            e = (*i);
+            e.unmark();
+
+            long timestamp = e.get_timestamp();
+            timestamp += a_ticks;
+            if(timestamp < 0L) {
+                /* wraparound */
+                timestamp = m_length - ( (-timestamp) % m_length);
+            } else {
+                timestamp %= m_length;
+            }
+            //printf("in shift_notes; a_ticks=%d  timestamp=%06ld  shift_timestamp=%06ld (mlength=%ld)\n", a_ticks, e.get_timestamp(), timestamp, m_length);
+            e.set_timestamp(timestamp);
+            shifted_events.push_front(e);
+
+	}
+    }
+
+    remove_marked();
+    shifted_events.sort();
+    m_list_event.merge( shifted_events);
+    
+   
+    verify_and_link();
+
+    unlock();
+
+    
+}
+
+
+
+
 
 // NOT DELETING THE ENDS, NOT SELECTED.
 void

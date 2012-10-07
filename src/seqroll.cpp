@@ -1080,6 +1080,57 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
             ret = true;
         }
 
+        if ( a_p0->keyval ==  GDK_Up ){
+
+            m_seq->push_undo();
+            if ( a_p0->state & GDK_SHIFT_MASK ){
+                m_seq->transpose_notes(12, 0);
+            } else {
+                m_seq->transpose_notes(1, 0);
+            }
+            ret = true;
+        }
+        if ( a_p0->keyval ==  GDK_Down ){
+
+            m_seq->push_undo();
+            if ( a_p0->state & GDK_SHIFT_MASK ){
+                m_seq->transpose_notes(-12, 0);
+            } else {
+                m_seq->transpose_notes(-1, 0);
+            }
+            ret = true;
+        }
+
+        if ( a_p0->keyval ==  GDK_Right ){
+
+            m_seq->push_undo();
+            if ( a_p0->state & GDK_SHIFT_MASK ){
+                m_seq->shift_notes(1);
+            } else {
+                m_seq->shift_notes(m_snap);
+            }
+            ret = true;
+        }
+        if ( a_p0->keyval ==  GDK_Left ){
+
+            m_seq->push_undo();
+            if ( a_p0->state & GDK_SHIFT_MASK ){
+                m_seq->shift_notes(-1);
+            } else {
+                m_seq->shift_notes(-m_snap);
+            }
+            ret = true;
+        }
+
+        if ( a_p0->state & GDK_MOD1_MASK ){
+            if ( a_p0->keyval ==  GDK_q ){
+
+                m_seq->push_undo();
+                m_seq->quanize_events(EVENT_NOTE_ON, 0, m_snap, 1 , true);
+                ret = true;
+            }
+        }
+
         if ( a_p0->state & GDK_CONTROL_MASK ){
 
             /* cut */
