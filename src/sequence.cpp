@@ -42,6 +42,7 @@ sequence::sequence( )
     m_name          = c_dummy;
     m_length        = 4 * c_ppqn;
     m_snap_tick     = c_ppqn / 4;
+    m_swing_mode    = c_no_swing;
   
     /* no notes are playing */
     for (int i=0; i< c_midi_notes; i++ )
@@ -206,11 +207,24 @@ sequence::play(long a_tick, trigger *a_trigger)
     long start_tick_offset = (start_tick + m_length - m_trigger_offset);
     long end_tick_offset = (end_tick + m_length - m_trigger_offset);
 
+    int swing_mode = get_swing_mode();
+    int swing_amount = 0;
+    if(swing_mode == c_swing_eighths) {
+        swing_amount = get_master_midi_bus()->get_swing_amount8();
+    } else if(swing_mode == c_swing_sixteenths) {
+        swing_amount = get_master_midi_bus()->get_swing_amount16();
+    }
+
     int transpose = get_master_midi_bus()->get_transpose();
     if (! m_track->get_transposable()) {
         transpose = 0;
     }
     event transposed_event;
+
+    unsigned long orig_event_timestamp;
+    unsigned long swung_event_timestamp;
+    unsigned long max_swung_event_timestamp;
+    unsigned long offset_timestamp;
 
     /* play the notes in our frame */
     //if ( m_playing && !m_track->get_song_mute() ){
@@ -218,9 +232,35 @@ sequence::play(long a_tick, trigger *a_trigger)
         list<event>::iterator e = m_list_event.begin();
 
         while ( e != m_list_event.end()){
+            orig_event_timestamp = (*e).get_timestamp();
+            swung_event_timestamp = orig_event_timestamp;
 
-            if ( ((*e).get_timestamp() + offset_base ) >= (start_tick_offset) &&
-                    ((*e).get_timestamp() + offset_base ) <= (end_tick_offset) ){
+            if(swing_amount && ((*e).is_note_on() || (*e).is_note_off()) ) {
+                // FIXME: apply swing_amount to event_timestamp
+                // Is this implementation too simplistic???
+                // Even if not, refactor to reduce duplication of logic.
+                if(swing_mode == c_swing_eighths) {
+                    if(orig_event_timestamp % c_ppqn) {
+                        swung_event_timestamp += (swing_amount * 2);
+                        max_swung_event_timestamp = (((orig_event_timestamp / c_ppqn) + 1) * c_ppqn) - c_note_off_margin;
+                        if(swung_event_timestamp > max_swung_event_timestamp) { swung_event_timestamp = max_swung_event_timestamp; }
+                    }
+                } else if(swing_mode == c_swing_sixteenths) {
+                    if(orig_event_timestamp % c_ppen) {
+                        swung_event_timestamp += swing_amount;
+                        max_swung_event_timestamp = (((orig_event_timestamp / c_ppen) + 1) * c_ppen) - c_note_off_margin;
+                        if(swung_event_timestamp > max_swung_event_timestamp) { swung_event_timestamp = max_swung_event_timestamp; }
+                    }
+                }
+            }
+
+            offset_timestamp = swung_event_timestamp + offset_base;
+
+            if ( ( offset_timestamp >= start_tick_offset) &&
+                 ( offset_timestamp <= end_tick_offset) ) {
+
+                // printf("orig_event_timestamp=%06ld swung_event_timestamp=%06ld offset_timestamp=%06ld  start_tick_offset=%06ld  end_tick_offset=%06ld\n",
+                //        orig_event_timestamp, swung_event_timestamp, offset_timestamp, start_tick_offset, end_tick_offset);
                 if(
                     transpose &&
                     ((*e).is_note_on() || (*e).is_note_off())
@@ -231,14 +271,14 @@ sequence::play(long a_tick, trigger *a_trigger)
                     transposed_event.set_note((*e).get_note()+transpose);
                     transposed_event.set_note_velocity((*e).get_note_velocity());
                     put_event_on_bus( &transposed_event );
-                    //printf( "event: ");transposed_event.print();
+                    //printf( "transposed_event: ");transposed_event.print();
                 } else {
                     put_event_on_bus( &(*e) );
                     //printf( "event: ");(*e).print();
                 }
             }
 
-            else if ( ((*e).get_timestamp() + offset_base) >  end_tick_offset ){
+            else if ( offset_timestamp > end_tick_offset ){
                 break;
             }
 
@@ -1914,6 +1954,7 @@ sequence::operator= (const sequence& a_rhs)
 	m_list_event   = a_rhs.m_list_event;
 	m_name         = a_rhs.m_name;
 	m_length       = a_rhs.m_length;
+	m_swing_mode   = a_rhs.m_swing_mode;
 
 	m_time_beats_per_measure = a_rhs.m_time_beats_per_measure;
 	m_time_beat_width = a_rhs.m_time_beat_width;
@@ -2156,7 +2197,8 @@ sequence::get_master_midi_bus( )
 void 
 sequence::print()
 {
-    printf("[%s]\n", m_name.c_str()  );
+    printf("name[%s]\n", m_name.c_str()  );
+    printf("swing_mode[%d]\n", m_swing_mode );
 
     for( list<event>::iterator i = m_list_event.begin(); i != m_list_event.end(); i++ )
 	(*i).print();
@@ -2672,6 +2714,7 @@ sequence::save(ofstream *file) {
     file->write((const char *) &m_length, sizeof(long));
     file->write((const char *) &m_time_beats_per_measure, sizeof(long));
     file->write((const char *) &m_time_beat_width, sizeof(long));
+    file->write((const char *) &m_swing_mode, sizeof(int));
     
     unsigned int num_events = m_list_event.size();
     file->write((const char *) &num_events, sizeof(int));
@@ -2694,6 +2737,12 @@ sequence::load(ifstream *file, int version) {
     file->read((char *) &m_length, sizeof(long));
     file->read((char *) &m_time_beats_per_measure, sizeof(long));
     file->read((char *) &m_time_beat_width, sizeof(long));
+
+    if(version > 1) {
+        file->read((char *) &m_swing_mode, sizeof(int));
+    } else {
+        m_swing_mode = c_no_swing;
+    }
 
     unsigned int num_events;
     file->read((char *) &num_events, sizeof(int));

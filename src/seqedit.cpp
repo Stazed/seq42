@@ -165,6 +165,7 @@ seqedit::seqedit( sequence *a_seq,
     m_menu_length = manage( new Menu());
     m_menu_bpm = manage( new Menu() );
     m_menu_bw = manage( new Menu() );
+    m_menu_swing_mode = manage( new Menu());
 
     m_menu_sequences = NULL;
 
@@ -302,6 +303,8 @@ seqedit::seqedit( sequence *a_seq,
 
     set_scale( m_scale );
     set_key( m_key );
+
+    set_swing_mode(m_seq->get_swing_mode());
 
     m_seqroll_wid->set_ignore_redraw(false);
     add_events(Gdk::SCROLL_MASK);
@@ -481,7 +484,6 @@ seqedit::create_menus( void )
                 sigc::bind(mem_fun(*this, &seqedit::set_scale),
                     c_scale_minor )));
     
-    /* midi channel menu */
     for( int i=0; i<16; i++ ){
         
         snprintf(b, sizeof(b), "%d", i + 1);
@@ -498,6 +500,14 @@ seqedit::create_menus( void )
                 sigc::bind(mem_fun(*this, &seqedit::set_measures), 32 )));
     m_menu_length->items().push_back(MenuElem("64",
                 sigc::bind(mem_fun(*this, &seqedit::set_measures), 64 )));
+
+
+    m_menu_swing_mode->items().push_back(MenuElem("no",
+                sigc::bind(mem_fun(*this, &seqedit::set_swing_mode), c_no_swing )));
+    m_menu_swing_mode->items().push_back(MenuElem("1/8",
+                sigc::bind(mem_fun(*this, &seqedit::set_swing_mode), c_swing_eighths )));
+    m_menu_swing_mode->items().push_back(MenuElem("1/16",
+                sigc::bind(mem_fun(*this, &seqedit::set_swing_mode), c_swing_sixteenths )));
 
   //m_menu_tools->items().push_back( SeparatorElem( )); 
 }
@@ -726,6 +736,20 @@ seqedit::fill_top_bar( void )
 
     m_hbox->pack_start( *m_button_length , false, false );
     m_hbox->pack_start( *m_entry_length , false, false );
+
+    /* swing mode */
+    m_button_swing_mode = manage( new Button("swing"));
+    //m_button_swing_mode->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( swing_mode_xpm  ))));
+    m_button_swing_mode->signal_clicked().connect(
+            sigc::bind<Menu *>( mem_fun( *this, &seqedit::popup_menu),
+                m_menu_swing_mode  ));
+    add_tooltip( m_button_swing_mode, "Sequence swing mode." );
+    m_entry_swing_mode = manage( new Entry());
+    m_entry_swing_mode->set_width_chars(4);
+    m_entry_swing_mode->set_editable( false );
+
+    m_hbox->pack_start( *m_button_swing_mode , false, false );
+    m_hbox->pack_start( *m_entry_swing_mode , false, false );
 
 
     m_hbox->pack_start( *(manage(new VSeparator( ))), false, false, 4);
@@ -1214,6 +1238,25 @@ seqedit::set_measures( int a_length_measures  )
 
     m_measures = a_length_measures;
     apply_length( m_seq->get_bpm(), m_seq->get_bw(), a_length_measures );
+}
+
+int 
+seqedit::get_swing_mode( void  )
+{
+    return m_seq->get_swing_mode();
+}
+
+void 
+seqedit::set_swing_mode( int a_mode  )
+{
+    m_seq->set_swing_mode(a_mode);
+    if(a_mode == c_swing_eighths) {
+        m_entry_swing_mode->set_text("1/8");
+    } else if(a_mode == c_swing_sixteenths) {
+        m_entry_swing_mode->set_text("1/16");
+    } else {
+        m_entry_swing_mode->set_text("no");
+    }
 }
 
 

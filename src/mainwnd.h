@@ -71,6 +71,11 @@ class mainwnd : public Gtk::Window
     SpinButton  *m_spinbutton_bpm;
     Adjustment  *m_adjust_bpm;
 
+    SpinButton  *m_spinbutton_swing_amount8;
+    Adjustment  *m_adjust_swing_amount8;
+    SpinButton  *m_spinbutton_swing_amount16;
+    Adjustment  *m_adjust_swing_amount16;
+
     sigc::connection   m_timeout_connect;
     
     Table *m_table;
@@ -131,6 +136,8 @@ class mainwnd : public Gtk::Window
 
     void adj_callback_ss( );
     void adj_callback_bpm( );
+    void adj_callback_swing_amount8( );
+    void adj_callback_swing_amount16( );
     bool timer_callback( );
 
     void start_playing();

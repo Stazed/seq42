@@ -63,7 +63,7 @@ mainwnd::mainwnd(perform *a_p)
 
     /* main window */
     update_window_title();
-    set_size_request(710, 322);
+    set_size_request(850, 322);
 
 #if GTK_MINOR_VERSION < 12
     m_tooltips = manage( new Tooltips() );
@@ -308,6 +308,22 @@ mainwnd::mainwnd(perform *a_p)
     m_entry_bw->set_width_chars(2);
     m_entry_bw->set_editable( false );
 
+    /* swing_amount spin buttons */
+    m_adjust_swing_amount8 = manage(new Adjustment(m_mainperf->get_swing_amount8(), 0, c_max_swing_amount, 1));
+    m_spinbutton_swing_amount8 = manage( new SpinButton( *m_adjust_swing_amount8 ));
+    m_spinbutton_swing_amount8->set_editable( false );
+    m_adjust_swing_amount8->signal_value_changed().connect(
+            mem_fun(*this, &mainwnd::adj_callback_swing_amount8 ));
+    add_tooltip( m_spinbutton_swing_amount8, "Adjust 1/8 swing amount" );
+
+    m_adjust_swing_amount16 = manage(new Adjustment(m_mainperf->get_swing_amount16(), 0, c_max_swing_amount, 1));
+    m_spinbutton_swing_amount16 = manage( new SpinButton( *m_adjust_swing_amount16 ));
+    m_spinbutton_swing_amount16->set_editable( false );
+    m_adjust_swing_amount16->signal_value_changed().connect(
+            mem_fun(*this, &mainwnd::adj_callback_swing_amount16 ));
+    add_tooltip( m_spinbutton_swing_amount16, "Adjust 1/16 swing amount" );
+
+
     /* undo */
     m_button_undo = manage( new Button());
     m_button_undo->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( undo_xpm  ))));
@@ -367,6 +383,12 @@ mainwnd::mainwnd(perform *a_p)
     m_hlbox->pack_start( *m_button_xpose , false, false );
     m_hlbox->pack_start( *m_entry_xpose , false, false );
 
+    m_hlbox->pack_start( *(manage(new Label( "swing" ))), false, false, 4);
+    m_hlbox->pack_start(*m_spinbutton_swing_amount8, false, false );
+    m_hlbox->pack_start(*(manage( new Label( "1/8" ))), false, false, 4);
+    m_hlbox->pack_start(*m_spinbutton_swing_amount16, false, false );
+    m_hlbox->pack_start(*(manage( new Label( "1/16" ))), false, false, 4);
+
     Button w;
     m_hlbox->set_focus_child( w ); // clear the focus
 
@@ -384,9 +406,9 @@ mainwnd::mainwnd(perform *a_p)
     /* add box */
     this->add (*ovbox);
 
-    m_snap = 4;
-    m_bpm = 4;
-    m_bw = 4;
+    //m_snap = 4;
+    //m_bpm = 4;
+    //m_bw = 4;
 
     set_snap( 4 );
     set_bpm( 4 );
@@ -432,6 +454,13 @@ mainwnd::timer_callback(  )
 
     if ( m_adjust_bpm->get_value() != m_mainperf->get_bpm()){
         m_adjust_bpm->set_value( m_mainperf->get_bpm());
+    }
+
+    if ( m_adjust_swing_amount8->get_value() != m_mainperf->get_swing_amount8()){
+        m_adjust_swing_amount8->set_value( m_mainperf->get_swing_amount8());
+    }
+    if ( m_adjust_swing_amount16->get_value() != m_mainperf->get_swing_amount16()){
+        m_adjust_swing_amount16->set_value( m_mainperf->get_swing_amount16());
     }
 
     return true;
@@ -749,6 +778,9 @@ void mainwnd::open_file(const Glib::ustring& fn)
     update_window_title();
 
     m_adjust_bpm->set_value( m_mainperf->get_bpm());
+
+    m_adjust_swing_amount8->set_value( m_mainperf->get_swing_amount8());
+    m_adjust_swing_amount16->set_value( m_mainperf->get_swing_amount16());
 }
 
 
@@ -1009,6 +1041,20 @@ void
 mainwnd::adj_callback_bpm( )
 {
     m_mainperf->set_bpm( (int) m_adjust_bpm->get_value());
+    m_modified = true;
+}
+
+void
+mainwnd::adj_callback_swing_amount8( )
+{
+    m_mainperf->set_swing_amount8( (int) m_adjust_swing_amount8->get_value());
+    m_modified = true;
+}
+
+void
+mainwnd::adj_callback_swing_amount16( )
+{
+    m_mainperf->set_swing_amount16( (int) m_adjust_swing_amount16->get_value());
     m_modified = true;
 }
 

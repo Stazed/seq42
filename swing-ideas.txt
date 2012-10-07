@@ -51,7 +51,7 @@ note#   start tick  end tick
  2       72         190
 
 
-example: 1 bar with 8 8 notes:
+example: 1 bar with 8 8th notes:
 note#   start tick  end tick
 -----   ----------  --------
  1        0          94
@@ -69,4 +69,18 @@ note#   start tick  end tick
  1        0         142    (96 * 1.5) - 2
  2      144         190
 
+
+Just fyi: here's the ticks/timestamps for a one bar pattern with a single
+16th note at the start, played thru twice in a loop:
+
+offset_timestamp=000768  start_tick_offset=000768  end_tick_offset=000768
+event: [000000] [8E0CA00] 90 3C 64
+offset_timestamp=000814  start_tick_offset=000813  end_tick_offset=000814
+event: [000046] [8E0CA00] 80 3C 64
+offset_timestamp=001536  start_tick_offset=001535  end_tick_offset=001536
+event: [000000] [8E0CA00] 90 3C 64
+offset_timestamp=001582  start_tick_offset=001582  end_tick_offset=001583
+event: [000046] [8E0CA00] 80 3C 64
+
+Note how each bar starts on a multiple of 768 ticks.
 

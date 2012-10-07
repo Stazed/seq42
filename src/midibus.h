@@ -210,6 +210,9 @@ class mastermidibus
     /* current note transpose value (for all transposable tracks) */
     int m_transpose;
 
+    int m_swing_amount8;
+    int m_swing_amount16;
+
     /* locking */
     mutex m_mutex;
 
@@ -244,6 +247,32 @@ class mastermidibus
 
     void set_transpose( int a_transpose ) { m_transpose = a_transpose; }
     int get_transpose( void) { return m_transpose; }
+
+    void set_swing_amount8(int a_swing_amount)
+    {
+        if ( a_swing_amount < 0 )  a_swing_amount = 0;
+        if ( a_swing_amount > c_max_swing_amount ) a_swing_amount = c_max_swing_amount;
+        m_swing_amount8 = a_swing_amount;
+    }
+
+
+    int get_swing_amount8( )
+    {
+        return  m_swing_amount8;
+    }
+
+    void set_swing_amount16(int a_swing_amount)
+    {
+        if ( a_swing_amount < 0 )  a_swing_amount = 0;
+        if ( a_swing_amount > c_max_swing_amount ) a_swing_amount = c_max_swing_amount;
+        m_swing_amount16 = a_swing_amount;
+    }
+
+
+    int get_swing_amount16( )
+    {
+        return  m_swing_amount16;
+    }
     
     void print();
     void flush(); 

@@ -68,6 +68,8 @@ class seqedit : public Gtk::Window
     Menu       *m_menu_bpm;
     Menu       *m_menu_bw;
 
+    Menu       *m_menu_swing_mode;
+
     SpinButton  *m_spinbutton_vel;
     Adjustment  *m_adjust_vel;
 
@@ -122,6 +124,9 @@ class seqedit : public Gtk::Window
     
     Button      *m_button_length;
     Entry       *m_entry_length;
+    
+    Button      *m_button_swing_mode;
+    Entry       *m_entry_swing_mode;
     
     Button      *m_button_key;
     Entry       *m_entry_key;
@@ -193,6 +198,9 @@ class seqedit : public Gtk::Window
     void set_measures( int a_length_measures  );
     void apply_length( int a_bpm, int a_bw, int a_measures );
     long get_measures( void );
+
+    void set_swing_mode( int a_mode  );
+    int get_swing_mode( void );
 
     void set_scale( int a_scale );
     void set_key( int a_note );
