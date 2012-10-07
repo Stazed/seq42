@@ -59,7 +59,8 @@
 int seqedit::m_initial_zoom = 2;
 int seqedit::m_initial_snap = c_ppqn / 4;
 int seqedit::m_initial_note_length = c_ppqn / 4;
-int seqedit::m_initial_scale = 0;
+//int seqedit::m_initial_scale = 0;
+int seqedit::m_initial_scale = c_scale_major;
 int seqedit::m_initial_key = 0;
 int seqedit::m_initial_bg_seq = -1;
 int seqedit::m_initial_bg_trk = -1;
@@ -108,9 +109,8 @@ seqedit::seqedit( sequence *a_seq,
     m_mainperf = a_perf;
 
     /* main window */
-    std::string title = "seq42 - ";
+    std::string title = "seq42 - sequence - ";
     title.append(m_seq->get_name());
-    title.append(" (sequence)");
     set_title(title);
     set_size_request(700, 500);
 
@@ -502,7 +502,7 @@ seqedit::create_menus( void )
                 sigc::bind(mem_fun(*this, &seqedit::set_measures), 64 )));
 
 
-    m_menu_swing_mode->items().push_back(MenuElem("no",
+    m_menu_swing_mode->items().push_back(MenuElem("off",
                 sigc::bind(mem_fun(*this, &seqedit::set_swing_mode), c_no_swing )));
     m_menu_swing_mode->items().push_back(MenuElem("1/8",
                 sigc::bind(mem_fun(*this, &seqedit::set_swing_mode), c_swing_eighths )));
@@ -1255,7 +1255,7 @@ seqedit::set_swing_mode( int a_mode  )
     } else if(a_mode == c_swing_sixteenths) {
         m_entry_swing_mode->set_text("1/16");
     } else {
-        m_entry_swing_mode->set_text("no");
+        m_entry_swing_mode->set_text("off");
     }
 }
 

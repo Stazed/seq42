@@ -1138,13 +1138,12 @@ mainwnd::update_window_title()
     std::string title;
 
     if (global_filename == "")
-        title = ( PACKAGE ) + string( " - unnamed (song)" );
+        title = ( PACKAGE ) + string( " - song - unsaved" );
     else
         title =
             ( PACKAGE )
-            + string( " - " )
-            + Glib::filename_to_utf8(global_filename)
-            + string( " (song)" );
+            + string( " - song - " )
+            + Glib::filename_to_utf8(global_filename);
 
     set_title ( title.c_str());
 }

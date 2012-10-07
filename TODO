@@ -28,7 +28,7 @@
 
 [x] Add a Copy item to the seqlist popup menu (copies the seq and opens it in the seqeditor)
 
-[ ] change window title
+[x] change window title
 from: "seq42 - NAME (TYPE)"
 to:   "seq42 TYPE - NAME"
 

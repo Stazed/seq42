@@ -37,9 +37,8 @@ trackedit::trackedit (track *a_track)
     m_track = a_track;
 
     /* main window */
-    std::string title = "seq42 - ";
+    std::string title = "seq42 - track - ";
     title.append(m_track->get_name());
-    title.append(" (track)");
     set_title(title);
     set_size_request(400, 120);
 
