@@ -1,3 +1,11 @@
+2012-10-06 Sam Brauer <sam.brauer@gmail.com>
+    added song transpose (temporary with option to apply permanently)
+    added dynamic swing
+    added note editing keyboard actions (move notes with cursor keys,
+    up and down by one note, or up or down by octave with Shift, left and 
+    right by grid snap amount, or left/right by one tick with Shift,
+    also Alt-Q to quantize notes)
+
 2010-07-06 Sam Brauer <sam.brauer@gmail.com>
 	* began  Seq42 - a fork of Seq24 with greater emphasis on 
 	song creation than live loop performance.

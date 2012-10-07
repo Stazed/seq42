@@ -35,6 +35,10 @@ to:   "seq42 TYPE - NAME"
 example: "seq42 - untitled (track)"  ->  "seq42 track - untitled"
 
 
+[ ] Get rid of configurable keys in Options dialog... hard code the few
+    that are currently configurable.
+
+
 [x] Add a transpose flag to track (True by default) and a global transpose value to the song/perf.  When playing, use the global transpose value for tracks that enable transposition.   Add some UI (a dropdown in the main window... and maybe keyboard shortcuts).
    [x] Add a song level function to apply the current transpose value... 
    Iterates thru all transposable tracks and changes the pitch values for all patterns... finally sets global transpose value to 0.
@@ -43,7 +47,6 @@ example: "seq42 - untitled (track)"  ->  "seq42 track - untitled"
 [ ] Change bpm from int to float... and allow one decimal place in UI (134.5 for example)
 
 [X] Don't switch song/live mode automatically anymore.  Show mode in main window (with a toggle button).
-[ ] Also add a configurage keystroke to toggle mode.
 
 [ ] Show midi bus and channel in sequence list.
 
@@ -86,7 +89,7 @@ example: "seq42 - untitled (track)"  ->  "seq42 track - untitled"
 [ ] Add new song function to create triggers between the left and right markers for the 
 patterns that currently have their play flag on.
 
-[ ] Add swing functionality?  See swing-ideas.txt
+[x] Add swing functionality?  See swing-ideas.txt
 
 Seq24 stuff below......
 
