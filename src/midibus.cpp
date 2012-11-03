@@ -1003,6 +1003,8 @@ mastermidibus::init( )
 
     set_bpm( c_bpm );
     set_ppqn( c_ppqn );
+    set_swing_amount8( 0 );
+    set_swing_amount16( 0 );
 
     /* midi input */
     /* poll descriptors */
@@ -1074,6 +1076,8 @@ mastermidibus::init( )
 
     set_bpm( c_bpm );
     set_ppqn( c_ppqn );
+    set_swing_amount8( 0 );
+    set_swing_amount16( 0 );
 
     /* midi input */
     /* poll descriptors */
