@@ -266,6 +266,13 @@ class sequence
 
     void select_all (void);
 
+    /* given a note length (in ticks) and a boolean indicating even or odd,
+    select all notes where the note on even occurs exactly on an even (or odd)
+    multiple of note length.
+    Example use: select every note that starts on an even eigth note beat.
+    */
+    int select_even_or_odd_notes(int note_len, bool even);
+
     void copy_selected (void);
     void paste_selected (long a_tick, int a_note);
 
@@ -367,6 +374,7 @@ class sequence
 			 false);
     void transpose_notes (int a_steps, int a_scale);
     void shift_notes (int a_ticks);  // move selected notes later/earlier in time
+    void multiply_event_time( float a_multiplier );  // multiply selected event timestamps by multiplier (for example, to double or halve time)
 
     bool save( ofstream *file );
     bool load( ifstream *file, int version );

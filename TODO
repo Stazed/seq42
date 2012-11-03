@@ -1,31 +1,17 @@
-[ ] Add to Select menu (along with All Notes and Inverse Notes):
-Even 1/4 Notes
-Odd 1/4 Notes
-Even 1/8 Notes
-Odd 1/8 Notes
-Even 1/16 Notes
-Odd 1/16 Notes
+[ ] Fix trigger offset bug!
 
 [ ] Add new song function to create triggers between the left and right markers for the patterns that currently have their play flag on.
 
+[ ] Add to track popup menu in song editor:
+insert row
+delete row (if row isn't empty, deletes the track too)
 
 [ ] In trigger popup menu, if the trigger has a pattern, add an option to set the pattern's play flag (if it's off) or unset it (if on).  Only show the option if not in song mode.
-
-
-
 
 [ ] Get rid of configurable keys in Options dialog... hard code the few
     that are currently configurable.
 
-
-[x] Add a transpose flag to track (True by default) and a global transpose value to the song/perf.  When playing, use the global transpose value for tracks that enable transposition.   Add some UI (a dropdown in the main window... and maybe keyboard shortcuts).
-   [x] Add a song level function to apply the current transpose value... 
-   Iterates thru all transposable tracks and changes the pitch values for all patterns... finally sets global transpose value to 0.
-
-
 [ ] Change bpm from int to float... and allow one decimal place in UI (134.5 for example)
-
-[X] Don't switch song/live mode automatically anymore.  Show mode in main window (with a toggle button).
 
 [ ] Show midi bus and channel in sequence list.
 
@@ -63,7 +49,24 @@ Odd 1/16 Notes
     performance.  Handy for copying sequences from another song.  You could even have a 
     file that contains re-usable sequences (like various drum rolls or CC patterns).
 
+
+[X] Don't switch song/live mode automatically anymore.  Show mode in main window (with a toggle button).
+
+[x] Add a transpose flag to track (True by default) and a global transpose value to the song/perf.  When playing, use the global transpose value for tracks that enable transposition.   Add some UI (a dropdown in the main window... and maybe keyboard shortcuts).
+   [x] Add a song level function to apply the current transpose value... 
+   Iterates thru all transposable tracks and changes the pitch values for all patterns... finally sets global transpose value to 0.
+
+
 [x] Add swing functionality?  See swing-ideas.txt
+
+[x] Add to Select menu (along with All Notes and Inverse Notes):
+Even 1/4 Notes
+Odd 1/4 Notes
+Even 1/8 Notes
+Odd 1/8 Notes
+Even 1/16 Notes
+Odd 1/16 Notes
+
 
 
 <0.0.1>

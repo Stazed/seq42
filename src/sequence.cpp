@@ -227,7 +227,6 @@ sequence::play(long a_tick, trigger *a_trigger)
     unsigned long offset_timestamp;
 
     /* play the notes in our frame */
-    //if ( m_playing && !m_track->get_song_mute() ){
     if ( m_playing ){
         list<event>::iterator e = m_list_event.begin();
 
@@ -718,6 +717,41 @@ sequence::get_num_selected_events( unsigned char a_status,
     
     unlock();
     
+    return ret;
+}
+
+int
+sequence::select_even_or_odd_notes(int note_len, bool even)
+{
+    int ret = 0;
+    list<event>::iterator i;
+    long tick = 0;
+    int is_even = 0;
+    event *note_off;
+    unselect();
+    lock();
+    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ) {
+        if ( (*i).is_note_on() ) {
+            tick = (*i).get_timestamp();
+            if(tick % note_len == 0) {
+                // Note that from the user POV of even and odd,
+                // we start counting from 1, not 0.
+                is_even = (tick / note_len) % 2;
+                if (
+                    (even && is_even) || (!even && !is_even)
+                ) {
+                    (*i).select( );
+                    ret++;
+                    if ( (*i).is_linked() ) {
+                        note_off = (*i).get_linked();
+                        note_off->select();
+                        ret++;
+                    }
+                }
+            }
+        }
+    }
+    unlock();
     return ret;
 }
 
@@ -2518,14 +2552,51 @@ sequence::quanize_events( unsigned char a_status, unsigned char a_cc,
     quantized_events.sort();
     m_list_event.merge(quantized_events);
     verify_and_link();
-
     unlock();
-
 }
 
 
+void
+sequence::multiply_event_time( float a_multiplier )
+{
+    event e;
 
+    list<event> stretched_events;
 
+    lock();
+
+    mark_selected();
+    
+    list<event>::iterator i;
+
+    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ) {
+
+        if ( (*i).is_marked() ) {
+                e = (*i);
+                e.unmark();
+
+                long timestamp = e.get_timestamp();
+                if ( e.get_status() ==  EVENT_NOTE_OFF) {
+                    timestamp += c_note_off_margin;
+                }
+                timestamp *= a_multiplier;
+                if ( e.get_status() ==  EVENT_NOTE_OFF) {
+                    timestamp -= c_note_off_margin;
+                }
+                timestamp %= m_length;
+                //printf("in multiply_event_time; a_multiplier=%f  timestamp=%06ld  new_timestamp=%06ld (mlength=%ld)\n", a_multiplier, e.get_timestamp(), timestamp, m_length);
+                e.set_timestamp(timestamp);
+                stretched_events.push_front(e);
+
+        }
+    }
+
+    remove_marked();
+    stretched_events.sort();
+    m_list_event.merge( stretched_events);
+    verify_and_link();
+    unlock();
+}
 
 
 void 
