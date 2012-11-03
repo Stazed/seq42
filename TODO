@@ -1,38 +1,17 @@
-<0.0.1>
-[x] Refactor top-level window (mainwnd) so that it contains the song 
-    (aka "performance") editor (perfedit) instead of the pattern grid (mainwid).
-[x] Removed a lot of live looping stuff (like mute groups, queuing, etc)
-[x] Added loop toggle kb shortcut
-[x] Refactor data structures and UI such that a performance has a list
-    of "tracks".  Split some of the seq24 sequence class out into track.
-    Track should have a midi port and channel, name, mute status, and a list of
-    sequences.  Sequence should no longer have midi port and channel; instead
-    it should send midi data to its track's port and channel.
-    Will also need to update file saving and loading.
+[ ] Add to Select menu (along with All Notes and Inverse Notes):
+Even 1/4 Notes
+Odd 1/4 Notes
+Even 1/8 Notes
+Odd 1/8 Notes
+Even 1/16 Notes
+Odd 1/16 Notes
 
-[x] Change seqedit such that there is a button (use midi.xpm) that opens the
-    track edit window
+[ ] Add new song function to create triggers between the left and right markers for the patterns that currently have their play flag on.
 
-[x] Add function to trigger menu to copy an existing sequence (from any track)
 
-[x] Add function to mute all tracks, unmute all tracks, and toggle/invert
-    the mute status of all tracks.  (see existing perform::mute_all_tracks)
+[ ] In trigger popup menu, if the trigger has a pattern, add an option to set the pattern's play flag (if it's off) or unset it (if on).  Only show the option if not in song mode.
 
-[x] Add to Edit menu a new action "View sequence list" which opens a new window
-    with a TreeView widget of all tracks.  Each track can be expanded to list 
-    all of the sequences.  Right-clicking a sequence pops up a menu with 
-    options to Edit and Delete.  When Delete is selected, check if the sequence 
-    is assigned to at least one trigger... if so, ask the user if they're sure.
 
-[x] Add a "New sequence" option to track menu.  Creates a new sequence and pops up edit window.  Doesn't deal with triggers at all.
-
-[x] Add a Copy item to the seqlist popup menu (copies the seq and opens it in the seqeditor)
-
-[x] change window title
-from: "seq42 - NAME (TYPE)"
-to:   "seq42 TYPE - NAME"
-
-example: "seq42 - untitled (track)"  ->  "seq42 track - untitled"
 
 
 [ ] Get rid of configurable keys in Options dialog... hard code the few
@@ -84,12 +63,46 @@ example: "seq42 - untitled (track)"  ->  "seq42 track - untitled"
     performance.  Handy for copying sequences from another song.  You could even have a 
     file that contains re-usable sequences (like various drum rolls or CC patterns).
 
-[ ] In trigger popup menu, if the trigger has a pattern, add an option to set the pattern's play flag (if it's off) or unset it (if on).  Only show the option if not in song mode.
-
-[ ] Add new song function to create triggers between the left and right markers for the 
-patterns that currently have their play flag on.
-
 [x] Add swing functionality?  See swing-ideas.txt
+
+
+<0.0.1>
+[x] Refactor top-level window (mainwnd) so that it contains the song 
+    (aka "performance") editor (perfedit) instead of the pattern grid (mainwid).
+[x] Removed a lot of live looping stuff (like mute groups, queuing, etc)
+[x] Added loop toggle kb shortcut
+[x] Refactor data structures and UI such that a performance has a list
+    of "tracks".  Split some of the seq24 sequence class out into track.
+    Track should have a midi port and channel, name, mute status, and a list of
+    sequences.  Sequence should no longer have midi port and channel; instead
+    it should send midi data to its track's port and channel.
+    Will also need to update file saving and loading.
+
+[x] Change seqedit such that there is a button (use midi.xpm) that opens the
+    track edit window
+
+[x] Add function to trigger menu to copy an existing sequence (from any track)
+
+[x] Add function to mute all tracks, unmute all tracks, and toggle/invert
+    the mute status of all tracks.  (see existing perform::mute_all_tracks)
+
+[x] Add to Edit menu a new action "View sequence list" which opens a new window
+    with a TreeView widget of all tracks.  Each track can be expanded to list 
+    all of the sequences.  Right-clicking a sequence pops up a menu with 
+    options to Edit and Delete.  When Delete is selected, check if the sequence 
+    is assigned to at least one trigger... if so, ask the user if they're sure.
+
+[x] Add a "New sequence" option to track menu.  Creates a new sequence and pops up edit window.  Doesn't deal with triggers at all.
+
+[x] Add a Copy item to the seqlist popup menu (copies the seq and opens it in the seqeditor)
+
+[x] change window title
+from: "seq42 - NAME (TYPE)"
+to:   "seq42 TYPE - NAME"
+
+example: "seq42 - untitled (track)"  ->  "seq42 track - untitled"
+
+
 
 Seq24 stuff below......
 
