@@ -1322,6 +1322,59 @@ sequence::decrement_selected(unsigned char a_status, unsigned char a_control )
 }
 
 
+void 
+sequence::randomize_selected( unsigned char a_status, unsigned char a_control, int a_plus_minus )
+{
+    int random;
+    unsigned char data[2];
+    unsigned char data_item;
+    int data_idx = 0;
+
+    lock();
+
+    list<event>::iterator i;
+
+    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
+
+        if ( (*i).is_selected() &&
+             (*i).get_status() == a_status ){
+            (*i).get_data( data, data+1 );
+
+            if ( a_status == EVENT_NOTE_ON || 
+                 a_status == EVENT_NOTE_OFF || 
+                 a_status == EVENT_AFTERTOUCH ||
+                 a_status == EVENT_CONTROL_CHANGE || 
+                 a_status == EVENT_PITCH_WHEEL ){
+
+                data_idx = 1;
+            }
+
+            if ( a_status == EVENT_PROGRAM_CHANGE ||
+                 a_status == EVENT_CHANNEL_PRESSURE ){
+
+                data_idx = 0;
+            }
+
+            data_item = data[data_idx];
+
+            // See http://c-faq.com/lib/randrange.html
+            random = (rand() / (RAND_MAX / ((2 * a_plus_minus) + 1) + 1)) - a_plus_minus;
+            data_item += random;
+            if(data_item > 127) {
+                data_item = 127;
+            } else if(data_item < 0) {
+                data_item = 0;
+            }
+
+            data[data_idx] = data_item;
+
+            (*i).set_data(data[0], data[1]);
+        }
+    }
+        
+    unlock();
+}
+
 
 
 void

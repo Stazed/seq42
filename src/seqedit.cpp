@@ -75,6 +75,8 @@ const int select_inverse_events = 4;
 const int quantize_notes    = 5;
 const int quantize_events   = 6;
 
+const int randomize_events   = 7;
+
 const int tighten_events   =  8;
 const int tighten_notes    =  9;
 
@@ -648,6 +650,17 @@ seqedit::popup_tool_menu( void )
     }
 
     m_menu_tools->items().push_back( MenuElem( "Modify Pitch", *holder ));
+    
+
+    holder = manage( new Menu());
+    for ( int i=1; i<17; ++i) {
+        snprintf(num, sizeof(num), "+/- %d", i);
+        holder->items().push_back( MenuElem( num,
+                    sigc::bind(mem_fun(*this,&seqedit::do_action),
+                        randomize_events, i )));
+    }
+    m_menu_tools->items().push_back( MenuElem( "Randomize Event Values", *holder ));
+
     m_menu_tools->popup(0,0);
 }
 
@@ -681,6 +694,11 @@ seqedit::do_action( int a_action, int a_var )
 
         case select_odd_notes:
             m_seq->select_even_or_odd_notes(a_var, false);
+            break;
+
+        case randomize_events:
+            m_seq->push_undo();
+            m_seq->randomize_selected(m_editing_status, m_editing_cc, a_var);
             break;
 
         case quantize_notes:

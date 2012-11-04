@@ -307,6 +307,8 @@ class sequence
     void increment_selected (unsigned char a_status, unsigned char a_control);
     void decrement_selected (unsigned char a_status, unsigned char a_control);
 
+    void randomize_selected( unsigned char a_status, unsigned char a_control, int a_plus_minus );
+
     /* moves note off event */
     void grow_selected (long a_delta_tick);
     void stretch_selected(long a_delta_tick);
