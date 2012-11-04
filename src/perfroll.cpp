@@ -860,7 +860,6 @@ perfroll::new_sequence( track *a_track, trigger *a_trigger )
     int seq_idx = a_track->new_sequence();
     m_mainperf->push_trigger_undo();
     sequence *a_sequence = a_track->get_sequence(seq_idx);
-    //a_track->set_trigger_sequence(a_trigger, a_sequence);
     a_track->set_trigger_sequence(a_trigger, seq_idx);
     new seqedit( a_sequence, m_mainperf );
 }
@@ -894,7 +893,6 @@ perfroll::edit_sequence( track *a_track, trigger *a_trigger )
     }
 }
 
-//void perfroll::set_trigger_sequence( track *a_track, trigger *a_trigger, sequence *a_sequence )
 void perfroll::set_trigger_sequence( track *a_track, trigger *a_trigger, int a_sequence )
 {
     m_mainperf->push_trigger_undo();
@@ -1160,16 +1158,16 @@ bool FruityPerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths
             if ( ths.m_moving )
             {
                 ths.m_mainperf->get_track( ths.m_drop_track )
-                              ->move_selected_triggers_to( tick );
+                              ->move_selected_triggers_to( tick, true );
             }
             if ( ths.m_growing )
             {
                 if ( ths.m_grow_direction )
                     ths.m_mainperf->get_track( ths.m_drop_track )
-                                  ->move_selected_triggers_to( tick, 0 );
+                                  ->move_selected_triggers_to( tick, false, 0 );
                 else
                     ths.m_mainperf->get_track( ths.m_drop_track )
-                                  ->move_selected_triggers_to( tick-1, 1 );
+                                  ->move_selected_triggers_to( tick-1, false, 1 );
             }
 
 
@@ -1377,8 +1375,6 @@ bool Seq42PerfInput::on_button_release_event(GdkEventButton* a_ev, perfroll& ths
                     for ( int s=0; s< a_track->get_number_of_sequences(); s++ ){
                         sequence *a_seq = a_track->get_sequence( s );
                         snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
-                        //set_seq_menu->items().push_back(MenuElem(name,
-                            //sigc::bind(mem_fun(ths, &perfroll::set_trigger_sequence), a_track, a_trigger, a_seq)));
                         set_seq_menu->items().push_back(MenuElem(name,
                             sigc::bind(mem_fun(ths, &perfroll::set_trigger_sequence), a_track, a_trigger, s)));
 
@@ -1471,16 +1467,16 @@ bool Seq42PerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths)
             if ( ths.m_moving )
             {
                 ths.m_mainperf->get_track( ths.m_drop_track )
-                              ->move_selected_triggers_to( tick );
+                              ->move_selected_triggers_to( tick, true );
             }
             if ( ths.m_growing )
             {
                 if ( ths.m_grow_direction )
                     ths.m_mainperf->get_track( ths.m_drop_track )
-                                  ->move_selected_triggers_to( tick, 0 );
+                                  ->move_selected_triggers_to( tick, false, 0 );
                 else
                     ths.m_mainperf->get_track( ths.m_drop_track )
-                                  ->move_selected_triggers_to( tick-1, 1 );
+                                  ->move_selected_triggers_to( tick-1, false, 1 );
             }
 
             

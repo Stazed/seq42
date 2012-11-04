@@ -185,7 +185,7 @@ class sequence
 
 
     /* length in ticks */
-    void set_length (long a_len);
+    void set_length (long a_len, bool a_adjust_triggers = true);
     long get_length ();
 
     /* returns last tick played..  used by 

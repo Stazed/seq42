@@ -145,7 +145,7 @@ class track
     //
     // Selection and Manipulation
     //
-    void add_trigger (long a_tick, long a_length, long a_offset = 0);
+    void add_trigger (long a_tick, long a_length, long a_offset = 0, int a_seq = -1);
     void split_trigger( long a_tick );
     void grow_trigger (long a_tick_from, long a_tick_to, long a_length);
     void del_trigger (long a_tick );
@@ -161,7 +161,9 @@ class track
     void cut_selected_trigger( void );
     void copy_selected_trigger( void );
     void paste_trigger( void );
-    void move_selected_triggers_to(long a_tick, int a_which=2);
+    void move_selected_triggers_to(long a_tick, bool a_adjust_offset, int a_which=2);
+    long adjust_offset( long a_offset, long a_length );
+    void adjust_trigger_offsets_to_length( sequence *a_seq, long a_new_len );
     long get_selected_trigger_start_tick( void );
     long get_selected_trigger_end_tick( void );
 

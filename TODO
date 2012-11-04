@@ -1,4 +1,16 @@
 [ ] Fix trigger offset bug!
+I think that will involve adding "adjust_offset" stuff back to move_selected_triggers_to()
+See seq24 sequence.cpp and seq42 track.cpp
+Then moving a trigger should adjust the offset (while it currently doesn't).
+May need to add back other offset adjusting stuff from seq24 too....
+
+[ ] Add Randomize function to seqedit
+Has options:
++/- 1
++/- 2
+...
++/- 16
+Adds a random value from the specified range to the velocity or CC value of all selected events.
 
 [ ] Add new song function to create triggers between the left and right markers for the patterns that currently have their play flag on.
 
