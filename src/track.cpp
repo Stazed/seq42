@@ -275,8 +275,6 @@ track::reset_sequences(bool a_playback_mode)
         m_vector_sequence[i]->off_playing_notes();
         m_vector_sequence[i]->set_playing(false);
         m_vector_sequence[i]->zero_markers();
-        // FIXME: does this make sense?  
-        //if (!a_playback_mode) m_vector_sequence[i]->set_playing(state);
         m_vector_sequence[i]->set_playing(state);
     }
 }
@@ -476,13 +474,14 @@ track::clear_triggers( void )
 
 
 void 
-track::add_trigger( long a_tick, long a_length, long a_offset )
+track::add_trigger( long a_tick, long a_length, long a_offset, int a_seq )
 {
     lock();
 
     trigger e;
 
     e.m_offset = a_offset;
+    e.m_sequence = a_seq;
     
     e.m_selected = false;
 
@@ -615,11 +614,46 @@ track::split_trigger( trigger &trig, long a_split_tick)
     
     long length = new_tick_end - new_tick_start;
     if ( length > 1 )
-        add_trigger( new_tick_start, length + 1, trig.m_offset );
+        add_trigger( new_tick_start, length + 1, trig.m_offset, trig.m_sequence );
     
     unlock();
 }
 
+void
+track::adjust_trigger_offsets_to_length( sequence *a_seq, long a_new_len )
+{
+    lock();
+
+    int seq_idx = get_sequence_index(a_seq);
+    long seq_length = a_seq->get_length();
+    
+    // for all triggers, and undo triggers
+    list<trigger>::iterator i = m_list_trigger.begin();
+    
+    while ( i != m_list_trigger.end() ){
+
+        if(i->m_sequence == seq_idx) {
+            i->m_offset = adjust_offset( i->m_offset, seq_length );
+            i->m_offset = seq_length - i->m_offset; // flip
+            long inverse_offset = seq_length - (i->m_tick_start % seq_length);
+
+            long local_offset = (inverse_offset - i->m_offset);
+            local_offset %= seq_length;
+
+            long inverse_offset_new = a_new_len - (i->m_tick_start % a_new_len);
+
+            long new_offset = inverse_offset_new - local_offset;
+
+            i->m_offset = (new_offset % a_new_len);
+            i->m_offset = a_new_len - i->m_offset;
+        }
+        
+        ++i;
+    }
+    
+    unlock();
+    
+}
 
 void
 track::copy_triggers( long a_start_tick, 
@@ -634,10 +668,19 @@ track::copy_triggers( long a_start_tick,
     move_triggers( a_start_tick, 
 		   a_distance,
 		   true );
+
+    sequence *a_seq;
+    long seq_length = 0L;
     
     list<trigger>::iterator i = m_list_trigger.begin();
     while(  i != m_list_trigger.end() ){
 
+    a_seq = get_trigger_sequence(&(*i));
+    if(a_seq) {
+        seq_length = a_seq->get_length();
+    } else {
+        seq_length = 0L;
+    }
 
         
 	if ( (*i).m_tick_start >= from_start_tick &&
@@ -658,6 +701,16 @@ track::copy_triggers( long a_start_tick,
             if ((*i).m_tick_end   > from_end_tick )
             {
                 e.m_tick_end = from_start_tick -1;
+            }
+
+            if(seq_length) {
+                e.m_offset += (seq_length - (a_distance % seq_length));
+                e.m_offset %= seq_length;
+
+                if ( e.m_offset < 0 )
+                    e.m_offset += seq_length;
+            } else {
+                e.m_offset = 0L;
             }
 
             m_list_trigger.push_front( e );
@@ -766,15 +819,29 @@ track::move_triggers( long a_start_tick,
         ++i;
     }
 
+    sequence *a_seq;
+    long seq_length = 0L;
+
 
     i = m_list_trigger.begin();
     while(  i != m_list_trigger.end() ){
+
+        a_seq = get_trigger_sequence(&(*i));
+        if(a_seq) {
+            seq_length = a_seq->get_length();
+        } else {
+            seq_length = 0L;
+        }
 
         if ( a_direction ) // forward
         {
             if ( (*i).m_tick_start >= a_start_tick ){
                 (*i).m_tick_start += a_distance;
                 (*i).m_tick_end   += a_distance;
+                if(seq_length) {
+                    (*i).m_offset += a_distance;
+                    (*i).m_offset %= seq_length;
+                }
                 
             }         
         }
@@ -783,8 +850,18 @@ track::move_triggers( long a_start_tick,
             if ( (*i).m_tick_start >= a_end_tick ){
                 (*i).m_tick_start -= a_distance;
                 (*i).m_tick_end   -= a_distance;
-                
+
+                if(seq_length) {
+                    (*i).m_offset += (seq_length - (a_distance % seq_length));
+                    (*i).m_offset %= seq_length;
+                }
             }  
+        }
+
+        if(seq_length) {
+            (*i).m_offset = adjust_offset( (*i).m_offset, seq_length );
+        } else {
+            (*i).m_offset = 0L;
         }
 
         ++i;
@@ -843,7 +920,7 @@ track::get_selected_trigger_end_tick( void )
 
 
 void
-track::move_selected_triggers_to( long a_tick, int a_which )
+track::move_selected_triggers_to( long a_tick, bool a_adjust_offset, int a_which )
 {
 
     lock();
@@ -935,6 +1012,17 @@ track::move_selected_triggers_to( long a_tick, int a_which )
             
             if ( a_which == 1 || a_which == 2 )
                 s->m_tick_end   += a_delta_tick;
+
+            if ( a_adjust_offset ){
+
+                int seq_idx = s->m_sequence;
+                if(seq_idx != -1) {
+                    long a_length = get_sequence(seq_idx)->get_length();
+                    s->m_offset += a_delta_tick;
+                    s->m_offset = adjust_offset( s->m_offset, a_length );
+                }
+            }
+
             
             break;
 	}
@@ -964,6 +1052,17 @@ track::get_max_trigger( void )
     unlock();
 
     return ret;
+}
+
+long
+track::adjust_offset( long a_offset, long a_length )
+{    
+    a_offset %= a_length;
+    
+    if ( a_offset < 0 )
+        a_offset += a_length;
+
+    return a_offset;
 }
 
 trigger * 
@@ -1114,12 +1213,11 @@ track::paste_trigger( void )
         // paste at copy end
         add_trigger( m_trigger_clipboard.m_tick_end + 1,
                      length,
-                     m_trigger_clipboard.m_offset);
+                     m_trigger_clipboard.m_offset + length,
+                     m_trigger_clipboard.m_sequence);
         
         m_trigger_clipboard.m_tick_start = m_trigger_clipboard.m_tick_end +1;
         m_trigger_clipboard.m_tick_end = m_trigger_clipboard.m_tick_start + length - 1;
-        
-        m_trigger_clipboard.m_offset += length;
     }
 }
 

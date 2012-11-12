@@ -2098,7 +2098,7 @@ sequence::get_last_tick( )
 
 
 void 
-sequence::set_length( long a_len)
+sequence::set_length( long a_len, bool a_adjust_triggers)
 {
     lock();
 
@@ -2109,6 +2109,11 @@ sequence::set_length( long a_len)
 
     if ( a_len < (c_ppqn / 4) )
         a_len = (c_ppqn /4);
+
+    if ( a_adjust_triggers ) {
+        // Gross, but I can live with it...
+        get_track()->adjust_trigger_offsets_to_length( this, a_len );
+    }
 
     m_length = a_len;
     
