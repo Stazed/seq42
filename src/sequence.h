@@ -376,7 +376,7 @@ class sequence
 			 false);
     void transpose_notes (int a_steps, int a_scale);
     void shift_notes (int a_ticks);  // move selected notes later/earlier in time
-    void multiply_event_time( float a_multiplier );  // multiply selected event timestamps by multiplier (for example, to double or halve time)
+    void multiply_pattern( float a_multiplier );
 
     bool save( ofstream *file );
     bool load( ifstream *file, int version );

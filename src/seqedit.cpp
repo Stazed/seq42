@@ -83,8 +83,8 @@ const int tighten_notes    =  9;
 const int transpose     = 10;
 const int transpose_h   = 12;
 
-const int expand_events   = 13;
-const int compress_events = 14;
+const int expand_pattern   = 13;
+const int compress_pattern = 14;
 
 const int select_even_notes = 15;
 const int select_odd_notes  = 16;
@@ -605,13 +605,13 @@ seqedit::popup_tool_menu( void )
     }
 
     holder->items().push_back( SeparatorElem( )); 
-    holder->items().push_back( MenuElem( "Expand Selected Events",
+    holder->items().push_back( MenuElem( "Expand Pattern (double)",
                 sigc::bind(mem_fun(*this, &seqedit::do_action),
-                    expand_events,0 )));
+                    expand_pattern,0 )));
 
-    holder->items().push_back( MenuElem( "Compress Selected Events",
+    holder->items().push_back( MenuElem( "Compress Pattern (halve)",
                 sigc::bind(mem_fun(*this, &seqedit::do_action),
-                    compress_events,0 )));
+                    compress_pattern,0 )));
 
     m_menu_tools->items().push_back( MenuElem( "Modify Time", *holder ));
 
@@ -731,14 +731,14 @@ seqedit::do_action( int a_action, int a_var )
             m_seq->transpose_notes(a_var, m_scale); 
             break;
 
-        case expand_events:
+        case expand_pattern:
             m_seq->push_undo();
-            m_seq->multiply_event_time(2.0);
+            m_seq->multiply_pattern(2.0);
             break;
 
-        case compress_events:
+        case compress_pattern:
             m_seq->push_undo();
-            m_seq->multiply_event_time(0.5);
+            m_seq->multiply_pattern(0.5);
             break;
 
         default:

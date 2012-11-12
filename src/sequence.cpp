@@ -2610,45 +2610,41 @@ sequence::quanize_events( unsigned char a_status, unsigned char a_cc,
 
 
 void
-sequence::multiply_event_time( float a_multiplier )
+sequence::multiply_pattern( float a_multiplier )
 {
-    event e;
 
-    list<event> stretched_events;
+    long orig_length = get_length();
+    long new_length = orig_length * a_multiplier;
+
+    if(new_length > orig_length) {
+        set_length(new_length);
+    }
 
     lock();
-
-    mark_selected();
     
     list<event>::iterator i;
 
     for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ) {
 
-        if ( (*i).is_marked() ) {
-                e = (*i);
-                e.unmark();
-
-                long timestamp = e.get_timestamp();
-                if ( e.get_status() ==  EVENT_NOTE_OFF) {
-                    timestamp += c_note_off_margin;
-                }
-                timestamp *= a_multiplier;
-                if ( e.get_status() ==  EVENT_NOTE_OFF) {
-                    timestamp -= c_note_off_margin;
-                }
-                timestamp %= m_length;
-                //printf("in multiply_event_time; a_multiplier=%f  timestamp=%06ld  new_timestamp=%06ld (mlength=%ld)\n", a_multiplier, e.get_timestamp(), timestamp, m_length);
-                e.set_timestamp(timestamp);
-                stretched_events.push_front(e);
-
+        long timestamp = (*i).get_timestamp();
+        if ( (*i).get_status() ==  EVENT_NOTE_OFF) {
+            timestamp += c_note_off_margin;
         }
+        timestamp *= a_multiplier;
+        if ( (*i).get_status() ==  EVENT_NOTE_OFF) {
+            timestamp -= c_note_off_margin;
+        }
+        timestamp %= m_length;
+        //printf("in multiply_event_time; a_multiplier=%f  timestamp=%06ld  new_timestamp=%06ld (mlength=%ld)\n", a_multiplier, e.get_timestamp(), timestamp, m_length);
+        (*i).set_timestamp(timestamp);
     }
 
-    remove_marked();
-    stretched_events.sort();
-    m_list_event.merge( stretched_events);
     verify_and_link();
     unlock();
+
+    if(new_length < orig_length) {
+        set_length(new_length);
+    }
 }
 
 
