@@ -22,6 +22,15 @@ delete row (if row isn't empty, deletes the track too)
 
 [ ] Get rid of configurable keys in Options dialog... hard code the few
     that are currently configurable.
+F1 play (if already playing, stop and restart)
+F2 stop
+F3 bpm down
+F4 bpm up
+
+F5 song mode 
+F6 live mode 
+F7 loop on
+F8 loop off
 
 [ ] Change bpm from int to float... and allow one decimal place in UI (134.5 for example)
 
