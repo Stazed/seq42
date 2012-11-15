@@ -19,15 +19,15 @@ Other than these conceptual changes, a seq24 user should feel at home.  The awes
 Here are some of the other enhancements of seq42:
 * song-level transpose function: Each track has a transpose flag (true by default when adding a new track; you'll want to disable it on tracks that trigger drums or sample hits).  At any point (even while the sequencer is running) you can change the song's transpose value (in the range of -12 to +12) and it will affect the playback of all transposable tracks.  If you like, you can make the transposition permanent via a new song menu item.
 * drum machine-like swing function: Each sequence has a swing setting (none, 1/8 or 1/16).  At the song level (along with BPM) there are two swing amount settings (one for 1/8 and one for 1/16).  These settings are evaluated while the sequencer is playing; the notes in each sequence remain "straight" on the grid.
-* main window has a button to toggle between song and live modes (in seq24, this was buried in the options popup).
+* main window has a button to toggle between song and live modes (in seq24, this was in a tab in the Options dialog).
 * sequence editor now supports use of the cursor keys to move selected notes up/down in pitch or left/right in time.  Up and down move by one semitone.  Hold down Shift to move up or down by octave.  Right and left move the selected notes by the current snap amount.  (Note that it doesn't automatically snap the notes to the grid; if you want that, use the quantize function first.)  You can also nudge the selected notes by individual ticks by holding down the Shift key with left or right.
 * sequence editor has new menu items to randomize selected events (adding or subtracting a random value in a range from +/-1 to +/-16).  This can be used on velocity or CC values.
 * sequence editor has new menu items to select notes that occur on specific beats (even 1/4, odd 1/4, even 1/8, odd 1/8, even 1/16, odd 1/16)
 * song window has new menu items to mute all tracks, unmute all tracks and toggle track mute status.
 
 There are a few caveats too:
-* seq42 has a different file format; it can't open seq24 files and there's (at least currently) no way to convert seq24 files to seq42's format.
-* seq24 could import and export midi files; seq42 currently cannot.
+* seq42 has a different file format; it can't open seq24 files and there's currently no code to convert seq24 files to seq42's format.
+* seq24 can import and export midi files; seq42 currently cannot.
 
 What to do with a fresh repository checkout?
 --------------------------------------------
