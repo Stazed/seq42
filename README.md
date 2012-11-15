@@ -3,7 +3,7 @@ seq42 README
 
 What is seq42?
 --------------
-It's a fork of seq24, but with a greater emphasis on song editing (as opposed to live looping) and some enhancements.
+It's a fork of [seq24](https://launchpad.net/seq24), but with a greater emphasis on song editing (as opposed to live looping) and some enhancements.
 seq24 is great for sequence editing and live looping, but I found it cumbersome to edit songs as the number of sequences grew (I would quickly reach a point where there were more sequence rows in the song editor that would fit on my screen without scrolling, which made it difficult to keep track of the whole song).
 
 seq42 adds a new concept of a "track".  It breaks down like this:
