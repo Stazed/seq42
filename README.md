@@ -23,11 +23,11 @@ Here are some of the other enhancements of seq42:
 * sequence editor has new menu items to select notes that occur on specific beats (even 1/4, odd 1/4, even 1/8, odd 1/8, even 1/16, odd 1/16)
 * song window has new menu items to mute all tracks, unmute all tracks and toggle track mute status.
 
-There are a few de-hancements too:
+There are a few caveats too:
 * seq42 has a different file format; it can't open seq24 files and there's (at least currently) no way to convert seq24 files to seq42's format.
 * seq24 could import and export midi files; seq42 currently cannot.
 
 What to do with a fresh repository checkout?
 --------------------------------------------
-Apply "autoreconf" to get a configure script, then "./configure; make".  Finally copy the seq42 binary whereever you like.
+Apply "autoreconf" to get a configure script, then "./configure; make".  Finally copy the seq42 binary wherever you like.
 
