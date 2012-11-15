@@ -31,5 +31,5 @@ There are a few caveats too:
 
 What to do with a fresh repository checkout?
 --------------------------------------------
-Apply "autoreconf" to get a configure script, then "./configure; make".  Finally copy the seq42 binary wherever you like.
+Run the usual "./configure" then "make".  Finally copy the "seq42" binary (in the "src" directory) wherever you like.
 
