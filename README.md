@@ -4,13 +4,15 @@ seq42 README
 What is seq42?
 --------------
 It's a fork of [seq24](https://launchpad.net/seq24) (which is a fork of the [original seq24](http://filter24.org/seq24/)), but with a greater emphasis on song editing (as opposed to live looping) and some enhancements.
-seq24 is great for sequence editing and live looping, but I found it cumbersome to edit songs as the number of sequences grew (I would quickly reach a point where there were more sequence rows in the song editor that would fit on my screen without scrolling, which made it difficult to keep track of the whole song).
+seq24 is great for sequence editing and live looping, but I found it cumbersome to edit songs as the number of sequences grew (I would quickly reach a point where there were more sequence rows in the song editor than would fit on my screen without scrolling, which made it difficult to keep track of the whole song).
 
 seq42 adds a new concept of a "track".  It breaks down like this:
+
 A song in seq24 is a collection of sequences.  Each sequence has a midi bus and midi channel that it sends events to.
-A seq24 sequence also has a collection of triggers, which indicate times in a song where that sequence plays.
+A seq24 sequence also has a collection of triggers, which indicate times in a song where that sequence plays.  
+
 A song in seq42 is a collection of tracks.  Each track has a midi bus and a midi channel (and also a transpose flag... more on that later).  Each seq42 track has a collection of sequences (which send their events to their track's midi bus and channel) and a collection of triggers, each of which triggers one of that track's sequences.
-In seq42, the main window is the song editor, with one row per track.  You'd have to have a lot of tracks to need to scroll up and down!
+In seq42, the main window is the song editor, with one row per track.
 
 Other than these conceptual changes, a seq24 user should feel at home.  The awesome sequence editor is pretty much the same.  The 8x4 sequence set window from seq24 is gone.  Instead there's a sequence list window that you can open from the main song editing window.  The sequence list displays all the sequences in the song; you can sort the list in various ways (it initializes sorted by track) and there's a checkbox for each sequence that you can use to toggle each sequence's play flag (when you're in live mode).  Here's a [screenshot](http://cloud.github.com/downloads/sbrauer/seq42/seq42-screenshot.png).
 
