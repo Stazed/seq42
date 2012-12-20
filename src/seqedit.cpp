@@ -305,7 +305,7 @@ seqedit::seqedit( sequence *a_seq,
 
     set_bpm( m_seq->get_bpm() );
     set_bw( m_seq->get_bw() );
-    set_measures( get_measures() );
+    set_measures( get_measures(), false );
 
     set_data_type( EVENT_NOTE_ON );
 
@@ -498,16 +498,16 @@ seqedit::create_menus( void )
         
         /* length */
         m_menu_length->items().push_back(MenuElem(b,
-                    sigc::bind(mem_fun(*this, &seqedit::set_measures), i+1 )));
+                    sigc::bind(mem_fun(*this, &seqedit::set_measures), i+1, true )));
         /* length */
         m_menu_bpm->items().push_back(MenuElem(b, 
                     sigc::bind(mem_fun(*this, &seqedit::set_bpm), i+1 )));
     }
 
     m_menu_length->items().push_back(MenuElem("32",
-                sigc::bind(mem_fun(*this, &seqedit::set_measures), 32 )));
+                sigc::bind(mem_fun(*this, &seqedit::set_measures), 32, true )));
     m_menu_length->items().push_back(MenuElem("64",
-                sigc::bind(mem_fun(*this, &seqedit::set_measures), 64 )));
+                sigc::bind(mem_fun(*this, &seqedit::set_measures), 64, true )));
 
 
     m_menu_swing_mode->items().push_back(MenuElem("off",
@@ -1277,9 +1277,9 @@ seqedit::set_key( int a_note )
 
 
 void
-seqedit::apply_length( int a_bpm, int a_bw, int a_measures )
+seqedit::apply_length( int a_bpm, int a_bw, int a_measures, bool a_adjust_triggers )
 {
-  m_seq->set_length( a_measures * a_bpm * ((c_ppqn * 4) / a_bw) );
+  m_seq->set_length( a_measures * a_bpm * ((c_ppqn * 4) / a_bw), a_adjust_triggers );
 
   m_seqroll_wid->reset();
   m_seqtime_wid->reset();
@@ -1304,7 +1304,7 @@ seqedit::get_measures( void )
 
 
 void 
-seqedit::set_measures( int a_length_measures  )
+seqedit::set_measures( int a_length_measures, bool a_adjust_triggers  )
 {
     char b[10];
 
@@ -1312,7 +1312,7 @@ seqedit::set_measures( int a_length_measures  )
     m_entry_length->set_text(b);
 
     m_measures = a_length_measures;
-    apply_length( m_seq->get_bpm(), m_seq->get_bw(), a_length_measures );
+    apply_length( m_seq->get_bpm(), m_seq->get_bw(), a_length_measures, a_adjust_triggers );
 }
 
 int 
@@ -1347,7 +1347,7 @@ seqedit::set_bpm( int a_beats_per_measure )
 
         long length = get_measures();
         m_seq->set_bpm( a_beats_per_measure );
-        apply_length( a_beats_per_measure, m_seq->get_bw(), length );
+        apply_length( a_beats_per_measure, m_seq->get_bw(), length, true );
     }
 }
 
@@ -1364,7 +1364,7 @@ seqedit::set_bw( int a_beat_width  )
 
         long length = get_measures();
         m_seq->set_bw( a_beat_width );
-        apply_length( m_seq->get_bpm(), a_beat_width, length );
+        apply_length( m_seq->get_bpm(), a_beat_width, length, true );
     }
 }
 

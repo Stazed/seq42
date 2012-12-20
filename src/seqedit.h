@@ -195,8 +195,8 @@ class seqedit : public Gtk::Window
 
     void set_bpm( int a_beats_per_measure );
     void set_bw( int a_beat_width );
-    void set_measures( int a_length_measures  );
-    void apply_length( int a_bpm, int a_bw, int a_measures );
+    void set_measures( int a_length_measures, bool a_adjust_triggers  );
+    void apply_length( int a_bpm, int a_bw, int a_measures, bool a_adjust_triggers );
     long get_measures( void );
 
     void set_swing_mode( int a_mode  );
