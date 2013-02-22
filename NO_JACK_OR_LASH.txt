@@ -1,1 +1,0 @@
-./configure --disable-jack-support --enable-lash=no
