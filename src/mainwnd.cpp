@@ -1008,13 +1008,10 @@ mainwnd::about_dialog( void )
     dialog.set_comments("Interactive MIDI Sequencer\n");
 
     dialog.set_copyright(
-            "(C) 2002 - 2006 Rob C. Buse\n"
+            "(C) 2010 - 2013 Sam Brauer\n"
             "(C) 2008 - 2009 Seq24team\n"
-            "(C) 2010 Sam Brauer");
-    dialog.set_website(
-            "http://www.filter24.org/seq24\n"
-            "http://edge.launchpad.net/seq24\n"
-            "FIXME");
+            "(C) 2002 - 2006 Rob C. Buse");
+    dialog.set_website("https://github.com/sbrauer/seq42");
 
     std::list<Glib::ustring> list_authors;
     list_authors.push_back("Rob C. Buse <rcb@filter24.org>");
