@@ -267,7 +267,7 @@ class sequence
     void select_all (void);
 
     /* given a note length (in ticks) and a boolean indicating even or odd,
-    select all notes where the note on even occurs exactly on an even (or odd)
+    select all notes where the note on event occurs exactly on an even (or odd)
     multiple of note length.
     Example use: select every note that starts on an even eigth note beat.
     */
