@@ -99,7 +99,7 @@ seqedit::menu_action_quantise( void )
 
 
 seqedit::seqedit( sequence *a_seq, 
-		  perform *a_perf)  
+		  perform *a_perf)
 {
     set_icon(Gdk::Pixbuf::create_from_xpm_data(seq_editor_xpm));
 
@@ -142,6 +142,9 @@ seqedit::seqedit( sequence *a_seq,
                                            m_zoom,
                                            m_hadjust));
     
+    m_lfo_wnd = manage( new lfownd(        m_seq,
+                                           m_seqdata_wid));
+
     m_seqevent_wid = manage( new seqevent( m_seq,
                                            m_zoom,
                                            m_snap,
@@ -233,6 +236,9 @@ seqedit::seqedit( sequence *a_seq,
     dhbox->pack_start(*m_button_play, false, false);
     dhbox->pack_start( *(manage(new VSeparator( ))), false, false, 4);
 
+    m_button_lfo = manage (new Button("lfo") );
+    dhbox->pack_start(*m_button_lfo, false, false);
+    m_button_lfo->signal_clicked().connect ( mem_fun(m_lfo_wnd, &lfownd::toggle_visible));
 
 
     /* data button */
@@ -1535,6 +1541,7 @@ seqedit::on_delete_event(GdkEventAny *a_event)
     m_mainperf->get_master_midi_bus()->set_sequence_input( false, NULL );
     m_seq->set_editing( false );
 
+    delete m_lfo_wnd;
     delete this;
     
     return false;
@@ -1626,3 +1633,5 @@ seqedit::adj_callback_vel()
 {
     m_seq->get_track()->set_default_velocity( (int) m_adjust_vel->get_value() );
 }
+
+

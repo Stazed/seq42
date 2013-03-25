@@ -37,6 +37,7 @@
 #include <string>
 
 #include "globals.h"
+#include "lfownd.h"
 
 using namespace Gtk;
 
@@ -147,6 +148,8 @@ class seqedit : public Gtk::Window
 
     Button      *m_button_stop;
     Button      *m_button_play;
+    Button	*m_button_lfo;
+    lfownd     *m_lfo_wnd;
     
     ToggleButton *m_toggle_play;
     ToggleButton *m_toggle_record;
@@ -243,6 +246,7 @@ class seqedit : public Gtk::Window
     void mouse_action( mouse_action_e a_action );
 
     void start_playing();
+
     void stop_playing();
 
     void set_track_info( );

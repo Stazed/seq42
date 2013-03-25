@@ -36,7 +36,8 @@ seq42_SOURCES = \
 	track.cpp track.h \
 	trackedit.cpp trackedit.h \
 	trackmenu.cpp trackmenu.h \
-	userfile.cpp userfile.h
+	userfile.cpp userfile.h \
+	lfownd.cpp lfownd.h
 
 EXTRA_DIST = configwin32.h *.xpm 
 
