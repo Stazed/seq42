@@ -19,6 +19,9 @@
 //-----------------------------------------------------------------------------
 
 #include <cctype>
+#include <csignal>
+#include <cerrno>
+#include <cstring>
 #include <gtk/gtkversion.h>
 
 #include "mainwnd.h"
@@ -277,7 +280,7 @@ mainwnd::mainwnd(perform *a_p)
 
         /* length */
         m_menu_bpm->items().push_back(MenuElem(b,
-                                               sigc::bind(mem_fun(*this,&mainwnd::set_bpm), 
+                                               sigc::bind(mem_fun(*this,&mainwnd::set_bpm),
                                                     i+1 )));
     }
 
@@ -409,7 +412,7 @@ mainwnd::mainwnd(perform *a_p)
     //m_snap = 4;
     //m_bpm = 4;
     //m_bw = 4;
-    
+
     set_bw( 4 );
     set_snap( 4 );
     set_bpm( 4 );
@@ -429,6 +432,10 @@ mainwnd::mainwnd(perform *a_p)
     m_modified = false;
 
     m_options = NULL;
+    
+    m_sigpipe[0] = -1;
+    m_sigpipe[1] = -1;
+    install_signal_handlers();
 }
 
 
@@ -436,6 +443,12 @@ mainwnd::~mainwnd()
 {
     if ( m_options != NULL )
         delete m_options;
+        
+    if (m_sigpipe[0] != -1)
+        close(m_sigpipe[0]);
+
+    if (m_sigpipe[1] != -1)
+        close(m_sigpipe[1]);
 }
 
 
@@ -1118,7 +1131,7 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
             return true;
         }
         // FIXME: make key configurable?
-        else if (a_ev->keyval == GDK_F12) 
+        else if (a_ev->keyval == GDK_F12)
         {
             m_mainperf->print();
             fflush( stdout );
@@ -1151,3 +1164,88 @@ bool mainwnd::is_modified()
     return m_modified;
 }
 
+int mainwnd::m_sigpipe[2];
+
+
+/* Handler for system signals (SIGUSR1, SIGINT...)
+ * Write a message to the pipe and leave as soon as possible
+ */
+void
+mainwnd::handle_signal(int sig)
+{
+    if (write(m_sigpipe[1], &sig, sizeof(sig)) == -1)
+    {
+        printf("write() failed: %s\n", std::strerror(errno));
+    }
+}
+
+
+bool
+mainwnd::install_signal_handlers()
+{
+    /*install pipe to forward received system signals*/
+    if (pipe(m_sigpipe) < 0)
+    {
+        printf("pipe() failed: %s\n", std::strerror(errno));
+        return false;
+    }
+
+    /*install notifier to handle pipe messages*/
+    Glib::signal_io().connect(sigc::mem_fun(*this, &mainwnd::signal_action),
+            m_sigpipe[0], Glib::IO_IN);
+
+    /*install signal handlers*/
+    struct sigaction action;
+    memset(&action, 0, sizeof(action));
+    action.sa_handler = handle_signal;
+
+    if (sigaction(SIGUSR1, &action, NULL) == -1)
+    {
+        printf("sigaction() failed: %s\n", std::strerror(errno));
+        return false;
+    }
+
+    if (sigaction(SIGINT, &action, NULL) == -1)
+    {
+        printf("sigaction() failed: %s\n", std::strerror(errno));
+        return false;
+    }
+
+    return true;
+}
+
+
+bool
+mainwnd::signal_action(Glib::IOCondition condition)
+{
+    int message;
+
+    if ((condition & Glib::IO_IN) == 0)
+    {
+        printf("Error: unexpected IO condition\n");
+        return false;
+    }
+
+
+    if (read(m_sigpipe[0], &message, sizeof(message)) == -1)
+    {
+        printf("read() failed: %s\n", std::strerror(errno));
+        return false;
+    }
+
+    switch (message)
+    {
+        case SIGUSR1:
+            save_file();
+            break;
+
+        case SIGINT:
+            file_exit();
+            break;
+
+        default:
+            printf("Unexpected signal received: %d\n", message);
+            break;
+    }
+    return true;
+}

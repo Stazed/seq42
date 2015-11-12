@@ -48,7 +48,8 @@ class mainwnd : public Gtk::Window
  private:
 
     bool      m_modified;
-    
+    static int m_sigpipe[2];
+
 #if GTK_MINOR_VERSION < 12
     Tooltips *m_tooltips;
 #endif
@@ -64,7 +65,7 @@ class mainwnd : public Gtk::Window
     options *m_options;
 
     Gdk::Cursor   m_main_cursor;
-    
+
     Button      *m_button_stop;
     Button      *m_button_play;
 
@@ -77,7 +78,7 @@ class mainwnd : public Gtk::Window
     Adjustment  *m_adjust_swing_amount16;
 
     sigc::connection   m_timeout_connect;
-    
+
     Table *m_table;
 
     VScrollbar *m_vscroll;
@@ -156,6 +157,9 @@ class mainwnd : public Gtk::Window
     void choose_file();
     int query_save_changes();
     bool is_save();
+    static void handle_signal(int sig);
+    bool install_signal_handlers();
+    bool signal_action(Glib::IOCondition condition);
 
     /* Begin method that used to be in perfedit */
     void set_bpm( int a_beats_per_measure );
