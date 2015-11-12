@@ -409,10 +409,10 @@ mainwnd::mainwnd(perform *a_p)
     //m_snap = 4;
     //m_bpm = 4;
     //m_bw = 4;
-
+    
+    set_bw( 4 );
     set_snap( 4 );
     set_bpm( 4 );
-    set_bw( 4 );
     set_xpose( 0 );
 
     m_perfroll->init_before_show();
