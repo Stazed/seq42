@@ -21,6 +21,7 @@
 // FIXME: re-use some of this code if I ever implement export to midi (or less likely, import from midi)
 
 #include "midifile.h"
+#include "seqedit.h"
 #include <iostream>
 
 midifile::midifile(const Glib::ustring& a_name)
@@ -39,10 +40,10 @@ midifile::read_long ()
 {
     unsigned long ret = 0;
 
-    ret += (m_d[m_pos++] << 24);
-    ret += (m_d[m_pos++] << 16);
-    ret += (m_d[m_pos++] << 8);
-    ret += (m_d[m_pos++]);
+    ret += (read_byte () << 24);
+    ret += (read_byte () << 16);
+    ret += (read_byte () << 8);
+    ret += (read_byte ());
 
     return ret;
 }
@@ -52,11 +53,17 @@ midifile::read_short ()
 {
     unsigned short ret = 0;
 
-    ret += (m_d[m_pos++] << 8);
-    ret += (m_d[m_pos++]);
+    ret += (read_byte () << 8);
+    ret += (read_byte ());
 
     //printf( "read_short 0x%4x\n", ret );
     return ret;
+}
+
+unsigned char
+midifile::read_byte ()
+{
+    return m_d[m_pos++];
 }
 
 unsigned long
@@ -66,7 +73,7 @@ midifile::read_var ()
     unsigned char c;
 
     /* while bit #7 is set */
-    while (((c = m_d[m_pos++]) & 0x80) != 0x00)
+    while (((c = read_byte ()) & 0x80) != 0x00)
     {
         /* shift ret 7 bits */
         ret <<= 7;
@@ -84,9 +91,6 @@ midifile::read_var ()
 
 bool midifile::parse (perform * a_perf)
 {
-    printf("FIXME midifile::parse()\n");
-#if 0
-
     /* open binary file */
     ifstream file(m_name.c_str(), ios::in | ios::binary | ios::ate);
 
@@ -124,8 +128,6 @@ bool midifile::parse (perform * a_perf)
     unsigned short Format;			/* 0,1,2 */
     unsigned short NumTracks;
     unsigned short ppqn;
-    unsigned short perf;
-    int c;
 
     /* track name from file */
     char TrackName[256];
@@ -134,7 +136,7 @@ bool midifile::parse (perform * a_perf)
     int i;
 
     /* sequence pointer */
-    sequence * seq;
+    track * a_track;
     event e;
 
     /* read in header */
@@ -162,36 +164,44 @@ bool midifile::parse (perform * a_perf)
     }
 
     /* We should be good to load now   */
+
+    /* Create new seq42 track to load all midi tracks */
+    a_track = new track();
+
+    if (a_track == NULL) {
+        fprintf(stderr, "Memory allocation failed\n");
+        delete[]m_d;
+        return false;
+    }
+    a_perf->add_track(a_track,0);
+    a_track->set_name((char*)"Midi Import");
+    a_track->set_master_midi_bus (&a_perf->m_master_bus);
+
     /* for each Track in the midi file */
     for (int curTrack = 0; curTrack < NumTracks; curTrack++)
     {
         /* done for each track */
         bool done = false;
-        perf = 0;
 
         /* events */
         unsigned char status = 0, type, data[2], laststatus;
         long len;
-        unsigned long proprietary = 0;
 
         /* Get ID + Length */
         ID = read_long ();
         TrackLength = read_long ();
         //printf( "[%8lX] len[%8lX]\n", ID,  TrackLength );
 
-
         /* magic number 'MTrk' */
         if (ID == 0x4D54726B)
         {
             /* we know we have a good track, so we can create
                a new sequence to dump it to */
-            seq = new sequence ();
-            if (seq == NULL) {
-                fprintf(stderr, "Memory allocation failed\n");
-                delete[]m_d;
-                return false;
-            }
-            seq->set_master_midi_bus (&a_perf->m_master_bus);
+
+            int seq_idx = a_track->new_sequence();
+            sequence *new_seq = a_track->get_sequence(seq_idx);
+
+            //printf( "seq_idx = %d", seq_idx);
 
             /* reset time */
             RunningTime = 0;
@@ -240,8 +250,8 @@ bool midifile::parse (perform * a_perf)
                     case EVENT_CONTROL_CHANGE:
                     case EVENT_PITCH_WHEEL:
 
-                        data[0] = m_d[m_pos++];
-                        data[1] = m_d[m_pos++];
+                        data[0] = read_byte ();
+                        data[1] = read_byte ();
 
                         // some files have vel=0 as note off
                         if ((status & 0xF0) == EVENT_NOTE_ON && data[1] == 0)
@@ -253,44 +263,40 @@ bool midifile::parse (perform * a_perf)
 
                         /* set data and add */
                         e.set_data (data[0], data[1]);
-                        seq->add_event (&e);
 
-                        /* set midi channel */
-                        seq->set_midi_channel (status & 0x0F);
+                        new_seq->add_event (&e);
                         break;
 
                         /* one data item */
                     case EVENT_PROGRAM_CHANGE:
                     case EVENT_CHANNEL_PRESSURE:
 
-                        data[0] = m_d[m_pos++];
+                        data[0] = read_byte ();
                         //printf( "%02X\n", data[0] );
 
                         /* set data and add */
                         e.set_data (data[0]);
-                        seq->add_event (&e);
-
-                        /* set midi channel */
-                        seq->set_midi_channel (status & 0x0F);
+                        new_seq->add_event (&e);
                         break;
 
                         /* meta midi events ---  this should be FF !!!!!  */
+
                     case 0xF0:
 
                         if (status == 0xFF)
                         {
-                            /* get meta type */
-                            type = m_d[m_pos++];
+                            // get meta type
+                            type = read_byte ();
                             len = read_var ();
 
                             //printf( "%02X %08X ", type, (int) len );
 
                             switch (type)
                             {
-                                /* proprietary */
-                                case 0x7f:
-
-                                    /* FF 7F len data  */
+                                // proprietary
+                                case 0x7f:  // cant use these
+                                    /*
+                                    // FF 7F len data
                                     if (len > 4)
                                     {
                                         proprietary = read_long ();
@@ -299,20 +305,24 @@ bool midifile::parse (perform * a_perf)
 
                                     if (proprietary == c_midibus)
                                     {
-                                        seq->set_midi_bus (m_d[m_pos++]);
+                                        m_pos++;
+                                        //seq->set_midi_bus (read_byte ());
+                                        //a_track->set_midi_bus (read_byte ());
                                         len--;
                                     }
 
                                     else if (proprietary == c_midich)
                                     {
-                                        seq->set_midi_channel (m_d[m_pos++]);
+                                        m_pos++;
+                                        //seq->set_midi_channel (read_byte ());
+                                        //a_track->set_midi_channel (read_byte ());
                                         len--;
                                     }
 
                                     else if (proprietary == c_timesig)
                                     {
-                                        seq->set_bpm (m_d[m_pos++]);
-                                        seq->set_bw (m_d[m_pos++]);
+                                        new_seq->set_bpm (read_byte ());
+                                        new_seq->set_bw (read_byte ());
                                         len -= 2;
                                     }
 
@@ -325,7 +335,8 @@ bool midifile::parse (perform * a_perf)
                                             unsigned long on = read_long ();
                                             unsigned long length = (read_long () - on);
                                             len -= 8;
-                                            seq->add_trigger(on, length, 0, false);
+                                            //seq->add_trigger(on, length, 0, false);
+                                            //trak->add_trigger(on, length, 0, false);
                                         }
                                     }
 
@@ -345,10 +356,11 @@ bool midifile::parse (perform * a_perf)
                                             //        on, off, offset );
 
                                             len -= 12;
-                                            seq->add_trigger (on, length, offset, false);
+                                            //seq->add_trigger (on, length, offset, false);
+                                            //trak->add_trigger (on, length, offset, false);
                                         }
                                     }
-
+                                    */
                                     /* eat the rest */
                                     m_pos += len;
                                     break;
@@ -364,8 +376,8 @@ bool midifile::parse (perform * a_perf)
                                         CurrentTime += 1;
                                     }
 
-                                    seq->set_length (CurrentTime, false);
-                                    seq->zero_markers ();
+                                    new_seq->set_length (CurrentTime, false);
+                                    new_seq->zero_markers ();
                                     done = true;
                                     break;
 
@@ -373,21 +385,23 @@ bool midifile::parse (perform * a_perf)
                                 case 0x03:
                                     for (i = 0; i < len; i++)
                                     {
-                                        TrackName[i] = m_d[m_pos++];
+                                        TrackName[i] = read_byte ();
                                     }
 
                                     TrackName[i] = '\0';
 
-                                    //printf("[%s]\n", TrackName );
-                                    seq->set_name (TrackName);
+                                    printf("[%s]\n", TrackName );
+                                    new_seq->set_name (TrackName);
                                     break;
 
                                     /* sequence number */
                                 case 0x00:
-                                    if (len == 0x00)
+                                    if(len != 0x00)
+                                        read_short();
+                                    /*if (len == 0x00)
                                         perf = 0;
                                     else
-                                        perf = read_short ();
+                                        perf = read_short (); */
 
                                     //printf ( "perf %d\n", perf );
                                     break;
@@ -395,7 +409,8 @@ bool midifile::parse (perform * a_perf)
                                 default:
                                     for (i = 0; i < len; i++)
                                     {
-                                        c = m_d[m_pos++];
+                                        read_byte();
+                                        //c = read_byte ();
                                         //printf( "%02X ", c  );
                                     }
                                     //printf("\n");
@@ -417,6 +432,7 @@ bool midifile::parse (perform * a_perf)
                             fprintf(stderr, "Unexpected system event : 0x%.2X", status);
                             delete[]m_d;
                             return false;
+                            break;
                         }
 
                         break;
@@ -431,7 +447,8 @@ bool midifile::parse (perform * a_perf)
             }			/* while ( !done loading Trk chunk */
 
             /* the sequence has been filled, add it  */
-            a_perf->add_sequence (seq);
+            new_seq->set_track(a_track);
+            //new seqedit( new_seq, a_perf ); // show it
         }
 
         /* dont know what kind of chunk */
@@ -460,7 +477,7 @@ bool midifile::parse (perform * a_perf)
             /* TrackLength is nyumber of buses */
             for (unsigned int x = 0; x < TrackLength; x++)
             {
-                int bus_on = m_d[m_pos++];
+                int bus_on = read_byte ();
                 a_perf->get_master_midi_bus ()->set_clock (x, (clock_e) bus_on);
             }
         }
@@ -481,8 +498,6 @@ bool midifile::parse (perform * a_perf)
 
     delete[]m_d;
     return true;
-    //printf ( "done\n");
-#endif
 }
 
 
@@ -578,7 +593,7 @@ bool midifile::write (perform * a_perf)
     write_long (c_bpmtag);
     write_long (a_perf->get_bpm ());
 
-    
+
     int data_size = m_l.size ();
     m_d = (unsigned char *) new char[data_size];
 
@@ -587,14 +602,14 @@ bool midifile::write (perform * a_perf)
     for (list < unsigned char >::reverse_iterator ri = m_l.rbegin ();
             ri != m_l.rend (); ri++)
     {
-        m_d[m_pos++] = *ri;
+        read_byte () = *ri;
     }
 
     m_l.clear ();
 
     // super slow
     //while ( m_l.size() > 0 ){
-    //m_d[m_pos++] =  m_l.back();
+    //read_byte () =  m_l.back();
     //  m_l.pop_back();
     //}
 

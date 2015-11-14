@@ -97,8 +97,8 @@ mainwnd::mainwnd(perform *a_p)
     m_menu_file->items().push_back(MenuElem("Save _as...",
                 mem_fun(*this, &mainwnd::file_save_as)));
     m_menu_file->items().push_back(SeparatorElem());
-//    m_menu_file->items().push_back(MenuElem("_Import...",
-//                mem_fun(*this, &mainwnd::file_import_dialog)));
+    m_menu_file->items().push_back(MenuElem("_Import midi...",
+                mem_fun(*this, &mainwnd::file_import_dialog)));
     m_menu_file->items().push_back(MenuElem("O_ptions...",
                 mem_fun(*this,&mainwnd::options_dialog)));
     m_menu_file->items().push_back(SeparatorElem());
@@ -432,7 +432,7 @@ mainwnd::mainwnd(perform *a_p)
     m_modified = false;
 
     m_options = NULL;
-    
+
     m_sigpipe[0] = -1;
     m_sigpipe[1] = -1;
     install_signal_handlers();
@@ -443,7 +443,7 @@ mainwnd::~mainwnd()
 {
     if ( m_options != NULL )
         delete m_options;
-        
+
     if (m_sigpipe[0] != -1)
         close(m_sigpipe[0]);
 
@@ -921,7 +921,7 @@ mainwnd::toLower(basic_string<char>& s) {
 }
 
 
-#if 0
+//#if 0
 void
 mainwnd::file_import_dialog( void )
 {
@@ -942,7 +942,8 @@ mainwnd::file_import_dialog( void )
 
     dialog.set_current_folder(last_used_dir);
 
-    HButtonBox *btnbox = dialog.get_action_area();
+//    HButtonBox *btnbox = dialog.get_action_area();
+    ButtonBox *btnbox = dialog.get_action_area();
     HBox hbox( false, 2 );
 
     btnbox->pack_start(hbox, false, false );
@@ -970,8 +971,8 @@ mainwnd::file_import_dialog( void )
                 errdialog.run();
            }
 
-           global_filename = std::string(dialog.get_filename());
-           update_window_title();
+           //global_filename = std::string(dialog.get_filename());
+           //update_window_title();
            m_modified = true;
 
            m_adjust_bpm->set_value( m_mainperf->get_bpm() );
@@ -987,7 +988,7 @@ mainwnd::file_import_dialog( void )
 
    }
 }
-#endif
+//#endif
 
 /*callback function*/
 void mainwnd::file_exit()
