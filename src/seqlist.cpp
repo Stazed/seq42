@@ -70,17 +70,17 @@ seqlist::seqlist (perform *a_perf)
     m_TreeView.append_column_editable("Playing", m_Columns.m_playing);
     m_TreeView.append_column("Triggers", m_Columns.m_triggers);
 
-    // Allow sorting by clicking on columns 
-    Gtk::TreeView::Column* pColumn; 
-    for(guint i = 0; i < 6; i++) { 
-        pColumn = m_TreeView.get_column(i); 
-        pColumn->set_sort_column(i); 
+    // Allow sorting by clicking on columns
+    Gtk::TreeView::Column* pColumn;
+    for(guint i = 0; i < 6; i++) {
+        pColumn = m_TreeView.get_column(i);
+        pColumn->set_sort_column(i);
     }
 
     m_TreeView.signal_button_release_event().connect(sigc::mem_fun(*this, &seqlist::on_button_release_event), true );
 
     m_perf->set_seqlist_open(true);
-    //update_model();
+    update_model(); // needed or reopen of window fails to show the list
     show_all();
 }
 
@@ -154,7 +154,7 @@ seqlist::update_model()
     for(int i=0; i< c_max_track; i++ ){
         if ( m_perf->is_active_track(i) ) {
             track *a_track =  m_perf->get_track( i );
-            for(int s=0; s< a_track->get_number_of_sequences(); s++ ){
+            for(unsigned s=0; s< a_track->get_number_of_sequences(); s++ ){
                  sequence *a_seq =  a_track->get_sequence( s );
                  row = *(m_refTreeModel->append());
                  row[m_Columns.m_trk_num] = i+1;

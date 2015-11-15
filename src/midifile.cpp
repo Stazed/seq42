@@ -390,7 +390,7 @@ bool midifile::parse (perform * a_perf)
 
                                     TrackName[i] = '\0';
 
-                                    printf("[%s]\n", TrackName );
+                                    printf("Import track: [%s]\n", TrackName );
                                     new_seq->set_name (TrackName);
                                     break;
 

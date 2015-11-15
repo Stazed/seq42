@@ -23,6 +23,7 @@
 #include "optionsfile.h"
 
 extern Glib::ustring last_used_dir;
+extern Glib::ustring last_midi_dir;
 
 optionsfile::optionsfile(const Glib::ustring& a_name) :
     configfile( a_name )
@@ -47,7 +48,7 @@ optionsfile::parse( perform *a_perf )
 
     if( ! file.is_open() )
         return false;
-    
+
     file_size = file.tellg();
 
     /* run to start */
@@ -85,18 +86,18 @@ optionsfile::parse( perform *a_perf )
 
     line_after( &file, "[jack-transport]" );
     long flag = 0;
-    
+
     sscanf( m_line, "%ld", &flag );
     global_with_jack_transport = (bool) flag;
-    
+
     next_data_line( &file );
     sscanf( m_line, "%ld", &flag );
     global_with_jack_master = (bool) flag;
-    
+
     next_data_line( &file );
     sscanf( m_line, "%ld", &flag );
     global_with_jack_master_cond = (bool) flag;
-    
+
 
     line_after( &file, "[midi-input]" );
     buses = 0;
@@ -110,7 +111,7 @@ optionsfile::parse( perform *a_perf )
         a_perf->get_master_midi_bus( )->set_input( bus, (bool) bus_on );
         next_data_line( &file );
     }
-    
+
     /* midi clock mod */
     long ticks = 64;
     line_after( &file, "[midi-clock-mod-ticks]" );
@@ -129,43 +130,49 @@ optionsfile::parse( perform *a_perf )
     if (m_line[0] == '/')
         last_used_dir.assign(m_line);
 
+    /* last midi dir */
+    line_after( &file, "[last-midi-dir]" );
+    //FIXME: check for a valid path is missing
+    if (m_line[0] == '/')
+        last_midi_dir.assign(m_line);
+
     /* interaction method  */
     long method = 0;
     line_after( &file, "[interaction-method]" );
     sscanf( m_line, "%ld", &method );
     global_interactionmethod = (interaction_method_e)method;
-    
+
     file.close();
 
     return true;
 }
 
 
-bool 
+bool
 optionsfile::write( perform *a_perf  )
 {
     /* open binary file */
- 
+
     ofstream file ( m_name.c_str(), ios::out | ios::trunc  );
     char outs[1024];
 
     if( ! file.is_open() )
         return false;
-    
- 
-	
+
+
+
     /* midi control */
 
     file << "#\n";
     file << "# Seq 42 Init File\n";
     file << "#\n\n\n";
-    
+
 
     int buses = a_perf->get_master_midi_bus( )->get_num_out_buses();
 
     file << "\n\n\n[midi-clock]\n";
     file << buses << "\n";
-    
+
     for (int i=0; i< buses; i++ ){
 
 
@@ -184,7 +191,7 @@ optionsfile::write( perform *a_perf  )
 
     file << "\n\n\n[midi-input]\n";
     file << buses << "\n";
-    
+
     for (int i=0; i< buses; i++ ){
 
 
@@ -200,7 +207,7 @@ optionsfile::write( perform *a_perf  )
     file << "# set to 1 if you want seq42 to create its own alsa ports and\n";
     file << "# not connect to other clients\n";
     file << global_manual_alsa_ports << "\n";
-    
+
     /* interaction-method */
     int x = 0;
     file << "\n\n\n[interaction-method]\n";
@@ -212,7 +219,7 @@ optionsfile::write( perform *a_perf  )
     }
     file << global_interactionmethod << "\n";
 
- 
+
 
     file << "\n\n\n[keyboard-control]\n";
 
@@ -234,8 +241,8 @@ optionsfile::write( perform *a_perf  )
 
     file << "\n\n\n[jack-transport]\n\n"
 
-         
-         << "# jack_transport - Enable sync with JACK Transport.\n" 
+
+         << "# jack_transport - Enable sync with JACK Transport.\n"
          << global_with_jack_transport << "\n\n"
 
          << "# jack_master - Seq42 will attempt to serve as JACK Master.\n"
@@ -243,10 +250,14 @@ optionsfile::write( perform *a_perf  )
 
          << "# jack_master_cond -  Seq42 will fail to be master if there is already a master set.\n"
          << global_with_jack_master_cond  << "\n\n";;
-    
+
     file << "\n\n\n[last-used-dir]\n\n"
-         << "# Last used directory.\n" 
+         << "# Last used directory.\n"
          << last_used_dir << "\n\n";
+
+    file << "\n\n\n[last-midi-dir]\n\n"
+         << "# Last midi directory.\n"
+         << last_midi_dir << "\n\n";
 
     file.close();
     return true;

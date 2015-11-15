@@ -164,6 +164,7 @@ extern bool global_manual_alsa_ports;
 
 extern Glib::ustring global_filename;
 extern Glib::ustring last_used_dir;
+extern Glib::ustring last_midi_dir;
 extern bool is_pattern_playing;
 
 extern bool global_print_keys;
@@ -245,27 +246,27 @@ const int c_scales_symbol[c_scale_size][12] =
     /* minor */
     { 32,32,32,32,32,32,32,32,129,128,129,128},
 
-};             
+};
 
-// up 128        
+// up 128
 // down 129
 
 
 const char c_scales_text[c_scale_size][6] =
-{ 
-    "Off", 
-    "Major", 
-    "Minor" 
+{
+    "Off",
+    "Major",
+    "Minor"
 };
 
 const char c_key_text[][3] =
 {
-    "C", 
-    "C#", 
-    "D", 
-    "D#", 
+    "C",
+    "C#",
+    "D",
+    "D#",
     "E",
-    "F", 
+    "F",
     "F#",
     "G",
     "G#",
@@ -293,7 +294,7 @@ const char c_interval_text[][3] =
     "M9",
     ""
 };
- 	  	  	
+
 const char c_chord_text[][5] =
 {
     "I",
@@ -306,7 +307,7 @@ const char c_chord_text[][5] =
     "VIII"
 };
 
-enum mouse_action_e 
+enum mouse_action_e
 {
     e_action_select,
     e_action_draw,

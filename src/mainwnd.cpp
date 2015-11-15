@@ -920,8 +920,6 @@ mainwnd::toLower(basic_string<char>& s) {
     }
 }
 
-
-//#if 0
 void
 mainwnd::file_import_dialog( void )
 {
@@ -940,9 +938,8 @@ mainwnd::file_import_dialog( void )
     filter_any.add_pattern("*");
     dialog.add_filter(filter_any);
 
-    dialog.set_current_folder(last_used_dir);
+    dialog.set_current_folder(last_midi_dir); // TODO use separate Midi dir
 
-//    HButtonBox *btnbox = dialog.get_action_area();
     ButtonBox *btnbox = dialog.get_action_area();
     HBox hbox( false, 2 );
 
@@ -963,6 +960,7 @@ mainwnd::file_import_dialog( void )
            try{
                midifile f( dialog.get_filename() );
                f.parse( m_mainperf );
+               last_midi_dir = dialog.get_filename().substr(0, dialog.get_filename().rfind("/") + 1);
            }
            catch(...){
                Gtk::MessageDialog errdialog(*this,
@@ -973,6 +971,8 @@ mainwnd::file_import_dialog( void )
 
            //global_filename = std::string(dialog.get_filename());
            //update_window_title();
+           open_seqlist();  // to show the list of imported files
+
            m_modified = true;
 
            m_adjust_bpm->set_value( m_mainperf->get_bpm() );
@@ -988,7 +988,6 @@ mainwnd::file_import_dialog( void )
 
    }
 }
-//#endif
 
 /*callback function*/
 void mainwnd::file_exit()
