@@ -71,6 +71,8 @@ class track
 
     bool m_trigger_copied;
 
+    long m_paste_tick;
+
     bool m_dirty_perf;
     bool m_dirty_names;
     bool m_dirty_seqlist;
@@ -122,10 +124,10 @@ class track
     /* midi channel */
     unsigned char get_midi_channel ();
     void set_midi_channel (unsigned char a_ch);
-    /* sets the midibus to dump to */ 
-    void set_midi_bus (char a_mb); 
-    char get_midi_bus (void); 
- 
+    /* sets the midibus to dump to */
+    void set_midi_bus (char a_mb);
+    char get_midi_bus (void);
+
     void set_master_midi_bus (mastermidibus * a_mmb);
     mastermidibus *get_master_midi_bus ();
 
@@ -141,7 +143,7 @@ class track
 
     /* dumps contents to stdout */
     void print ();
-    
+
     //
     // Selection and Manipulation
     //
@@ -161,6 +163,8 @@ class track
     void cut_selected_trigger( void );
     void copy_selected_trigger( void );
     void paste_trigger( void );
+    void set_trigger_paste_tick(long a_tick);
+    long get_trigger_paste_tick( void );
     void move_selected_triggers_to(long a_tick, bool a_adjust_offset, int a_which=2);
     long adjust_offset( long a_offset, long a_length );
     void adjust_trigger_offsets_to_length( sequence *a_seq, long a_new_len );

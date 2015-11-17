@@ -741,11 +741,7 @@ track::split_trigger( long a_tick )
         {
             //printf( "split trigger %ld %ld\n", (*i).m_tick_start, (*i).m_tick_end );
             {
-                long tick = (*i).m_tick_end - (*i).m_tick_start;
-                tick += 1;
-                tick /= 2;
-
-                split_trigger(*i, (*i).m_tick_start + tick);
+                split_trigger(*i, a_tick);
                 break;
             }
         }
@@ -1187,6 +1183,7 @@ track::cut_selected_trigger( void )
 void
 track::copy_selected_trigger( void )
 {
+    set_trigger_paste_tick(-1); // initialize
     lock();
 
     list<trigger>::iterator i;
@@ -1203,7 +1200,48 @@ track::copy_selected_trigger( void )
     unlock();
 }
 
+void
+track::paste_trigger( void )
+{
+    if ( m_trigger_copied ){
+        long length =  m_trigger_clipboard.m_tick_end -
+            m_trigger_clipboard.m_tick_start + 1;
+        // paste at copy end or get_trigger_paste_tick
+        if(get_trigger_paste_tick() < 0)    // < 0 means no paste tick set so use default
+        {
+            add_trigger( m_trigger_clipboard.m_tick_end + 1,
+                     length,
+                     m_trigger_clipboard.m_offset + length,
+                     m_trigger_clipboard.m_sequence );
 
+            m_trigger_clipboard.m_tick_start = m_trigger_clipboard.m_tick_end +1;
+            m_trigger_clipboard.m_tick_end = m_trigger_clipboard.m_tick_start + length - 1;
+
+            m_trigger_clipboard.m_offset += length;
+
+            long a_length = get_sequence(m_trigger_clipboard.m_sequence)->get_length();
+
+            m_trigger_clipboard.m_offset = adjust_offset(m_trigger_clipboard.m_offset,a_length);
+        }else
+        {
+            long offset_adjust = get_trigger_paste_tick() - m_trigger_clipboard.m_tick_start;
+            add_trigger(get_trigger_paste_tick(),
+                     length,
+                     m_trigger_clipboard.m_offset + offset_adjust,
+                     m_trigger_clipboard.m_sequence); // +/- distance to paste tick from start
+
+            m_trigger_clipboard.m_tick_start = get_trigger_paste_tick();
+            m_trigger_clipboard.m_tick_end = m_trigger_clipboard.m_tick_start + length - 1;
+            m_trigger_clipboard.m_offset += offset_adjust;
+
+            long a_length = get_sequence(m_trigger_clipboard.m_sequence)->get_length();
+            m_trigger_clipboard.m_offset = adjust_offset(m_trigger_clipboard.m_offset,a_length);
+            set_trigger_paste_tick(-1); // clear the paste location
+        }
+    }
+}
+
+/*
 void
 track::paste_trigger( void )
 {
@@ -1219,6 +1257,18 @@ track::paste_trigger( void )
         m_trigger_clipboard.m_tick_start = m_trigger_clipboard.m_tick_end +1;
         m_trigger_clipboard.m_tick_end = m_trigger_clipboard.m_tick_start + length - 1;
     }
+}
+*/
+void
+track::set_trigger_paste_tick(long a_tick)
+{
+    m_paste_tick = a_tick;
+}
+
+long
+track::get_trigger_paste_tick(void)
+{
+    return m_paste_tick;
 }
 
 void

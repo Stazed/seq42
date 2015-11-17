@@ -1079,10 +1079,13 @@ bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 
         if ( ths.m_mainperf->is_active_track( ths.m_drop_track )){
 
+            ths.m_mainperf->get_track( ths.m_drop_track )->set_trigger_paste_tick(tick); // for paste
+
             bool state = ths.m_mainperf->get_track( ths.m_drop_track )->get_trigger_state( tick );
 
             if ( state )
             {
+                ths.m_mainperf->get_track( ths.m_drop_track )->set_trigger_paste_tick(-1); // not paste
                 ths.m_mainperf->push_trigger_undo();
 
                 ths.m_mainperf->get_track( ths.m_drop_track )->split_trigger( tick );
@@ -1312,17 +1315,19 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
     }
 
     /* middle, split */
-/******************* FIXME: Never used this.... kill it?
     if ( a_ev->button == 2 )
     {
         long tick = ths.m_drop_tick;
 
         if ( ths.m_mainperf->is_active_track( ths.m_drop_track )){
 
+            ths.m_mainperf->get_track( ths.m_drop_track )->set_trigger_paste_tick(tick); // for paste
+
             bool state = ths.m_mainperf->get_track( ths.m_drop_track )->get_trigger_state( tick );
 
             if ( state )
             {
+                ths.m_mainperf->get_track( ths.m_drop_track )->set_trigger_paste_tick(-1); // not paste
                 ths.m_mainperf->push_trigger_undo();
 
                 ths.m_mainperf->get_track( ths.m_drop_track )->split_trigger( tick );
@@ -1333,7 +1338,6 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
             }
         }
     }
-*******************/
     return true;
 }
 
