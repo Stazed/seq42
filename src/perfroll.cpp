@@ -1071,21 +1071,17 @@ bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
         }
     }
 
-    /* left-ctrl, or middle: split */
+    /* left-ctrl: split -- button 2: paste */
     if ( a_ev->button == 2 ||
-         ( a_ev->button == 1 && (a_ev->state & GDK_CONTROL_MASK) ) )
+        (a_ev->button == 1 && (a_ev->state & GDK_CONTROL_MASK) ))
     {
         long tick = ths.m_drop_tick;
 
         if ( ths.m_mainperf->is_active_track( ths.m_drop_track )){
-
-            ths.m_mainperf->get_track( ths.m_drop_track )->set_trigger_paste_tick(tick); // for paste
-
             bool state = ths.m_mainperf->get_track( ths.m_drop_track )->get_trigger_state( tick );
 
-            if ( state )
+            if ( state && a_ev->button != 2)// clicked on trigger for split
             {
-                ths.m_mainperf->get_track( ths.m_drop_track )->set_trigger_paste_tick(-1); // not paste
                 ths.m_mainperf->push_trigger_undo();
 
                 ths.m_mainperf->get_track( ths.m_drop_track )->split_trigger( tick );
@@ -1093,6 +1089,10 @@ bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
                 ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
                 ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
                 ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
+            }
+            else // clicked off trigger for paste
+            {
+                ths.m_mainperf->get_track( ths.m_drop_track )->set_trigger_paste_tick(tick);
             }
         }
     }
@@ -1108,6 +1108,11 @@ bool FruityPerfInput::on_button_release_event(GdkEventButton* a_ev, perfroll& th
     if ( a_ev->button == 1 || a_ev->button == 3 )
     {
         m_adding_pressed = false;
+    }
+
+    if ( a_ev->button == 2 )
+    {
+        ths.trigger_menu_popup(a_ev,ths);
     }
 
     ths.m_moving = false;
@@ -1320,14 +1325,10 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
         long tick = ths.m_drop_tick;
 
         if ( ths.m_mainperf->is_active_track( ths.m_drop_track )){
-
-            ths.m_mainperf->get_track( ths.m_drop_track )->set_trigger_paste_tick(tick); // for paste
-
             bool state = ths.m_mainperf->get_track( ths.m_drop_track )->get_trigger_state( tick );
 
-            if ( state )
+            if ( state )    // clicked on trigger for split
             {
-                ths.m_mainperf->get_track( ths.m_drop_track )->set_trigger_paste_tick(-1); // not paste
                 ths.m_mainperf->push_trigger_undo();
 
                 ths.m_mainperf->get_track( ths.m_drop_track )->split_trigger( tick );
@@ -1335,6 +1336,10 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
                 ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
                 ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
                 ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
+            }
+            else    // clicked off trigger for paste
+            {
+                ths.m_mainperf->get_track( ths.m_drop_track )->set_trigger_paste_tick(tick);
             }
         }
     }
@@ -1360,68 +1365,7 @@ bool Seq42PerfInput::on_button_release_event(GdkEventButton* a_ev, perfroll& ths
         }
         else
         {
-            track *a_track = NULL;
-            trigger *a_trigger = NULL;
-            if ( ths.m_mainperf->is_active_track( ths.m_drop_track )){
-                a_track = ths.m_mainperf->get_track( ths.m_drop_track );
-                a_trigger = a_track->get_trigger( ths.m_drop_tick );
-            }
-            if(a_trigger != NULL) {
-                Menu *menu_trigger =   manage( new Menu());
-                //menu_trigger->items().push_back(SeparatorElem());
-                if(a_trigger->m_sequence > -1) {
-                    menu_trigger->items().push_back(MenuElem("Edit sequence", sigc::bind(mem_fun(ths,&perfroll::edit_sequence), a_track, a_trigger )));
-                }
-                menu_trigger->items().push_back(MenuElem("New sequence", sigc::bind(mem_fun(ths,&perfroll::new_sequence), a_track, a_trigger )));
-                if(a_track->get_number_of_sequences()) {
-                    char name[40];
-                    Menu *set_seq_menu = manage( new Menu());
-                    for (unsigned s=0; s< a_track->get_number_of_sequences(); s++ ){
-                        sequence *a_seq = a_track->get_sequence( s );
-                        snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
-                        set_seq_menu->items().push_back(MenuElem(name,
-                            sigc::bind(mem_fun(ths, &perfroll::set_trigger_sequence), a_track, a_trigger, s)));
-
-                    }
-                    menu_trigger->items().push_back(MenuElem("Set sequence", *set_seq_menu));
-                }
-                menu_trigger->items().push_back(MenuElem("Delete trigger", sigc::bind(mem_fun(ths,&perfroll::del_trigger), a_track, ths.m_drop_tick )));
-
-
-                Menu *copy_seq_menu = NULL;
-                char name[40];
-                for ( int t=0; t<c_max_track; ++t ){
-                        if (! ths.m_mainperf->is_active_track( t )){
-                            continue;
-                        }
-                    track *some_track = ths.m_mainperf->get_track(t);
-
-                    Menu *menu_t = NULL;
-                    bool inserted = false;
-                    for (unsigned s=0; s< some_track->get_number_of_sequences(); s++ ){
-                        if ( !inserted ){
-                            if(copy_seq_menu == NULL) {
-                                copy_seq_menu = manage( new Menu());
-                            }
-                            inserted = true;
-                            snprintf(name, sizeof(name), "[%d] %s", t+1, some_track->get_name());
-                            menu_t = manage( new Menu());
-                            copy_seq_menu->items().push_back(MenuElem(name, *menu_t));
-                        }
-
-                        sequence *a_seq = some_track->get_sequence( s );
-                        snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
-                        menu_t->items().push_back(MenuElem(name,
-                            sigc::bind(mem_fun(ths, &perfroll::copy_sequence), a_track, a_trigger, a_seq)));
-
-                    }
-                }
-                if(copy_seq_menu != NULL) {
-                    menu_trigger->items().push_back(MenuElem("Copy sequence", *copy_seq_menu));
-                }
-
-                menu_trigger->popup(0,0);
-            }
+            ths.trigger_menu_popup(a_ev, ths);
         }
     }
 
@@ -1491,4 +1435,72 @@ bool Seq42PerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths)
     }
 
     return true;
+}
+
+void
+perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
+{
+    using namespace Menu_Helpers;
+    track *a_track = NULL;
+    trigger *a_trigger = NULL;
+    if ( ths.m_mainperf->is_active_track( ths.m_drop_track )){
+        a_track = ths.m_mainperf->get_track( ths.m_drop_track );
+        a_trigger = a_track->get_trigger( ths.m_drop_tick );
+    }
+    if(a_trigger != NULL) {
+        Menu *menu_trigger =   manage( new Menu());
+        //menu_trigger->items().push_back(SeparatorElem());
+        if(a_trigger->m_sequence > -1) {
+            menu_trigger->items().push_back(MenuElem("Edit sequence", sigc::bind(mem_fun(ths,&perfroll::edit_sequence), a_track, a_trigger )));
+        }
+        menu_trigger->items().push_back(MenuElem("New sequence", sigc::bind(mem_fun(ths,&perfroll::new_sequence), a_track, a_trigger )));
+        if(a_track->get_number_of_sequences()) {
+            char name[40];
+            Menu *set_seq_menu = manage( new Menu());
+            for (unsigned s=0; s< a_track->get_number_of_sequences(); s++ ){
+                sequence *a_seq = a_track->get_sequence( s );
+                snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
+                set_seq_menu->items().push_back(MenuElem(name,
+                    sigc::bind(mem_fun(ths, &perfroll::set_trigger_sequence), a_track, a_trigger, s)));
+
+            }
+            menu_trigger->items().push_back(MenuElem("Set sequence", *set_seq_menu));
+        }
+        menu_trigger->items().push_back(MenuElem("Delete trigger", sigc::bind(mem_fun(ths,&perfroll::del_trigger), a_track, ths.m_drop_tick )));
+
+
+        Menu *copy_seq_menu = NULL;
+        char name[40];
+        for ( int t=0; t<c_max_track; ++t ){
+                if (! ths.m_mainperf->is_active_track( t )){
+                    continue;
+                }
+            track *some_track = ths.m_mainperf->get_track(t);
+
+            Menu *menu_t = NULL;
+            bool inserted = false;
+            for (unsigned s=0; s< some_track->get_number_of_sequences(); s++ ){
+                if ( !inserted ){
+                    if(copy_seq_menu == NULL) {
+                        copy_seq_menu = manage( new Menu());
+                    }
+                    inserted = true;
+                    snprintf(name, sizeof(name), "[%d] %s", t+1, some_track->get_name());
+                    menu_t = manage( new Menu());
+                    copy_seq_menu->items().push_back(MenuElem(name, *menu_t));
+                }
+
+                sequence *a_seq = some_track->get_sequence( s );
+                snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
+                menu_t->items().push_back(MenuElem(name,
+                    sigc::bind(mem_fun(ths, &perfroll::copy_sequence), a_track, a_trigger, a_seq)));
+
+            }
+        }
+        if(copy_seq_menu != NULL) {
+            menu_trigger->items().push_back(MenuElem("Copy sequence", *copy_seq_menu));
+        }
+
+        menu_trigger->popup(0,0);
+    }
 }

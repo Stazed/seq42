@@ -74,14 +74,12 @@ struct Seq42PerfInput
 /* performance roll */
 class perfroll : public Gtk::DrawingArea
 {
-
- private: 
+ private:
     friend struct FruityPerfInput;
     FruityPerfInput m_fruity_interaction;
 
     friend struct Seq42PerfInput;
     Seq42PerfInput m_seq42_interaction;
-
 
     Glib::RefPtr<Gdk::GC> m_gc;
     Glib::RefPtr<Gdk::Window> m_window;
@@ -98,7 +96,7 @@ class perfroll : public Gtk::DrawingArea
     int          m_beat_length;
 
     int          m_window_x, m_window_y;
- 
+
     long         m_old_progress_ticks;
 
     int          m_4bar_offset;
@@ -113,7 +111,7 @@ class perfroll : public Gtk::DrawingArea
     int          m_drop_track;
 
     bool         m_track_active[c_max_track];
-    
+
     Adjustment   *m_vadjust;
     Adjustment   *m_hadjust;
 
@@ -123,7 +121,7 @@ class perfroll : public Gtk::DrawingArea
 
     void on_realize();
     bool on_expose_event(GdkEventExpose* a_ev);
-    bool on_button_press_event(GdkEventButton* a_ev); 
+    bool on_button_press_event(GdkEventButton* a_ev);
     bool on_button_release_event(GdkEventButton* a_ev);
     bool on_motion_notify_event(GdkEventMotion* a_ev);
     bool on_scroll_event( GdkEventScroll* a_ev ) ;
@@ -140,22 +138,22 @@ class perfroll : public Gtk::DrawingArea
     void convert_x( int a_x, long *a_ticks);
     void snap_x( int *a_x );
 
-   
+
     void start_playing( void );
     void stop_playing( void );
 
-   
+
 
     void draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track );
     void draw_background_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track );
 
     void draw_drawable_row( Glib::RefPtr<Gdk::Drawable> a_dest, Glib::RefPtr<Gdk::Drawable> a_src,  long a_y );
-    
-    
+
+
     void change_horz( void );
     void change_vert( void );
 
-
+    void trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths);
 
  public:
     void set_guides( int a_snap, int a_measure, int a_beat );
@@ -178,7 +176,7 @@ class perfroll : public Gtk::DrawingArea
     void del_trigger( track *a_track, long a_tick );
     void copy_sequence( track *a_track, trigger *a_trigger, sequence *a_seq );
 
-    perfroll( perform *a_perf, 
+    perfroll( perform *a_perf,
 	      Adjustment *a_hadjust,
 	      Adjustment *a_vadjust );
 
