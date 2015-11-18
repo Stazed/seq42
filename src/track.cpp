@@ -1100,9 +1100,13 @@ track::get_trigger_sequence( trigger *a_trigger )
     }
 }
 
+
 //void track::set_trigger_sequence( trigger *a_trigger, sequence *a_sequence )
 void track::set_trigger_sequence( trigger *a_trigger, int a_sequence )
 {
+    // to make all newly added sequences align seq start with trigger start
+    a_trigger->m_offset = a_trigger->m_tick_start;
+
     if(a_trigger != NULL) {
         a_trigger->m_sequence = a_sequence;
         set_dirty();
@@ -1241,24 +1245,7 @@ track::paste_trigger( void )
     }
 }
 
-/*
-void
-track::paste_trigger( void )
-{
-    if ( m_trigger_copied ){
-        long length =  m_trigger_clipboard.m_tick_end -
-            m_trigger_clipboard.m_tick_start + 1;
-        // paste at copy end
-        add_trigger( m_trigger_clipboard.m_tick_end + 1,
-                     length,
-                     m_trigger_clipboard.m_offset + length,
-                     m_trigger_clipboard.m_sequence);
 
-        m_trigger_clipboard.m_tick_start = m_trigger_clipboard.m_tick_end +1;
-        m_trigger_clipboard.m_tick_end = m_trigger_clipboard.m_tick_start + length - 1;
-    }
-}
-*/
 void
 track::set_trigger_paste_tick(long a_tick)
 {

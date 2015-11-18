@@ -135,7 +135,7 @@ class mainwnd : public Gtk::Window
     void options_dialog( void );
     void about_dialog( void );
 
-    void adj_callback_ss( );
+    //void adj_callback_ss( );
     void adj_callback_bpm( );
     void adj_callback_swing_amount8( );
     void adj_callback_swing_amount16( );

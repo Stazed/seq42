@@ -655,6 +655,7 @@ mainwnd::open_seqlist()
     {
         new seqlist(m_mainperf);
     }
+    m_modified = true;
 }
 
 
@@ -938,7 +939,7 @@ mainwnd::file_import_dialog( void )
     filter_any.add_pattern("*");
     dialog.add_filter(filter_any);
 
-    dialog.set_current_folder(last_midi_dir); // TODO use separate Midi dir
+    dialog.set_current_folder(last_midi_dir);
 
     ButtonBox *btnbox = dialog.get_action_area();
     HBox hbox( false, 2 );
