@@ -1076,6 +1076,7 @@ bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
         (a_ev->button == 1 && (a_ev->state & GDK_CONTROL_MASK) ))
     {
         long tick = ths.m_drop_tick;
+        tick = tick - tick % ths.m_snap; // grid snap
 
         if ( ths.m_mainperf->is_active_track( ths.m_drop_track )){
             bool state = ths.m_mainperf->get_track( ths.m_drop_track )->get_trigger_state( tick );
@@ -1323,6 +1324,7 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
     if ( a_ev->button == 2 )
     {
         long tick = ths.m_drop_tick;
+        tick = tick - tick % ths.m_snap; // grid snap
 
         if ( ths.m_mainperf->is_active_track( ths.m_drop_track )){
             bool state = ths.m_mainperf->get_track( ths.m_drop_track )->get_trigger_state( tick );

@@ -30,6 +30,7 @@ track::track()
     m_midi_channel = 0;
     m_song_mute = false;
     m_transposable = true;
+    m_paste_tick = -1;
 
     m_dirty_perf = true;
     m_dirty_names = true;
@@ -1187,7 +1188,6 @@ track::cut_selected_trigger( void )
 void
 track::copy_selected_trigger( void )
 {
-    set_trigger_paste_tick(-1); // initialize
     lock();
 
     list<trigger>::iterator i;
@@ -1240,7 +1240,7 @@ track::paste_trigger( void )
 
             long a_length = get_sequence(m_trigger_clipboard.m_sequence)->get_length();
             m_trigger_clipboard.m_offset = adjust_offset(m_trigger_clipboard.m_offset,a_length);
-            set_trigger_paste_tick(-1); // clear the paste location
+            set_trigger_paste_tick(-1); // reset to default
         }
     }
 }
