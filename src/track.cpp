@@ -1188,6 +1188,7 @@ track::cut_selected_trigger( void )
 void
 track::copy_selected_trigger( void )
 {
+    set_trigger_paste_tick(-1); // reset to default for any carryover of unpasted click on track
     lock();
 
     list<trigger>::iterator i;
@@ -1207,6 +1208,10 @@ track::copy_selected_trigger( void )
 void
 track::paste_trigger( void )
 {
+     // empty trigger = segfault via get_length - don't allow w/o sequence
+    if (m_trigger_clipboard.m_sequence < 0)
+        return;
+
     if ( m_trigger_copied ){
         long length =  m_trigger_clipboard.m_tick_end -
             m_trigger_clipboard.m_tick_start + 1;
