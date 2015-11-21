@@ -969,11 +969,6 @@ mainwnd::file_import_dialog( void )
                        Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
                 errdialog.run();
            }
-
-           //global_filename = std::string(dialog.get_filename());
-           //update_window_title();
-           open_seqlist();  // to show the list of imported files
-
            m_modified = true;
 
            m_adjust_bpm->set_value( m_mainperf->get_bpm() );

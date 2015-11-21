@@ -24,10 +24,22 @@
 #include "seqedit.h"
 #include <iostream>
 
+/*
 midifile::midifile(const Glib::ustring& a_name)
 {
     m_name = a_name;
     m_pos = 0;
+}
+
+midifile::~midifile ()
+{
+}
+*/
+
+midifile::midifile(const Glib::ustring& a_name) :
+    m_pos(0),
+    m_name(a_name)
+{
 }
 
 midifile::~midifile ()
@@ -105,12 +117,16 @@ bool midifile::parse (perform * a_perf)
     file.seekg (0, ios::beg);
 
     /* alloc data */
-    m_d = (unsigned char *) new char[file_size];
-    if (m_d == NULL) {
+    try
+	{
+	    m_d.resize(file_size);
+	}
+	catch(std::bad_alloc& ex)
+	{
         fprintf(stderr, "Memory allocation failed\n");
         return false;
     }
-    file.read ((char *) m_d, file_size);
+    file.read ((char *) &m_d[0], file_size);
     file.close ();
 
     /* set position to 0 */
@@ -152,31 +168,16 @@ bool midifile::parse (perform * a_perf)
     /* magic number 'MThd' */
     if (ID != 0x4D546864) {
         fprintf(stderr, "Invalid MIDI header detected: %8lX\n", ID);
-        delete[]m_d;
         return false;
     }
 
     /* we are only supporting format 1 for now */
     if (Format != 1) {
         fprintf(stderr, "Unsupported MIDI format detected: %d\n", Format);
-        delete[]m_d;
         return false;
     }
 
     /* We should be good to load now   */
-
-    /* Create new seq42 track to load all midi tracks */
-    a_track = new track();
-
-    if (a_track == NULL) {
-        fprintf(stderr, "Memory allocation failed\n");
-        delete[]m_d;
-        return false;
-    }
-    a_perf->add_track(a_track,0);
-    a_track->set_name((char*)"Midi Import");
-    a_track->set_master_midi_bus (&a_perf->m_master_bus);
-
     /* for each Track in the midi file */
     for (int curTrack = 0; curTrack < NumTracks; curTrack++)
     {
@@ -186,6 +187,7 @@ bool midifile::parse (perform * a_perf)
         /* events */
         unsigned char status = 0, type, data[2], laststatus;
         long len;
+        unsigned long proprietary = 0;
 
         /* Get ID + Length */
         ID = read_long ();
@@ -196,12 +198,20 @@ bool midifile::parse (perform * a_perf)
         if (ID == 0x4D54726B)
         {
             /* we know we have a good track, so we can create
-               a new sequence to dump it to */
+               a new seq42 track to dump it */
+
+            a_track = new track();
+
+            if (a_track == NULL) {
+                fprintf(stderr, "Memory allocation failed\n");
+                return false;
+            }
+            a_perf->add_track(a_track,curTrack);
+            a_track->set_name((char*)"Midi Import");
+            a_track->set_master_midi_bus (&a_perf->m_master_bus);
 
             int seq_idx = a_track->new_sequence();
-            sequence *new_seq = a_track->get_sequence(seq_idx);
-
-            //printf( "seq_idx = %d", seq_idx);
+            sequence *seq = a_track->get_sequence(seq_idx);
 
             /* reset time */
             RunningTime = 0;
@@ -263,8 +273,10 @@ bool midifile::parse (perform * a_perf)
 
                         /* set data and add */
                         e.set_data (data[0], data[1]);
+                        seq->add_event (&e);
 
-                        new_seq->add_event (&e);
+                        /* set midi channel */
+                        a_track->set_midi_channel (status & 0x0F);
                         break;
 
                         /* one data item */
@@ -276,7 +288,10 @@ bool midifile::parse (perform * a_perf)
 
                         /* set data and add */
                         e.set_data (data[0]);
-                        new_seq->add_event (&e);
+                        seq->add_event (&e);
+
+                        /* set midi channel */
+                        a_track->set_midi_channel (status & 0x0F);
                         break;
 
                         /* meta midi events ---  this should be FF !!!!!  */
@@ -294,8 +309,8 @@ bool midifile::parse (perform * a_perf)
                             switch (type)
                             {
                                 // proprietary
-                                case 0x7f:  // cant use these
-                                    /*
+                                case 0x7f:
+
                                     // FF 7F len data
                                     if (len > 4)
                                     {
@@ -305,24 +320,20 @@ bool midifile::parse (perform * a_perf)
 
                                     if (proprietary == c_midibus)
                                     {
-                                        m_pos++;
-                                        //seq->set_midi_bus (read_byte ());
-                                        //a_track->set_midi_bus (read_byte ());
+                                        a_track->set_midi_bus (read_byte ());
                                         len--;
                                     }
 
                                     else if (proprietary == c_midich)
                                     {
-                                        m_pos++;
-                                        //seq->set_midi_channel (read_byte ());
-                                        //a_track->set_midi_channel (read_byte ());
+                                        a_track->set_midi_channel (read_byte ());
                                         len--;
                                     }
 
                                     else if (proprietary == c_timesig)
                                     {
-                                        new_seq->set_bpm (read_byte ());
-                                        new_seq->set_bw (read_byte ());
+                                        seq->set_bpm (read_byte ());
+                                        seq->set_bw (read_byte ());
                                         len -= 2;
                                     }
 
@@ -335,8 +346,7 @@ bool midifile::parse (perform * a_perf)
                                             unsigned long on = read_long ();
                                             unsigned long length = (read_long () - on);
                                             len -= 8;
-                                            //seq->add_trigger(on, length, 0, false);
-                                            //trak->add_trigger(on, length, 0, false);
+                                            a_track->add_trigger(on, length, 0, false);
                                         }
                                     }
 
@@ -356,11 +366,9 @@ bool midifile::parse (perform * a_perf)
                                             //        on, off, offset );
 
                                             len -= 12;
-                                            //seq->add_trigger (on, length, offset, false);
-                                            //trak->add_trigger (on, length, offset, false);
+                                            a_track->add_trigger (on, length, offset, false);
                                         }
                                     }
-                                    */
                                     /* eat the rest */
                                     m_pos += len;
                                     break;
@@ -376,8 +384,8 @@ bool midifile::parse (perform * a_perf)
                                         CurrentTime += 1;
                                     }
 
-                                    new_seq->set_length (CurrentTime, false);
-                                    new_seq->zero_markers ();
+                                    seq->set_length (CurrentTime, false);
+                                    seq->zero_markers ();
                                     done = true;
                                     break;
 
@@ -390,28 +398,20 @@ bool midifile::parse (perform * a_perf)
 
                                     TrackName[i] = '\0';
 
-                                    printf("Import track: [%s]\n", TrackName );
-                                    new_seq->set_name (TrackName);
+                                    //printf("Import track: [%s]\n", TrackName );
+                                    seq->set_name (TrackName);
                                     break;
 
                                     /* sequence number */
                                 case 0x00:
                                     if(len != 0x00)
                                         read_short();
-                                    /*if (len == 0x00)
-                                        perf = 0;
-                                    else
-                                        perf = read_short (); */
-
-                                    //printf ( "perf %d\n", perf );
                                     break;
 
                                 default:
                                     for (i = 0; i < len; i++)
                                     {
                                         read_byte();
-                                        //c = read_byte ();
-                                        //printf( "%02X ", c  );
                                     }
                                     //printf("\n");
                                     break;
@@ -430,16 +430,13 @@ bool midifile::parse (perform * a_perf)
                         else
                         {
                             fprintf(stderr, "Unexpected system event : 0x%.2X", status);
-                            delete[]m_d;
                             return false;
-                            break;
                         }
 
                         break;
 
                     default:
                         fprintf(stderr, "Unsupported MIDI event: %hhu\n", status);
-                        delete[]m_d;
                         return false;
                         break;
                 }
@@ -447,8 +444,7 @@ bool midifile::parse (perform * a_perf)
             }			/* while ( !done loading Trk chunk */
 
             /* the sequence has been filled, add it  */
-            new_seq->set_track(a_track);
-            //new seqedit( new_seq, a_perf ); // show it
+            seq->set_track(a_track);
         }
 
         /* dont know what kind of chunk */
@@ -467,8 +463,6 @@ bool midifile::parse (perform * a_perf)
 
     if ((file_size - m_pos) > (int) sizeof (unsigned long))
     {
-        ID = read_long ();
-
         /* Get ID + Length */
         ID = read_long ();
         if (ID == c_midiclocks)
@@ -495,8 +489,6 @@ bool midifile::parse (perform * a_perf)
     }
 
     // *** ADD NEW TAGS AT END **************/
-
-    delete[]m_d;
     return true;
 }
 
