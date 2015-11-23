@@ -27,6 +27,7 @@ class track;
 #include "trigger.h"
 #include "sequence.h"
 #include "mutex.h"
+#include <vector>
 
 class track
 {
@@ -92,7 +93,6 @@ class track
     track& operator=(const track& other);
     void free ();
 
-
     void push_trigger_undo (void);
     void pop_trigger_undo (void);
     void pop_trigger_redo (void);
@@ -152,6 +152,9 @@ class track
     void grow_trigger (long a_tick_from, long a_tick_to, long a_length);
     void del_trigger (long a_tick );
     trigger *get_trigger(long a_tick);
+
+    void get_trak_triggers(std::vector<trigger> &trig_vect); //  merge
+
     bool get_trigger_state (long a_tick);
     sequence *get_trigger_sequence (trigger *a_trigger);
     //void set_trigger_sequence (trigger *a_trigger, sequence *a_sequence);

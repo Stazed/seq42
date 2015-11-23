@@ -1084,6 +1084,17 @@ track::get_trigger( long a_tick )
     return ret;
 }
 
+void
+track::get_trak_triggers(std::vector<trigger> &trig_vect)
+{
+    lock();
+
+    trig_vect.assign(m_list_trigger.begin(),m_list_trigger.end());
+
+    unlock();
+}
+
+
 bool
 track::get_trigger_state( long a_tick )
 {
