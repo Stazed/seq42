@@ -42,7 +42,7 @@ class trackmenu;
 #include <gtkmm/table.h>
 #include <gtkmm/drawingarea.h>
 #include <gtkmm/widget.h>
-#include <gtkmm/style.h> 
+#include <gtkmm/style.h>
 
 
 
@@ -52,7 +52,7 @@ using namespace Gtk;
 class trackmenu : public virtual Glib::ObjectBase
 {
 
- private: 
+ private:
 
     Menu        *m_menu;
     perform     *m_mainperf;
@@ -63,21 +63,22 @@ class trackmenu : public virtual Glib::ObjectBase
 
     void trk_new();
 
-    void trk_copy();   
+    void trk_copy();
     void trk_cut();
-    void trk_paste(); 
-    void trk_edit(); 
+    void trk_paste();
+    void trk_merge();
+    void trk_edit();
     void new_sequence();
 
     void trk_clear_perf();
 
     void set_bus_and_midi_channel( int a_bus, int a_ch );
     void mute_all_tracks();
-    
+
     virtual void redraw( int a_track ) = 0;
 
  protected:
-   
+
     int m_current_trk;
     void popup_menu();
 

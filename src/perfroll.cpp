@@ -1086,9 +1086,9 @@ bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 
                 ths.m_mainperf->get_track( ths.m_drop_track )->split_trigger( tick );
 
-                //ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
-                //ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
-                //ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
+                ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
+                ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
+                ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
             }
             else // clicked off trigger for paste
             {
@@ -1334,9 +1334,9 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 
                 ths.m_mainperf->get_track( ths.m_drop_track )->split_trigger( tick );
 
-                //ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
-                //ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
-                //ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
+                ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
+                ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
+                ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
             }
             else    // clicked off trigger for paste
             {
