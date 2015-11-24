@@ -18,23 +18,12 @@
 //
 //-----------------------------------------------------------------------------
 
-// FIXME: re-use some of this code if I ever implement export to midi (or less likely, import from midi)
+// FIXME: re-use some of this code if I ever implement export to midi
 
 #include "midifile.h"
 #include "seqedit.h"
 #include <iostream>
 
-/*
-midifile::midifile(const Glib::ustring& a_name)
-{
-    m_name = a_name;
-    m_pos = 0;
-}
-
-midifile::~midifile ()
-{
-}
-*/
 
 midifile::midifile(const Glib::ustring& a_name) :
     m_pos(0),
@@ -466,12 +455,8 @@ bool midifile::parse (perform * a_perf)
         ID = read_long ();
         if (ID == c_midictrl) // Not used: all the read_byte() change m_pos to correct position for c_bpmtag
         {
-            unsigned long seqs = read_long ();
-
-            for (unsigned int i = 0; i < seqs; i++) // FIXME - got to be a better way to get c_bpmtag
-            {
-                read_byte();
-            }
+            unsigned long len = read_long ();
+            m_pos += len;
         }
         /* Get ID + Length */
         ID = read_long ();
@@ -491,7 +476,7 @@ bool midifile::parse (perform * a_perf)
     {
         /* Get ID + Length */
         ID = read_long ();
-        if (ID == c_notes)  // Not used: all the read_byte() change m_pos to correct position for c_bpmtag
+        if (ID == c_notes)  // Not used: except to change m_pos to correct position for c_bpmtag
         {
             unsigned int screen_sets = read_short ();
 
@@ -499,9 +484,7 @@ bool midifile::parse (perform * a_perf)
             {
                 /* get the length of the string */
                 unsigned int len = read_short ();
-
-                for (unsigned int i = 0; i < len; i++)
-                    read_byte();
+                m_pos += len;
             }
         }
     }
