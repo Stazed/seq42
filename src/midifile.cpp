@@ -151,7 +151,7 @@ bool midifile::parse (perform * a_perf)
     /* used in small loops */
     int i;
 
-    /* sequence pointer */
+    /* track pointer */
     track * a_track;
     event e;
 
@@ -463,6 +463,16 @@ bool midifile::parse (perform * a_perf)
 
     if ((file_size - m_pos) > (int) sizeof (unsigned long))
     {
+        ID = read_long ();
+        if (ID == c_midictrl) // Not used: all the read_byte() change m_pos to correct position for c_bpmtag
+        {
+            unsigned long seqs = read_long ();
+
+            for (unsigned int i = 0; i < seqs; i++) // FIXME - got to be a better way to get c_bpmtag
+            {
+                read_byte();
+            }
+        }
         /* Get ID + Length */
         ID = read_long ();
         if (ID == c_midiclocks)
@@ -476,6 +486,26 @@ bool midifile::parse (perform * a_perf)
             }
         }
     }
+
+    if ((file_size - m_pos) > (int) sizeof (unsigned long)) // FIXME there has got to be a better way
+    {
+        /* Get ID + Length */
+        ID = read_long ();
+        if (ID == c_notes)  // Not used: all the read_byte() change m_pos to correct position for c_bpmtag
+        {
+            unsigned int screen_sets = read_short ();
+
+            for (unsigned int x = 0; x < screen_sets; x++)
+            {
+                /* get the length of the string */
+                unsigned int len = read_short ();
+
+                for (unsigned int i = 0; i < len; i++)
+                    read_byte();
+            }
+        }
+    }
+
 
     if ((file_size - m_pos) > (int) sizeof (unsigned int))
     {
