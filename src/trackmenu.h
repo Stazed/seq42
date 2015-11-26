@@ -67,6 +67,7 @@ class trackmenu : public virtual Glib::ObjectBase
     void trk_cut();
     void trk_paste();
     void trk_merge();
+    void trk_merge_seq(track *a_track, sequence *a_seq );
     void trk_edit();
     void new_sequence();
 

@@ -64,6 +64,41 @@ trackmenu::popup_menu( void )
         }
         m_menu->items().push_back(MenuElem("Copy", mem_fun(*this,&trackmenu::trk_copy)));
         if(m_something_to_paste) m_menu->items().push_back(MenuElem("Merge", mem_fun(*this,&trackmenu::trk_merge)));
+
+        Menu *merge_seq_menu = NULL;
+        char name[40];
+        for ( int t=0; t<c_max_track; ++t ){
+                if (! m_mainperf->is_active_track( t )){
+                    continue;
+                }
+            track *some_track = m_mainperf->get_track(t);
+
+            Menu *menu_t = NULL;
+            bool inserted = false;
+            for (unsigned s=0; s< some_track->get_number_of_sequences(); s++ ){
+                if ( !inserted ){
+                    if(merge_seq_menu == NULL) {
+                        merge_seq_menu = manage( new Menu());
+                    }
+                    inserted = true;
+                    snprintf(name, sizeof(name), "[%d] %s", t+1, some_track->get_name());
+                    menu_t = manage( new Menu());
+                    merge_seq_menu->items().push_back(MenuElem(name, *menu_t));
+                }
+
+                sequence *a_seq = some_track->get_sequence( s );
+                snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
+                menu_t->items().push_back(MenuElem(name,
+                    sigc::bind(mem_fun(*this,&trackmenu::trk_merge_seq),some_track, a_seq)));
+                    //sigc::bind(mem_fun(ths, &perfroll::copy_sequence), a_track, a_trigger, a_seq)));
+
+            }
+        }
+        if(merge_seq_menu != NULL) {
+            m_menu->items().push_back(MenuElem("Merge sequence", *merge_seq_menu));
+            //menu_trigger->items().push_back(MenuElem("Merge sequence", *merge_seq_menu));
+        }
+
     } else {
         if(m_something_to_paste) m_menu->items().push_back(MenuElem("Paste", mem_fun(*this,&trackmenu::trk_paste)));
     }
@@ -217,6 +252,13 @@ trackmenu::trk_merge(){
         m_something_to_paste = false;
     }
 }
+
+void
+trackmenu::trk_merge_seq(track * a_track, sequence *a_seq )
+{
+    //FIXME todo
+}
+
 
 void
 trackmenu::trk_edit(){

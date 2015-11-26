@@ -24,10 +24,13 @@ Here are some of the other enhancements of seq42:
 * sequence editor has new menu items to randomize selected events (adding or subtracting a random value in a range from +/-1 to +/-16).  This can be used on velocity or CC values.
 * sequence editor has new menu items to select notes that occur on specific beats (even 1/4, odd 1/4, even 1/8, odd 1/8, even 1/16, odd 1/16)
 * song window has new menu items to mute all tracks, unmute all tracks and toggle track mute status.
+* NEW - Import seq24 files, and any midi files!!
+* NEW - merge tracks: right click on existing track - select Copy - move to another existing track, right click and select "merge".  All the copied track's sequences and song triggers will be added to the merged track. Now you can easily combine those seq24 tracks!!
 
 There are a few caveats too:
-* seq42 has a different file format; it can't open seq24 files and there's currently no code to convert seq24 files to seq42's format.
-* seq24 can import and export midi files; seq42 currently cannot.
+* seq42 has a different file format; it CAN now open seq24 files!!!!.
+* seq24 can import and export midi files; seq42 currently CAN import but not export (coming soon).
+
 
 What to do with a fresh repository checkout?
 --------------------------------------------
