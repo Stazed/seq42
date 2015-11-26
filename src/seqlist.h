@@ -62,7 +62,6 @@ class seqlist : public Gtk::Window
     Button     *m_button_all_off;
 
     void update_model( );
-    void popup_seq_menu( void );
     void edit_seq( sequence *a_seq );
     void copy_seq( sequence *a_seq );
     void del_seq( track *a_track, int a_seq );
@@ -81,9 +80,9 @@ class seqlist : public Gtk::Window
     sequence * get_selected_sequence();
     bool get_selected_playing_state();
 
-    
+
 public:
-    
+
     seqlist( perform *a_perf );
     ~seqlist();
 

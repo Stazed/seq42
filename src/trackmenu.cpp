@@ -63,16 +63,13 @@ trackmenu::popup_menu( void )
             m_menu->items().push_back(MenuElem("Cut", mem_fun(*this,&trackmenu::trk_cut)));
         }
         m_menu->items().push_back(MenuElem("Copy", mem_fun(*this,&trackmenu::trk_copy)));
-        if(m_something_to_paste) m_menu->items().push_back(MenuElem("Merge", mem_fun(*this,&trackmenu::trk_merge)));
 
         Menu *merge_seq_menu = NULL;
         char name[40];
         for ( int t=0; t<c_max_track; ++t ){
-                if (! m_mainperf->is_active_track( t )){
-                    continue;
-                }
-            if(t == m_current_trk)
-                continue;   // don't list the current track
+            if (! m_mainperf->is_active_track( t ) || t == m_current_trk){
+                continue;// don't list empty tracks or the current track
+            }
 
             track *some_track = m_mainperf->get_track(t);
 
@@ -199,57 +196,6 @@ trackmenu::trk_paste(){
         m_mainperf->new_track( m_current_trk  );
         *(m_mainperf->get_track( m_current_trk )) = m_clipboard;
         m_mainperf->get_track( m_current_trk )->set_dirty();
-    }
-}
-
-// combines copied clipboard & appends to existing track with triggers
-void
-trackmenu::trk_merge(){
-
-    if ( m_something_to_paste && m_mainperf->is_active_track( m_current_trk ))
-    {
-        m_mainperf->push_trigger_undo();
-        track * a_track;
-        a_track = new track();
-        a_track = &m_clipboard;
-
-        unsigned num_merged_sequences = a_track->get_number_of_sequences();
-
-        std::vector<trigger> trig_vect;
-        a_track->get_trak_triggers(trig_vect); // all triggers for the copied track
-        //printf("trig_vect.size()[%d]\n",trig_vect.size());
-
-        trigger *a_trig = NULL;
-
-        for(unsigned i = 0; i < num_merged_sequences;i++)
-        {
-            // Add the sequences
-            int seq_idx = m_mainperf->get_track( m_current_trk )->new_sequence();
-            sequence *seq = m_mainperf->get_track( m_current_trk )->get_sequence(seq_idx);
-            *seq = *a_track->get_sequence(i);
-            seq->set_track(m_mainperf->get_track( m_current_trk ));
-
-            for(unsigned ii = 0; ii < trig_vect.size(); ii++)
-            {
-                // Add the triggers for each sequence
-                a_trig = &trig_vect[ii];
-
-                if(a_trig->m_sequence == i) // i = the current sequence
-                {
-                    m_mainperf->get_track( m_current_trk )->add_trigger(a_trig->m_tick_start,
-                                        a_trig->m_tick_end - a_trig->m_tick_start,a_trig->m_offset,
-                                        seq_idx);
-
-                    //printf( "tick_start[%ld]: tick_end[%ld]: offset[%ld]\n", a_trig->m_tick_start,
-                    //                a_trig->m_tick_end,a_trig->m_offset );
-                }
-                a_trig = NULL;
-            }
-            //seq->print();
-        }
-
-        m_mainperf->get_track( m_current_trk )->set_dirty();
-        m_something_to_paste = false;
     }
 }
 

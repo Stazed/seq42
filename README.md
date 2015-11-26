@@ -25,7 +25,7 @@ Here are some of the other enhancements of seq42:
 * sequence editor has new menu items to select notes that occur on specific beats (even 1/4, odd 1/4, even 1/8, odd 1/8, even 1/16, odd 1/16)
 * song window has new menu items to mute all tracks, unmute all tracks and toggle track mute status.
 * NEW - Import seq24 files, and any midi files!!
-* NEW - merge tracks: right click on existing track - select Copy - move to another existing track, right click and select "merge".  All the copied track's sequences and song triggers will be added to the merged track. Now you can easily combine those seq24 tracks!!
+* NEW - merge sequence: right click on existing track name - select Merge Sequence - Select the sequence from the available list.  The Sequences AND song triggers will be added to the track. Now you can easily combine those seq24 tracks!! - any overlapping trigger will be overwritten and/or split - just create a new sequence for them...
 
 There are a few caveats too:
 * seq42 has a different file format; it CAN now open seq24 files!!!!.
