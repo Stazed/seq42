@@ -71,6 +71,9 @@ trackmenu::popup_menu( void )
                 if (! m_mainperf->is_active_track( t )){
                     continue;
                 }
+            if(t == m_current_trk)
+                continue;   // don't list the current track
+
             track *some_track = m_mainperf->get_track(t);
 
             Menu *menu_t = NULL;
@@ -90,13 +93,10 @@ trackmenu::popup_menu( void )
                 snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
                 menu_t->items().push_back(MenuElem(name,
                     sigc::bind(mem_fun(*this,&trackmenu::trk_merge_seq),some_track, a_seq)));
-                    //sigc::bind(mem_fun(ths, &perfroll::copy_sequence), a_track, a_trigger, a_seq)));
-
             }
         }
         if(merge_seq_menu != NULL) {
             m_menu->items().push_back(MenuElem("Merge sequence", *merge_seq_menu));
-            //menu_trigger->items().push_back(MenuElem("Merge sequence", *merge_seq_menu));
         }
 
     } else {
@@ -253,10 +253,41 @@ trackmenu::trk_merge(){
     }
 }
 
-void
+void    // merge selected sequence into current track with triggers
 trackmenu::trk_merge_seq(track * a_track, sequence *a_seq )
 {
-    //FIXME todo
+    if ( m_mainperf->is_active_track( m_current_trk ))
+    {
+        m_mainperf->push_trigger_undo();
+
+        std::vector<trigger> trig_vect;
+        a_track->get_trak_triggers(trig_vect); // all triggers for the track
+        //printf("trig_vect.size()[%d]\n",trig_vect.size());
+
+        trigger *a_trig = NULL;
+
+        int seq_idx = m_mainperf->get_track( m_current_trk )->new_sequence();
+        sequence *seq = m_mainperf->get_track( m_current_trk )->get_sequence(seq_idx);
+        *seq = *a_seq;
+        seq->set_track(m_mainperf->get_track( m_current_trk ));
+
+        for(unsigned ii = 0; ii < trig_vect.size(); ii++)
+        {
+            a_trig = &trig_vect[ii];
+
+            if(a_trig->m_sequence == a_track->get_sequence_index(a_seq))
+            {
+                m_mainperf->get_track( m_current_trk )->add_trigger(a_trig->m_tick_start,
+                                    a_trig->m_tick_end - a_trig->m_tick_start,a_trig->m_offset,
+                                    seq_idx);
+
+                //printf( "tick_start[%ld]: tick_end[%ld]: offset[%ld]\n", a_trig->m_tick_start,
+                //                a_trig->m_tick_end,a_trig->m_offset );
+            }
+            a_trig = NULL;
+        }
+        m_mainperf->get_track( m_current_trk )->set_dirty();
+    }
 }
 
 
