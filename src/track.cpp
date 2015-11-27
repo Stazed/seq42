@@ -30,6 +30,7 @@ track::track()
     m_midi_channel = 0;
     m_song_mute = false;
     m_transposable = true;
+    m_trigger_copied = false;
     m_paste_tick = -1;
 
     m_dirty_perf = true;
@@ -1125,6 +1126,26 @@ void track::set_trigger_sequence( trigger *a_trigger, int a_sequence )
     }
 }
 
+void track::set_trigger_copied ( void )
+{
+    m_trigger_copied = true;
+}
+
+void track::unset_trigger_copied ( void )
+{
+    m_trigger_copied = false;
+}
+
+bool track::get_trigger_copied ( void )
+{
+    return m_trigger_copied;
+}
+
+trigger*
+track::get_trigger_clipboard( void )
+{
+    return &m_trigger_clipboard;
+}
 
 bool
 track::select_trigger( long a_tick )

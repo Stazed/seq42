@@ -754,8 +754,34 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                 /* paste */
                 if ( a_p0->keyval == GDK_v || a_p0->keyval == GDK_V ){
                     m_mainperf->push_trigger_undo();
-                    m_mainperf->get_track( m_drop_track )->paste_trigger();
-                    ret = true;
+
+                    bool cross_track = false;
+                    for ( int t=0; t<c_max_track; ++t )
+                    {
+                        if (! m_mainperf->is_active_track( t ))
+                        {
+                            continue;
+                        }
+
+                        if(m_mainperf->get_track(t)->get_trigger_copied())
+                        {
+                            if(t != m_drop_track) // this is cross track copy
+                            {
+                                paste_trigger_sequence( m_mainperf->get_track( m_drop_track ),
+                                                        m_mainperf->get_track(t)->get_sequence(m_mainperf->get_track(t)->get_trigger_clipboard()->m_sequence ));
+                                ret = true;
+                                cross_track = true;
+                                break;
+                            }
+                        }
+
+                    }
+                    if(!cross_track)
+                    {
+                        m_mainperf->get_track( m_drop_track )->paste_trigger();
+                        cross_track = false; // is this necessary?
+                        ret = true;
+                    }
                 }
             }
         }
@@ -907,6 +933,58 @@ perfroll::del_trigger( track *a_track, long a_tick )
     a_track->set_dirty( );
 }
 
+void
+perfroll::paste_trigger_sequence( track *p_track, sequence *a_sequence )
+{
+     // empty trigger = segfault via get_length - don't allow w/o sequence
+    if (a_sequence == NULL)
+        return;
+
+    if ( a_sequence->get_track()->get_trigger_copied() ){
+
+            if(a_sequence->get_track() != p_track)  // then we have to copy the sequence
+            {
+                // Add the sequence
+                int seq_idx = p_track->new_sequence();
+                sequence *seq = p_track->get_sequence(seq_idx);
+                *seq = *a_sequence;
+                seq->set_track(p_track);
+                trigger *a_trigger = NULL;
+                a_trigger = a_sequence->get_track()->get_trigger_clipboard();
+
+                //printf("a_trigger-m_offset[%ld]\na_trigger-m_tick_start[%ld]\nm_tick_end[%ld]\n",a_trigger->m_offset,
+                //       a_trigger->m_tick_start,a_trigger->m_tick_end);
+                //put trigger into current track clipboard
+                p_track->get_trigger_clipboard()->m_offset = a_trigger->m_offset;
+                p_track->get_trigger_clipboard()->m_selected = a_trigger->m_selected;
+                p_track->get_trigger_clipboard()->m_sequence = seq_idx;
+                p_track->get_trigger_clipboard()->m_tick_start = a_trigger->m_tick_start;
+                p_track->get_trigger_clipboard()->m_tick_end = a_trigger->m_tick_end;
+
+                long length =  p_track->get_trigger_clipboard()->m_tick_end - p_track->get_trigger_clipboard()->m_tick_start + 1;
+
+                long offset_adjust = p_track->get_trigger_paste_tick() - p_track->get_trigger_clipboard()->m_tick_start;
+                p_track->add_trigger(p_track->get_trigger_paste_tick(),
+                         length,
+                         p_track->get_trigger_clipboard()->m_offset + offset_adjust,
+                         p_track->get_trigger_clipboard()->m_sequence); // +/- distance to paste tick from start
+
+                p_track->get_trigger_clipboard()->m_tick_start = p_track->get_trigger_paste_tick();
+                p_track->get_trigger_clipboard()->m_tick_end = p_track->get_trigger_clipboard()->m_tick_start + length - 1;
+                p_track->get_trigger_clipboard()->m_offset += offset_adjust;
+
+                long a_length = p_track->get_sequence(p_track->get_trigger_clipboard()->m_sequence)->get_length();
+                p_track->get_trigger_clipboard()->m_offset = p_track->adjust_offset(p_track->get_trigger_clipboard()->m_offset,a_length);
+
+                //printf("p-m_offset[%ld]\np-m_tick_start[%ld]\np-m_tick_end[%ld]\n",p_track->get_trigger_clipboard()->m_offset,
+                //       p_track->get_trigger_clipboard()->m_tick_start,p_track->get_trigger_clipboard()->m_tick_end);
+
+                p_track->set_trigger_paste_tick(-1); // reset to default
+                p_track->set_trigger_copied();  // change to paste track
+                a_sequence->get_track()->unset_trigger_copied(); // undo original
+            }
+    }
+}
 
 //////////////////////////
 // interaction methods

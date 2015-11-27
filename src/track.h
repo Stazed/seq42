@@ -159,6 +159,10 @@ class track
     sequence *get_trigger_sequence (trigger *a_trigger);
     //void set_trigger_sequence (trigger *a_trigger, sequence *a_sequence);
     void set_trigger_sequence (trigger *a_trigger, int a_sequence);
+    void set_trigger_copied ( void );
+    void unset_trigger_copied ( void );
+    bool get_trigger_copied ( void );
+    trigger *get_trigger_clipboard( void );
     bool select_trigger(long a_tick);
     bool unselect_triggers (void);
     bool intersectTriggers( long position, long& start, long& end );

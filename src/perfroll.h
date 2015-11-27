@@ -174,6 +174,7 @@ class perfroll : public Gtk::DrawingArea
     //void set_trigger_sequence( track *a_track, trigger *a_trigger, sequence *a_sequence );
     void set_trigger_sequence( track *a_track, trigger *a_trigger, int a_sequence );
     void del_trigger( track *a_track, long a_tick );
+    void paste_trigger_sequence( track *p_track, sequence *a_sequence );
     void copy_sequence( track *a_track, trigger *a_trigger, sequence *a_seq );
 
     perfroll( perform *a_perf,
