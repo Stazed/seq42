@@ -76,6 +76,7 @@ perfroll::perfroll( perform *a_perf,
     for( int i=0; i<c_max_track; ++i )
         m_track_active[i]=false;
 
+    bool cross_track_paste = false;
 }
 
 perfroll::~perfroll( )
@@ -748,12 +749,13 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                 if ( a_p0->keyval == GDK_c || a_p0->keyval == GDK_C ){
 
                     m_mainperf->get_track( m_drop_track )->copy_selected_trigger();
+                    cross_track_paste = false;
                     ret = true;
                 }
 
                 /* paste */
                 if ( a_p0->keyval == GDK_v || a_p0->keyval == GDK_V ){
-                    m_mainperf->push_trigger_undo();
+                    m_mainperf->push_trigger_undo();    // FIXME should not push unless something actually gets pasted
 
                     bool cross_track = false;
                     for ( int t=0; t<c_max_track; ++t )
@@ -763,13 +765,17 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                             continue;
                         }
 
-                        if(m_mainperf->get_track(t)->get_trigger_copied())
+                        if(m_mainperf->get_track(t)->get_trigger_copied() &&    // do we have a copy to clipboard
+                            m_mainperf->get_track( m_drop_track)->get_trigger_paste_tick() >= 0 &&  // do we have a paste
+                           !cross_track_paste) // has cross track paste NOT been done for this copy
                         {
-                            if(t != m_drop_track) // this is cross track copy
+                            if(t != m_drop_track) // If clipboard and paste are on diff tracks - then cross track paste
                             {
                                 paste_trigger_sequence( m_mainperf->get_track( m_drop_track ),
-                                                        m_mainperf->get_track(t)->get_sequence(m_mainperf->get_track(t)->get_trigger_clipboard()->m_sequence ));
+                                                        m_mainperf->get_track(t)->get_sequence(m_mainperf->get_track(t)
+                                                                               ->get_trigger_clipboard()->m_sequence ));
                                 ret = true;
+                                cross_track_paste = true;
                                 cross_track = true;
                                 break;
                             }
