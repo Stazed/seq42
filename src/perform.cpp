@@ -567,6 +567,8 @@ void perform::push_trigger_undo( void ) // FIXME todo - sequence adds from cross
             m_tracks[i]->push_trigger_undo( );
         }
     }
+
+    undo_vect.push_back(c_undo_trigger);
 }
 
 
@@ -579,6 +581,8 @@ void perform::pop_trigger_undo( void ) // FIXME todo - sequence adds from cross-
             m_tracks[i]->pop_trigger_undo( );
         }
     }
+    undo_vect.pop_back();
+    redo_vect.push_back(c_undo_trigger);
 }
 
 void perform::pop_trigger_redo( void ) // FIXME todo - sequence adds from cross-track and merge
@@ -590,6 +594,8 @@ void perform::pop_trigger_redo( void ) // FIXME todo - sequence adds from cross-
             m_tracks[i]->pop_trigger_redo( );
         }
     }
+    redo_vect.pop_back();
+    undo_vect.push_back(c_undo_trigger);
 }
 
 

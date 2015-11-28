@@ -330,13 +330,15 @@ mainwnd::mainwnd(perform *a_p)
     /* undo */
     m_button_undo = manage( new Button());
     m_button_undo->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( undo_xpm  ))));
-    m_button_undo->signal_clicked().connect(  mem_fun( *this, &mainwnd::undo));
+//    m_button_undo->signal_clicked().connect(  mem_fun( *this, &mainwnd::undo));
+    m_button_undo->signal_clicked().connect(  mem_fun( *this, &mainwnd::undo_type));
     add_tooltip( m_button_undo, "Undo." );
 
     /* redo */
     m_button_redo = manage( new Button());
     m_button_redo->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( redo_xpm  ))));
-    m_button_redo->signal_clicked().connect(  mem_fun( *this, &mainwnd::redo));
+//    m_button_redo->signal_clicked().connect(  mem_fun( *this, &mainwnd::redo));
+    m_button_redo->signal_clicked().connect(  mem_fun( *this, &mainwnd::redo_type));
     add_tooltip( m_button_redo, "Redo." );
 
 
@@ -479,12 +481,50 @@ mainwnd::timer_callback(  )
     return true;
 }
 
+void
+mainwnd::undo_type( void )
+{
+    char type = m_mainperf->undo_vect[m_mainperf->undo_vect.size() -1];
+
+    switch (type)
+    {
+    case c_undo_trigger:
+        undo();
+        break;
+    case c_undo_track:  // TODO
+        break;
+    case c_undo_perf:   // TODO
+        break;
+    default:
+        break;
+    }
+}
+
 
 void
 mainwnd::undo( void )
 {
     m_mainperf->pop_trigger_undo();
     m_perfroll->queue_draw();
+}
+
+void
+mainwnd::redo_type( void )
+{
+    char type = m_mainperf->redo_vect[m_mainperf->redo_vect.size() - 1];
+    switch (type)
+    {
+    case c_undo_trigger:
+        redo();
+        break;
+    case c_undo_track:  // TODO
+        break;
+    case c_undo_perf:   // TODO
+        break;
+    default:
+        break;
+    }
+    //FIXME todo
 }
 
 void

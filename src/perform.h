@@ -51,7 +51,7 @@ enum mute_op
 class perform
 {
  private:
-    /* vector of sequences */
+    /* vector of tracks */
     track *m_tracks[c_max_track];
 
     bool m_tracks_active[ c_max_track ];
@@ -78,18 +78,18 @@ class perform
 
     bool m_playback_mode;
 
-    int thread_trigger_width_ms; 
+    int thread_trigger_width_ms;
 
     long m_left_tick;
     long m_right_tick;
     long m_starting_tick;
-    
+
     long m_tick;
     bool m_usemidiclock;
     bool m_midiclockrunning; // stopped or started
     int  m_midiclocktick;
     int  m_midiclockpos;
-    
+
     void set_running( bool a_running );
 
     void set_playback_mode( bool a_playback_mode );
@@ -98,7 +98,7 @@ class perform
 
 
 #ifdef JACK_SUPPORT
-    
+
     jack_client_t *m_jack_client;
     jack_nframes_t m_jack_frame_current,
                    m_jack_frame_last;
@@ -106,9 +106,9 @@ class perform
     jack_transport_state_t m_jack_transport_state;
     jack_transport_state_t m_jack_transport_state_last;
     double m_jack_tick;
-    
+
 #endif
-    
+
     bool m_jack_running;
     bool m_jack_master;
 
@@ -116,6 +116,12 @@ class perform
     void inner_stop();
 
  public:
+
+    /* used for undo/redo vector */
+    vector<char> undo_vect;
+    vector<char> redo_vect;
+
+
     bool is_running();
 
     unsigned int m_key_bpm_up;
@@ -132,18 +138,18 @@ class perform
     void init( void );
 
     void clear_all( void );
-    
+
     void launch_input_thread( void );
     void launch_output_thread( void );
     void init_jack( void );
     void deinit_jack( void );
-    
+
     void add_track( track *a_track, int a_pref );
     void delete_track( int a_num );
 
     bool is_track_in_edit( int a_num );
     int get_track_index( track *a_track );
-    
+
     void clear_track_triggers( int a_num  );
 
     long get_tick( ) { return m_tick; };
@@ -159,7 +165,7 @@ class perform
 
     void move_triggers( bool a_direction );
     void copy_triggers(  );
-    
+
     void push_trigger_undo( void );
     void pop_trigger_undo( void );
     void pop_trigger_redo( void );
@@ -181,7 +187,7 @@ class perform
     bool is_active_track(int a_track);
     bool is_dirty_perf (int a_sequence);
     bool is_dirty_names (int a_sequence);
-        
+
     void new_track( int a_track );
 
     /* plays all notes to Curent tick */
@@ -202,14 +208,14 @@ class perform
     int  get_swing_amount16( );
 
     void set_looping( bool a_looping ){ m_looping = a_looping; };
- 
+
     void set_song_mute( mute_op op );
 
     mastermidibus* get_master_midi_bus( );
-    
+
     void output_func();
     void input_func();
-    
+
     long get_max_trigger( void );
 
     bool save( const Glib::ustring& a_filename );
@@ -243,10 +249,10 @@ class perform
 
 #ifdef JACK_SUPPORT
 
-    friend int jack_sync_callback(jack_transport_state_t state, 
+    friend int jack_sync_callback(jack_transport_state_t state,
                               jack_position_t *pos, void *arg);
     friend void jack_shutdown(void *arg);
-    friend void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes, 
+    friend void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
                                        jack_position_t *pos, int new_pos, void *arg);
 #endif
 };
@@ -259,11 +265,11 @@ extern void *input_thread_func(void *a_p);
 
 #ifdef JACK_SUPPORT
 
-int jack_sync_callback(jack_transport_state_t state, 
+int jack_sync_callback(jack_transport_state_t state,
 					   jack_position_t *pos, void *arg);
 void print_jack_pos( jack_position_t* jack_pos );
 void jack_shutdown(void *arg);
-void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes, 
+void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
                             jack_position_t *pos, int new_pos, void *arg);
 #endif
 

@@ -140,6 +140,11 @@ const int c_adding = 0;
 const int c_normal = 1;
 const int c_paste  = 2;
 
+/* used for undo/redo vector */
+#define c_undo_trigger  '0'
+#define c_undo_track    '1'
+#define c_undo_perf     '2'
+
 /* redraw when recording ms */
 #ifdef __WIN32__
 const int c_redraw_ms = 20;

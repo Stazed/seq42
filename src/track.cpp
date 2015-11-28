@@ -295,7 +295,6 @@ track::push_trigger_undo( void )
       (*i).m_selected = false;
     }
 
-
     unlock();
 }
 

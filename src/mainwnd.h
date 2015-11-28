@@ -183,7 +183,9 @@ class mainwnd : public Gtk::Window
     void expand (void);
     void collapse (void);
     void copy (void);
+    void undo_type( void );
     void undo ( void );
+    void redo_type( void );
     void redo ( void );
 
     void popup_menu (Menu * a_menu);
