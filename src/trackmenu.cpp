@@ -151,7 +151,7 @@ trackmenu::set_bus_and_midi_channel( int a_bus, int a_ch )
 
 // Makes a New track
 void
-trackmenu::trk_new(){
+trackmenu::trk_new(){   // FIXME undo
 
     if ( ! m_mainperf->is_active_track( m_current_trk )){
 
@@ -175,7 +175,7 @@ trackmenu::trk_copy(){
 
 // Deletes and Copies to Clipboard */
 void
-trackmenu::trk_cut(){
+trackmenu::trk_cut(){ // FIXME undo
 
     if ( m_mainperf->is_active_track( m_current_trk ) &&
             !m_mainperf->is_track_in_edit( m_current_trk ) ){

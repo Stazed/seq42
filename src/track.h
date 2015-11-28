@@ -36,7 +36,7 @@ class track
 
     /* holds the sequences */
     vector < sequence *> m_vector_sequence;
-    static sequence m_sequence_clipboard;
+    static sequence m_sequence_clipboard; // FIXME never used??
 
     /* holds the triggers */
     list < trigger > m_list_trigger;

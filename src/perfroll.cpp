@@ -76,7 +76,7 @@ perfroll::perfroll( perform *a_perf,
     for( int i=0; i<c_max_track; ++i )
         m_track_active[i]=false;
 
-    bool cross_track_paste = false;
+    cross_track_paste = false;
 }
 
 perfroll::~perfroll( )
