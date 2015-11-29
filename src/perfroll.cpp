@@ -755,7 +755,7 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
 
                 /* paste */
                 if ( a_p0->keyval == GDK_v || a_p0->keyval == GDK_V ){
-                    m_mainperf->push_trigger_undo();    // FIXME should not push unless something actually gets pasted
+                    //m_mainperf->push_trigger_undo();    // FIXME should not push unless something actually gets pasted
 
                     bool cross_track = false;
                     for ( int t=0; t<c_max_track; ++t )
@@ -777,6 +777,8 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                                 ret = true;
                                 cross_track_paste = true;
                                 cross_track = true;
+                                m_mainperf->push_trigger_undo(); // FIX to track undo
+                                m_mainperf->undo_vect.push_back(c_undo_track); //FIX put in track undo
                                 break;
                             }
                         }
@@ -784,9 +786,14 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                     }
                     if(!cross_track)
                     {
-                        m_mainperf->get_track( m_drop_track )->paste_trigger();
-                        cross_track = false; // is this necessary?
-                        ret = true;
+                        if (m_mainperf->get_track(m_drop_track)->get_trigger_clipboard()->m_sequence >= 0)
+                        {
+                            m_mainperf->push_trigger_undo();
+                            m_mainperf->get_track( m_drop_track )->paste_trigger();
+                            cross_track = false; // is this necessary?
+                            ret = true;
+                        }
+
                     }
                 }
             }

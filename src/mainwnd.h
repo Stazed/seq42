@@ -184,9 +184,11 @@ class mainwnd : public Gtk::Window
     void collapse (void);
     void copy (void);
     void undo_type( void );
-    void undo ( void );
+    void undo_trigger( void );
+    void undo_track( void );
     void redo_type( void );
-    void redo ( void );
+    void redo_trigger ( void );
+    void redo_track( void );
 
     void popup_menu (Menu * a_menu);
 

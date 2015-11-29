@@ -485,25 +485,35 @@ void
 mainwnd::undo_type( void )
 {
     char type = m_mainperf->undo_vect[m_mainperf->undo_vect.size() -1];
-
+    //printf("undo_vect size[%d] undo type[%s]\n",(m_mainperf->undo_vect.size()-1),type);
     switch (type)
     {
     case c_undo_trigger:
-        undo();
+        printf("Undo Trigger\n");
+        undo_trigger();
         break;
-    case c_undo_track:  // TODO
+    case c_undo_track:
+        undo_track();
         break;
     case c_undo_perf:   // TODO
+        printf("Undo Perf\n");
         break;
     default:
         break;
     }
 }
 
+void
+mainwnd::undo_trigger( void )
+{
+    m_mainperf->pop_trigger_undo();
+    m_perfroll->queue_draw();
+}
 
 void
-mainwnd::undo( void )
+mainwnd::undo_track( void )
 {
+    printf("Undo Track\n"); //FIXME
     m_mainperf->pop_trigger_undo();
     m_perfroll->queue_draw();
 }
@@ -512,27 +522,39 @@ void
 mainwnd::redo_type( void )
 {
     char type = m_mainperf->redo_vect[m_mainperf->redo_vect.size() - 1];
+    //printf("redo_vect size[%d] - redo type[%s]\n",(m_mainperf->redo_vect.size() -1),type);
     switch (type)
     {
     case c_undo_trigger:
-        redo();
+        printf("Redo Trigger\n");
+        redo_trigger();
         break;
-    case c_undo_track:  // TODO
+    case c_undo_track:
+        redo_track();
         break;
     case c_undo_perf:   // TODO
+        printf("Redo Perf\n");
         break;
     default:
         break;
     }
-    //FIXME todo
 }
 
 void
-mainwnd::redo( void )
+mainwnd::redo_trigger( void )
 {
     m_mainperf->pop_trigger_redo();
     m_perfroll->queue_draw();
 }
+
+void
+mainwnd::redo_track( void )
+{
+    printf("Redo Track\n"); // FIXME
+    m_mainperf->pop_trigger_redo();
+    m_perfroll->queue_draw();
+}
+
 
 void
 mainwnd::start_playing( void )
@@ -1118,13 +1140,13 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
         /* Ctrl-Z: Undo */
         if ( a_ev->keyval == GDK_z || a_ev->keyval == GDK_Z )
         {
-            undo();
+            undo_type();
             return true;
         }
         /* Ctrl-R: Redo */
         if ( a_ev->keyval == GDK_r || a_ev->keyval == GDK_R )
         {
-            redo();
+            redo_type();
             return true;
         }
     }
