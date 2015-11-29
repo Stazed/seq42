@@ -144,6 +144,7 @@ const int c_paste  = 2;
 #define c_undo_trigger  '0'
 #define c_undo_track    '1'
 #define c_undo_perf     '2'
+#define c_undo_collapse_expand  '3'
 
 /* redraw when recording ms */
 #ifdef __WIN32__

@@ -484,13 +484,13 @@ mainwnd::timer_callback(  )
 void
 mainwnd::undo_type( void )
 {
-    char type = m_mainperf->undo_vect[m_mainperf->undo_vect.size() -1];
+    char type = m_mainperf->undo_vect[m_mainperf->undo_vect.size() -1].type;
     //printf("undo_vect size[%d] undo type[%s]\n",(m_mainperf->undo_vect.size()-1),type);
     switch (type)
     {
     case c_undo_trigger:
         printf("Undo Trigger\n");
-        undo_trigger();
+        undo_trigger(m_mainperf->undo_vect[m_mainperf->undo_vect.size() -1].track);
         break;
     case c_undo_track:
         undo_track();
@@ -498,13 +498,22 @@ mainwnd::undo_type( void )
     case c_undo_perf:   // TODO
         printf("Undo Perf\n");
         break;
+    case c_undo_collapse_expand:
+        undo_trigger();
     default:
         break;
     }
 }
 
 void
-mainwnd::undo_trigger( void )
+mainwnd::undo_trigger(int a_track)
+{
+    m_mainperf->pop_trigger_undo(a_track);
+    m_perfroll->queue_draw();
+}
+
+void
+mainwnd::undo_trigger( void ) // collapse and expand
 {
     m_mainperf->pop_trigger_undo();
     m_perfroll->queue_draw();
@@ -521,13 +530,14 @@ mainwnd::undo_track( void )
 void
 mainwnd::redo_type( void )
 {
-    char type = m_mainperf->redo_vect[m_mainperf->redo_vect.size() - 1];
-    //printf("redo_vect size[%d] - redo type[%s]\n",(m_mainperf->redo_vect.size() -1),type);
+    char type = m_mainperf->redo_vect[m_mainperf->redo_vect.size() - 1].type;
+    int redo_vect_size = m_mainperf->redo_vect.size() - 1;
+//    printf("redo_vect size[%d] :redo type[%s]\n",redo_vect_size,type);
     switch (type)
     {
     case c_undo_trigger:
         printf("Redo Trigger\n");
-        redo_trigger();
+        redo_trigger(m_mainperf->redo_vect[m_mainperf->redo_vect.size() - 1].track);
         break;
     case c_undo_track:
         redo_track();
@@ -535,13 +545,23 @@ mainwnd::redo_type( void )
     case c_undo_perf:   // TODO
         printf("Redo Perf\n");
         break;
+    case c_undo_collapse_expand:
+        redo_trigger();
+        break;
     default:
         break;
     }
 }
 
 void
-mainwnd::redo_trigger( void )
+mainwnd::redo_trigger(int a_track)
+{
+    m_mainperf->pop_trigger_redo(a_track);
+    m_perfroll->queue_draw();
+}
+
+void
+mainwnd::redo_trigger( void ) // collapse and expand
 {
     m_mainperf->pop_trigger_redo();
     m_perfroll->queue_draw();
@@ -582,7 +602,7 @@ mainwnd::stop_playing( void )
 }
 
 void
-mainwnd::collapse( void )
+mainwnd::collapse( void ) // This cannot be done track specific
 {
     m_mainperf->push_trigger_undo();
     m_mainperf->move_triggers( false );

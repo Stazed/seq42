@@ -48,6 +48,12 @@ enum mute_op
     MUTE_ON = 1
 };
 
+struct undo_type
+{
+    char type;
+    int track;
+};
+
 class perform
 {
  private:
@@ -118,8 +124,8 @@ class perform
  public:
 
     /* used for undo/redo vector */
-    vector<char> undo_vect;
-    vector<char> redo_vect;
+    vector<undo_type> undo_vect;
+    vector<undo_type> redo_vect;
 
 
     bool is_running();
@@ -148,7 +154,7 @@ class perform
     void delete_track( int a_num );
 
     bool is_track_in_edit( int a_num );
-    int get_track_index( track *a_track );
+    int get_track_index( track * a_track );
 
     void clear_track_triggers( int a_num  );
 
@@ -166,9 +172,12 @@ class perform
     void move_triggers( bool a_direction );
     void copy_triggers(  );
 
-    void push_trigger_undo( void );
-    void pop_trigger_undo( void );
-    void pop_trigger_redo( void );
+    void push_trigger_undo( void ); // collapse and expand
+    void push_trigger_undo( int a_track );
+    void pop_trigger_undo( void ); // collapse and expand
+    void pop_trigger_undo( int a_track );
+    void pop_trigger_redo( void ); // collapse and expand
+    void pop_trigger_redo( int a_track );
 
     void print();
 

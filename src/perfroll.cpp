@@ -778,7 +778,7 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                                 cross_track_paste = true;
                                 cross_track = true;
                                 m_mainperf->push_trigger_undo(); // FIX to track undo
-                                m_mainperf->undo_vect.push_back(c_undo_track); //FIX put in track undo
+//                                m_mainperf->undo_vect.push_back(c_undo_track); //FIX put in track undo
                                 break;
                             }
                         }
