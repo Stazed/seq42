@@ -730,7 +730,7 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
 
             if ( a_p0->keyval ==  GDK_Delete || a_p0->keyval == GDK_BackSpace ){
 
-                m_mainperf->push_trigger_undo();
+                m_mainperf->push_trigger_undo(m_drop_track);
                 m_mainperf->get_track( m_drop_track )->del_selected_trigger();
 
                 ret = true;
@@ -741,7 +741,7 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                 /* cut */
                 if ( a_p0->keyval == GDK_x || a_p0->keyval == GDK_X ){
 
-                    m_mainperf->push_trigger_undo();
+                    m_mainperf->push_trigger_undo(m_drop_track);
                     m_mainperf->get_track( m_drop_track )->cut_selected_trigger();
                     ret = true;
                 }
@@ -755,7 +755,6 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
 
                 /* paste */
                 if ( a_p0->keyval == GDK_v || a_p0->keyval == GDK_V ){
-                    //m_mainperf->push_trigger_undo();    // FIXME should not push unless something actually gets pasted
 
                     bool cross_track = false;
                     for ( int t=0; t<c_max_track; ++t )
@@ -788,7 +787,7 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                     {
                         if (m_mainperf->get_track(m_drop_track)->get_trigger_clipboard()->m_sequence >= 0)
                         {
-                            m_mainperf->push_trigger_undo();
+                            m_mainperf->push_trigger_undo(m_drop_track);
                             m_mainperf->get_track( m_drop_track )->paste_trigger();
                             cross_track = false; // is this necessary?
                             ret = true;
@@ -896,7 +895,7 @@ void
 perfroll::new_sequence( track *a_track, trigger *a_trigger )
 {
     int seq_idx = a_track->new_sequence();
-    m_mainperf->push_trigger_undo();
+    m_mainperf->push_trigger_undo(); // FIXME goes to track undo
     sequence *a_sequence = a_track->get_sequence(seq_idx);
     a_track->set_trigger_sequence(a_trigger, seq_idx);
     new seqedit( a_sequence, m_mainperf );
@@ -907,7 +906,7 @@ perfroll::copy_sequence( track *a_track, trigger *a_trigger, sequence *a_seq )
 {
     bool same_track = a_track == a_seq->get_track();
     int seq_idx = a_track->new_sequence();
-    m_mainperf->push_trigger_undo();
+    m_mainperf->push_trigger_undo(); // FIXME track_undo
     sequence *a_sequence = a_track->get_sequence(seq_idx);
     *a_sequence = *a_seq;
     a_sequence->set_track(a_track);
@@ -933,7 +932,7 @@ perfroll::edit_sequence( track *a_track, trigger *a_trigger )
 
 void perfroll::set_trigger_sequence( track *a_track, trigger *a_trigger, int a_sequence )
 {
-    m_mainperf->push_trigger_undo();
+    m_mainperf->push_trigger_undo(m_mainperf->get_track_index(a_track));
     a_track->set_trigger_sequence(a_trigger, a_sequence);
 }
 
@@ -941,7 +940,7 @@ void perfroll::set_trigger_sequence( track *a_track, trigger *a_trigger, int a_s
 void
 perfroll::del_trigger( track *a_track, long a_tick )
 {
-    m_mainperf->push_trigger_undo();
+    m_mainperf->push_trigger_undo(m_mainperf->get_track_index(a_track));
     a_track->del_trigger( a_tick );
     a_track->set_dirty( );
 }
@@ -1082,7 +1081,7 @@ bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
                 {
                     //m_adding = false;
                     m_adding_pressed = false;
-                    ths.m_mainperf->push_trigger_undo();
+                    ths.m_mainperf->push_trigger_undo(ths.m_drop_track);
                     ths.m_mainperf->get_track( ths.m_drop_track )->select_trigger( tick );
 
                     long start_tick = ths.m_mainperf->get_track( ths.m_drop_track )->get_selected_trigger_start_tick();
@@ -1131,7 +1130,7 @@ bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
                 {
                     tick = tick - (tick % c_default_trigger_length);
 
-                    ths.m_mainperf->push_trigger_undo();
+                    ths.m_mainperf->push_trigger_undo(ths.m_drop_track);
                     ths.m_mainperf->get_track( ths.m_drop_track )->add_trigger( tick, c_default_trigger_length );
                     ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
                     ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
@@ -1155,7 +1154,7 @@ bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 
             if ( state )
             {
-                ths.m_mainperf->push_trigger_undo();
+                ths.m_mainperf->push_trigger_undo(ths.m_drop_track);
                 ths.m_mainperf->get_track( ths.m_drop_track )->del_trigger( tick );
             }
         }
@@ -1173,7 +1172,7 @@ bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 
             if ( state && a_ev->button != 2)// clicked on trigger for split
             {
-                ths.m_mainperf->push_trigger_undo();
+                ths.m_mainperf->push_trigger_undo(ths.m_drop_track);
 
                 ths.m_mainperf->get_track( ths.m_drop_track )->split_trigger( tick );
 
@@ -1332,7 +1331,7 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 
                 if ( state )
                 {
-                    ths.m_mainperf->push_trigger_undo();
+                    ths.m_mainperf->push_trigger_undo(ths.m_drop_track);
                     ths.m_mainperf->get_track( ths.m_drop_track )->del_trigger( tick );
                 }
                 else
@@ -1341,7 +1340,7 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
                     // snap to length of sequence
                     tick = tick - (tick % c_default_trigger_length);
 
-                    ths.m_mainperf->push_trigger_undo();
+                    ths.m_mainperf->push_trigger_undo(ths.m_drop_track);
                     ths.m_mainperf->get_track( ths.m_drop_track )->add_trigger( tick, c_default_trigger_length );
                     ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
                     ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
@@ -1354,7 +1353,7 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 
             if ( ths.m_mainperf->is_active_track( ths.m_drop_track )){
 
-                ths.m_mainperf->push_trigger_undo();
+                ths.m_mainperf->push_trigger_undo(ths.m_drop_track);
                 ths.m_mainperf->get_track( ths.m_drop_track )->select_trigger( tick );
 
                 long start_tick = ths.m_mainperf->get_track( ths.m_drop_track )->get_selected_trigger_start_tick();
@@ -1421,7 +1420,7 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 
             if ( state )    // clicked on trigger for split
             {
-                ths.m_mainperf->push_trigger_undo();
+                ths.m_mainperf->push_trigger_undo(ths.m_drop_track);
 
                 ths.m_mainperf->get_track( ths.m_drop_track )->split_trigger( tick );
 

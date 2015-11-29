@@ -602,7 +602,7 @@ mainwnd::stop_playing( void )
 }
 
 void
-mainwnd::collapse( void ) // This cannot be done track specific
+mainwnd::collapse( void ) // all tracks
 {
     m_mainperf->push_trigger_undo();
     m_mainperf->move_triggers( false );
@@ -610,7 +610,7 @@ mainwnd::collapse( void ) // This cannot be done track specific
 }
 
 void
-mainwnd::copy( void )
+mainwnd::copy( void ) // all tracks
 {
     m_mainperf->push_trigger_undo();
     m_mainperf->copy_triggers(  );
@@ -618,7 +618,7 @@ mainwnd::copy( void )
 }
 
 void
-mainwnd::expand( void )
+mainwnd::expand( void ) // all tracks
 {
     m_mainperf->push_trigger_undo();
     m_mainperf->move_triggers( true );

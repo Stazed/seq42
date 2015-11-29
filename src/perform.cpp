@@ -567,8 +567,12 @@ void perform::push_trigger_undo( void ) // for collapse and expand
             m_tracks[i]->push_trigger_undo( );
         }
     }
- //   printf("in perform::push_trigger_undo\n");
- //   undo_vect.push_back(c_undo_trigger);
+    undo_type a_undo;
+    a_undo.track = -1; // all tracks
+    a_undo.type = c_undo_collapse_expand;
+
+    printf("push_trigger_undo collapse\n");
+    undo_vect.push_back(a_undo);
 }
 
 void perform::push_trigger_undo( int a_track ) // single track items
@@ -583,6 +587,26 @@ void perform::push_trigger_undo( int a_track ) // single track items
 
     printf("in perform::push_trigger_undo\n");
     undo_vect.push_back(a_undo);
+}
+
+void perform::pop_trigger_undo( void ) // collapse and expand
+{
+    for (int i=0; i< c_max_track; i++ ){
+
+        if ( is_active_track(i) == true ){
+            assert( m_tracks[i] );
+            m_tracks[i]->pop_trigger_undo( );
+        }
+    }
+
+    undo_type a_undo;
+    a_undo.track = -1; // all tracks
+    a_undo.type = c_undo_collapse_expand;
+
+    printf("pop_trigger_undo collapse\n");
+
+    undo_vect.pop_back();
+    redo_vect.push_back(a_undo);
 }
 
 void perform::pop_trigger_undo( int a_track ) // single track items
@@ -602,6 +626,26 @@ void perform::pop_trigger_undo( int a_track ) // single track items
     redo_vect.push_back(a_undo);
 }
 
+void perform::pop_trigger_redo( void ) // collapse and expand
+{
+    for (int i=0; i< c_max_track; i++ ){
+
+        if ( is_active_track(i) == true ){
+            assert( m_tracks[i] );
+            m_tracks[i]->pop_trigger_redo( );
+        }
+    }
+
+    undo_type a_undo;
+    a_undo.track = -1; // all tracks
+    a_undo.type = c_undo_collapse_expand;
+
+    printf("pop_trigger_redo collapse\n");
+
+    redo_vect.pop_back();
+    undo_vect.push_back(a_undo);
+}
+
 void perform::pop_trigger_redo( int a_track ) // single track items
 {
     if ( is_active_track(a_track) == true ){
@@ -618,35 +662,6 @@ void perform::pop_trigger_redo( int a_track ) // single track items
     redo_vect.pop_back();
     undo_vect.push_back(a_undo);
 }
-
-void perform::pop_trigger_undo( void ) // collapse and expand
-{
-    for (int i=0; i< c_max_track; i++ ){
-
-        if ( is_active_track(i) == true ){
-            assert( m_tracks[i] );
-            m_tracks[i]->pop_trigger_undo( );
-        }
-    }
-//    printf("in perform::pop_trigger_undo\n");
-//    undo_vect.pop_back();
-//    redo_vect.push_back(c_undo_trigger);
-}
-
-void perform::pop_trigger_redo( void ) // collapse and expand
-{
-    for (int i=0; i< c_max_track; i++ ){
-
-        if ( is_active_track(i) == true ){
-            assert( m_tracks[i] );
-            m_tracks[i]->pop_trigger_redo( );
-        }
-    }
-//    printf("in perform::pop_trigger_redo\n");
-//    redo_vect.pop_back();
-//    undo_vect.push_back(c_undo_trigger);
-}
-
 
 /* copies between L and R -> R */
 void perform::copy_triggers( )
