@@ -657,6 +657,35 @@ void perform::pop_track_undo( int a_track )
         *(get_track(a_track )) = m_undo_tracks[m_undo_track_count - 1];
         m_undo_track_count--;
         get_track( a_track )->set_dirty();
+    }else
+    {
+        std::string name = "VOID***";
+        new_track( a_track  );
+        assert( m_tracks[a_track] );
+        get_track(a_track)->set_name(name);
+        //set_active(a_track, false);
+        //m_tracks[a_track]->set_playing_off( );
+        m_redo_tracks[m_redo_track_count] = *(get_track(a_track ));
+
+        m_redo_track_count++;
+        //delete m_tracks[a_track];
+        //set_active(a_track, true);
+        *(get_track(a_track )) = m_undo_tracks[m_undo_track_count - 1];
+        //if(m_tracks[a_track]->get_name() == name.c_str())
+        if(get_track(a_track )->get_name() == name.c_str())
+        {
+            delete_track(a_track);
+//            redraw( a_track );
+        }
+        else
+        {
+            set_active(a_track, true);
+            get_track( a_track )->set_dirty();
+        }
+
+        m_undo_track_count--;
+        //get_track( a_track )->set_dirty();
+        // FIXME for deleted tracks segfaults on push to redo
     }
 
     undo_type a_undo;
@@ -718,6 +747,33 @@ void perform::pop_track_redo( int a_track )
         m_redo_track_count--;
 
         get_track( a_track )->set_dirty();
+    }else
+    {
+        std::string name = "VOID***";
+        new_track( a_track  );
+        assert( m_tracks[a_track] );
+        get_track(a_track)->set_name(name);
+        //set_active(a_track, false);
+        //m_tracks[a_track]->set_playing_off( );
+        m_undo_tracks[m_undo_track_count] = *(get_track(a_track ));
+
+        m_undo_track_count++;
+
+        *(get_track(a_track )) = m_redo_tracks[m_redo_track_count - 1];
+        //if(m_tracks[a_track]->get_name() == name.c_str())
+        if(get_track(a_track )->get_name() == name.c_str())
+        {
+            delete_track(a_track);
+//            redraw( a_track );
+        }
+        else
+        {
+            set_active(a_track, true);
+            get_track( a_track )->set_dirty();
+        }
+
+        m_redo_track_count--;
+        //FIXME segfault on push to undo
     }
 
     undo_type a_undo;

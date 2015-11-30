@@ -182,6 +182,7 @@ trackmenu::trk_cut(){ // FIXME undo
 
         m_clipboard = *(m_mainperf->get_track( m_current_trk ));
         m_something_to_paste = true;
+        m_mainperf->push_track_undo(m_current_trk);
         m_mainperf->delete_track( m_current_trk );
         redraw( m_current_trk );
     }
@@ -193,6 +194,7 @@ trackmenu::trk_paste(){
 
     if ( m_something_to_paste && ! m_mainperf->is_active_track( m_current_trk ))
     {
+        m_mainperf->push_track_undo(m_current_trk);
         m_mainperf->new_track( m_current_trk  );
         *(m_mainperf->get_track( m_current_trk )) = m_clipboard;
         m_mainperf->get_track( m_current_trk )->set_dirty();
@@ -252,6 +254,7 @@ trackmenu::trk_edit(){
 
 void
 trackmenu::new_sequence(){
+    m_mainperf->push_track_undo(m_current_trk);
     track *a_track = m_mainperf->get_track( m_current_trk );
     int seq_idx = a_track->new_sequence();
     sequence *a_sequence = a_track->get_sequence(seq_idx);

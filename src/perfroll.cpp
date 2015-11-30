@@ -776,8 +776,7 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                                 ret = true;
                                 cross_track_paste = true;
                                 cross_track = true;
-                                m_mainperf->push_trigger_undo(); // FIX to track undo
-//                                m_mainperf->undo_vect.push_back(c_undo_track); //FIX put in track undo
+                                //m_mainperf->push_track_undo(m_drop_track);
                                 break;
                             }
                         }
@@ -894,8 +893,8 @@ perfroll::on_size_request(GtkRequisition* a_r )
 void
 perfroll::new_sequence( track *a_track, trigger *a_trigger )
 {
+    m_mainperf->push_track_undo(m_mainperf->get_track_index(a_track));
     int seq_idx = a_track->new_sequence();
-    m_mainperf->push_trigger_undo(); // FIXME goes to track undo
     sequence *a_sequence = a_track->get_sequence(seq_idx);
     a_track->set_trigger_sequence(a_trigger, seq_idx);
     new seqedit( a_sequence, m_mainperf );
@@ -904,9 +903,9 @@ perfroll::new_sequence( track *a_track, trigger *a_trigger )
 void
 perfroll::copy_sequence( track *a_track, trigger *a_trigger, sequence *a_seq )
 {
+    m_mainperf->push_track_undo(m_mainperf->get_track_index(a_track));
     bool same_track = a_track == a_seq->get_track();
     int seq_idx = a_track->new_sequence();
-    m_mainperf->push_trigger_undo(); // FIXME track_undo
     sequence *a_sequence = a_track->get_sequence(seq_idx);
     *a_sequence = *a_seq;
     a_sequence->set_track(a_track);
@@ -956,6 +955,7 @@ perfroll::paste_trigger_sequence( track *p_track, sequence *a_sequence )
 
             if(a_sequence->get_track() != p_track)  // then we have to copy the sequence
             {
+                m_mainperf->push_track_undo(m_mainperf->get_track_index(p_track));
                 // Add the sequence
                 int seq_idx = p_track->new_sequence();
                 sequence *seq = p_track->get_sequence(seq_idx);
