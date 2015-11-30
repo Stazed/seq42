@@ -31,6 +31,8 @@
 //For keys
 #include <gtkmm/accelkey.h>
 
+static int m_undo_track_count = 0;
+static int m_redo_track_count = 0;
 
 using namespace Gtk;
 
@@ -589,17 +591,14 @@ void perform::push_trigger_undo( int a_track ) // single track items
     undo_vect.push_back(a_undo);
 }
 
-void perform::push_track_undo( int a_track ) // FIXME
+void perform::push_track_undo( int a_track )
 {
+
     if ( is_active_track(a_track) == true ){
         assert( m_tracks[a_track] );
-        //m_undo_tracks.push_back(*get_track(a_track));
-        m_undo_tracks.push_back(*(m_tracks[a_track]));
-        //m_clipboard = *(m_tracks[a_track]);
-        /*
-        here we need to push the track to a list/vector track_undo_vect
-        */
-        //m_tracks[a_track]->push_trigger_undo( );
+
+        m_undo_tracks[m_undo_track_count] = *(m_tracks[a_track]);
+        m_undo_track_count++;
     }
     undo_type a_undo;
     a_undo.track = a_track;
@@ -647,23 +646,17 @@ void perform::pop_trigger_undo( int a_track ) // single track items
     redo_vect.push_back(a_undo);
 }
 
-void perform::pop_track_undo( int a_track ) // FIXME
+void perform::pop_track_undo( int a_track )
 {
     if ( is_active_track(a_track) == true ){
         assert( m_tracks[a_track] );
 
-        m_redo_tracks.push_back(*(m_tracks[a_track]));
-        //delete_track( a_track );
-        //new_track( a_track  );
-        //*(get_track(a_track)) = m_clipboard;
-        *(get_track(a_track )) = m_undo_tracks[m_undo_tracks.size()-1];
-        //m_undo_tracks.pop_back();
+        m_redo_tracks[m_redo_track_count] = *(get_track(a_track ));
+        m_redo_track_count++;
+
+        *(get_track(a_track )) = m_undo_tracks[m_undo_track_count - 1];
+        m_undo_track_count--;
         get_track( a_track )->set_dirty();
-        /*
-            here need to pop the track from list/vector track_undo_vect
-            and push it to track_redo_vect
-        */
-        //m_tracks[a_track]->pop_trigger_undo( );
     }
 
     undo_type a_undo;
@@ -713,16 +706,18 @@ void perform::pop_trigger_redo( int a_track ) // single track items
     undo_vect.push_back(a_undo);
 }
 
-void perform::pop_track_redo( int a_track ) // FIXME
+void perform::pop_track_redo( int a_track )
 {
     if ( is_active_track(a_track) == true ){
         assert( m_tracks[a_track] );
-        /*
-            need to set the track to pop track_redo_vect
-                push track_undo_vect
 
-        */
-        //m_tracks[a_track]->pop_trigger_redo( );
+        m_undo_tracks[m_undo_track_count] = *(get_track(a_track ));
+        m_undo_track_count++;
+
+        *(get_track(a_track )) = m_redo_tracks[m_redo_track_count -1];
+        m_redo_track_count--;
+
+        get_track( a_track )->set_dirty();
     }
 
     undo_type a_undo;

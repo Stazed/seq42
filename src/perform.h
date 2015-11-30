@@ -59,11 +59,9 @@ class perform
  private:
     /* vector of tracks */
     track *m_tracks[c_max_track];
-    vector<track>m_undo_tracks;
-    vector<track>m_redo_tracks;
     track m_clipboard;
-    //track *m_undo_tracks[c_max_track];
-    //track *m_redo_tracks[c_max_track];
+    track m_undo_tracks[c_max_track];
+    track m_redo_tracks[c_max_track];
 
     bool m_tracks_active[ c_max_track ];
     bool m_seqlist_open;
@@ -131,7 +129,6 @@ class perform
     /* used for undo/redo vector */
     vector<undo_type> undo_vect;
     vector<undo_type> redo_vect;
-
 
     bool is_running();
 

@@ -522,7 +522,7 @@ mainwnd::undo_trigger( void ) // collapse and expand
 void
 mainwnd::undo_track( int a_track )
 {
-    printf("Undo Track\n"); //FIXME
+    printf("Undo Track\n");
     m_mainperf->pop_track_undo(a_track);
     m_perfroll->queue_draw();
 }
@@ -531,7 +531,6 @@ void
 mainwnd::redo_type( void )
 {
     char type = m_mainperf->redo_vect[m_mainperf->redo_vect.size() - 1].type;
-    int redo_vect_size = m_mainperf->redo_vect.size() - 1;
 //    printf("redo_vect size[%d] :redo type[%s]\n",redo_vect_size,type);
     switch (type)
     {
@@ -570,7 +569,7 @@ mainwnd::redo_trigger( void ) // collapse and expand
 void
 mainwnd::redo_track( int a_track )
 {
-    printf("Redo Track\n"); // FIXME
+    printf("Redo Track\n");
     m_mainperf->pop_track_redo(a_track);
     m_perfroll->queue_draw();
 }
