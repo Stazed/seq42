@@ -151,10 +151,11 @@ trackmenu::set_bus_and_midi_channel( int a_bus, int a_ch )
 
 // Makes a New track
 void
-trackmenu::trk_new(){   // FIXME undo
+trackmenu::trk_new(){
 
     if ( ! m_mainperf->is_active_track( m_current_trk )){
 
+        m_mainperf->push_track_undo(m_current_trk);
         m_mainperf->new_track( m_current_trk );
         m_mainperf->get_track( m_current_trk )->set_dirty();
         // FIXME: add a bool preference: "New track pops up edit window?"
@@ -175,7 +176,7 @@ trackmenu::trk_copy(){
 
 // Deletes and Copies to Clipboard */
 void
-trackmenu::trk_cut(){ // FIXME undo
+trackmenu::trk_cut(){
 
     if ( m_mainperf->is_active_track( m_current_trk ) &&
             !m_mainperf->is_track_in_edit( m_current_trk ) ){

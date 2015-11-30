@@ -455,7 +455,7 @@ int  perform::get_swing_amount16( )
 }
 
 
-void perform::delete_track( int a_num ) // FIXME undo
+void perform::delete_track( int a_num )
 {
     if ( m_tracks[a_num] != NULL &&
             !is_track_in_edit(a_num) ){
@@ -475,7 +475,7 @@ bool perform::is_track_in_edit( int a_num )
 }
 
 
-void perform::new_track( int a_track ) // FIXME undo
+void perform::new_track( int a_track )
 {
     m_tracks[ a_track ] = new track();
     m_tracks[ a_track ]->set_master_midi_bus( &m_master_bus );
@@ -573,7 +573,7 @@ void perform::push_trigger_undo( void ) // for collapse and expand
     a_undo.track = -1; // all tracks
     a_undo.type = c_undo_collapse_expand;
 
-    printf("push_trigger_undo collapse\n");
+    //printf("push_trigger_undo collapse\n");
     undo_vect.push_back(a_undo);
 }
 
@@ -587,7 +587,7 @@ void perform::push_trigger_undo( int a_track ) // single track items
     a_undo.track = a_track;
     a_undo.type = c_undo_trigger;
 
-    printf("in perform::push_trigger_undo\n");
+    //printf("in perform::push_trigger_undo\n");
     undo_vect.push_back(a_undo);
 }
 
@@ -600,11 +600,20 @@ void perform::push_track_undo( int a_track )
         m_undo_tracks[m_undo_track_count] = *(m_tracks[a_track]);
         m_undo_track_count++;
     }
+    else
+    {   // empty track so must push junk to undo ***NULL***
+        std::string name = "***NULL***";
+        new_track( a_track  );
+        assert( m_tracks[a_track] );
+        get_track(a_track)->set_name(name);
+        m_undo_tracks[m_undo_track_count] = *(m_tracks[a_track]);
+        m_undo_track_count++;
+    }
     undo_type a_undo;
     a_undo.track = a_track;
     a_undo.type = c_undo_track;
 
-    printf("in perform::push_track_undo\n");
+    //printf("in perform::push_track_undo\n");
     undo_vect.push_back(a_undo);
 }
 
@@ -623,7 +632,7 @@ void perform::pop_trigger_undo( void ) // collapse and expand
     a_undo.track = -1; // all tracks
     a_undo.type = c_undo_collapse_expand;
 
-    printf("pop_trigger_undo collapse\n");
+    //printf("pop_trigger_undo collapse\n");
 
     undo_vect.pop_back();
     redo_vect.push_back(a_undo);
@@ -640,7 +649,7 @@ void perform::pop_trigger_undo( int a_track ) // single track items
     a_undo.track = a_track;
     a_undo.type = c_undo_trigger;
 
-    printf("in perform::pop_trigger_undo\n");
+    //printf("in perform::pop_trigger_undo\n");
 
     undo_vect.pop_back();
     redo_vect.push_back(a_undo);
@@ -648,6 +657,7 @@ void perform::pop_trigger_undo( int a_track ) // single track items
 
 void perform::pop_track_undo( int a_track )
 {
+    std::string name = "***NULL***";
     if ( is_active_track(a_track) == true ){
         assert( m_tracks[a_track] );
 
@@ -655,44 +665,48 @@ void perform::pop_track_undo( int a_track )
         m_redo_track_count++;
 
         *(get_track(a_track )) = m_undo_tracks[m_undo_track_count - 1];
-        m_undo_track_count--;
-        get_track( a_track )->set_dirty();
-    }else
-    {
-        std::string name = "VOID***";
-        new_track( a_track  );
-        assert( m_tracks[a_track] );
-        get_track(a_track)->set_name(name);
-        //set_active(a_track, false);
-        //m_tracks[a_track]->set_playing_off( );
-        m_redo_tracks[m_redo_track_count] = *(get_track(a_track ));
 
-        m_redo_track_count++;
-        //delete m_tracks[a_track];
-        //set_active(a_track, true);
-        *(get_track(a_track )) = m_undo_tracks[m_undo_track_count - 1];
-        //if(m_tracks[a_track]->get_name() == name.c_str())
-        if(get_track(a_track )->get_name() == name.c_str())
+        std::string get_name = get_track(a_track )->get_name();
+        if(get_name == name)
         {
             delete_track(a_track);
-//            redraw( a_track );
         }
         else
         {
-            set_active(a_track, true);
+            get_track( a_track )->set_dirty();
+        }
+
+
+        m_undo_track_count--;
+    }else
+    {   // we have an empty track here to set name to ***NULL*** when pushing to redo
+        new_track( a_track  );
+        assert( m_tracks[a_track] );
+        get_track(a_track)->set_name(name);
+        m_redo_tracks[m_redo_track_count] = *(get_track(a_track ));
+
+        m_redo_track_count++;
+
+        *(get_track(a_track )) = m_undo_tracks[m_undo_track_count - 1];
+
+        std::string get_name = get_track(a_track )->get_name();
+        if(get_name == name) // this is a ***NULL*** track to delete it
+        {
+            delete_track(a_track);
+        }
+        else
+        {
             get_track( a_track )->set_dirty();
         }
 
         m_undo_track_count--;
-        //get_track( a_track )->set_dirty();
-        // FIXME for deleted tracks segfaults on push to redo
     }
 
     undo_type a_undo;
     a_undo.track = a_track;
     a_undo.type = c_undo_track;
 
-    printf("in perform::pop_track_undo\n");
+    //printf("in perform::pop_track_undo\n");
 
     undo_vect.pop_back();
     redo_vect.push_back(a_undo);
@@ -712,7 +726,7 @@ void perform::pop_trigger_redo( void ) // collapse and expand
     a_undo.track = -1; // all tracks
     a_undo.type = c_undo_collapse_expand;
 
-    printf("pop_trigger_redo collapse\n");
+    //printf("pop_trigger_redo collapse\n");
 
     redo_vect.pop_back();
     undo_vect.push_back(a_undo);
@@ -729,7 +743,7 @@ void perform::pop_trigger_redo( int a_track ) // single track items
     a_undo.track = a_track;
     a_undo.type = c_undo_trigger;
 
-    printf("in perform::pop_trigger_redo\n");
+    //printf("in perform::pop_trigger_redo\n");
 
     redo_vect.pop_back();
     undo_vect.push_back(a_undo);
@@ -737,6 +751,7 @@ void perform::pop_trigger_redo( int a_track ) // single track items
 
 void perform::pop_track_redo( int a_track )
 {
+    std::string name = "***NULL***";
     if ( is_active_track(a_track) == true ){
         assert( m_tracks[a_track] );
 
@@ -744,43 +759,49 @@ void perform::pop_track_redo( int a_track )
         m_undo_track_count++;
 
         *(get_track(a_track )) = m_redo_tracks[m_redo_track_count -1];
+
+        std::string get_name = get_track(a_track )->get_name();
+        if(get_name == name) // ***NULL*** track so delete
+        {
+            delete_track(a_track);
+        }
+        else
+        {
+            get_track( a_track )->set_dirty();
+        }
+
         m_redo_track_count--;
 
-        get_track( a_track )->set_dirty();
     }else
-    {
-        std::string name = "VOID***";
+    {   // empty track so set to ***NULL*** on push to undo
         new_track( a_track  );
         assert( m_tracks[a_track] );
         get_track(a_track)->set_name(name);
-        //set_active(a_track, false);
-        //m_tracks[a_track]->set_playing_off( );
+
         m_undo_tracks[m_undo_track_count] = *(get_track(a_track ));
 
         m_undo_track_count++;
 
         *(get_track(a_track )) = m_redo_tracks[m_redo_track_count - 1];
-        //if(m_tracks[a_track]->get_name() == name.c_str())
-        if(get_track(a_track )->get_name() == name.c_str())
+
+        std::string get_name = get_track(a_track )->get_name();
+        if(get_name == name) // ***NULL***
         {
             delete_track(a_track);
-//            redraw( a_track );
         }
         else
         {
-            set_active(a_track, true);
             get_track( a_track )->set_dirty();
         }
 
         m_redo_track_count--;
-        //FIXME segfault on push to undo
     }
 
     undo_type a_undo;
     a_undo.track = a_track;
     a_undo.type = c_undo_track;
 
-    printf("in perform::pop_track_redo\n");
+    //printf("in perform::pop_track_redo\n");
 
     redo_vect.pop_back();
     undo_vect.push_back(a_undo);

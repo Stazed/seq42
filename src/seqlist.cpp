@@ -92,7 +92,7 @@ seqlist::~seqlist()
 bool
 seqlist::on_delete_event(GdkEventAny *a_event)
 {
-    //printf( "seqlist::on_delete_event()\n" );
+    printf( "seqlist::on_delete_event()\n" );
     m_perf->set_seqlist_open(false);
     delete this;
     return false;
@@ -220,6 +220,7 @@ seqlist::edit_seq( sequence *a_seq )
 void
 seqlist::copy_seq( sequence *a_seq )
 {
+    m_perf->push_track_undo(m_perf->get_track_index(a_seq->get_track()));
     track *a_track = a_seq->get_track();
     int seq_idx = a_track->new_sequence();
     sequence *new_seq = a_track->get_sequence(seq_idx);
@@ -233,10 +234,11 @@ seqlist::copy_seq( sequence *a_seq )
 void
 seqlist::del_seq( track *a_track, int a_seq )
 {
-    // FIXME: if sequence is triggered, ask for confirmation
     if( a_track->get_trigger_count_for_seqidx(a_seq))
     {
+    // FIXME: if sequence is triggered, ask for confirmation
     }
+    m_perf->push_track_undo(m_perf->get_track_index(a_track));
     a_track->delete_sequence( a_seq );
 }
 

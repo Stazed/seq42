@@ -371,7 +371,7 @@ track::get_transposable( void )
 }
 
 int
-track::new_sequence( )  // FIXME need push undo
+track::new_sequence( )
 {
     sequence *a_seq = new sequence();
     a_seq->set_track(this);
@@ -396,7 +396,7 @@ void track::delete_sequence( int a_num )
             i++;
         }
         delete a_seq;
-        m_vector_sequence.erase(m_vector_sequence.begin()+a_num); //  FIXME need to push undo
+        m_vector_sequence.erase(m_vector_sequence.begin()+a_num);
         set_dirty();
     }
 }

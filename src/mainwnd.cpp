@@ -485,11 +485,11 @@ void
 mainwnd::undo_type( void )
 {
     char type = m_mainperf->undo_vect[m_mainperf->undo_vect.size() -1].type;
-    //printf("undo_vect size[%d] undo type[%s]\n",(m_mainperf->undo_vect.size()-1),type);
+
     switch (type)
     {
     case c_undo_trigger:
-        printf("Undo Trigger\n");
+        //printf("Undo Trigger\n");
         undo_trigger(m_mainperf->undo_vect[m_mainperf->undo_vect.size() -1].track);
         break;
     case c_undo_track:
@@ -522,7 +522,7 @@ mainwnd::undo_trigger( void ) // collapse and expand
 void
 mainwnd::undo_track( int a_track )
 {
-    printf("Undo Track\n");
+    //printf("Undo Track\n");
     m_mainperf->pop_track_undo(a_track);
     m_perfroll->queue_draw();
 }
@@ -531,11 +531,11 @@ void
 mainwnd::redo_type( void )
 {
     char type = m_mainperf->redo_vect[m_mainperf->redo_vect.size() - 1].type;
-//    printf("redo_vect size[%d] :redo type[%s]\n",redo_vect_size,type);
+
     switch (type)
     {
     case c_undo_trigger:
-        printf("Redo Trigger\n");
+        //printf("Redo Trigger\n");
         redo_trigger(m_mainperf->redo_vect[m_mainperf->redo_vect.size() - 1].track);
         break;
     case c_undo_track:
@@ -569,7 +569,7 @@ mainwnd::redo_trigger( void ) // collapse and expand
 void
 mainwnd::redo_track( int a_track )
 {
-    printf("Redo Track\n");
+    //printf("Redo Track\n");
     m_mainperf->pop_track_redo(a_track);
     m_perfroll->queue_draw();
 }
