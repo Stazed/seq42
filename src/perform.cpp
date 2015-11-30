@@ -589,6 +589,27 @@ void perform::push_trigger_undo( int a_track ) // single track items
     undo_vect.push_back(a_undo);
 }
 
+void perform::push_track_undo( int a_track ) // FIXME
+{
+    if ( is_active_track(a_track) == true ){
+        assert( m_tracks[a_track] );
+        //m_undo_tracks.push_back(*get_track(a_track));
+        m_undo_tracks.push_back(*(m_tracks[a_track]));
+        //m_clipboard = *(m_tracks[a_track]);
+        /*
+        here we need to push the track to a list/vector track_undo_vect
+        */
+        //m_tracks[a_track]->push_trigger_undo( );
+    }
+    undo_type a_undo;
+    a_undo.track = a_track;
+    a_undo.type = c_undo_track;
+
+    printf("in perform::push_track_undo\n");
+    undo_vect.push_back(a_undo);
+}
+
+
 void perform::pop_trigger_undo( void ) // collapse and expand
 {
     for (int i=0; i< c_max_track; i++ ){
@@ -626,6 +647,35 @@ void perform::pop_trigger_undo( int a_track ) // single track items
     redo_vect.push_back(a_undo);
 }
 
+void perform::pop_track_undo( int a_track ) // FIXME
+{
+    if ( is_active_track(a_track) == true ){
+        assert( m_tracks[a_track] );
+
+        m_redo_tracks.push_back(*(m_tracks[a_track]));
+        //delete_track( a_track );
+        //new_track( a_track  );
+        //*(get_track(a_track)) = m_clipboard;
+        *(get_track(a_track )) = m_undo_tracks[m_undo_tracks.size()-1];
+        //m_undo_tracks.pop_back();
+        get_track( a_track )->set_dirty();
+        /*
+            here need to pop the track from list/vector track_undo_vect
+            and push it to track_redo_vect
+        */
+        //m_tracks[a_track]->pop_trigger_undo( );
+    }
+
+    undo_type a_undo;
+    a_undo.track = a_track;
+    a_undo.type = c_undo_track;
+
+    printf("in perform::pop_track_undo\n");
+
+    undo_vect.pop_back();
+    redo_vect.push_back(a_undo);
+}
+
 void perform::pop_trigger_redo( void ) // collapse and expand
 {
     for (int i=0; i< c_max_track; i++ ){
@@ -658,6 +708,28 @@ void perform::pop_trigger_redo( int a_track ) // single track items
     a_undo.type = c_undo_trigger;
 
     printf("in perform::pop_trigger_redo\n");
+
+    redo_vect.pop_back();
+    undo_vect.push_back(a_undo);
+}
+
+void perform::pop_track_redo( int a_track ) // FIXME
+{
+    if ( is_active_track(a_track) == true ){
+        assert( m_tracks[a_track] );
+        /*
+            need to set the track to pop track_redo_vect
+                push track_undo_vect
+
+        */
+        //m_tracks[a_track]->pop_trigger_redo( );
+    }
+
+    undo_type a_undo;
+    a_undo.track = a_track;
+    a_undo.type = c_undo_track;
+
+    printf("in perform::pop_track_redo\n");
 
     redo_vect.pop_back();
     undo_vect.push_back(a_undo);

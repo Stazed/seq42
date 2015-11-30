@@ -59,6 +59,11 @@ class perform
  private:
     /* vector of tracks */
     track *m_tracks[c_max_track];
+    vector<track>m_undo_tracks;
+    vector<track>m_redo_tracks;
+    track m_clipboard;
+    //track *m_undo_tracks[c_max_track];
+    //track *m_redo_tracks[c_max_track];
 
     bool m_tracks_active[ c_max_track ];
     bool m_seqlist_open;
@@ -174,10 +179,13 @@ class perform
 
     void push_trigger_undo( void ); // collapse and expand
     void push_trigger_undo( int a_track );
+    void push_track_undo(int a_track );
     void pop_trigger_undo( void ); // collapse and expand
     void pop_trigger_undo( int a_track );
+    void pop_track_undo(int a_track );
     void pop_trigger_redo( void ); // collapse and expand
     void pop_trigger_redo( int a_track );
+    void pop_track_redo(int a_track );
 
     void print();
 

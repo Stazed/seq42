@@ -186,11 +186,11 @@ class mainwnd : public Gtk::Window
     void undo_type( void );
     void undo_trigger(int a_track);
     void undo_trigger( void );
-    void undo_track( void );
+    void undo_track(int a_track );
     void redo_type( void );
     void redo_trigger (int a_track);
     void redo_trigger ( void );
-    void redo_track( void );
+    void redo_track(int a_track );
 
     void popup_menu (Menu * a_menu);
 

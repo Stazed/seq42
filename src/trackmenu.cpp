@@ -204,7 +204,7 @@ trackmenu::trk_merge_seq(track * a_track, sequence *a_seq )
 {
     if ( m_mainperf->is_active_track( m_current_trk ))
     {
-        m_mainperf->push_trigger_undo(); // FIXME undo_track
+        m_mainperf->push_track_undo(m_current_trk);
 
         std::vector<trigger> trig_vect;
         a_track->get_trak_triggers(trig_vect); // all triggers for the track

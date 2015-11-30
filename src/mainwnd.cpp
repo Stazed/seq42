@@ -493,7 +493,7 @@ mainwnd::undo_type( void )
         undo_trigger(m_mainperf->undo_vect[m_mainperf->undo_vect.size() -1].track);
         break;
     case c_undo_track:
-        undo_track();
+        undo_track(m_mainperf->undo_vect[m_mainperf->undo_vect.size() -1].track);
         break;
     case c_undo_perf:   // TODO
         printf("Undo Perf\n");
@@ -520,10 +520,10 @@ mainwnd::undo_trigger( void ) // collapse and expand
 }
 
 void
-mainwnd::undo_track( void )
+mainwnd::undo_track( int a_track )
 {
     printf("Undo Track\n"); //FIXME
-    m_mainperf->pop_trigger_undo();
+    m_mainperf->pop_track_undo(a_track);
     m_perfroll->queue_draw();
 }
 
@@ -540,7 +540,7 @@ mainwnd::redo_type( void )
         redo_trigger(m_mainperf->redo_vect[m_mainperf->redo_vect.size() - 1].track);
         break;
     case c_undo_track:
-        redo_track();
+        redo_track(m_mainperf->redo_vect[m_mainperf->redo_vect.size() - 1].track);
         break;
     case c_undo_perf:   // TODO
         printf("Redo Perf\n");
@@ -554,7 +554,7 @@ mainwnd::redo_type( void )
 }
 
 void
-mainwnd::redo_trigger(int a_track)
+mainwnd::redo_trigger(int a_track) // single track
 {
     m_mainperf->pop_trigger_redo(a_track);
     m_perfroll->queue_draw();
@@ -568,10 +568,10 @@ mainwnd::redo_trigger( void ) // collapse and expand
 }
 
 void
-mainwnd::redo_track( void )
+mainwnd::redo_track( int a_track )
 {
     printf("Redo Track\n"); // FIXME
-    m_mainperf->pop_trigger_redo();
+    m_mainperf->pop_track_redo(a_track);
     m_perfroll->queue_draw();
 }
 
