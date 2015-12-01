@@ -577,7 +577,7 @@ void perform::push_trigger_undo( void ) // for collapse and expand
     undo_vect.push_back(a_undo);
 }
 
-void perform::push_trigger_undo( int a_track ) // single track items
+void perform::push_trigger_undo( int a_track ) // single track
 {
     if ( is_active_track(a_track) == true ){
         assert( m_tracks[a_track] );
@@ -638,7 +638,7 @@ void perform::pop_trigger_undo( void ) // collapse and expand
     redo_vect.push_back(a_undo);
 }
 
-void perform::pop_trigger_undo( int a_track ) // single track items
+void perform::pop_trigger_undo( int a_track ) // single track
 {
     if ( is_active_track(a_track) == true ){
         assert( m_tracks[a_track] );
@@ -674,8 +674,8 @@ void perform::pop_track_undo( int a_track )
         else
         {
             get_track( a_track )->set_dirty();
-        }
 
+        }
 
         m_undo_track_count--;
     }else
@@ -732,7 +732,7 @@ void perform::pop_trigger_redo( void ) // collapse and expand
     undo_vect.push_back(a_undo);
 }
 
-void perform::pop_trigger_redo( int a_track ) // single track items
+void perform::pop_trigger_redo( int a_track ) // single track
 {
     if ( is_active_track(a_track) == true ){
         assert( m_tracks[a_track] );

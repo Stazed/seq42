@@ -74,6 +74,8 @@ track::operator=(const track& other)
         m_dirty_seqlist = false;
 
         m_list_trigger = other.m_list_trigger;
+        m_list_trigger_undo = other.m_list_trigger_undo;
+        m_list_trigger_redo = other.m_list_trigger_redo;
 
 #if 0
         m_vector_sequence = other.m_vector_sequence;
@@ -298,7 +300,6 @@ track::push_trigger_undo( void )
     unlock();
 }
 
-
 void
 track::pop_trigger_undo( void )
 {
@@ -313,7 +314,6 @@ track::pop_trigger_undo( void )
     unlock();
 }
 
-
 void
 track::pop_trigger_redo( void )
 {
@@ -327,6 +327,7 @@ track::pop_trigger_redo( void )
 
     unlock();
 }
+
 
 void
 track::set_master_midi_bus( mastermidibus *a_mmb )
