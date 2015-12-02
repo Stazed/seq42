@@ -655,7 +655,7 @@ void perform::pop_trigger_undo( int a_track ) // single track
     redo_vect.push_back(a_undo);
 }
 
-void perform::pop_track_undo( int a_track )
+void perform::pop_track_undo( int a_track ) // FIXME cannot allow if seq is open or track is open
 {
     std::string name = "***NULL***";
     if ( is_active_track(a_track) == true ){
@@ -749,7 +749,7 @@ void perform::pop_trigger_redo( int a_track ) // single track
     undo_vect.push_back(a_undo);
 }
 
-void perform::pop_track_redo( int a_track )
+void perform::pop_track_redo( int a_track ) // FIXME cannot allow if seq is open or track is open
 {
     std::string name = "***NULL***";
     if ( is_active_track(a_track) == true ){

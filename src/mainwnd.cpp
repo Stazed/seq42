@@ -330,14 +330,12 @@ mainwnd::mainwnd(perform *a_p)
     /* undo */
     m_button_undo = manage( new Button());
     m_button_undo->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( undo_xpm  ))));
-//    m_button_undo->signal_clicked().connect(  mem_fun( *this, &mainwnd::undo));
     m_button_undo->signal_clicked().connect(  mem_fun( *this, &mainwnd::undo_type));
     add_tooltip( m_button_undo, "Undo." );
 
     /* redo */
     m_button_redo = manage( new Button());
     m_button_redo->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( redo_xpm  ))));
-//    m_button_redo->signal_clicked().connect(  mem_fun( *this, &mainwnd::redo));
     m_button_redo->signal_clicked().connect(  mem_fun( *this, &mainwnd::redo_type));
     add_tooltip( m_button_redo, "Redo." );
 
@@ -484,12 +482,15 @@ mainwnd::timer_callback(  )
 void
 mainwnd::undo_type( void )
 {
-    char type = m_mainperf->undo_vect[m_mainperf->undo_vect.size() -1].type;
+    char type = '\0';
+    if(m_mainperf->undo_vect.size() > 0)
+        type = m_mainperf->undo_vect[m_mainperf->undo_vect.size() -1].type;
+    else
+        return;
 
     switch (type)
     {
     case c_undo_trigger:
-        //printf("Undo Trigger\n");
         undo_trigger(m_mainperf->undo_vect[m_mainperf->undo_vect.size() -1].track);
         break;
     case c_undo_track:
@@ -522,7 +523,6 @@ mainwnd::undo_trigger( void ) // collapse and expand
 void
 mainwnd::undo_track( int a_track )
 {
-    //printf("Undo Track\n");
     m_mainperf->pop_track_undo(a_track);
     m_perfroll->queue_draw();
 }
@@ -530,12 +530,15 @@ mainwnd::undo_track( int a_track )
 void
 mainwnd::redo_type( void )
 {
-    char type = m_mainperf->redo_vect[m_mainperf->redo_vect.size() - 1].type;
+    char type = '\0';
+    if(m_mainperf->redo_vect.size() > 0)
+        type = m_mainperf->redo_vect[m_mainperf->redo_vect.size() -1].type;
+    else
+        return;
 
     switch (type)
     {
     case c_undo_trigger:
-        //printf("Redo Trigger\n");
         redo_trigger(m_mainperf->redo_vect[m_mainperf->redo_vect.size() - 1].track);
         break;
     case c_undo_track:
