@@ -476,6 +476,16 @@ mainwnd::timer_callback(  )
         m_adjust_swing_amount16->set_value( m_mainperf->get_swing_amount16());
     }
 
+    if(m_mainperf->undo_vect.size() > 0)
+        m_button_undo->set_sensitive(true);
+    else
+        m_button_undo->set_sensitive(false);
+
+    if(m_mainperf->redo_vect.size() > 0)
+        m_button_redo->set_sensitive(true);
+    else
+        m_button_redo->set_sensitive(false);
+
     return true;
 }
 
