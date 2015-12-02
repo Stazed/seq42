@@ -77,6 +77,7 @@ perfroll::perfroll( perform *a_perf,
         m_track_active[i]=false;
 
     cross_track_paste = false;
+    have_button_press = false;
 }
 
 perfroll::~perfroll( )
@@ -1081,7 +1082,7 @@ bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
                 {
                     //m_adding = false;
                     m_adding_pressed = false;
-                    ths.m_mainperf->push_trigger_undo(ths.m_drop_track);
+                    ths.have_button_press = true; // flag to tell motion notify to push_trigger_undo
                     ths.m_mainperf->get_track( ths.m_drop_track )->select_trigger( tick );
 
                     long start_tick = ths.m_mainperf->get_track( ths.m_drop_track )->get_selected_trigger_start_tick();
@@ -1248,6 +1249,11 @@ bool FruityPerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths
     {
         if ( ths.m_mainperf->is_active_track( ths.m_drop_track))
         {
+            if(ths.have_button_press)
+            {   // this is necessary to ensure no push unless we have motion notify
+                ths.m_mainperf->push_trigger_undo(ths.m_drop_track);
+                ths.have_button_press = false;
+            }
             ths.convert_x( x, &tick );
             tick -= ths.m_drop_tick_trigger_offset;
 
@@ -1353,7 +1359,7 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 
             if ( ths.m_mainperf->is_active_track( ths.m_drop_track )){
 
-                ths.m_mainperf->push_trigger_undo(ths.m_drop_track);
+                ths.have_button_press = true; // flag to tell motion notify to push_trigger_undo
                 ths.m_mainperf->get_track( ths.m_drop_track )->select_trigger( tick );
 
                 long start_tick = ths.m_mainperf->get_track( ths.m_drop_track )->get_selected_trigger_start_tick();
@@ -1362,7 +1368,7 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
                 if ( tick >= start_tick &&
                         tick <= start_tick + (c_perfroll_size_box_click_w * c_perf_scale_x) &&
                         (ths.m_drop_y % c_names_y) <= c_perfroll_size_box_click_w + 1 )
-                {
+                {   // left resize handle clicked
                     ths.m_growing = true;
                     ths.m_grow_direction = true;
                     ths.m_drop_tick_trigger_offset = ths.m_drop_tick -
@@ -1373,7 +1379,7 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
                     if ( tick >= end_tick - (c_perfroll_size_box_click_w * c_perf_scale_x) &&
                             tick <= end_tick &&
                             (ths.m_drop_y % c_names_y) >= c_names_y - c_perfroll_size_box_click_w - 1 )
-                    {
+                    {   // right resize handle clicked
                         ths.m_growing = true;
                         ths.m_grow_direction = false;
                         ths.m_drop_tick_trigger_offset =
@@ -1497,6 +1503,12 @@ bool Seq42PerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths)
     else if ( ths.m_moving || ths.m_growing ){
 
         if ( ths.m_mainperf->is_active_track( ths.m_drop_track)){
+
+            if(ths.have_button_press)
+            {   // this is necessary to ensure no push unless we have motion notify
+                ths.m_mainperf->push_trigger_undo(ths.m_drop_track);
+                ths.have_button_press = false;
+            }
 
             ths.convert_x( x, &tick );
             tick -= ths.m_drop_tick_trigger_offset;

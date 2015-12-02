@@ -156,6 +156,7 @@ class perfroll : public Gtk::DrawingArea
     void trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths);
 
     bool cross_track_paste;
+    bool have_button_press;
 
  public:
     void set_guides( int a_snap, int a_measure, int a_beat );

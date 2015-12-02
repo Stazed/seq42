@@ -575,6 +575,7 @@ void perform::push_trigger_undo( void ) // for collapse and expand
 
     //printf("push_trigger_undo collapse\n");
     undo_vect.push_back(a_undo);
+    redo_vect.clear();
 }
 
 void perform::push_trigger_undo( int a_track ) // single track
@@ -589,11 +590,11 @@ void perform::push_trigger_undo( int a_track ) // single track
 
     //printf("in perform::push_trigger_undo\n");
     undo_vect.push_back(a_undo);
+    redo_vect.clear();
 }
 
 void perform::push_track_undo( int a_track )
 {
-
     if ( is_active_track(a_track) == true ){
         assert( m_tracks[a_track] );
 
@@ -615,6 +616,7 @@ void perform::push_track_undo( int a_track )
 
     //printf("in perform::push_track_undo\n");
     undo_vect.push_back(a_undo);
+    redo_vect.clear();
 }
 
 
