@@ -466,9 +466,9 @@ void perform::delete_track( int a_num )
 }
 
 
-bool perform::is_track_in_edit( int a_num )
+bool perform::is_track_in_edit( int a_num, bool undo_redo )
 {
-    return ( m_tracks[a_num] != NULL &&
+    return ( (m_tracks[a_num] != NULL && !undo_redo) &&
              ( m_tracks[a_num]->get_editing() ||  m_tracks[a_num]->get_sequence_editing() )
            );
 
@@ -657,8 +657,11 @@ void perform::pop_trigger_undo( int a_track ) // single track
     redo_vect.push_back(a_undo);
 }
 
-void perform::pop_track_undo( int a_track ) // FIXME cannot allow if seq is open or track is open
+void perform::pop_track_undo( int a_track )
 {
+    if(is_track_in_edit( a_track , true)) // don't allow
+        return;
+
     std::string name = "***NULL***";
     if ( is_active_track(a_track) == true ){
         assert( m_tracks[a_track] );
@@ -751,8 +754,11 @@ void perform::pop_trigger_redo( int a_track ) // single track
     undo_vect.push_back(a_undo);
 }
 
-void perform::pop_track_redo( int a_track ) // FIXME cannot allow if seq is open or track is open
+void perform::pop_track_redo( int a_track )
 {
+    if(is_track_in_edit( a_track, true )) // don't allow
+        return;
+
     std::string name = "***NULL***";
     if ( is_active_track(a_track) == true ){
         assert( m_tracks[a_track] );

@@ -155,7 +155,7 @@ class perform
     void add_track( track *a_track, int a_pref );
     void delete_track( int a_num );
 
-    bool is_track_in_edit( int a_num );
+    bool is_track_in_edit( int a_num , bool undo_redo = false);
     int get_track_index( track * a_track );
 
     void clear_track_triggers( int a_num  );
