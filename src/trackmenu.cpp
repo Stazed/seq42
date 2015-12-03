@@ -185,7 +185,7 @@ trackmenu::trk_cut(){
         m_something_to_paste = true;
         m_mainperf->push_track_undo(m_current_trk);
         m_mainperf->delete_track( m_current_trk );
-        m_mainperf->update_seqlist_on_delete = true;
+        m_mainperf->update_seqlist_on_change = true;
         redraw( m_current_trk );
     }
 }

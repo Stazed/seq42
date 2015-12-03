@@ -202,10 +202,10 @@ seqlist::timeout( void )
     }
 
 
-    if(need_update || m_perf->update_seqlist_on_delete) {
+    if(need_update || m_perf->update_seqlist_on_change) {
         update_model();
     }
-    m_perf->update_seqlist_on_delete = false;
+    m_perf->update_seqlist_on_change = false;
     return true;
 }
 

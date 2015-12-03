@@ -75,7 +75,7 @@ perform::perform()
 
     m_out_thread_launched = false;
     m_in_thread_launched = false;
-    update_seqlist_on_delete = false;
+    update_seqlist_on_change = false;
 }
 
 
@@ -467,7 +467,7 @@ void perform::delete_track( int a_num )
 }
 
 
-bool perform::is_track_in_edit( int a_num, bool undo_redo )
+bool perform::is_track_in_edit( int a_num, bool undo_redo ) //FIXME undo_redo
 {
     return ( (m_tracks[a_num] != NULL && !undo_redo) &&
              ( m_tracks[a_num]->get_editing() ||  m_tracks[a_num]->get_sequence_editing() )
@@ -577,6 +577,7 @@ void perform::push_trigger_undo( void ) // for collapse and expand
     //printf("push_trigger_undo collapse\n");
     undo_vect.push_back(a_undo);
     redo_vect.clear();
+    update_seqlist_on_change = true;
 }
 
 void perform::push_trigger_undo( int a_track ) // single track
@@ -639,6 +640,7 @@ void perform::pop_trigger_undo( void ) // collapse and expand
 
     undo_vect.pop_back();
     redo_vect.push_back(a_undo);
+    update_seqlist_on_change = true;
 }
 
 void perform::pop_trigger_undo( int a_track ) // single track
@@ -656,6 +658,7 @@ void perform::pop_trigger_undo( int a_track ) // single track
 
     undo_vect.pop_back();
     redo_vect.push_back(a_undo);
+    update_seqlist_on_change = true;
 }
 
 void perform::pop_track_undo( int a_track )
@@ -716,7 +719,7 @@ void perform::pop_track_undo( int a_track )
 
     undo_vect.pop_back();
     redo_vect.push_back(a_undo);
-    update_seqlist_on_delete = true; // in case the seqlist is open
+    update_seqlist_on_change = true; // in case the seqlist is open
 }
 
 void perform::pop_trigger_redo( void ) // collapse and expand
@@ -737,6 +740,7 @@ void perform::pop_trigger_redo( void ) // collapse and expand
 
     redo_vect.pop_back();
     undo_vect.push_back(a_undo);
+    update_seqlist_on_change = true;
 }
 
 void perform::pop_trigger_redo( int a_track ) // single track
@@ -754,6 +758,7 @@ void perform::pop_trigger_redo( int a_track ) // single track
 
     redo_vect.pop_back();
     undo_vect.push_back(a_undo);
+    update_seqlist_on_change = true;
 }
 
 void perform::pop_track_redo( int a_track )
@@ -815,7 +820,7 @@ void perform::pop_track_redo( int a_track )
 
     redo_vect.pop_back();
     undo_vect.push_back(a_undo);
-    update_seqlist_on_delete = true; // in case the seqlist is open
+    update_seqlist_on_change = true; // in case the seqlist is open
 }
 
 /* copies between L and R -> R */
