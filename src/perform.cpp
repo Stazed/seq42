@@ -75,6 +75,7 @@ perform::perform()
 
     m_out_thread_launched = false;
     m_in_thread_launched = false;
+    update_seqlist_on_delete = false;
 }
 
 
@@ -715,6 +716,7 @@ void perform::pop_track_undo( int a_track )
 
     undo_vect.pop_back();
     redo_vect.push_back(a_undo);
+    update_seqlist_on_delete = true; // in case the seqlist is open
 }
 
 void perform::pop_trigger_redo( void ) // collapse and expand
@@ -813,6 +815,7 @@ void perform::pop_track_redo( int a_track )
 
     redo_vect.pop_back();
     undo_vect.push_back(a_undo);
+    update_seqlist_on_delete = true; // in case the seqlist is open
 }
 
 /* copies between L and R -> R */

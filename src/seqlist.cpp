@@ -92,7 +92,7 @@ seqlist::~seqlist()
 bool
 seqlist::on_delete_event(GdkEventAny *a_event)
 {
-    printf( "seqlist::on_delete_event()\n" );
+    //printf( "seqlist::on_delete_event()\n" );
     m_perf->set_seqlist_open(false);
     delete this;
     return false;
@@ -200,9 +200,12 @@ seqlist::timeout( void )
             }
         }
     }
-    if(need_update) {
+
+
+    if(need_update || m_perf->update_seqlist_on_delete) {
         update_model();
     }
+    m_perf->update_seqlist_on_delete = false;
     return true;
 }
 
