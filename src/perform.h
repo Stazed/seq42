@@ -155,7 +155,7 @@ class perform
     void add_track( track *a_track, int a_pref );
     void delete_track( int a_num );
 
-    bool is_track_in_edit( int a_num , bool undo_redo = false);
+    bool is_track_in_edit( int a_num );
     int get_track_index( track * a_track );
 
     void clear_track_triggers( int a_num  );
@@ -173,15 +173,17 @@ class perform
 
     void move_triggers( bool a_direction );
     void copy_triggers(  );
-
-    void push_trigger_undo( void ); // collapse and expand
+     // collapse and expand - all tracks
+    void push_trigger_undo( void );
+    void pop_trigger_undo( void );
+    void pop_trigger_redo( void );
+     // single track items
     void push_trigger_undo( int a_track );
-    void push_track_undo(int a_track );
-    void pop_trigger_undo( void ); // collapse and expand
     void pop_trigger_undo( int a_track );
-    void pop_track_undo(int a_track );
-    void pop_trigger_redo( void ); // collapse and expand
     void pop_trigger_redo( int a_track );
+     // tracks - merge sequence, cross track trigger, track cut, track paste
+    void push_track_undo(int a_track );
+    void pop_track_undo(int a_track );
     void pop_track_redo(int a_track );
 
     void print();

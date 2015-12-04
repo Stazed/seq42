@@ -467,9 +467,9 @@ void perform::delete_track( int a_num )
 }
 
 
-bool perform::is_track_in_edit( int a_num, bool undo_redo ) //FIXME undo_redo
+bool perform::is_track_in_edit( int a_num )
 {
-    return ( (m_tracks[a_num] != NULL && !undo_redo) &&
+    return ( (m_tracks[a_num] != NULL) &&
              ( m_tracks[a_num]->get_editing() ||  m_tracks[a_num]->get_sequence_editing() )
            );
 
@@ -560,8 +560,8 @@ void perform::move_triggers( bool a_direction )
     }
 }
 
-
-void perform::push_trigger_undo( void ) // for collapse and expand
+// collapse and expand - all tracks
+void perform::push_trigger_undo( void )
 {
     for (int i=0; i< c_max_track; i++ ){
 
@@ -574,55 +574,12 @@ void perform::push_trigger_undo( void ) // for collapse and expand
     a_undo.track = -1; // all tracks
     a_undo.type = c_undo_collapse_expand;
 
-    //printf("push_trigger_undo collapse\n");
     undo_vect.push_back(a_undo);
     redo_vect.clear();
     update_seqlist_on_change = true;
 }
 
-void perform::push_trigger_undo( int a_track ) // single track
-{
-    if ( is_active_track(a_track) == true ){
-        assert( m_tracks[a_track] );
-        m_tracks[a_track]->push_trigger_undo( );
-    }
-    undo_type a_undo;
-    a_undo.track = a_track;
-    a_undo.type = c_undo_trigger;
-
-    //printf("in perform::push_trigger_undo\n");
-    undo_vect.push_back(a_undo);
-    redo_vect.clear();
-}
-
-void perform::push_track_undo( int a_track )
-{
-    if ( is_active_track(a_track) == true ){
-        assert( m_tracks[a_track] );
-
-        m_undo_tracks[m_undo_track_count] = *(m_tracks[a_track]);
-        m_undo_track_count++;
-    }
-    else
-    {   // empty track so must push junk to undo ***NULL***
-        std::string name = "***NULL***";
-        new_track( a_track  );
-        assert( m_tracks[a_track] );
-        get_track(a_track)->set_name(name);
-        m_undo_tracks[m_undo_track_count] = *(m_tracks[a_track]);
-        m_undo_track_count++;
-    }
-    undo_type a_undo;
-    a_undo.track = a_track;
-    a_undo.type = c_undo_track;
-
-    //printf("in perform::push_track_undo\n");
-    undo_vect.push_back(a_undo);
-    redo_vect.clear();
-}
-
-
-void perform::pop_trigger_undo( void ) // collapse and expand
+void perform::pop_trigger_undo( void )
 {
     for (int i=0; i< c_max_track; i++ ){
 
@@ -636,93 +593,12 @@ void perform::pop_trigger_undo( void ) // collapse and expand
     a_undo.track = -1; // all tracks
     a_undo.type = c_undo_collapse_expand;
 
-    //printf("pop_trigger_undo collapse\n");
-
     undo_vect.pop_back();
     redo_vect.push_back(a_undo);
     update_seqlist_on_change = true;
 }
 
-void perform::pop_trigger_undo( int a_track ) // single track
-{
-    if ( is_active_track(a_track) == true ){
-        assert( m_tracks[a_track] );
-        m_tracks[a_track]->pop_trigger_undo( );
-    }
-
-    undo_type a_undo;
-    a_undo.track = a_track;
-    a_undo.type = c_undo_trigger;
-
-    //printf("in perform::pop_trigger_undo\n");
-
-    undo_vect.pop_back();
-    redo_vect.push_back(a_undo);
-    update_seqlist_on_change = true;
-}
-
-void perform::pop_track_undo( int a_track )
-{
-    if(is_track_in_edit( a_track , true)) // don't allow
-        return;
-
-    std::string name = "***NULL***";
-    if ( is_active_track(a_track) == true ){
-        assert( m_tracks[a_track] );
-
-        m_redo_tracks[m_redo_track_count] = *(get_track(a_track ));
-        m_redo_track_count++;
-
-        *(get_track(a_track )) = m_undo_tracks[m_undo_track_count - 1];
-
-        std::string get_name = get_track(a_track )->get_name();
-        if(get_name == name)
-        {
-            delete_track(a_track);
-        }
-        else
-        {
-            get_track( a_track )->set_dirty();
-
-        }
-
-        m_undo_track_count--;
-    }else
-    {   // we have an empty track here to set name to ***NULL*** when pushing to redo
-        new_track( a_track  );
-        assert( m_tracks[a_track] );
-        get_track(a_track)->set_name(name);
-        m_redo_tracks[m_redo_track_count] = *(get_track(a_track ));
-
-        m_redo_track_count++;
-
-        *(get_track(a_track )) = m_undo_tracks[m_undo_track_count - 1];
-
-        std::string get_name = get_track(a_track )->get_name();
-        if(get_name == name) // this is a ***NULL*** track to delete it
-        {
-            delete_track(a_track);
-        }
-        else
-        {
-            get_track( a_track )->set_dirty();
-        }
-
-        m_undo_track_count--;
-    }
-
-    undo_type a_undo;
-    a_undo.track = a_track;
-    a_undo.type = c_undo_track;
-
-    //printf("in perform::pop_track_undo\n");
-
-    undo_vect.pop_back();
-    redo_vect.push_back(a_undo);
-    update_seqlist_on_change = true; // in case the seqlist is open
-}
-
-void perform::pop_trigger_redo( void ) // collapse and expand
+void perform::pop_trigger_redo( void )
 {
     for (int i=0; i< c_max_track; i++ ){
 
@@ -736,14 +612,43 @@ void perform::pop_trigger_redo( void ) // collapse and expand
     a_undo.track = -1; // all tracks
     a_undo.type = c_undo_collapse_expand;
 
-    //printf("pop_trigger_redo collapse\n");
-
     redo_vect.pop_back();
     undo_vect.push_back(a_undo);
     update_seqlist_on_change = true;
 }
 
-void perform::pop_trigger_redo( int a_track ) // single track
+// single track items
+void perform::push_trigger_undo( int a_track )
+{
+    if ( is_active_track(a_track) == true ){
+        assert( m_tracks[a_track] );
+        m_tracks[a_track]->push_trigger_undo( );
+    }
+    undo_type a_undo;
+    a_undo.track = a_track;
+    a_undo.type = c_undo_trigger;
+
+    undo_vect.push_back(a_undo);
+    redo_vect.clear();
+}
+
+void perform::pop_trigger_undo( int a_track )
+{
+    if ( is_active_track(a_track) == true ){
+        assert( m_tracks[a_track] );
+        m_tracks[a_track]->pop_trigger_undo( );
+    }
+
+    undo_type a_undo;
+    a_undo.track = a_track;
+    a_undo.type = c_undo_trigger;
+
+    undo_vect.pop_back();
+    redo_vect.push_back(a_undo);
+    update_seqlist_on_change = true;
+}
+
+void perform::pop_trigger_redo( int a_track )
 {
     if ( is_active_track(a_track) == true ){
         assert( m_tracks[a_track] );
@@ -754,20 +659,101 @@ void perform::pop_trigger_redo( int a_track ) // single track
     a_undo.track = a_track;
     a_undo.type = c_undo_trigger;
 
-    //printf("in perform::pop_trigger_redo\n");
-
     redo_vect.pop_back();
     undo_vect.push_back(a_undo);
     update_seqlist_on_change = true;
 }
 
+// tracks - merge sequence, cross track trigger, track cut, track paste
+void perform::push_track_undo( int a_track )
+{
+    if ( is_active_track(a_track) == true ) // merge, cross track, track cut
+    {
+        assert( m_tracks[a_track] );
+
+        m_undo_tracks[m_undo_track_count] = *(m_tracks[a_track]);
+        m_undo_track_count++;
+    }
+    else // track paste - must push null track so create dummy then delete
+    {
+        std::string name = "***NULL***";
+        new_track( a_track  );
+        assert( m_tracks[a_track] );
+        get_track(a_track)->set_name(name);
+        m_undo_tracks[m_undo_track_count] = *(m_tracks[a_track]);
+        delete_track(a_track);
+        m_undo_track_count++;
+    }
+    undo_type a_undo;
+    a_undo.track = a_track;
+    a_undo.type = c_undo_track;
+
+    //printf("in perform::push_track_undo\n");
+    undo_vect.push_back(a_undo);
+    redo_vect.clear();
+}
+
+void perform::pop_track_undo( int a_track )
+{
+    std::string name = "***NULL***";
+
+    if ( is_active_track(a_track) == true ) // cross track, merge seq, paste track
+    {
+        if(is_track_in_edit(a_track)) // don't allow since track will be changed
+            return;
+
+        assert( m_tracks[a_track] );
+
+        m_redo_tracks[m_redo_track_count] = *(get_track(a_track ));
+        m_redo_track_count++;
+
+        *(get_track(a_track )) = m_undo_tracks[m_undo_track_count - 1];
+
+        std::string get_name = get_track(a_track )->get_name();
+        if(get_name == name) // paste track undo
+        {
+            delete_track(a_track);
+        }
+        else // cross track, merge track
+        {
+            get_track( a_track )->set_dirty();
+
+        }
+
+        m_undo_track_count--;
+    }else // cut track push junk to redo then load good from undo
+    {
+        new_track( a_track  );
+        assert( m_tracks[a_track] );
+        get_track(a_track)->set_name(name);
+        m_redo_tracks[m_redo_track_count] = *(get_track(a_track ));
+
+        m_redo_track_count++;
+
+        *(get_track(a_track )) = m_undo_tracks[m_undo_track_count - 1];
+        get_track( a_track )->set_dirty();
+
+        m_undo_track_count--;
+    }
+
+    undo_type a_undo;
+    a_undo.track = a_track;
+    a_undo.type = c_undo_track;
+
+    undo_vect.pop_back();
+    redo_vect.push_back(a_undo);
+    update_seqlist_on_change = true; // in case the seqlist is open
+}
+
 void perform::pop_track_redo( int a_track )
 {
-    if(is_track_in_edit( a_track, true )) // don't allow
-        return;
-
     std::string name = "***NULL***";
-    if ( is_active_track(a_track) == true ){
+
+    if ( is_active_track(a_track) == true ) // cross track, merge seq, cut track
+    {
+        if(is_track_in_edit(a_track)) // don't allow since track will be changed
+            return;
+
         assert( m_tracks[a_track] );
 
         m_undo_tracks[m_undo_track_count] = *(get_track(a_track ));
@@ -776,11 +762,11 @@ void perform::pop_track_redo( int a_track )
         *(get_track(a_track )) = m_redo_tracks[m_redo_track_count -1];
 
         std::string get_name = get_track(a_track )->get_name();
-        if(get_name == name) // ***NULL*** track so delete
+        if(get_name == name) // cut track
         {
             delete_track(a_track);
         }
-        else
+        else // cross track, merge track
         {
             get_track( a_track )->set_dirty();
         }
@@ -788,7 +774,7 @@ void perform::pop_track_redo( int a_track )
         m_redo_track_count--;
 
     }else
-    {   // empty track so set to ***NULL*** on push to undo
+    {   // paste track
         new_track( a_track  );
         assert( m_tracks[a_track] );
         get_track(a_track)->set_name(name);
@@ -798,16 +784,7 @@ void perform::pop_track_redo( int a_track )
         m_undo_track_count++;
 
         *(get_track(a_track )) = m_redo_tracks[m_redo_track_count - 1];
-
-        std::string get_name = get_track(a_track )->get_name();
-        if(get_name == name) // ***NULL***
-        {
-            delete_track(a_track);
-        }
-        else
-        {
-            get_track( a_track )->set_dirty();
-        }
+        get_track( a_track )->set_dirty();
 
         m_redo_track_count--;
     }
@@ -815,8 +792,6 @@ void perform::pop_track_redo( int a_track )
     undo_type a_undo;
     a_undo.track = a_track;
     a_undo.type = c_undo_track;
-
-    //printf("in perform::pop_track_redo\n");
 
     redo_vect.pop_back();
     undo_vect.push_back(a_undo);
