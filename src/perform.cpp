@@ -674,21 +674,15 @@ void perform::push_track_undo( int a_track )
         m_undo_tracks[m_undo_track_count] = *(m_tracks[a_track]);
         m_undo_track_count++;
     }
-    else // track paste - must push null track so create dummy then delete
+    else // track paste - set name to null for later delete
     {
-        std::string name = "***NULL***";
-        new_track( a_track  );
-        assert( m_tracks[a_track] );
-        get_track(a_track)->set_name(name);
-        m_undo_tracks[m_undo_track_count] = *(m_tracks[a_track]);
-        delete_track(a_track);
+        m_undo_tracks[m_undo_track_count].set_name((char*)"***NULL***");
         m_undo_track_count++;
     }
     undo_type a_undo;
     a_undo.track = a_track;
     a_undo.type = c_undo_track;
 
-    //printf("in perform::push_track_undo\n");
     undo_vect.push_back(a_undo);
     redo_vect.clear();
 }
@@ -721,18 +715,15 @@ void perform::pop_track_undo( int a_track )
         }
 
         m_undo_track_count--;
-    }else // cut track push junk to redo then load good from undo
+    }else // cut track - set NULL name to redo, create new track for undo
     {
-        new_track( a_track  );
-        assert( m_tracks[a_track] );
-        get_track(a_track)->set_name(name);
-        m_redo_tracks[m_redo_track_count] = *(get_track(a_track ));
-
+        m_redo_tracks[m_redo_track_count].set_name(name);
         m_redo_track_count++;
 
+        new_track( a_track  );
+        assert( m_tracks[a_track] );
         *(get_track(a_track )) = m_undo_tracks[m_undo_track_count - 1];
         get_track( a_track )->set_dirty();
-
         m_undo_track_count--;
     }
 
@@ -773,19 +764,15 @@ void perform::pop_track_redo( int a_track )
 
         m_redo_track_count--;
 
-    }else
-    {   // paste track
-        new_track( a_track  );
-        assert( m_tracks[a_track] );
-        get_track(a_track)->set_name(name);
-
-        m_undo_tracks[m_undo_track_count] = *(get_track(a_track ));
-
+    }else  // paste track - set NULL to undo, create track for redo
+    {
+        m_undo_tracks[m_undo_track_count].set_name(name);
         m_undo_track_count++;
 
+        new_track( a_track  );
+        assert( m_tracks[a_track] );
         *(get_track(a_track )) = m_redo_tracks[m_redo_track_count - 1];
         get_track( a_track )->set_dirty();
-
         m_redo_track_count--;
     }
 
