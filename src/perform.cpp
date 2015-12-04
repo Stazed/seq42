@@ -697,6 +697,7 @@ void perform::pop_track_undo( int a_track )
             return;
 
         assert( m_tracks[a_track] );
+        bool mute = m_tracks[a_track]->get_song_mute();
 
         m_redo_tracks[m_redo_track_count] = *(get_track(a_track ));
         m_redo_track_count++;
@@ -710,6 +711,7 @@ void perform::pop_track_undo( int a_track )
         }
         else // cross track, merge track
         {
+            get_track(a_track)->set_song_mute(mute); // don't change mute status on undo
             get_track( a_track )->set_dirty();
 
         }
@@ -746,6 +748,7 @@ void perform::pop_track_redo( int a_track )
             return;
 
         assert( m_tracks[a_track] );
+        bool mute = m_tracks[a_track]->get_song_mute();
 
         m_undo_tracks[m_undo_track_count] = *(get_track(a_track ));
         m_undo_track_count++;
@@ -759,6 +762,7 @@ void perform::pop_track_redo( int a_track )
         }
         else // cross track, merge track
         {
+            get_track(a_track)->set_song_mute(mute); // don't change mute status on redo
             get_track( a_track )->set_dirty();
         }
 

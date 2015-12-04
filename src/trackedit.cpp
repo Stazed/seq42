@@ -47,7 +47,7 @@ trackedit::trackedit (track *a_track)
     m_tooltips = manage( new Tooltips( ) );
     m_vbox = manage( new VBox( false, 2 ));
     m_vbox->set_border_width( 2 );
-    
+
     m_hbox = manage (new HBox ());
     m_hbox->set_border_width (6);
     m_vbox->pack_start (*m_hbox, false, false);
@@ -63,7 +63,7 @@ trackedit::trackedit (track *a_track)
     m_entry_name->signal_changed().connect(
     mem_fun( *this, &trackedit::name_change_callback));
     m_hbox->pack_start( *m_entry_name, true, true );
-    
+
     m_hbox2 = manage (new HBox ());
     m_hbox2->set_border_width (6);
     m_vbox->pack_start (*m_hbox2, false, false);
@@ -94,7 +94,7 @@ trackedit::trackedit (track *a_track)
     m_hbox2->pack_start( *m_button_channel , false, false );
     m_hbox2->pack_start( *m_entry_channel , false, false );
 
-    
+
     m_hbox3 = manage (new HBox ());
     m_hbox3->set_border_width (6);
     m_vbox->pack_start (*m_hbox3, false, false);
@@ -103,7 +103,7 @@ trackedit::trackedit (track *a_track)
     m_check_transposable->set_active(m_track->get_transposable());
     m_check_transposable->signal_toggled ().
         connect (bind
-                (mem_fun (*this, &trackedit::transposable_change_callback), 
+                (mem_fun (*this, &trackedit::transposable_change_callback),
                  m_check_transposable));
     m_hbox3->pack_start( *m_check_transposable, false, false );
 
@@ -158,7 +158,7 @@ trackedit::timeout( void )
 
 void
 trackedit::name_change_callback ()
-{  
+{
     m_track->set_name( m_entry_name->get_text());
 }
 
@@ -218,7 +218,6 @@ trackedit::set_midi_channel( int a_midichannel  )
     m_entry_channel->set_text(b);
     m_track->set_midi_channel( a_midichannel );
 }
-
 
 void
 trackedit::set_midi_bus( int a_midibus )
