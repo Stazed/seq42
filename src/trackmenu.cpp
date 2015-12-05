@@ -246,8 +246,8 @@ trackmenu::trk_edit(){
 
     if ( m_mainperf->is_active_track( m_current_trk ))
     {
+        m_mainperf->push_track_undo(m_current_trk); // FIXME maybe check for change
         track *a_track = m_mainperf->get_track( m_current_trk );
-        m_mainperf->push_track_undo(m_current_trk);
 
         if(a_track->get_editing()) {
             a_track->set_raise(true);

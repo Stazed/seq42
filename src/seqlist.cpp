@@ -213,6 +213,7 @@ seqlist::timeout( void )
 void
 seqlist::edit_seq( sequence *a_seq )
 {
+    m_perf->push_track_undo(m_perf->get_track_index(a_seq->get_track())); // FIXME maybe check if changed
     if(a_seq->get_editing()) {
         a_seq->set_raise(true);
     } else {

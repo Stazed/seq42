@@ -922,6 +922,7 @@ perfroll::copy_sequence( track *a_track, trigger *a_trigger, sequence *a_seq )
 void
 perfroll::edit_sequence( track *a_track, trigger *a_trigger )
 {
+    m_mainperf->push_track_undo(m_mainperf->get_track_index(a_track)); // FIXME only on change
     sequence *a_seq = a_track->get_trigger_sequence(a_trigger);
     if(a_seq->get_editing()) {
         a_seq->set_raise(true);
