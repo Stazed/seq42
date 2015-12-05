@@ -139,7 +139,7 @@ trackmenu::popup_menu( void )
 
 }
 
-    void
+void
 trackmenu::set_bus_and_midi_channel( int a_bus, int a_ch )
 {
     if ( m_mainperf->is_active_track( m_current_trk )) {

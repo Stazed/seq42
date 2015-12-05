@@ -60,7 +60,7 @@ track::operator=(const track& other)
     lock();
     if(this != &other)
     {
-        free();
+        free(); // FIXME this causes segfault on undo track copy to m_undo_clipboard
 
         m_name = other.m_name;
         m_bus = other.m_bus;

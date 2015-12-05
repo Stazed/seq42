@@ -1537,7 +1537,8 @@ bool
 seqedit::on_delete_event(GdkEventAny *a_event)
 {
     if(m_seq->get_undo_size()>0)
-        m_mainperf->push_track_clipboard_undo(m_mainperf->get_undo_clipboard(),m_mainperf->get_track_index(m_seq->get_track()));
+        m_mainperf->push_track_clipboard_undo(m_mainperf->m_undo_clipboard,m_mainperf->get_track_index(m_seq->get_track()));
+        //m_mainperf->push_track_clipboard_undo(m_mainperf->get_undo_clipboard(),m_mainperf->get_track_index(m_seq->get_track()));
     //printf( "seqedit::on_delete_event()\n" );
     m_seq->set_recording( false );
     m_mainperf->get_master_midi_bus()->set_sequence_input( false, NULL );

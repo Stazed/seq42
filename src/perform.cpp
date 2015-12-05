@@ -676,7 +676,7 @@ void perform::push_track_undo( int a_track )
     }
     else // track paste - set name to null for later delete
     {
-        m_undo_tracks[m_undo_track_count].set_name((char*)"***NULL***");
+        m_undo_tracks[m_undo_track_count].set_name((char*)"***NULL***"); // FIXME
         m_undo_track_count++;
     }
     undo_type a_undo;
@@ -689,7 +689,7 @@ void perform::push_track_undo( int a_track )
 
 void perform::pop_track_undo( int a_track )
 {
-    std::string name = "***NULL***";
+    std::string name = "***NULL***"; // FIXME
 
     if ( is_active_track(a_track) == true ) // cross track, merge seq, paste track
     {
@@ -702,24 +702,25 @@ void perform::pop_track_undo( int a_track )
         m_redo_tracks[m_redo_track_count] = *(get_track(a_track ));
         m_redo_track_count++;
 
-        *(get_track(a_track )) = m_undo_tracks[m_undo_track_count - 1];
+        //mastermidibus a_mmb;
+        //a_mmb = *get_master_midi_bus();
+        delete_track(a_track); // must delete or junk leftover on copy - also for paste track undo
 
-        std::string get_name = get_track(a_track )->get_name();
-        if(get_name == name) // paste track undo
+        if(m_undo_tracks[m_undo_track_count - 1].get_name() != name) // cross track, merge track
         {
-            delete_track(a_track);
-        }
-        else // cross track, merge track
-        {
+            new_track( a_track );
+            *(get_track( a_track )) = m_undo_tracks[m_undo_track_count - 1];
+            assert( m_tracks[a_track] );
             get_track(a_track)->set_song_mute(mute); // don't change mute status on undo
+            //get_track(a_track)->set_master_midi_bus(&a_mmb);
             get_track( a_track )->set_dirty();
-
         }
 
         m_undo_track_count--;
+
     }else // cut track - set NULL name to redo, create new track for undo
     {
-        m_redo_tracks[m_redo_track_count].set_name(name);
+        m_redo_tracks[m_redo_track_count].set_name(name); // FIXME
         m_redo_track_count++;
 
         new_track( a_track  );
@@ -753,16 +754,13 @@ void perform::pop_track_redo( int a_track )
         m_undo_tracks[m_undo_track_count] = *(get_track(a_track ));
         m_undo_track_count++;
 
-        *(get_track(a_track )) = m_redo_tracks[m_redo_track_count -1];
+        delete_track(a_track); // must delete or junk leftover on copy - also for cut track redo
 
-        std::string get_name = get_track(a_track )->get_name();
-        if(get_name == name) // cut track
+        if(m_redo_tracks[m_redo_track_count - 1].get_name() != name) // cross track, merge track
         {
-            delete_track(a_track);
-        }
-        else // cross track, merge track
-        {
-            get_track(a_track)->set_song_mute(mute); // don't change mute status on redo
+            new_track( a_track );
+            *(get_track( a_track )) = m_redo_tracks[m_redo_track_count - 1];
+            get_track(a_track)->set_song_mute(mute); // don't change mute status on undo
             get_track( a_track )->set_dirty();
         }
 
@@ -792,13 +790,8 @@ void perform::pop_track_redo( int a_track )
 void
 perform::push_track_clipboard_undo(track a_track, int trk_idx)
 {
-    //if ( is_active_track(a_track) == true ) // merge, cross track, track cut
-    //{
-    //    assert( m_tracks[a_track] );
-
-        m_undo_tracks[m_undo_track_count] = a_track;
-        m_undo_track_count++;
-    //}
+    m_undo_tracks[m_undo_track_count] = a_track;
+    m_undo_track_count++;
 
     undo_type a_undo;
     a_undo.track = trk_idx;
@@ -808,11 +801,11 @@ perform::push_track_clipboard_undo(track a_track, int trk_idx)
     redo_vect.clear();
 }
 
-
+/*
 void
-perform::set_undo_clipboard(track *a_track)
+perform::set_undo_clipboard(track a_track)
 {
-    m_undo_clipboard = *a_track;
+    m_undo_clipboard = a_track;
 }
 
 track
@@ -822,7 +815,7 @@ perform::get_undo_clipboard(void)
     //*a_track = m_undo_clipboard;
     return m_undo_clipboard;
 }
-
+*/
 
 
 
