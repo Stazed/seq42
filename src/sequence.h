@@ -137,6 +137,7 @@ class sequence
     void push_undo (void);
     void pop_undo (void);
     void pop_redo (void);
+    unsigned get_undo_size (void);
 
     //
     //  Gets and Sets

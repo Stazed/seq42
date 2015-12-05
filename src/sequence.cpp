@@ -98,6 +98,11 @@ sequence::pop_redo( void )
     unlock();
 }
 
+unsigned
+sequence::get_undo_size (void)
+{
+    return m_list_undo.size();
+}
 
 void
 sequence::set_bpm( long a_beats_per_measure )

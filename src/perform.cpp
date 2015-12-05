@@ -789,6 +789,43 @@ void perform::pop_track_redo( int a_track )
     update_seqlist_on_change = true; // in case the seqlist is open
 }
 
+void
+perform::push_track_clipboard_undo(track a_track, int trk_idx)
+{
+    //if ( is_active_track(a_track) == true ) // merge, cross track, track cut
+    //{
+    //    assert( m_tracks[a_track] );
+
+        m_undo_tracks[m_undo_track_count] = a_track;
+        m_undo_track_count++;
+    //}
+
+    undo_type a_undo;
+    a_undo.track = trk_idx;
+    a_undo.type = c_undo_track;
+
+    undo_vect.push_back(a_undo);
+    redo_vect.clear();
+}
+
+
+void
+perform::set_undo_clipboard(track *a_track)
+{
+    m_undo_clipboard = *a_track;
+}
+
+track
+perform::get_undo_clipboard(void)
+{
+    //track * a_track;
+    //*a_track = m_undo_clipboard;
+    return m_undo_clipboard;
+}
+
+
+
+
 /* copies between L and R -> R */
 void perform::copy_triggers( )
 {
