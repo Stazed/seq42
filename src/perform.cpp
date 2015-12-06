@@ -76,6 +76,9 @@ perform::perform()
     m_out_thread_launched = false;
     m_in_thread_launched = false;
     update_seqlist_on_change = false;
+    seq_undo_size = 0;
+    undo_clip_track_index = -1; // FIXME
+    new_seq_clip = false;
 }
 
 

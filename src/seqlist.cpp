@@ -225,7 +225,10 @@ seqlist::edit_seq( sequence *a_seq )
 void
 seqlist::copy_seq( sequence *a_seq )
 {
-    m_perf->push_track_undo(m_perf->get_track_index(a_seq->get_track()));
+    //m_perf->push_track_undo(m_perf->get_track_index(a_seq->get_track()));
+    m_perf->set_undo_clipboard(m_perf->get_track_index(a_seq->get_track()));
+    m_perf->new_seq_clip = true;
+
     track *a_track = a_seq->get_track();
     int seq_idx = a_track->new_sequence();
     sequence *new_seq = a_track->get_sequence(seq_idx);

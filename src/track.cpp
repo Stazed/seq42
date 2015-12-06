@@ -61,7 +61,7 @@ track::operator=(const track& other)
     lock();
     if(this != &other)
     {
-        free(); // FIXME this was causing double free on undo!!
+        //free(); // FIXME this was causing double free on undo!!
 
         m_name = other.m_name;
         m_bus = other.m_bus;
