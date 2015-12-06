@@ -50,6 +50,7 @@ track::free() { // FIXME on shutdown double free
     //printf("in free()\n");
     for(unsigned i=0; i<m_vector_sequence.size(); i++) {
         delete m_vector_sequence[i];
+        m_vector_sequence[i] = NULL;
     }
 }
 
@@ -60,7 +61,7 @@ track::operator=(const track& other)
     lock();
     if(this != &other)
     {
-        //free(); // FIXME this was causing double free on undo!!
+        free(); // FIXME this was causing double free on undo!!
 
         m_name = other.m_name;
         m_bus = other.m_bus;
@@ -80,10 +81,10 @@ track::operator=(const track& other)
 #if 0
         m_vector_sequence = other.m_vector_sequence;
         for(int i=0; i<m_vector_sequence.size(); i++) {
-            m_vector_sequence[i].set_track(this);
+            m_vector_sequence[i]->set_track(this);
         }
 #endif
-
+//#if 0
         //printf("copying sequences...\n");
         // Copy the other track's sequences.
         m_vector_sequence.clear();
@@ -94,6 +95,7 @@ track::operator=(const track& other)
             a_seq->set_track(this);
             m_vector_sequence.push_back(a_seq);
         }
+//#endif
     }
     unlock();
     return *this;
@@ -397,6 +399,7 @@ void track::delete_sequence( int a_num )
             i++;
         }
         delete a_seq;
+        a_seq = NULL;
         m_vector_sequence.erase(m_vector_sequence.begin()+a_num);
         set_dirty();
     }

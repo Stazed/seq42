@@ -248,6 +248,7 @@ perform::~perform()
     for (int i=0; i< c_max_track; i++ ){
         if ( is_active_track(i) ){
             delete m_tracks[i];
+            m_tracks[i] = NULL;
         }
     }
 }
@@ -463,6 +464,7 @@ void perform::delete_track( int a_num )
         set_active(a_num, false);
         m_tracks[a_num]->set_playing_off( );
         delete m_tracks[a_num];
+        m_tracks[a_num] = NULL;
     }
 }
 
