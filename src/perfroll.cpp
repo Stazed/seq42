@@ -922,9 +922,8 @@ perfroll::copy_sequence( track *a_track, trigger *a_trigger, sequence *a_seq )
 void
 perfroll::edit_sequence( track *a_track, trigger *a_trigger )
 {
-    //m_mainperf->set_undo_clipboard(a_track);
-    m_mainperf->m_undo_clipboard = *a_track;
-
+    //printf("in perfroll::edit_sequence before clip..\n");
+    m_mainperf->set_undo_clipboard(m_mainperf->get_track_index(a_track));
     sequence *a_seq = a_track->get_trigger_sequence(a_trigger);
     if(a_seq->get_editing()) {
         a_seq->set_raise(true);

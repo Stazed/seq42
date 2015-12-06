@@ -62,7 +62,7 @@ class perform
     track m_clipboard;
     track m_undo_tracks[c_max_track];
     track m_redo_tracks[c_max_track];
-//    track m_undo_clipboard;
+    track m_undo_clipboard;
 
     bool m_tracks_active[ c_max_track ];
     bool m_seqlist_open;
@@ -188,9 +188,10 @@ class perform
     void pop_track_redo(int a_track );
 
     void push_track_clipboard_undo(track a_track, int trk_idx);
-    track m_undo_clipboard;
-//    void set_undo_clipboard(track a_track);
-//    track get_undo_clipboard(void);
+    void set_undo_clipboard(int a_track);
+    track get_undo_clipboard(void);
+    int undo_size; // FIXME rename
+    int track_index; // FIXME
 
     void print();
 

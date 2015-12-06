@@ -702,8 +702,6 @@ void perform::pop_track_undo( int a_track )
         m_redo_tracks[m_redo_track_count] = *(get_track(a_track ));
         m_redo_track_count++;
 
-        //mastermidibus a_mmb;
-        //a_mmb = *get_master_midi_bus();
         delete_track(a_track); // must delete or junk leftover on copy - also for paste track undo
 
         if(m_undo_tracks[m_undo_track_count - 1].get_name() != name) // cross track, merge track
@@ -712,7 +710,6 @@ void perform::pop_track_undo( int a_track )
             *(get_track( a_track )) = m_undo_tracks[m_undo_track_count - 1];
             assert( m_tracks[a_track] );
             get_track(a_track)->set_song_mute(mute); // don't change mute status on undo
-            //get_track(a_track)->set_master_midi_bus(&a_mmb);
             get_track( a_track )->set_dirty();
         }
 
@@ -790,6 +787,7 @@ void perform::pop_track_redo( int a_track )
 void
 perform::push_track_clipboard_undo(track a_track, int trk_idx)
 {
+    //printf("in push_track_clipboard_undo...\n");
     m_undo_tracks[m_undo_track_count] = a_track;
     m_undo_track_count++;
 
@@ -801,23 +799,19 @@ perform::push_track_clipboard_undo(track a_track, int trk_idx)
     redo_vect.clear();
 }
 
-/*
 void
-perform::set_undo_clipboard(track a_track)
+perform::set_undo_clipboard(int a_track)
 {
-    m_undo_clipboard = a_track;
+    //printf("in set_undo_clipboard...\n");
+    m_undo_clipboard = *(m_tracks[a_track]);
+    track_index = a_track;
 }
 
 track
 perform::get_undo_clipboard(void)
 {
-    //track * a_track;
-    //*a_track = m_undo_clipboard;
     return m_undo_clipboard;
 }
-*/
-
-
 
 /* copies between L and R -> R */
 void perform::copy_triggers( )

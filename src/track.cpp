@@ -46,7 +46,7 @@ track::~track() {
 }
 
 void
-track::free() {
+track::free() { // FIXME on shutdown double free
     //printf("in free()\n");
     for(unsigned i=0; i<m_vector_sequence.size(); i++) {
         delete m_vector_sequence[i];
@@ -60,7 +60,7 @@ track::operator=(const track& other)
     lock();
     if(this != &other)
     {
-        free(); // FIXME this causes segfault on undo track copy to m_undo_clipboard
+        //free(); // FIXME this was causing double free on undo!!
 
         m_name = other.m_name;
         m_bus = other.m_bus;

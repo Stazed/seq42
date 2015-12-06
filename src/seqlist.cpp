@@ -213,10 +213,8 @@ seqlist::timeout( void )
 void
 seqlist::edit_seq( sequence *a_seq )
 {
-
-    //m_perf->set_undo_clipboard(*(m_perf->get_track(m_perf->get_track_index(a_seq->get_track()))));
-    m_perf->m_undo_clipboard = *(m_perf->get_track(m_perf->get_track_index(a_seq->get_track())));
-
+    //printf("in seqlist::edit_seq before clip...\n");
+    m_perf->set_undo_clipboard(m_perf->get_track_index(a_seq->get_track()));
     if(a_seq->get_editing()) {
         a_seq->set_raise(true);
     } else {
