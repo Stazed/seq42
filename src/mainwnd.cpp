@@ -486,11 +486,12 @@ mainwnd::timer_callback(  )
     else
         m_button_redo->set_sensitive(false);
 
-    if(m_mainperf->undo_size > 0)
+    if(m_mainperf->seq_undo_size > 0 || m_mainperf->new_seq_clip)
     {
         //printf("int mainwnd timer...\n");
-        m_mainperf->push_track_clipboard_undo(m_mainperf->get_undo_clipboard(),m_mainperf->track_index);
-        m_mainperf->undo_size = 0;
+        m_mainperf->push_track_clipboard_undo(m_mainperf->get_undo_clipboard(),m_mainperf->undo_clip_track_index);
+        m_mainperf->seq_undo_size = 0;
+        m_mainperf->new_seq_clip = false;
     }
     return true;
 }

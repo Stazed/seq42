@@ -262,7 +262,7 @@ class seqedit : public Gtk::Window
     ~seqedit();
 
     void set_undo_size(void);
-    int get_undo_size(void);
+    //int get_undo_size(void);
     bool on_delete_event(GdkEventAny *a_event);
     bool on_scroll_event(GdkEventScroll* a_ev);
     bool on_key_press_event(GdkEventKey* a_ev);

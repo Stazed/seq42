@@ -806,7 +806,7 @@ perform::set_undo_clipboard(int a_track)
 {
     //printf("in set_undo_clipboard...\n");
     m_undo_clipboard = *(m_tracks[a_track]);
-    track_index = a_track;
+    undo_clip_track_index = a_track;
 }
 
 track

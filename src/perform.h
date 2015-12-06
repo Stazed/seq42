@@ -190,8 +190,9 @@ class perform
     void push_track_clipboard_undo(track a_track, int trk_idx);
     void set_undo_clipboard(int a_track);
     track get_undo_clipboard(void);
-    int undo_size; // FIXME rename
-    int track_index; // FIXME
+    int seq_undo_size; // FIXME rename
+    int undo_clip_track_index; // FIXME
+    bool new_seq_clip;
 
     void print();
 

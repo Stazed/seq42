@@ -894,7 +894,10 @@ perfroll::on_size_request(GtkRequisition* a_r )
 void
 perfroll::new_sequence( track *a_track, trigger *a_trigger )
 {
-    m_mainperf->push_track_undo(m_mainperf->get_track_index(a_track));
+    //m_mainperf->push_track_undo(m_mainperf->get_track_index(a_track));
+    m_mainperf->set_undo_clipboard(m_mainperf->get_track_index(a_track));
+    m_mainperf->new_seq_clip = true;
+    //m_mainperf->track_index = m_mainperf->get_track_index(a_track); // for edit return
     int seq_idx = a_track->new_sequence();
     sequence *a_sequence = a_track->get_sequence(seq_idx);
     a_track->set_trigger_sequence(a_trigger, seq_idx);
@@ -904,7 +907,10 @@ perfroll::new_sequence( track *a_track, trigger *a_trigger )
 void
 perfroll::copy_sequence( track *a_track, trigger *a_trigger, sequence *a_seq )
 {
-    m_mainperf->push_track_undo(m_mainperf->get_track_index(a_track));
+    //m_mainperf->push_track_undo(m_mainperf->get_track_index(a_track));
+    m_mainperf->set_undo_clipboard(m_mainperf->get_track_index(a_track));
+    m_mainperf->new_seq_clip = true;
+
     bool same_track = a_track == a_seq->get_track();
     int seq_idx = a_track->new_sequence();
     sequence *a_sequence = a_track->get_sequence(seq_idx);
