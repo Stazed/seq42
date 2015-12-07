@@ -476,22 +476,28 @@ mainwnd::timer_callback(  )
         m_adjust_swing_amount16->set_value( m_mainperf->get_swing_amount16());
     }
 
-    if(m_mainperf->undo_vect.size() > 0)
+    if(m_mainperf->m_have_undo)
+    {
         m_button_undo->set_sensitive(true);
+        m_modified = true;
+    }
     else
+    {
         m_button_undo->set_sensitive(false);
-
-    if(m_mainperf->redo_vect.size() > 0)
+        m_modified = false;
+    }
+    if(m_mainperf->m_have_redo)
         m_button_redo->set_sensitive(true);
     else
         m_button_redo->set_sensitive(false);
 
-    if(m_mainperf->seq_undo_size > 0 || m_mainperf->new_seq_clip)
+    if(m_mainperf->undo_clip_track_index >= 0 && (m_mainperf->seq_undo_size > 0 || m_mainperf->new_seq_clip))
     {
         //printf("int mainwnd timer...\n");
         m_mainperf->push_track_clipboard_undo(m_mainperf->get_undo_clipboard(),m_mainperf->undo_clip_track_index);
         m_mainperf->seq_undo_size = 0;
         m_mainperf->new_seq_clip = false;
+        m_mainperf->undo_clip_track_index = -1;
     }
     return true;
 }
@@ -521,6 +527,7 @@ mainwnd::undo_type( void )
     default:
         break;
     }
+    m_mainperf->set_have_undo();
 }
 
 void
@@ -570,6 +577,7 @@ mainwnd::redo_type( void )
     default:
         break;
     }
+    m_mainperf->set_have_redo();
 }
 
 void

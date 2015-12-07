@@ -77,8 +77,10 @@ perform::perform()
     m_in_thread_launched = false;
     update_seqlist_on_change = false;
     seq_undo_size = 0;
-    undo_clip_track_index = -1; // FIXME
+    undo_clip_track_index = -1;
     new_seq_clip = false;
+    m_have_undo = false;
+    m_have_redo = false;
 }
 
 
@@ -582,6 +584,7 @@ void perform::push_trigger_undo( void )
     undo_vect.push_back(a_undo);
     redo_vect.clear();
     update_seqlist_on_change = true;
+    set_have_undo();
 }
 
 void perform::pop_trigger_undo( void )
@@ -601,6 +604,7 @@ void perform::pop_trigger_undo( void )
     undo_vect.pop_back();
     redo_vect.push_back(a_undo);
     update_seqlist_on_change = true;
+    set_have_redo();
 }
 
 void perform::pop_trigger_redo( void )
@@ -620,6 +624,7 @@ void perform::pop_trigger_redo( void )
     redo_vect.pop_back();
     undo_vect.push_back(a_undo);
     update_seqlist_on_change = true;
+    set_have_undo();
 }
 
 // single track items
@@ -635,6 +640,7 @@ void perform::push_trigger_undo( int a_track )
 
     undo_vect.push_back(a_undo);
     redo_vect.clear();
+    set_have_undo();
 }
 
 void perform::pop_trigger_undo( int a_track )
@@ -651,6 +657,7 @@ void perform::pop_trigger_undo( int a_track )
     undo_vect.pop_back();
     redo_vect.push_back(a_undo);
     update_seqlist_on_change = true;
+    set_have_redo();
 }
 
 void perform::pop_trigger_redo( int a_track )
@@ -667,6 +674,7 @@ void perform::pop_trigger_redo( int a_track )
     redo_vect.pop_back();
     undo_vect.push_back(a_undo);
     update_seqlist_on_change = true;
+    set_have_undo();
 }
 
 // tracks - merge sequence, cross track trigger, track cut, track paste
@@ -690,6 +698,7 @@ void perform::push_track_undo( int a_track )
 
     undo_vect.push_back(a_undo);
     redo_vect.clear();
+    set_have_undo();
 }
 
 void perform::pop_track_undo( int a_track )
@@ -739,6 +748,7 @@ void perform::pop_track_undo( int a_track )
     undo_vect.pop_back();
     redo_vect.push_back(a_undo);
     update_seqlist_on_change = true; // in case the seqlist is open
+    set_have_redo();
 }
 
 void perform::pop_track_redo( int a_track )
@@ -787,6 +797,7 @@ void perform::pop_track_redo( int a_track )
     redo_vect.pop_back();
     undo_vect.push_back(a_undo);
     update_seqlist_on_change = true; // in case the seqlist is open
+    set_have_undo();
 }
 
 void
@@ -802,6 +813,32 @@ perform::push_track_clipboard_undo(track a_track, int trk_idx)
 
     undo_vect.push_back(a_undo);
     redo_vect.clear();
+    set_have_undo();
+}
+
+void
+perform::set_have_undo( void )
+{
+    if(undo_vect.size() > 0)
+    {
+        m_have_undo = true;
+        printf("m_undo_track_count[%d]\n",m_undo_track_count);
+    }else
+    {
+        m_have_undo = false;
+    }
+}
+
+void
+perform::set_have_redo( void )
+{
+    if(redo_vect.size() > 0)
+    {
+        m_have_redo = true;
+    }else
+    {
+        m_have_redo = false;
+    }
 }
 
 void

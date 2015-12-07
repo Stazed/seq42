@@ -60,8 +60,8 @@ class perform
     /* vector of tracks */
     track *m_tracks[c_max_track];
     track m_clipboard;
-    track m_undo_tracks[c_max_track];
-    track m_redo_tracks[c_max_track];
+    track m_undo_tracks[c_max_track]; // FIXME how big??
+    track m_redo_tracks[c_max_track]; // FIXME how big??
     track m_undo_clipboard;
 
     bool m_tracks_active[ c_max_track ];
@@ -130,6 +130,8 @@ class perform
     /* used for undo/redo vector */
     vector<undo_type> undo_vect;
     vector<undo_type> redo_vect;
+    bool m_have_undo;
+    bool m_have_redo;
 
     bool is_running();
 
@@ -186,12 +188,15 @@ class perform
     void push_track_undo(int a_track );
     void pop_track_undo(int a_track );
     void pop_track_redo(int a_track );
-
     void push_track_clipboard_undo(track a_track, int trk_idx);
+
+    void set_have_undo( void );
+    void set_have_redo( void );
+
     void set_undo_clipboard(int a_track);
     track get_undo_clipboard(void);
-    int seq_undo_size; // FIXME rename
-    int undo_clip_track_index; // FIXME
+    int seq_undo_size;
+    int undo_clip_track_index;
     bool new_seq_clip;
 
     void print();

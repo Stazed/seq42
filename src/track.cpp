@@ -41,13 +41,13 @@ track::track()
 }
 
 track::~track() {
-    printf("in ~track()\n");
+    //printf("in ~track()\n");
     free();
 }
 
 void
 track::free() { // FIXME on shutdown double free
-    printf("in free()\n");
+    //printf("in free()\n");
     for(unsigned i=0; i<m_vector_sequence.size(); i++) {
         delete m_vector_sequence[i];
         m_vector_sequence[i] = NULL;
@@ -57,7 +57,7 @@ track::free() { // FIXME on shutdown double free
 track&
 track::operator=(const track& other)
 {
-    printf("in track::operator=()\n");
+    //printf("in track::operator=()\n");
     lock();
     if(this != &other)
     {

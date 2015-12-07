@@ -1555,6 +1555,9 @@ seqedit::on_delete_event(GdkEventAny *a_event)
 
     delete m_lfo_wnd;
     delete this;
+    m_seq = NULL;
+    m_mainperf = NULL;
+    m_lfo_wnd = NULL;
     return false;
 }
 

@@ -1095,7 +1095,10 @@ mastermidibus::init( )
 mastermidibus::~mastermidibus()
 {
     for ( int i=0; i<m_num_out_buses; i++ )
-	delete m_buses_out[i];
+	{
+	    delete m_buses_out[i];
+        m_buses_out[i] = NULL;
+    }
 #ifdef HAVE_LIBASOUND
     snd_seq_event_t ev;
 
