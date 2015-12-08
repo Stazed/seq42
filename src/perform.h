@@ -60,8 +60,8 @@ class perform
     /* vector of tracks */
     track *m_tracks[c_max_track];
     track m_clipboard;
-    track m_undo_tracks[c_max_track]; // FIXME how big??
-    track m_redo_tracks[c_max_track]; // FIXME how big??
+    track m_undo_tracks[200]; // FIXME how big?? & double free on exit
+    track m_redo_tracks[200]; // FIXME how big?? & double free on exit
     track m_undo_clipboard;
 
     bool m_tracks_active[ c_max_track ];
