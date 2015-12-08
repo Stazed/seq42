@@ -76,7 +76,7 @@ perform::perform()
     m_out_thread_launched = false;
     m_in_thread_launched = false;
     update_seqlist_on_change = false;
-    seq_undo_size = 0;
+    seq_have_undo = false;
     undo_clip_track_index = -1;
     new_seq_clip = false;
     m_have_undo = false;

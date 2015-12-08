@@ -195,7 +195,7 @@ class perform
 
     void set_undo_clipboard(int a_track);
     track get_undo_clipboard(void);
-    int seq_undo_size;
+    bool seq_have_undo;
     int undo_clip_track_index;
     bool new_seq_clip;
 

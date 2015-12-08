@@ -1535,15 +1535,9 @@ seqedit::~seqedit()
 void
 seqedit::set_undo_size(void)
 {
-    m_mainperf->seq_undo_size = m_seq->get_undo_size();
+    m_mainperf->seq_have_undo = m_seq->get_have_undo();
 }
-/*
-int
-seqedit::get_undo_size(void)
-{
-//    return undo_size;
-}
-*/
+
 bool
 seqedit::on_delete_event(GdkEventAny *a_event)
 {

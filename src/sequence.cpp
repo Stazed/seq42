@@ -34,6 +34,8 @@ sequence::sequence( )
     m_quanized_rec  = false;
     m_thru          = false;
 
+    m_undo_size     = 0;
+
     m_time_beats_per_measure = 4;
     m_time_beat_width = 4;
 
@@ -98,10 +100,16 @@ sequence::pop_redo( void )
     unlock();
 }
 
-unsigned
-sequence::get_undo_size (void)
+bool
+sequence::get_have_undo (void)
 {
-    return m_list_undo.size();
+    if(m_undo_size != m_list_undo.size())
+    {
+        m_undo_size = m_list_undo.size();
+        return true;
+    }
+
+    return false;
 }
 
 void
@@ -2129,26 +2137,31 @@ sequence::operator= (const sequence& a_rhs)
     lock();
 
     /* dont copy to self */
-    if (this != &a_rhs){
+    if (this != &a_rhs)
+    {
 
-	m_list_event   = a_rhs.m_list_event;
-	m_name         = a_rhs.m_name;
-	m_length       = a_rhs.m_length;
-	m_swing_mode   = a_rhs.m_swing_mode;
+        m_list_event   = a_rhs.m_list_event;
+        m_name         = a_rhs.m_name;
+        m_length       = a_rhs.m_length;
+        m_swing_mode   = a_rhs.m_swing_mode;
 
-	m_time_beats_per_measure = a_rhs.m_time_beats_per_measure;
-	m_time_beat_width = a_rhs.m_time_beat_width;
+        m_time_beats_per_measure = a_rhs.m_time_beats_per_measure;
+        m_time_beat_width = a_rhs.m_time_beat_width;
 
-	m_playing      = false;
+        m_playing      = false;
 
-	m_track      = a_rhs.m_track;
+        m_track      = a_rhs.m_track;
 
-	/* no notes are playing */
-	for (int i=0; i< c_midi_notes; i++ )
-	    m_playing_notes[i] = 0;
+        m_list_undo  = a_rhs.m_list_undo;
+        m_list_redo  = a_rhs.m_list_redo;
+        m_undo_size  = a_rhs.m_undo_size;
 
-	/* reset */
-	zero_markers( );
+        /* no notes are playing */
+        for (int i=0; i< c_midi_notes; i++ )
+            m_playing_notes[i] = 0;
+
+        /* reset */
+        zero_markers( );
 
     }
 
