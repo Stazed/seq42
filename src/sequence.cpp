@@ -33,8 +33,8 @@ sequence::sequence( )
     m_recording     = false;
     m_quanized_rec  = false;
     m_thru          = false;
-
-    m_undo_size     = 0;
+    m_have_undo     = false;
+    m_have_redo     = false;
 
     m_time_beats_per_measure = 4;
     m_time_beat_width = 4;
@@ -65,6 +65,7 @@ sequence::push_undo( void )
     lock();
     m_list_undo.push( m_list_event );
     unlock();
+    set_have_undo();
 }
 
 
@@ -82,6 +83,8 @@ sequence::pop_undo( void )
     }
 
     unlock();
+    set_have_undo();
+    set_have_redo();
 }
 
 void
@@ -98,18 +101,32 @@ sequence::pop_redo( void )
     }
 
     unlock();
+    set_have_redo();
+    set_have_undo();
 }
 
-bool
-sequence::get_have_undo (void)
+void
+sequence::set_have_undo( void )
 {
-    if(m_undo_size != m_list_undo.size())
+    if(m_list_undo.size() > 0)
     {
-        m_undo_size = m_list_undo.size();
-        return true;
+        m_have_undo = true;
+    }else
+    {
+        m_have_undo = false;
     }
+}
 
-    return false;
+void
+sequence::set_have_redo( void )
+{
+    if(m_list_redo.size() > 0)
+    {
+        m_have_redo = true;
+    }else
+    {
+        m_have_redo = false;
+    }
 }
 
 void
@@ -2154,7 +2171,8 @@ sequence::operator= (const sequence& a_rhs)
 
         m_list_undo  = a_rhs.m_list_undo;
         m_list_redo  = a_rhs.m_list_redo;
-        m_undo_size  = a_rhs.m_undo_size;
+        m_have_undo  = a_rhs.m_have_undo;
+        m_have_redo  = a_rhs.m_have_redo;
 
         /* no notes are playing */
         for (int i=0; i< c_midi_notes; i++ )

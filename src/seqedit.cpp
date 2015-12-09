@@ -1415,6 +1415,8 @@ seqedit::undo_callback( void )
 	m_seqtime_wid->redraw();
 	m_seqdata_wid->redraw();
 	m_seqevent_wid->redraw();
+
+	m_seq->set_dirty();
 }
 
 
@@ -1427,6 +1429,8 @@ seqedit::redo_callback( void )
 	m_seqtime_wid->redraw();
 	m_seqdata_wid->redraw();
 	m_seqevent_wid->redraw();
+
+	m_seq->set_dirty();
 }
 
 
@@ -1523,25 +1527,35 @@ seqedit::timeout( void )
     // FIXME: ick
     set_track_info();
 
+    if(m_seq->m_have_undo)
+    {
+        m_button_undo->set_sensitive(true);
+        //m_modified = true; // FIXME for a_perf
+    }
+    else
+    {
+        m_button_undo->set_sensitive(false);
+        //m_modified = false; // FIXME for a_perf
+    }
+    if(m_seq->m_have_redo)
+        m_button_redo->set_sensitive(true);
+    else
+        m_button_redo->set_sensitive(false);
+
+
+
+
     return true;
 }
-
 
 seqedit::~seqedit()
 {
     //m_seq->set_editing( false );
 }
 
-void
-seqedit::set_undo_size(void)// FIXME wont work for mutiple sequences
-{
-    m_mainperf->seq_have_undo = m_seq->get_have_undo();
-}
-
 bool
 seqedit::on_delete_event(GdkEventAny *a_event)
 {
-    set_undo_size();// FIXME wont work for mutiple sequences
     //printf( "seqedit::on_delete_event()\n" );
     m_seq->set_recording( false );
     m_mainperf->get_master_midi_bus()->set_sequence_input( false, NULL );

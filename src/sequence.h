@@ -59,8 +59,6 @@ class sequence
     stack < list < event > >m_list_undo;
     stack < list < event > >m_list_redo;
 
-    unsigned m_undo_size;
-
     /* markers */
     list < event >::iterator m_iterator_play;
     list < event >::iterator m_iterator_draw;
@@ -136,14 +134,20 @@ class sequence
      ~sequence ();
 
 
+    bool m_have_undo;
+    bool m_have_redo;
+
     void push_undo (void);
     void pop_undo (void);
     void pop_redo (void);
-    bool get_have_undo(void);
 
     //
     //  Gets and Sets
     //
+
+    void set_have_undo( void );
+    void set_have_redo( void );
+
     void set_track (track *a_track);
     track *get_track (void);
 

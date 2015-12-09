@@ -707,7 +707,14 @@ void perform::pop_track_undo( int a_track )
             return;
 
         assert( m_tracks[a_track] );
+
+        /* The track edit items should not be changed on redo/undo */
         bool mute = m_tracks[a_track]->get_song_mute();
+        std::string name = m_tracks[a_track]->get_name();
+        unsigned char midi_channel = m_tracks[a_track]->get_midi_channel();
+        char midi_bus = m_tracks[a_track]->get_midi_bus();
+        bool transpose = m_tracks[a_track]->get_transposable();
+        /* end track edit items */
 
         m_redo_tracks[m_redo_track_count] = *(get_track(a_track ));
 
@@ -718,7 +725,15 @@ void perform::pop_track_undo( int a_track )
             new_track( a_track );
             *(get_track( a_track )) = m_undo_tracks[m_undo_track_count - 1];
             assert( m_tracks[a_track] );
-            get_track(a_track)->set_song_mute(mute); // don't change mute status on undo
+
+            /* reset the track edit items */
+            get_track(a_track)->set_song_mute(mute);
+            get_track(a_track)->set_name(name);
+            get_track(a_track)->set_midi_channel(midi_channel);
+            get_track(a_track)->set_midi_bus(midi_bus);
+            get_track(a_track)->set_transposable(transpose);
+            /* end reset track items */
+
             get_track( a_track )->set_dirty();
         }
     }else // cut track - set NULL name to redo, create new track for undo
@@ -752,7 +767,14 @@ void perform::pop_track_redo( int a_track )
             return;
 
         assert( m_tracks[a_track] );
+
+        /* The track edit items should not be changed on redo/undo */
         bool mute = m_tracks[a_track]->get_song_mute();
+        std::string name = m_tracks[a_track]->get_name();
+        unsigned char midi_channel = m_tracks[a_track]->get_midi_channel();
+        char midi_bus = m_tracks[a_track]->get_midi_bus();
+        bool transpose = m_tracks[a_track]->get_transposable();
+        /* end track edit items */
 
         m_undo_tracks[m_undo_track_count] = *(get_track(a_track ));
 
@@ -762,7 +784,15 @@ void perform::pop_track_redo( int a_track )
         {
             new_track( a_track );
             *(get_track( a_track )) = m_redo_tracks[m_redo_track_count - 1];
-            get_track(a_track)->set_song_mute(mute); // don't change mute status on undo
+
+            /* reset the track edit items */
+            get_track(a_track)->set_song_mute(mute);
+            get_track(a_track)->set_name(name);
+            get_track(a_track)->set_midi_channel(midi_channel);
+            get_track(a_track)->set_midi_bus(midi_bus);
+            get_track(a_track)->set_transposable(transpose);
+            /* end reset track items */
+
             get_track( a_track )->set_dirty();
         }
 

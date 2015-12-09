@@ -217,14 +217,13 @@ class seqedit : public Gtk::Window
     void thru_change_callback( void );
     void undo_callback( void );
     void redo_callback( void );
-//    int undo_size;
 
     void adj_callback_vel( );
 
     void set_data_type( unsigned char a_status,
 			unsigned char a_control = 0 );
 
-    void update_all_windows( );
+    void update_all_windows( ); // FIXME not used??
 
     void fill_top_bar( void );
     void create_menus( void );
@@ -261,8 +260,6 @@ class seqedit : public Gtk::Window
 
     ~seqedit();
 
-    void set_undo_size(void);
-    //int get_undo_size(void);
     bool on_delete_event(GdkEventAny *a_event);
     bool on_scroll_event(GdkEventScroll* a_ev);
     bool on_key_press_event(GdkEventKey* a_ev);
