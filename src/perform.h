@@ -60,9 +60,8 @@ class perform
     /* vector of tracks */
     track *m_tracks[c_max_track];
     track m_clipboard;
-    track m_undo_tracks[200]; // FIXME how big?? & double free on exit
-    track m_redo_tracks[200]; // FIXME how big?? & double free on exit
-    track m_undo_clipboard;
+    track m_undo_tracks[200]; // FIXME how big??
+    track m_redo_tracks[200]; // FIXME how big??
 
     bool m_tracks_active[ c_max_track ];
     bool m_seqlist_open;
@@ -188,16 +187,10 @@ class perform
     void push_track_undo(int a_track );
     void pop_track_undo(int a_track );
     void pop_track_redo(int a_track );
-    void push_track_clipboard_undo(track a_track, int trk_idx);
 
     void set_have_undo( void );
     void set_have_redo( void );
-
-    void set_undo_clipboard(int a_track);
-    track get_undo_clipboard(void);
-    bool seq_have_undo;
-    int undo_clip_track_index;
-    bool new_seq_clip;
+    bool seq_have_undo; // FIXME
 
     void print();
 

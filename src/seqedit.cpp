@@ -1533,7 +1533,7 @@ seqedit::~seqedit()
 }
 
 void
-seqedit::set_undo_size(void)
+seqedit::set_undo_size(void)// FIXME wont work for mutiple sequences
 {
     m_mainperf->seq_have_undo = m_seq->get_have_undo();
 }
@@ -1541,7 +1541,7 @@ seqedit::set_undo_size(void)
 bool
 seqedit::on_delete_event(GdkEventAny *a_event)
 {
-    set_undo_size();
+    set_undo_size();// FIXME wont work for mutiple sequences
     //printf( "seqedit::on_delete_event()\n" );
     m_seq->set_recording( false );
     m_mainperf->get_master_midi_bus()->set_sequence_input( false, NULL );

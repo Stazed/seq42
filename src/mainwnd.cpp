@@ -479,25 +479,18 @@ mainwnd::timer_callback(  )
     if(m_mainperf->m_have_undo)
     {
         m_button_undo->set_sensitive(true);
-        m_modified = true;
+        m_modified = true; // FIXME for m_mainperf->seq_have_undo
     }
     else
     {
         m_button_undo->set_sensitive(false);
-        m_modified = false;
+        m_modified = false; // FIXME for m_mainperf->seq_have_undo
     }
     if(m_mainperf->m_have_redo)
         m_button_redo->set_sensitive(true);
     else
         m_button_redo->set_sensitive(false);
 
-    if(m_mainperf->seq_have_undo || m_mainperf->new_seq_clip)
-    {
-        m_mainperf->push_track_clipboard_undo(m_mainperf->get_undo_clipboard(),m_mainperf->undo_clip_track_index);
-        m_mainperf->seq_have_undo = false;
-        m_mainperf->new_seq_clip = false;
-        m_mainperf->undo_clip_track_index = -1;
-    }
     return true;
 }
 

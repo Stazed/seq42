@@ -76,9 +76,7 @@ perform::perform()
     m_out_thread_launched = false;
     m_in_thread_launched = false;
     update_seqlist_on_change = false;
-    seq_have_undo = false;
-    undo_clip_track_index = -1;
-    new_seq_clip = false;
+    seq_have_undo = false; // FIXME
     m_have_undo = false;
     m_have_redo = false;
 }
@@ -792,22 +790,6 @@ void perform::pop_track_redo( int a_track )
 }
 
 void
-perform::push_track_clipboard_undo(track a_track, int trk_idx)
-{
-    //printf("in push_track_clipboard_undo...\n");
-    m_undo_tracks[m_undo_track_count] = a_track;
-    m_undo_track_count++;
-
-    undo_type a_undo;
-    a_undo.track = trk_idx;
-    a_undo.type = c_undo_track;
-
-    undo_vect.push_back(a_undo);
-    redo_vect.clear();
-    set_have_undo();
-}
-
-void
 perform::set_have_undo( void )
 {
     if(undo_vect.size() > 0)
@@ -830,20 +812,6 @@ perform::set_have_redo( void )
     {
         m_have_redo = false;
     }
-}
-
-void
-perform::set_undo_clipboard(int a_track)
-{
-    //printf("in set_undo_clipboard...\n");
-    m_undo_clipboard = *(m_tracks[a_track]);
-    undo_clip_track_index = a_track;
-}
-
-track
-perform::get_undo_clipboard(void)
-{
-    return m_undo_clipboard;
 }
 
 /* copies between L and R -> R */
