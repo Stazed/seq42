@@ -182,7 +182,6 @@ seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
     unsigned char d0,d1;
 
     int event_x;
-//    int event_width;
     int event_height;
 
     bool selected;
@@ -214,7 +213,6 @@ seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
             /* turn into screen corrids */
 
             event_x = tick / m_zoom;
-            //event_width  = c_data_x;
 
             /* generate the value */
             event_height = d1;

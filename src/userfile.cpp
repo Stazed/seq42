@@ -37,16 +37,11 @@ bool
 userfile::parse( perform *a_perf )
 {
 
-    /* file size */
-    int file_size = 0;
-
     /* open binary file */
     ifstream file ( m_name.c_str(), ios::in | ios::ate );
 
     if( ! file.is_open() )
         return false;
-    
-    file_size = file.tellg();
 
     /* run to start */
     file.seekg( 0, ios::beg );
@@ -55,7 +50,7 @@ userfile::parse( perform *a_perf )
     int buses = 0;
     sscanf( m_line, "%d", &buses );
     char bus_num[4];
-    
+
     for ( int i=0; i<buses; i++ )
     {
         snprintf(bus_num, sizeof(bus_num), "%d", i);
@@ -92,7 +87,7 @@ userfile::parse( perform *a_perf )
         int cc=0;
 
         char cc_name[1024];
-        
+
         sscanf( m_line, "%d", &ccs );
         for ( int j=0; j<ccs; j++ )
         {
@@ -104,14 +99,14 @@ userfile::parse( perform *a_perf )
             // printf( "[%d] %s\n", cc, cc_name );
         }
     }
-    
+
     file.close();
 
     return true;
 }
 
 
-bool 
+bool
 userfile::write( perform *a_perf  )
 {
     return false;

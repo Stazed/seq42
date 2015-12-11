@@ -39,7 +39,10 @@ perform::perform()
     for (int i=0; i< c_max_track; i++) {
 
         m_tracks[i] = NULL;
-        m_tracks_active[i] = false;
+        m_tracks_active[i]      = false;
+        m_was_active_edit[i]    = false;
+        m_was_active_perf[i]    = false;
+        m_was_active_names[i]   = false;
     }
 
     m_seqlist_open = false;
@@ -73,6 +76,9 @@ perform::perform()
 
     m_out_thread_launched = false;
     m_in_thread_launched = false;
+
+    m_playback_mode = false;
+
     update_seqlist_on_change = false;
     m_have_undo = false;
     m_have_redo = false;
