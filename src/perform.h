@@ -62,6 +62,8 @@ class perform
     track m_clipboard;
     track m_undo_tracks[200]; // FIXME how big??
     track m_redo_tracks[200]; // FIXME how big??
+    int m_undo_track_count;
+    int m_redo_track_count;
 
     bool m_tracks_active[ c_max_track ];
     bool m_seqlist_open;
@@ -131,6 +133,7 @@ class perform
     vector<undo_type> redo_vect;
     bool m_have_undo;
     bool m_have_redo;
+    bool m_have_modified;
 
     bool is_running();
 
@@ -190,7 +193,7 @@ class perform
 
     void set_have_undo( void );
     void set_have_redo( void );
-    bool seq_have_undo; // FIXME
+    void set_have_modified(bool m_modified);
 
     void print();
 

@@ -1415,7 +1415,6 @@ seqedit::undo_callback( void )
 	m_seqtime_wid->redraw();
 	m_seqdata_wid->redraw();
 	m_seqevent_wid->redraw();
-
 	m_seq->set_dirty();
 }
 
@@ -1429,7 +1428,6 @@ seqedit::redo_callback( void )
 	m_seqtime_wid->redraw();
 	m_seqdata_wid->redraw();
 	m_seqevent_wid->redraw();
-
 	m_seq->set_dirty();
 }
 
@@ -1530,20 +1528,15 @@ seqedit::timeout( void )
     if(m_seq->m_have_undo)
     {
         m_button_undo->set_sensitive(true);
-        //m_modified = true; // FIXME for a_perf
     }
     else
     {
         m_button_undo->set_sensitive(false);
-        //m_modified = false; // FIXME for a_perf
     }
     if(m_seq->m_have_redo)
         m_button_redo->set_sensitive(true);
     else
         m_button_redo->set_sensitive(false);
-
-
-
 
     return true;
 }
@@ -1556,6 +1549,10 @@ seqedit::~seqedit()
 bool
 seqedit::on_delete_event(GdkEventAny *a_event)
 {
+    if(m_seq->m_have_undo)
+    {
+        m_mainperf->set_have_modified(true);
+    }
     //printf( "seqedit::on_delete_event()\n" );
     m_seq->set_recording( false );
     m_mainperf->get_master_midi_bus()->set_sequence_input( false, NULL );
@@ -1563,9 +1560,6 @@ seqedit::on_delete_event(GdkEventAny *a_event)
 
     delete m_lfo_wnd;
     delete this;
-    m_seq = NULL;
-    m_mainperf = NULL;
-    m_lfo_wnd = NULL;
     return false;
 }
 

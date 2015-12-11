@@ -477,19 +477,17 @@ mainwnd::timer_callback(  )
     }
 
     if(m_mainperf->m_have_undo)
-    {
         m_button_undo->set_sensitive(true);
-        m_modified = true; // FIXME for m_mainperf->seq_have_undo
-    }
     else
-    {
         m_button_undo->set_sensitive(false);
-        m_modified = false; // FIXME for m_mainperf->seq_have_undo
-    }
+
     if(m_mainperf->m_have_redo)
         m_button_redo->set_sensitive(true);
     else
         m_button_redo->set_sensitive(false);
+
+    if(m_mainperf->m_have_modified)
+        m_modified = true;
 
     return true;
 }
@@ -961,6 +959,7 @@ bool mainwnd::save_file()
         errdialog.run();
     }
     m_modified = !result;
+    m_mainperf->set_have_modified(!result);
     return result;
 }
 

@@ -31,8 +31,6 @@
 //For keys
 #include <gtkmm/accelkey.h>
 
-static int m_undo_track_count = 0;
-static int m_redo_track_count = 0;
 
 using namespace Gtk;
 
@@ -76,9 +74,11 @@ perform::perform()
     m_out_thread_launched = false;
     m_in_thread_launched = false;
     update_seqlist_on_change = false;
-    seq_have_undo = false; // FIXME
     m_have_undo = false;
     m_have_redo = false;
+    m_have_modified = false;
+    m_undo_track_count = 0;
+    m_redo_track_count = 0;
 }
 
 
@@ -825,6 +825,7 @@ perform::set_have_undo( void )
     if(undo_vect.size() > 0)
     {
         m_have_undo = true;
+        set_have_modified(true);
         printf("m_undo_track_count[%d]\n",m_undo_track_count);
     }else
     {
@@ -842,6 +843,12 @@ perform::set_have_redo( void )
     {
         m_have_redo = false;
     }
+}
+
+void
+perform::set_have_modified(bool m_modified)
+{
+    m_have_modified = m_modified;
 }
 
 /* copies between L and R -> R */
