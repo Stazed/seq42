@@ -55,13 +55,32 @@ trackmenu::popup_menu( void )
                     mem_fun(*this, &trackmenu::trk_new)));
     }
 
-    if ( m_mainperf->is_active_track( m_current_trk )) {
+    if ( m_mainperf->is_active_track( m_current_trk ))
+    {
         m_menu->items().push_back(MenuElem("Edit", mem_fun(*this,&trackmenu::trk_edit)));
         m_menu->items().push_back(MenuElem("New sequence", mem_fun(*this,&trackmenu::new_sequence)));
         if(! m_mainperf->is_track_in_edit( m_current_trk ))
         {
             m_menu->items().push_back(MenuElem("Cut", mem_fun(*this,&trackmenu::trk_cut)));
         }
+
+        if( m_mainperf->get_track( m_current_trk ) != NULL)
+        {
+            bool can_we_insert = true;
+
+            for(int i = 0; i < c_max_track; i++)
+            {
+                if( (m_mainperf->get_track(i) != NULL) &&
+                    m_mainperf->is_track_in_edit(i) )
+                {
+                    can_we_insert = false; // don't allow
+                }
+            }
+            if(can_we_insert)
+                m_menu->items().push_back(MenuElem("Insert",
+                       sigc::bind(mem_fun(*this,&trackmenu::trk_insert),m_current_trk)));
+        }
+
         m_menu->items().push_back(MenuElem("Copy", mem_fun(*this,&trackmenu::trk_copy)));
 
         Menu *merge_seq_menu = NULL;
@@ -163,6 +182,13 @@ trackmenu::trk_new(){
 
     }
 }
+
+// insert empty track at location
+void
+trackmenu::trk_insert(int a_track_location){
+
+}
+
 
 // Copies selected to clipboard track */
 void
