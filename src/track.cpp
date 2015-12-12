@@ -38,7 +38,7 @@ track::track()
     m_dirty_seqlist = true;
 
     m_default_velocity = 100;
-    m_is_NULL_undo = false;
+    m_is_NULL = false;
 }
 
 track::~track() {
@@ -74,7 +74,7 @@ track::operator=(const track& other)
         m_dirty_perf = false;
         m_dirty_names = false;
         m_dirty_seqlist = false;
-        m_is_NULL_undo = other.m_is_NULL_undo;
+        m_is_NULL = other.m_is_NULL;
 
         m_list_trigger = other.m_list_trigger;
         m_list_trigger_undo = other.m_list_trigger_undo;

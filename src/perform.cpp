@@ -693,7 +693,7 @@ void perform::push_track_undo( int a_track )
     }
     else // track paste - set name to null for later delete
     {
-        m_undo_tracks[m_undo_track_count].m_is_NULL_undo = true;
+        m_undo_tracks[m_undo_track_count].m_is_NULL = true;
         m_undo_track_count++;
     }
     undo_type a_undo;
@@ -726,7 +726,7 @@ void perform::pop_track_undo( int a_track )
 
         delete_track(a_track); // must delete or junk leftover on copy - also for paste track undo
 
-        if(!m_undo_tracks[m_undo_track_count - 1].m_is_NULL_undo) // cross track, merge track
+        if(!m_undo_tracks[m_undo_track_count - 1].m_is_NULL) // cross track, merge track
         {
             new_track( a_track );
             *(get_track( a_track )) = m_undo_tracks[m_undo_track_count - 1];
@@ -744,7 +744,7 @@ void perform::pop_track_undo( int a_track )
         }
     }else // cut track - set NULL name to redo, create new track for undo
     {
-        m_redo_tracks[m_redo_track_count].m_is_NULL_undo = true;
+        m_redo_tracks[m_redo_track_count].m_is_NULL = true;
 
         new_track( a_track  );
         assert( m_tracks[a_track] );
@@ -786,7 +786,7 @@ void perform::pop_track_redo( int a_track )
 
         delete_track(a_track); // must delete or junk leftover on copy - also for cut track redo
 
-        if(!m_redo_tracks[m_redo_track_count - 1].m_is_NULL_undo) // cross track, merge track
+        if(!m_redo_tracks[m_redo_track_count - 1].m_is_NULL) // cross track, merge track
         {
             new_track( a_track );
             *(get_track( a_track )) = m_redo_tracks[m_redo_track_count - 1];
@@ -804,7 +804,7 @@ void perform::pop_track_redo( int a_track )
 
     }else  // paste track - set NULL to undo, create track for redo
     {
-        m_undo_tracks[m_undo_track_count].m_is_NULL_undo = true;
+        m_undo_tracks[m_undo_track_count].m_is_NULL = true;
 
         new_track( a_track  );
         assert( m_tracks[a_track] );

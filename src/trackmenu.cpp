@@ -187,6 +187,43 @@ trackmenu::trk_new(){
 void
 trackmenu::trk_insert(int a_track_location){
 
+    // first copy all tracks to m_insert_clipboard[];
+    for(int i = 0; i < c_max_track; i++)
+    {
+        if ( m_mainperf->is_active_track(i) == true )
+        {
+            m_mainperf->m_insert_clipboard[i] = *m_mainperf->get_track(i);
+        }else
+        {
+            m_mainperf->m_insert_clipboard[i].m_is_NULL = true;
+        }
+    }
+
+    // push to undo here
+
+    m_mainperf->delete_track(a_track_location); // the new insert blank track
+
+    for(int i = a_track_location + 1; i < c_max_track; i++)//now delete and replace the rest offset
+    {
+        if ( m_mainperf->is_active_track(i) == true )
+        {
+            m_mainperf->delete_track(i);
+            if(!m_mainperf->m_insert_clipboard[i-1].m_is_NULL)
+            {
+                m_mainperf->new_track(i);
+                *m_mainperf->get_track(i) = m_mainperf->m_insert_clipboard[i-1];
+                m_mainperf->get_track(i)->set_dirty();
+            }
+        }else
+        {
+            if(!m_mainperf->m_insert_clipboard[i-1].m_is_NULL)
+            {
+                m_mainperf->new_track(i);
+                *m_mainperf->get_track(i) = m_mainperf->m_insert_clipboard[i-1];
+                m_mainperf->get_track(i)->set_dirty();
+            }
+        }
+    }   // the last track will get lost????!!!!!
 }
 
 

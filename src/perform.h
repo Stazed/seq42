@@ -131,6 +131,7 @@ class perform
     /* used for undo/redo vector */
     vector<undo_type> undo_vect;
     vector<undo_type> redo_vect;
+    track m_insert_clipboard[c_max_track];
     bool m_have_undo;
     bool m_have_redo;
     bool m_have_modified;

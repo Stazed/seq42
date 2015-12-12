@@ -94,7 +94,7 @@ class track
     track& operator=(const track& other);
     void free ();
 
-    bool m_is_NULL_undo;
+    bool m_is_NULL;
 
     void push_trigger_undo (void);
     void pop_trigger_undo (void);
