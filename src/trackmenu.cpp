@@ -77,7 +77,7 @@ trackmenu::popup_menu( void )
                 }
             }
             if(can_we_insert)
-                m_menu->items().push_back(MenuElem("Insert",
+                m_menu->items().push_back(MenuElem("Insert empty track",
                        sigc::bind(mem_fun(*this,&trackmenu::trk_insert),m_current_trk)));
         }
 
@@ -192,14 +192,14 @@ trackmenu::trk_insert(int a_track_location){
     {
         if ( m_mainperf->is_active_track(i) == true )
         {
-            m_mainperf->m_insert_clipboard[i] = *m_mainperf->get_track(i);
+            m_mainperf->m_tracks_clipboard[i] = *m_mainperf->get_track(i);
         }else
         {
-            m_mainperf->m_insert_clipboard[i].m_is_NULL = true;
+            m_mainperf->m_tracks_clipboard[i].m_is_NULL = true;
         }
     }
 
-    // push to undo here
+    m_mainperf->push_perf_undo();
 
     m_mainperf->delete_track(a_track_location); // the new insert blank track
 
@@ -208,18 +208,18 @@ trackmenu::trk_insert(int a_track_location){
         if ( m_mainperf->is_active_track(i) == true )
         {
             m_mainperf->delete_track(i);
-            if(!m_mainperf->m_insert_clipboard[i-1].m_is_NULL)
+            if(!m_mainperf->m_tracks_clipboard[i-1].m_is_NULL)
             {
                 m_mainperf->new_track(i);
-                *m_mainperf->get_track(i) = m_mainperf->m_insert_clipboard[i-1];
+                *m_mainperf->get_track(i) = m_mainperf->m_tracks_clipboard[i-1];
                 m_mainperf->get_track(i)->set_dirty();
             }
         }else
         {
-            if(!m_mainperf->m_insert_clipboard[i-1].m_is_NULL)
+            if(!m_mainperf->m_tracks_clipboard[i-1].m_is_NULL)
             {
                 m_mainperf->new_track(i);
-                *m_mainperf->get_track(i) = m_mainperf->m_insert_clipboard[i-1];
+                *m_mainperf->get_track(i) = m_mainperf->m_tracks_clipboard[i-1];
                 m_mainperf->get_track(i)->set_dirty();
             }
         }

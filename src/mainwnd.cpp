@@ -511,6 +511,7 @@ mainwnd::undo_type( void )
         break;
     case c_undo_perf:   // TODO
         printf("Undo Perf\n");
+        undo_perf();
         break;
     case c_undo_collapse_expand:
         undo_trigger();
@@ -542,6 +543,13 @@ mainwnd::undo_track( int a_track )
 }
 
 void
+mainwnd::undo_perf( void )
+{
+    m_mainperf->pop_perf_undo();
+    m_perfroll->queue_draw();
+}
+
+void
 mainwnd::redo_type( void )
 {
     char type = '\0';
@@ -560,6 +568,7 @@ mainwnd::redo_type( void )
         break;
     case c_undo_perf:   // TODO
         printf("Redo Perf\n");
+        redo_perf();
         break;
     case c_undo_collapse_expand:
         redo_trigger();
@@ -587,8 +596,14 @@ mainwnd::redo_trigger( void ) // collapse and expand
 void
 mainwnd::redo_track( int a_track )
 {
-    //printf("Redo Track\n");
     m_mainperf->pop_track_redo(a_track);
+    m_perfroll->queue_draw();
+}
+
+void
+mainwnd::redo_perf()
+{
+    m_mainperf->pop_perf_redo();
     m_perfroll->queue_draw();
 }
 

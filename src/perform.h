@@ -54,6 +54,12 @@ struct undo_type
     int track;
 };
 
+struct undo_redo_perf_tracks
+{
+    //int num;
+    track perf_tracks[c_max_track];
+};
+
 class perform
 {
  private:
@@ -64,6 +70,11 @@ class perform
     track m_redo_tracks[200]; // FIXME how big??
     int m_undo_track_count;
     int m_redo_track_count;
+
+    undo_redo_perf_tracks undo_perf[40]; // FIXME how big
+    undo_redo_perf_tracks redo_perf[40]; // FIXME how big
+    int m_undo_perf_count;
+    int m_redo_perf_count;
 
     bool m_tracks_active[ c_max_track ];
     bool m_seqlist_open;
@@ -131,7 +142,9 @@ class perform
     /* used for undo/redo vector */
     vector<undo_type> undo_vect;
     vector<undo_type> redo_vect;
-    track m_insert_clipboard[c_max_track];
+
+    track m_tracks_clipboard[c_max_track];
+
     bool m_have_undo;
     bool m_have_redo;
     bool m_have_modified;
@@ -187,10 +200,14 @@ class perform
     void push_trigger_undo( int a_track );
     void pop_trigger_undo( int a_track );
     void pop_trigger_redo( int a_track );
-     // tracks - merge sequence, cross track trigger, track cut, track paste
+     // tracks - merge sequence, cross track trigger, track cut, track paste, sequence adds & deletes
     void push_track_undo(int a_track );
     void pop_track_undo(int a_track );
     void pop_track_redo(int a_track );
+    // track insert, track squash, midi import
+    void push_perf_undo( void );
+    void pop_perf_undo( void );
+    void pop_perf_redo( void );
 
     void set_have_undo( void );
     void set_have_redo( void );

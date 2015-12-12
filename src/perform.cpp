@@ -85,6 +85,8 @@ perform::perform()
     m_have_modified = false;
     m_undo_track_count = 0;
     m_redo_track_count = 0;
+    m_undo_perf_count = 0;
+    m_redo_perf_count = 0;
 }
 
 
@@ -589,6 +591,7 @@ void perform::push_trigger_undo( void )
     redo_vect.clear();
     update_seqlist_on_change = true;
     set_have_undo();
+    set_have_redo();
 }
 
 void perform::pop_trigger_undo( void )
@@ -644,7 +647,9 @@ void perform::push_trigger_undo( int a_track )
 
     undo_vect.push_back(a_undo);
     redo_vect.clear();
+    update_seqlist_on_change = true;
     set_have_undo();
+    set_have_redo();
 }
 
 void perform::pop_trigger_undo( int a_track )
@@ -703,6 +708,7 @@ void perform::push_track_undo( int a_track )
     undo_vect.push_back(a_undo);
     redo_vect.clear();
     set_have_undo();
+    set_have_redo();
 }
 
 void perform::pop_track_undo( int a_track )
@@ -824,6 +830,113 @@ void perform::pop_track_redo( int a_track )
     update_seqlist_on_change = true; // in case the seqlist is open
     set_have_undo();
 }
+
+
+void
+perform::push_perf_undo( void )
+{
+    for(int i = 0; i < c_max_track; i++)
+    {
+        undo_perf[m_undo_perf_count].perf_tracks[i] = m_tracks_clipboard[i];
+    }
+    m_undo_perf_count++;
+
+    undo_type a_undo;
+    a_undo.track = -1;
+    a_undo.type = c_undo_perf;
+
+    undo_vect.push_back(a_undo);
+    redo_vect.clear();
+    set_have_undo();
+    set_have_redo();
+}
+
+void
+perform::pop_perf_undo( void )
+{
+    for(int i = 0; i < c_max_track; i++)//now delete and replace
+    {
+        if ( is_active_track(i) == true )
+        {
+            redo_perf[m_redo_perf_count].perf_tracks[i] = *get_track(i);// push redo
+
+            delete_track(i);
+            if(!undo_perf[m_undo_perf_count-1].perf_tracks[i].m_is_NULL)
+            {
+                new_track(i);
+                *get_track(i) = undo_perf[m_undo_perf_count-1].perf_tracks[i];
+                get_track(i)->set_dirty();
+            }
+        }else
+        {
+            redo_perf[m_redo_perf_count].perf_tracks[i].m_is_NULL = true; // push redo
+
+            if(!undo_perf[m_undo_perf_count-1].perf_tracks[i].m_is_NULL)
+            {
+                //redo_perf[m_redo_perf_count].perf_tracks[i].m_is_NULL = true; // push redo
+
+                new_track(i);
+                *get_track(i) = undo_perf[m_undo_perf_count-1].perf_tracks[i];
+                get_track(i)->set_dirty();
+            }
+        }
+    }
+
+    m_undo_perf_count--;
+    m_redo_perf_count++;
+
+    undo_type a_undo;
+    a_undo.track = -1;
+    a_undo.type = c_undo_perf;
+
+    undo_vect.pop_back();
+    redo_vect.push_back(a_undo);
+    update_seqlist_on_change = true; // in case the seqlist is open
+    set_have_redo();
+}
+
+void
+perform::pop_perf_redo( void )
+{
+   for(int i = 0; i < c_max_track; i++)//now delete and replace
+    {
+        if ( is_active_track(i) == true )
+        {
+            undo_perf[m_undo_perf_count].perf_tracks[i] = *get_track(i); // push undo
+
+            delete_track(i);
+            if(!redo_perf[m_redo_perf_count-1].perf_tracks[i].m_is_NULL)
+            {
+                new_track(i);
+                *get_track(i) = redo_perf[m_redo_perf_count-1].perf_tracks[i];
+                get_track(i)->set_dirty();
+            }
+        }else
+        {
+            undo_perf[m_undo_perf_count].perf_tracks[i].m_is_NULL = true; // push undo
+
+            if(!redo_perf[m_redo_perf_count-1].perf_tracks[i].m_is_NULL)
+            {
+                new_track(i);
+                *get_track(i) = redo_perf[m_redo_perf_count-1].perf_tracks[i];
+                get_track(i)->set_dirty();
+            }
+        }
+    }
+
+    m_undo_perf_count++;
+    m_redo_perf_count--;
+
+    undo_type a_undo;
+    a_undo.track = -1;
+    a_undo.type = c_undo_perf;
+
+    redo_vect.pop_back();
+    undo_vect.push_back(a_undo);
+    update_seqlist_on_change = true;
+    set_have_undo();
+}
+
 
 void
 perform::set_have_undo( void )
