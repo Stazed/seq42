@@ -1240,7 +1240,8 @@ void perform::output_func(void)
         /* tick and tick fraction */
         double current_tick   = 0.0;
         double total_tick   = 0.0;
-        double clock_tick = 0.0;
+        long clock_tick = 0;
+        long delta_tick_frac = 0;
 
         long stats_total_tick = 0;
 
@@ -1334,7 +1335,10 @@ void perform::output_func(void)
             int bpm  = m_master_bus.get_bpm();
 
             /* get delta ticks, delta_ticks_f is in 1000th of a tick */
-            double delta_tick = (double) (bpm * ppqn * (delta_us/60000000.0f));
+            long long delta_tick_num = bpm * ppqn * delta_us + delta_tick_frac;
+            long long delta_tick_denom = 60000000;
+            long delta_tick = (long)(delta_tick_num / delta_tick_denom);
+            delta_tick_frac = (long)(delta_tick_num % delta_tick_denom);
 
             if (m_usemidiclock) {
                 delta_tick = m_midiclocktick;
@@ -1510,7 +1514,7 @@ void perform::output_func(void)
              * as soon as jack gets a good lock on playback */
 
             if (init_clock) {
-                m_master_bus.init_clock( (long)clock_tick );
+                m_master_bus.init_clock( clock_tick );
                 init_clock = false;
             }
 
@@ -1534,7 +1538,7 @@ void perform::output_func(void)
                 //printf( "play[%d]\n", current_tick );
 
                 /* midi clock */
-                m_master_bus.clock( (long) clock_tick );
+                m_master_bus.clock( clock_tick );
 
 
                 if ( global_stats ){
