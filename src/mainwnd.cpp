@@ -509,8 +509,7 @@ mainwnd::undo_type( void )
     case c_undo_track:
         undo_track(m_mainperf->undo_vect[m_mainperf->undo_vect.size() -1].track);
         break;
-    case c_undo_perf:   // TODO
-        printf("Undo Perf\n");
+    case c_undo_perf:
         undo_perf();
         break;
     case c_undo_collapse_expand:
@@ -566,8 +565,7 @@ mainwnd::redo_type( void )
     case c_undo_track:
         redo_track(m_mainperf->redo_vect[m_mainperf->redo_vect.size() - 1].track);
         break;
-    case c_undo_perf:   // TODO
-        printf("Redo Perf\n");
+    case c_undo_perf:
         redo_perf();
         break;
     case c_undo_collapse_expand:

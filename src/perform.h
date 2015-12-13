@@ -56,7 +56,6 @@ struct undo_type
 
 struct undo_redo_perf_tracks
 {
-    //int num;
     track perf_tracks[c_max_track];
 };
 
@@ -66,8 +65,8 @@ class perform
     /* vector of tracks */
     track *m_tracks[c_max_track];
     track m_clipboard;
-    track m_undo_tracks[200]; // FIXME how big??
-    track m_redo_tracks[200]; // FIXME how big??
+    track m_undo_tracks[100]; // FIXME how big??
+    track m_redo_tracks[100]; // FIXME how big??
     int m_undo_track_count;
     int m_redo_track_count;
 
@@ -212,6 +211,7 @@ class perform
     void set_have_undo( void );
     void set_have_redo( void );
     void set_have_modified(bool m_modified);
+
 
     void print();
 

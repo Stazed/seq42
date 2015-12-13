@@ -187,6 +187,7 @@ trackmenu::trk_new(){
 void
 trackmenu::trk_insert(int a_track_location){
 
+    m_mainperf->push_perf_undo();
     // first copy all tracks to m_insert_clipboard[];
     for(int i = 0; i < c_max_track; i++)
     {
@@ -198,8 +199,6 @@ trackmenu::trk_insert(int a_track_location){
             m_mainperf->m_tracks_clipboard[i].m_is_NULL = true;
         }
     }
-
-    m_mainperf->push_perf_undo();
 
     m_mainperf->delete_track(a_track_location); // the new insert blank track
 

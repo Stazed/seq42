@@ -837,8 +837,15 @@ perform::push_perf_undo( void )
 {
     for(int i = 0; i < c_max_track; i++)
     {
-        undo_perf[m_undo_perf_count].perf_tracks[i] = m_tracks_clipboard[i];
+        if ( is_active_track(i) == true )
+        {
+            undo_perf[m_undo_perf_count].perf_tracks[i] = *get_track(i);
+        }else
+        {
+            undo_perf[m_undo_perf_count].perf_tracks[i].m_is_NULL = true;
+        }
     }
+
     m_undo_perf_count++;
 
     undo_type a_undo;
@@ -873,8 +880,6 @@ perform::pop_perf_undo( void )
 
             if(!undo_perf[m_undo_perf_count-1].perf_tracks[i].m_is_NULL)
             {
-                //redo_perf[m_redo_perf_count].perf_tracks[i].m_is_NULL = true; // push redo
-
                 new_track(i);
                 *get_track(i) = undo_perf[m_undo_perf_count-1].perf_tracks[i];
                 get_track(i)->set_dirty();
@@ -945,7 +950,7 @@ perform::set_have_undo( void )
     {
         m_have_undo = true;
         set_have_modified(true);
-        printf("m_undo_track_count[%d]\n",m_undo_track_count);
+        //printf("m_undo_track_count[%d]\n",m_undo_track_count);
     }else
     {
         m_have_undo = false;

@@ -92,6 +92,8 @@ midifile::read_var ()
 
 bool midifile::parse (perform * a_perf)
 {
+    a_perf->push_perf_undo();
+
     /* open binary file */
     ifstream file(m_name.c_str(), ios::in | ios::binary | ios::ate);
 
