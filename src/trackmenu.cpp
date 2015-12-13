@@ -50,9 +50,27 @@ trackmenu::popup_menu( void )
 
     m_menu = manage( new Menu());
 
-    if ( ! m_mainperf->is_active_track( m_current_trk )) {
+    if ( ! m_mainperf->is_active_track( m_current_trk ))
+    {
         m_menu->items().push_back(MenuElem("New",
                     mem_fun(*this, &trackmenu::trk_new)));
+
+        bool can_we_delete = true;
+
+        for(int i = 0; i < c_max_track; i++)
+        {
+            if( (m_mainperf->get_track(i) != NULL) &&
+                m_mainperf->is_track_in_edit(i) )
+            {
+                can_we_delete = false; // don't allow
+            }
+        }
+        if(can_we_delete)
+        {
+            m_menu->items().push_back(MenuElem("Delete row",
+                   sigc::bind(mem_fun(*this,&trackmenu::trk_delete),m_current_trk)));
+        }
+
     }
 
     if ( m_mainperf->is_active_track( m_current_trk ))
@@ -66,19 +84,23 @@ trackmenu::popup_menu( void )
 
         if( m_mainperf->get_track( m_current_trk ) != NULL)
         {
-            bool can_we_insert = true;
+            bool can_we_insert_delete = true;
 
             for(int i = 0; i < c_max_track; i++)
             {
                 if( (m_mainperf->get_track(i) != NULL) &&
                     m_mainperf->is_track_in_edit(i) )
                 {
-                    can_we_insert = false; // don't allow
+                    can_we_insert_delete = false; // don't allow
                 }
             }
-            if(can_we_insert)
-                m_menu->items().push_back(MenuElem("Insert empty track",
+            if(can_we_insert_delete)
+            {
+                m_menu->items().push_back(MenuElem("Insert row",
                        sigc::bind(mem_fun(*this,&trackmenu::trk_insert),m_current_trk)));
+                m_menu->items().push_back(MenuElem("Delete row",
+                       sigc::bind(mem_fun(*this,&trackmenu::trk_delete),m_current_trk)));
+            }
         }
 
         m_menu->items().push_back(MenuElem("Copy", mem_fun(*this,&trackmenu::trk_copy)));
@@ -225,6 +247,45 @@ trackmenu::trk_insert(int a_track_location){
     }   // the last track will get lost????!!!!!
 }
 
+// delete row at location
+void
+trackmenu::trk_delete(int a_track_location){
+
+    m_mainperf->push_perf_undo();
+    // first copy all tracks to m_insert_clipboard[];
+    for(int i = 0; i < c_max_track; i++)
+    {
+        if ( m_mainperf->is_active_track(i) == true )
+        {
+            m_mainperf->m_tracks_clipboard[i] = *m_mainperf->get_track(i);
+        }else
+        {
+            m_mainperf->m_tracks_clipboard[i].m_is_NULL = true;
+        }
+    }
+
+    for(int i = a_track_location; i < c_max_track - 1; i++)//now delete and replace the rest offset
+    {
+        if ( m_mainperf->is_active_track(i) == true )
+        {
+            m_mainperf->delete_track(i);
+            if(!m_mainperf->m_tracks_clipboard[i+1].m_is_NULL)
+            {
+                m_mainperf->new_track(i);
+                *m_mainperf->get_track(i) = m_mainperf->m_tracks_clipboard[i+1];
+                m_mainperf->get_track(i)->set_dirty();
+            }
+        }else
+        {
+            if(!m_mainperf->m_tracks_clipboard[i+1].m_is_NULL)
+            {
+                m_mainperf->new_track(i);
+                *m_mainperf->get_track(i) = m_mainperf->m_tracks_clipboard[i+1];
+                m_mainperf->get_track(i)->set_dirty();
+            }
+        }
+    }
+}
 
 // Copies selected to clipboard track */
 void

@@ -14,7 +14,7 @@ Adds a random value from the specified range to the velocity or CC value of all 
 
 [ ] Add new song function to create triggers between the left and right markers for the patterns that currently have their play flag on.
 
-[ ] Add to track popup menu in song editor:
+[X] Add to track popup menu in song editor:
 insert row
 delete row (if row isn't empty, deletes the track too)
 
@@ -46,7 +46,7 @@ F8 loop off
     Loading a file should put each track back in the same slot (allowing for
     empty slots b/w tracks).
 
-[ ] Enhance perform-level undo/redo such that all perform/track level changes
+[X] Enhance perform-level undo/redo such that all perform/track level changes
     can be undone/redone: adding a track, cutting/copying/pasting a track, editing a track.
     This would require a more sophisticated approach.
     Current approach pushes state of all triggers for all active tracks onto an undo stack.
@@ -59,7 +59,7 @@ F8 loop off
     background sequence (for seqedit and seqroll), and be sure to set it to
     null if the sequence is deleted.
 
-[ ] Add m_modified bool to perform (and possibly also sequence and track).
+[X] Add m_modified bool to perform (and possibly also sequence and track).
     Set to True as soon as anything is modified.
     Add an is_modified() method that returns m_modified.
     Update mainwnd is_modified() to take perform's is_modified() into account.
