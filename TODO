@@ -1,10 +1,10 @@
-[ ] Fix trigger offset bug!
+[X] Fix trigger offset bug!
 I think that will involve adding "adjust_offset" stuff back to move_selected_triggers_to()
 See seq24 sequence.cpp and seq42 track.cpp
 Then moving a trigger should adjust the offset (while it currently doesn't).
 May need to add back other offset adjusting stuff from seq24 too....
 
-[ ] Add Randomize function to seqedit
+[X] Add Randomize function to seqedit
 Has options:
 +/- 1
 +/- 2
