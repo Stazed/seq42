@@ -212,7 +212,6 @@ class perform
     void set_have_redo( void );
     void set_have_modified(bool m_modified);
 
-
     void print();
 
     void start( bool a_state );

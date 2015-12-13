@@ -69,6 +69,8 @@ trackmenu::popup_menu( void )
         {
             m_menu->items().push_back(MenuElem("Delete row",
                    sigc::bind(mem_fun(*this,&trackmenu::trk_delete),m_current_trk)));
+            m_menu->items().push_back(MenuElem("_Pack tracks",
+                mem_fun(*this, &trackmenu::pack_tracks)));
         }
 
     }
@@ -97,9 +99,11 @@ trackmenu::popup_menu( void )
             if(can_we_insert_delete)
             {
                 m_menu->items().push_back(MenuElem("Insert row",
-                       sigc::bind(mem_fun(*this,&trackmenu::trk_insert),m_current_trk)));
+                        sigc::bind(mem_fun(*this,&trackmenu::trk_insert),m_current_trk)));
                 m_menu->items().push_back(MenuElem("Delete row",
-                       sigc::bind(mem_fun(*this,&trackmenu::trk_delete),m_current_trk)));
+                        sigc::bind(mem_fun(*this,&trackmenu::trk_delete),m_current_trk)));
+                m_menu->items().push_back(MenuElem("_Pack tracks",
+                        mem_fun(*this, &trackmenu::pack_tracks)));
             }
         }
 
@@ -205,7 +209,7 @@ trackmenu::trk_new(){
     }
 }
 
-// insert empty track at location
+// insert row at location
 void
 trackmenu::trk_insert(int a_track_location){
 
@@ -281,6 +285,51 @@ trackmenu::trk_delete(int a_track_location){
             {
                 m_mainperf->new_track(i);
                 *m_mainperf->get_track(i) = m_mainperf->m_tracks_clipboard[i+1];
+                m_mainperf->get_track(i)->set_dirty();
+            }
+        }
+    }
+}
+
+
+void
+trackmenu::pack_tracks(){
+
+    m_mainperf->push_perf_undo();
+
+    // first copy all active tracks to m_insert_clipboard[];
+    int active_tracks = 0;
+    for(int i = 0; i < c_max_track; i++)
+    {
+        if ( m_mainperf->is_active_track(i) == true )
+        {
+           m_mainperf->m_tracks_clipboard[active_tracks] = *m_mainperf->get_track(i);
+           active_tracks++;
+        }
+    }
+
+    for(int i = active_tracks; i < c_max_track; i++) // NULL the remainder
+    {
+        m_mainperf->m_tracks_clipboard[i].m_is_NULL = true;
+    }
+
+    for(int i = 0; i < c_max_track; i++)//now delete and replace in order
+    {
+        if ( m_mainperf->is_active_track(i) == true )
+        {
+            m_mainperf->delete_track(i);
+            if(!m_mainperf->m_tracks_clipboard[i].m_is_NULL)
+            {
+                m_mainperf->new_track(i);
+                *m_mainperf->get_track(i) = m_mainperf->m_tracks_clipboard[i];
+                m_mainperf->get_track(i)->set_dirty();
+            }
+        }else
+        {
+            if(!m_mainperf->m_tracks_clipboard[i].m_is_NULL)
+            {
+                m_mainperf->new_track(i);
+                *m_mainperf->get_track(i) = m_mainperf->m_tracks_clipboard[i];
                 m_mainperf->get_track(i)->set_dirty();
             }
         }
