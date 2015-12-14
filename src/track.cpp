@@ -1379,6 +1379,8 @@ track::save(ofstream *file) {
 
     file->write((const char *) &m_transposable, sizeof(bool));
 
+    file->write((const char *) &m_song_mute, sizeof(bool));
+
     unsigned int num_seqs = get_number_of_sequences();
     file->write((const char *) &num_seqs, sizeof(int));
     for(unsigned int i=0; i<m_vector_sequence.size(); i++) {
@@ -1414,6 +1416,10 @@ track::load(ifstream *file, int version) {
     // The m_transposable didn't exist for version==0 files.
     if(version > 0) {
         file->read((char *) &m_transposable, sizeof(bool));
+    }
+
+    if(version > 2) {
+        file->read((char *) &m_song_mute, sizeof(bool));
     }
 
     unsigned int num_seqs;

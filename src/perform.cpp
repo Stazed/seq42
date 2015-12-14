@@ -445,6 +445,7 @@ int  perform::get_bpm( )
     return  m_master_bus.get_bpm( );
 }
 
+
 void perform::set_swing_amount8(int a_swing_amount)
 {
     m_master_bus.set_swing_amount8( a_swing_amount );
@@ -2155,9 +2156,13 @@ perform::save( const Glib::ustring& a_filename )
     }
     file.write((const char *) &active_tracks, sizeof(int));
 
-    for (int i=0; i< c_max_track; i++ ){
+    for (int i=0; i< c_max_track; i++ )
+    {
         if ( is_active_track(i) )
         {
+            int trk_idx = i; // file version 3
+            file.write((const char *) &trk_idx, sizeof(int));
+
             if(! get_track(i)->save(&file)) {
                 return false;
             }
@@ -2196,9 +2201,17 @@ perform::load( const Glib::ustring& a_filename )
     int active_tracks;
     file.read((char *) &active_tracks, sizeof(int));
 
-    for (int i=0; i< active_tracks; i++ ){
-        new_track(i);
-        if(! get_track(i)->load(&file, version)) {
+    int trk_index = 0;
+    for (int i=0; i< active_tracks; i++ )
+    {
+        trk_index = i;
+        if(version > 2)
+        {
+            file.read((char *) &trk_index, sizeof(int));
+        }
+
+        new_track(trk_index);
+        if(! get_track(trk_index)->load(&file, version)) {
             return false;
         }
     }

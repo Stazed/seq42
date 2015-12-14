@@ -208,7 +208,6 @@ class mainwnd : public Gtk::Window
     bool on_delete_event(GdkEventAny *a_e);
     bool on_key_press_event(GdkEventKey* a_ev);
 
-
 };
 
 
