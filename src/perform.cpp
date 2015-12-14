@@ -79,6 +79,9 @@ perform::perform()
 
     m_playback_mode = false;
 
+    m_bp_measure = 4;
+    m_bw = 4;
+
     update_seqlist_on_change = false;
     m_have_undo = false;
     m_have_redo = false;
@@ -443,6 +446,26 @@ void perform::set_bpm(int a_bpm)
 int  perform::get_bpm( )
 {
     return  m_master_bus.get_bpm( );
+}
+
+void perform::set_bp_measure(int a_bp_mes)
+{
+    m_bp_measure = a_bp_mes;
+}
+
+int perform::get_bp_measure( )
+{
+    return m_bp_measure;
+}
+
+void perform::set_bw(int a_bw)
+{
+    m_bw = a_bw;
+}
+
+int perform::get_bw( )
+{
+    return m_bw;
 }
 
 
@@ -2145,6 +2168,12 @@ perform::save( const Glib::ustring& a_filename )
     int bpm = get_bpm();
     file.write((const char *) &bpm, sizeof(int));
 
+    int bp_measure = get_bp_measure(); // version 4
+    file.write((const char *) &bp_measure, sizeof(int));
+
+    int bw = get_bw();                 // version 4
+    file.write((const char *) &bw, sizeof(int));
+
     int swing_amount8 = get_swing_amount8();
     file.write((const char *) &swing_amount8, sizeof(int));
     int swing_amount16 = get_swing_amount16();
@@ -2186,6 +2215,18 @@ perform::load( const Glib::ustring& a_filename )
     int bpm;
     file.read((char *) &bpm, sizeof(int));
     set_bpm(bpm);
+
+    int bp_measure = 4;
+    if(version > 3){
+        file.read((char *) &bp_measure, sizeof(int));
+    }
+    set_bp_measure(bp_measure);
+
+    int bw = 4;
+    if(version > 3){
+        file.read((char *) &bw, sizeof(int));
+    }
+    set_bw(bw);
 
     int swing_amount8 = 0;
     if(version > 1) {

@@ -35,12 +35,13 @@
 
 using namespace std;
 
-const int c_file_version = 3;  // Version of our save file format.  Increment this whenever the format of the save file changes.
+const int c_file_version = 4;  // Version of our save file format.  Increment this whenever the format of the save file changes.
 /* Version history:
 0 - initial seq42 file format
 1 - added transposable to track
 2 - added swing amount to perform and swing_mode to sequence
 3 - added track mute, track index
+4 - added beats per measure, beat width
 */
 
 const int c_max_track_name = 16;

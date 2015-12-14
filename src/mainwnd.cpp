@@ -469,6 +469,14 @@ mainwnd::timer_callback(  )
         m_adjust_bpm->set_value( m_mainperf->get_bpm());
     }
 
+    if ( m_bpm != m_mainperf->get_bp_measure()){
+        set_bpm( m_mainperf->get_bp_measure());
+    }
+
+    if ( m_bw != m_mainperf->get_bw()){
+        set_bw( m_mainperf->get_bw());
+    }
+
     if ( m_adjust_swing_amount8->get_value() != m_mainperf->get_swing_amount8()){
         m_adjust_swing_amount8->set_value( m_mainperf->get_swing_amount8());
     }
@@ -712,6 +720,7 @@ mainwnd::set_snap( int a_snap  )
 
 void mainwnd::set_bpm( int a_beats_per_measure )
 {
+    m_mainperf->set_bp_measure(a_beats_per_measure);
     char b[10];
     snprintf(b, sizeof(b), "%d", a_beats_per_measure );
     m_entry_bpm->set_text(b);
@@ -723,6 +732,7 @@ void mainwnd::set_bpm( int a_beats_per_measure )
 
 void mainwnd::set_bw( int a_beat_width )
 {
+    m_mainperf->set_bw(a_beat_width);
     char b[10];
     snprintf(b, sizeof(b), "%d", a_beat_width );
     m_entry_bw->set_text(b);

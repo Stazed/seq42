@@ -111,6 +111,9 @@ class perform
     int  m_midiclocktick;
     int  m_midiclockpos;
 
+    int m_bp_measure;
+    int m_bw;
+
     void set_running( bool a_running );
 
     void set_playback_mode( bool a_playback_mode );
@@ -243,6 +246,12 @@ class perform
 
     void set_bpm(int a_bpm);
     int  get_bpm( );
+
+    void set_bp_measure(int a_bp_mes);
+    int get_bp_measure( );
+
+    void set_bw(int a_bw);
+    int get_bw( );
 
     void set_swing_amount8(int a_swing_amount);
     int  get_swing_amount8( );
