@@ -1129,14 +1129,12 @@ bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
                 // add an event:
                 else
                 {
+                    tick = tick - (tick % ths.get_default_trigger_length(ths));
                     //tick = tick - (tick % c_default_trigger_length);
-                    tick = tick - (tick % (c_default_trigger_length_in_bars *
-                                           ths.m_mainperf->get_bp_measure() * c_ppqn));
 
                     ths.m_mainperf->push_trigger_undo(ths.m_drop_track);
-                    ths.m_mainperf->get_track( ths.m_drop_track )->add_trigger( tick,
-                                (c_default_trigger_length_in_bars * ths.m_mainperf->get_bp_measure() * c_ppqn) );
                     //ths.m_mainperf->get_track( ths.m_drop_track )->add_trigger( tick, c_default_trigger_length );
+                    ths.m_mainperf->get_track( ths.m_drop_track )->add_trigger( tick, ths.get_default_trigger_length(ths));
                     ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
                     ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
                     ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
@@ -1238,15 +1236,13 @@ bool FruityPerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths
 
         if ( ths.m_mainperf->is_active_track( ths.m_drop_track )){
 
+            tick = tick - (tick % ths.get_default_trigger_length(ths));
             //tick = tick - (tick % c_default_trigger_length);
-            tick = tick - (tick % (c_default_trigger_length_in_bars *
-                                    ths.m_mainperf->get_bp_measure() * c_ppqn));
 
             /*long min_tick = (tick < m_drop_tick) ? tick : m_drop_tick;*/
 
     	    ths.m_mainperf->get_track( ths.m_drop_track )
-                          ->grow_trigger( ths.m_drop_tick, tick,
-                          (c_default_trigger_length_in_bars * ths.m_mainperf->get_bp_measure() * c_ppqn));
+                            ->grow_trigger( ths.m_drop_tick, tick, ths.get_default_trigger_length(ths));
                           //->grow_trigger( ths.m_drop_tick, tick, c_default_trigger_length);
     	    ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
     	    ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
@@ -1350,15 +1346,11 @@ Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
                 }
                 else
                 {
-
-                    // snap to length of sequence
-                    tick = tick - (tick % (c_default_trigger_length_in_bars *
-                                            ths.m_mainperf->get_bp_measure() * c_ppqn));
                     //tick = tick - (tick % c_default_trigger_length);
+                    tick = tick - (tick % ths.get_default_trigger_length(ths));
 
                     ths.m_mainperf->push_trigger_undo(ths.m_drop_track);
-                    ths.m_mainperf->get_track( ths.m_drop_track )->add_trigger( tick,
-                                (c_default_trigger_length_in_bars * ths.m_mainperf->get_bp_measure() * c_ppqn) );
+                    ths.m_mainperf->get_track( ths.m_drop_track )->add_trigger( tick, ths.get_default_trigger_length(ths));
                     //ths.m_mainperf->get_track( ths.m_drop_track )->add_trigger( tick, c_default_trigger_length );
                     ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
                     ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
@@ -1502,14 +1494,13 @@ bool Seq42PerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths)
     	ths.convert_x( x, &tick );
 
     	if ( ths.m_mainperf->is_active_track( ths.m_drop_track )){
-
-            tick = tick - (tick % (c_default_trigger_length_in_bars * ths.m_mainperf->get_bp_measure() * c_ppqn));
             //tick = tick - (tick % c_default_trigger_length);
+            tick = tick - (tick % ths.get_default_trigger_length(ths));
 
     	    ths.m_mainperf->get_track( ths.m_drop_track )
-                          ->grow_trigger( ths.m_drop_tick, tick,
-                          (c_default_trigger_length_in_bars * ths.m_mainperf->get_bp_measure() * c_ppqn));
-                          //->grow_trigger( ths.m_drop_tick, tick, c_default_trigger_length);
+                        ->grow_trigger( ths.m_drop_tick, tick, ths.get_default_trigger_length(ths));
+                        //->grow_trigger( ths.m_drop_tick, tick, c_default_trigger_length);
+
     	    ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
     	    ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
             ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
@@ -1621,4 +1612,18 @@ perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
 
         menu_trigger->popup(0,0);
     }
+}
+
+long
+perfroll::get_default_trigger_length(perfroll& ths)
+{
+    //c_default_trigger_length_in_bars * 4 * c_ppqn
+    float trig_ratio = (float) ths.m_mainperf->get_bp_measure() / (float)ths.m_mainperf->get_bw();
+    //printf("trig_ratio [%f]\n",trig_ratio);
+
+    long trig_measure = 4 * c_ppqn;
+    long ret = (long) (trig_ratio * trig_measure);
+    //printf("trig_length [%ld]\n", ret);
+
+    return ret;
 }
