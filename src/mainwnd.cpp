@@ -129,6 +129,12 @@ mainwnd::mainwnd(perform *a_p)
     m_menu_edit->items().push_back(MenuElem("_Increase grid size",
                 mem_fun(*this, &mainwnd::grow)));
 
+    m_menu_edit->items().push_back(SeparatorElem());
+
+    m_menu_edit->items().push_back(MenuElem("_Midi export (Seq 24)",
+            mem_fun(*this, &mainwnd::export_sequences)));
+    m_menu_edit->items().push_back(MenuElem("_Midi export song",
+            mem_fun(*this, &mainwnd::export_song)));
 
     /* help menu items */
     m_menu_help->items().push_back(MenuElem("_About...",
@@ -900,6 +906,15 @@ void mainwnd::file_save_as()
     }
 }
 
+void mainwnd::export_sequences()
+{
+    //FIXME TODO
+}
+
+void mainwnd::export_song()
+{
+    //FIXME TODO
+}
 
 void mainwnd::open_file(const Glib::ustring& fn)
 {
