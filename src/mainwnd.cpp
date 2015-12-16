@@ -95,7 +95,7 @@ mainwnd::mainwnd(perform *a_p)
                 Gtk::AccelKey("<control>S"),
                 mem_fun(*this, &mainwnd::file_save)));
     m_menu_file->items().push_back(MenuElem("Save _as...",
-                mem_fun(*this, &mainwnd::file_save_as)));
+                sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 0)));
     m_menu_file->items().push_back(SeparatorElem());
     m_menu_file->items().push_back(MenuElem("_Import midi...",
                 mem_fun(*this, &mainwnd::file_import_dialog)));
@@ -132,9 +132,9 @@ mainwnd::mainwnd(perform *a_p)
     m_menu_edit->items().push_back(SeparatorElem());
 
     m_menu_edit->items().push_back(MenuElem("_Midi export (Seq 24)",
-            mem_fun(*this, &mainwnd::export_sequences)));
+            sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 1)));
     m_menu_edit->items().push_back(MenuElem("_Midi export song",
-            mem_fun(*this, &mainwnd::export_song)));
+            sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 2)));
 
     /* help menu items */
     m_menu_help->items().push_back(MenuElem("_About...",
@@ -844,8 +844,12 @@ void mainwnd::file_save()
 
 
 /* callback function */
-void mainwnd::file_save_as()
+void mainwnd::file_save_as(int type)
 {
+    // default type 0 = .s42
+    //         type 1 = .mid .midi etc for Seq24 export
+    //         type 2 = .mid .midi etc for midi song export
+
     Gtk::FileChooserDialog dialog("Save file as",
                       Gtk::FILE_CHOOSER_ACTION_SAVE);
     dialog.set_transient_for(*this);
@@ -854,8 +858,20 @@ void mainwnd::file_save_as()
     dialog.add_button(Gtk::Stock::SAVE, Gtk::RESPONSE_OK);
 
     Gtk::FileFilter filter_midi;
-    filter_midi.set_name("Seq42 files");
-    filter_midi.add_pattern("*.s42");
+
+    if(type == 0)
+    {
+        filter_midi.set_name("Seq42 files");
+        filter_midi.add_pattern("*.s42");
+    }
+
+    if(type == 1 || type == 2)
+    {
+        filter_midi.set_name("MIDI files");
+        filter_midi.add_pattern("*.midi");
+        filter_midi.add_pattern("*.mid");
+    }
+
     dialog.add_filter(filter_midi);
 
     Gtk::FileFilter filter_any;
@@ -863,7 +879,13 @@ void mainwnd::file_save_as()
     filter_any.add_pattern("*");
     dialog.add_filter(filter_any);
 
-    dialog.set_current_folder(last_used_dir);
+    if(type == 0) // .s42
+        dialog.set_current_folder(last_used_dir);
+
+    if(type == 1 || type == 2) // .midi
+        dialog.set_current_folder(last_midi_dir);
+
+
     int result = dialog.run();
 
     switch (result) {
@@ -884,6 +906,17 @@ void mainwnd::file_save_as()
                 if (suffix != "s42") fname = fname + ".s42";
             }
 
+            if ((current_filter != NULL) &&
+                    (current_filter->get_name() == "MIDI files")) {
+
+                // check for MIDI file extension; if missing, add .midi
+                std::string suffix = fname.substr(
+                        fname.find_last_of(".") + 1, std::string::npos);
+                toLower(suffix);
+                if ((suffix != "midi") && (suffix != "mid"))
+                    fname = fname + ".midi";
+            }
+
             if (Glib::file_test(fname, Glib::FILE_TEST_EXISTS)) {
                 Gtk::MessageDialog warning(*this,
                         "File already exists!\n"
@@ -895,9 +928,24 @@ void mainwnd::file_save_as()
                 if (result == Gtk::RESPONSE_NO)
                     return;
             }
-            global_filename = fname;
-            update_window_title();
-            save_file();
+
+            if(type == 0)
+            {
+                global_filename = fname;
+                update_window_title();
+                save_file();
+            }
+
+            if(type == 1)
+            {
+                export_sequences(fname);
+            }
+
+            if(type == 2)
+            {
+                export_song(fname);
+            }
+
             break;
         }
 
@@ -906,14 +954,40 @@ void mainwnd::file_save_as()
     }
 }
 
-void mainwnd::export_sequences()
+void mainwnd::export_sequences(const Glib::ustring& fn)
 {
-    //FIXME TODO
+    bool result = false;
+
+    midifile f(fn);
+    result = f.write_sequences(m_mainperf);
+
+    if (!result) {
+        Gtk::MessageDialog errdialog(*this,
+                "Error writing file.", false,
+                Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
+        errdialog.run();
+    }
+
+    if(result)
+        last_midi_dir = fn.substr(0, fn.rfind("/") + 1);
 }
 
-void mainwnd::export_song()
+void mainwnd::export_song(const Glib::ustring& fn)
 {
-    //FIXME TODO
+    bool result = false;
+
+    midifile f(fn);
+    result = f.write_song(m_mainperf);
+
+    if (!result) {
+        Gtk::MessageDialog errdialog(*this,
+                "Error writing file.", false,
+                Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
+        errdialog.run();
+    }
+
+    if(result)
+        last_midi_dir = fn.substr(0, fn.rfind("/") + 1);
 }
 
 void mainwnd::open_file(const Glib::ustring& fn)
@@ -994,7 +1068,7 @@ bool mainwnd::save_file()
     bool result = false;
 
     if (global_filename == "") {
-        file_save_as();
+        file_save_as(0);
         return true;
     }
 

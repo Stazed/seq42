@@ -55,7 +55,8 @@ class midifile
     ~midifile();
 
     bool parse( perform *a_perf );
-    bool write( perform *a_perf );
+    bool write_sequences( perform *a_perf );
+    bool write_song( perform *a_perf );
 
 };
 

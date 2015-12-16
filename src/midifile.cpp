@@ -525,9 +525,9 @@ midifile::write_short (unsigned short a_x)
     m_l.push_front ((a_x & 0x00FF));
 }
 
-bool midifile::write (perform * a_perf)
+bool midifile::write_sequences (perform * a_perf)
 {
-    printf("FIXME midifile::write()\n");
+    printf("FIXME midifile::write_sequences()\n");
 #if 0
     /* open binary file */
     ofstream file (m_name.c_str (), ios::out | ios::binary | ios::trunc);
@@ -627,4 +627,112 @@ bool midifile::write (perform * a_perf)
 
     return true;
 #endif
+    return false; // FIXME
 }
+
+
+bool midifile::write_song (perform * a_perf)
+{
+    printf("FIXME midifile::write_song()\n");
+#if 0
+    /* open binary file */
+    ofstream file (m_name.c_str (), ios::out | ios::binary | ios::trunc);
+
+    if (!file.is_open ())
+        return false;
+
+    /* used in small loops */
+    int i;
+
+    /* sequence pointer */
+    sequence * seq;
+    event e;
+    list<char> l;
+
+    int numtracks = 0;
+
+    /* get number of tracks */
+    for (i = 0; i < c_max_track; i++)
+    {
+        if (a_perf->is_active_track (i))
+            numtracks++;
+    }
+
+    //printf ("numtracks[%d]\n", numtracks );
+
+    /* write header */
+    /* 'MThd' and length of 6 */
+    write_long (0x4D546864);
+    write_long (0x00000006);
+
+    /* format 1, number of tracks, ppqn */
+    write_short (0x0001);
+    write_short (numtracks);
+    write_short (c_ppqn);
+
+    /* We should be good to load now   */
+    /* for each Track in the midi file */
+    for (int curTrack = 0; curTrack < c_max_sequence; curTrack++)
+    {
+
+        if (a_perf->is_active_track (curTrack))
+        {
+
+            //printf ("track[%d]\n", curTrack );
+
+            seq = a_perf->get_sequence (curTrack);
+            seq->fill_list (&l, curTrack);
+
+            /* magic number 'MTrk' */
+            write_long (0x4D54726B);
+            write_long (l.size ());
+
+            //printf("MTrk len[%d]\n", l.size());
+
+            while (l.size () > 0)
+            {
+                m_l.push_front (l.back ());
+                l.pop_back ();
+            }
+        }
+    }
+
+    /* bus mute/unmute data */
+    write_long (c_midiclocks);
+    write_long (0);
+
+
+    /* bpm */
+    write_long (c_bpmtag);
+    write_long (a_perf->get_bpm ());
+
+
+    int data_size = m_l.size ();
+    m_d = (unsigned char *) new char[data_size];
+
+    m_pos = 0;
+
+    for (list < unsigned char >::reverse_iterator ri = m_l.rbegin ();
+            ri != m_l.rend (); ri++)
+    {
+        read_byte () = *ri;
+    }
+
+    m_l.clear ();
+
+    // super slow
+    //while ( m_l.size() > 0 ){
+    //read_byte () =  m_l.back();
+    //  m_l.pop_back();
+    //}
+
+    file.write ((char *) m_d, data_size);
+    file.close ();
+
+    delete[]m_d;
+
+    return true;
+#endif
+    return false; // FIXME
+}
+
