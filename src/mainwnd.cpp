@@ -247,8 +247,19 @@ mainwnd::mainwnd(perform *a_p)
     m_menu_snap =   manage( new Menu());
     m_menu_snap->items().push_back(MenuElem("1/1",     sigc::bind(mem_fun(*this,&mainwnd::set_snap), 1  )));
     m_menu_snap->items().push_back(MenuElem("1/2",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 2  )));
+    m_menu_snap->items().push_back(MenuElem("1/3",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 3  )));
     m_menu_snap->items().push_back(MenuElem("1/4",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 4  )));
+    m_menu_snap->items().push_back(MenuElem("1/5",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 5  )));
+    m_menu_snap->items().push_back(MenuElem("1/6",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 6  )));
+    m_menu_snap->items().push_back(MenuElem("1/7",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 7  )));
     m_menu_snap->items().push_back(MenuElem("1/8",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 8  )));
+    m_menu_snap->items().push_back(MenuElem("1/9",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 9  )));
+    m_menu_snap->items().push_back(MenuElem("1/10",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 10  )));
+    m_menu_snap->items().push_back(MenuElem("1/11",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 11  )));
+    m_menu_snap->items().push_back(MenuElem("1/12",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 12  )));
+    m_menu_snap->items().push_back(MenuElem("1/13",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 13  )));
+    m_menu_snap->items().push_back(MenuElem("1/14",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 14  )));
+    m_menu_snap->items().push_back(MenuElem("1/15",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 15  )));
     m_menu_snap->items().push_back(MenuElem("1/16",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 16  )));
     m_menu_snap->items().push_back(MenuElem("1/32",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 32  )));
 
@@ -268,6 +279,7 @@ mainwnd::mainwnd(perform *a_p)
     /* bw */
     m_menu_bw->items().push_back(MenuElem("1", sigc::bind(mem_fun(*this,&mainwnd::set_bw), 1  )));
     m_menu_bw->items().push_back(MenuElem("2", sigc::bind(mem_fun(*this,&mainwnd::set_bw), 2  )));
+    m_menu_bw->items().push_back(MenuElem("3", sigc::bind(mem_fun(*this,&mainwnd::set_bw), 3  )));
     m_menu_bw->items().push_back(MenuElem("4", sigc::bind(mem_fun(*this,&mainwnd::set_bw), 4  )));
     m_menu_bw->items().push_back(MenuElem("8", sigc::bind(mem_fun(*this,&mainwnd::set_bw), 8  )));
     m_menu_bw->items().push_back(MenuElem("16", sigc::bind(mem_fun(*this,&mainwnd::set_bw), 16 )));
@@ -721,6 +733,7 @@ mainwnd::set_snap( int a_snap  )
 void mainwnd::set_bpm( int a_beats_per_measure )
 {
     m_mainperf->set_bp_measure(a_beats_per_measure);
+    set_snap(a_beats_per_measure);//maybe???
     char b[10];
     snprintf(b, sizeof(b), "%d", a_beats_per_measure );
     m_entry_bpm->set_text(b);
