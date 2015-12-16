@@ -39,7 +39,7 @@ trackmenu::trackmenu( perform *a_p  )
 }
 
 
-    void
+void
 trackmenu::popup_menu( void )
 {
 
@@ -52,7 +52,7 @@ trackmenu::popup_menu( void )
 
     if ( ! m_mainperf->is_active_track( m_current_trk ))
     {
-        m_menu->items().push_back(MenuElem("New",
+        m_menu->items().push_back(MenuElem("_New",
                     mem_fun(*this, &trackmenu::trk_new)));
 
         bool can_we_delete = true;
@@ -67,7 +67,9 @@ trackmenu::popup_menu( void )
         }
         if(can_we_delete)
         {
-            m_menu->items().push_back(MenuElem("Delete row",
+            m_menu->items().push_back(MenuElem("_Insert row",
+                        sigc::bind(mem_fun(*this,&trackmenu::trk_insert),m_current_trk)));
+            m_menu->items().push_back(MenuElem("_Delete row",
                    sigc::bind(mem_fun(*this,&trackmenu::trk_delete),m_current_trk)));
             m_menu->items().push_back(MenuElem("_Pack tracks",
                 mem_fun(*this, &trackmenu::pack_tracks)));
@@ -77,12 +79,15 @@ trackmenu::popup_menu( void )
 
     if ( m_mainperf->is_active_track( m_current_trk ))
     {
-        m_menu->items().push_back(MenuElem("Edit", mem_fun(*this,&trackmenu::trk_edit)));
-        m_menu->items().push_back(MenuElem("New sequence", mem_fun(*this,&trackmenu::new_sequence)));
+        m_menu->items().push_back(MenuElem("_Edit", mem_fun(*this,&trackmenu::trk_edit)));
+        m_menu->items().push_back(MenuElem("_Copy", mem_fun(*this,&trackmenu::trk_copy)));
+
         if(! m_mainperf->is_track_in_edit( m_current_trk ))
         {
             m_menu->items().push_back(MenuElem("Cut", mem_fun(*this,&trackmenu::trk_cut)));
         }
+
+        m_menu->items().push_back(SeparatorElem());
 
         if( m_mainperf->get_track( m_current_trk ) != NULL)
         {
@@ -98,16 +103,16 @@ trackmenu::popup_menu( void )
             }
             if(can_we_insert_delete)
             {
-                m_menu->items().push_back(MenuElem("Insert row",
+                m_menu->items().push_back(MenuElem("_Insert row",
                         sigc::bind(mem_fun(*this,&trackmenu::trk_insert),m_current_trk)));
-                m_menu->items().push_back(MenuElem("Delete row",
+                m_menu->items().push_back(MenuElem("_Delete row",
                         sigc::bind(mem_fun(*this,&trackmenu::trk_delete),m_current_trk)));
                 m_menu->items().push_back(MenuElem("_Pack tracks",
                         mem_fun(*this, &trackmenu::pack_tracks)));
             }
         }
 
-        m_menu->items().push_back(MenuElem("Copy", mem_fun(*this,&trackmenu::trk_copy)));
+        m_menu->items().push_back(SeparatorElem());
 
         Menu *merge_seq_menu = NULL;
         char name[40];
@@ -137,12 +142,15 @@ trackmenu::popup_menu( void )
                     sigc::bind(mem_fun(*this,&trackmenu::trk_merge_seq),some_track, a_seq)));
             }
         }
+
+        m_menu->items().push_back(MenuElem("_New sequence", mem_fun(*this,&trackmenu::new_sequence)));
+
         if(merge_seq_menu != NULL) {
             m_menu->items().push_back(MenuElem("Merge sequence", *merge_seq_menu));
         }
 
     } else {
-        if(m_something_to_paste) m_menu->items().push_back(MenuElem("Paste", mem_fun(*this,&trackmenu::trk_paste)));
+        if(m_something_to_paste) m_menu->items().push_back(MenuElem("_Paste", mem_fun(*this,&trackmenu::trk_paste)));
     }
 
     if ( m_mainperf->is_active_track( m_current_trk )) {
