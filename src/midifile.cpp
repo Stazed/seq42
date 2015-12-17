@@ -511,48 +511,41 @@ bool midifile::parse (perform * a_perf)
 void
 midifile::write_long (unsigned long a_x)
 {
-    m_l.push_front ((a_x & 0xFF000000) >> 24);
-    m_l.push_front ((a_x & 0x00FF0000) >> 16);
-    m_l.push_front ((a_x & 0x0000FF00) >> 8);
-    m_l.push_front ((a_x & 0x000000FF));
+    write_byte ((a_x & 0xFF000000) >> 24);
+    write_byte ((a_x & 0x00FF0000) >> 16);
+    write_byte ((a_x & 0x0000FF00) >> 8);
+    write_byte ((a_x & 0x000000FF));
 }
 
 
 void
 midifile::write_short (unsigned short a_x)
 {
-    m_l.push_front ((a_x & 0xFF00) >> 8);
-    m_l.push_front ((a_x & 0x00FF));
+    write_byte ((a_x & 0xFF00) >> 8);
+    write_byte ((a_x & 0x00FF));
+}
+
+
+void
+midifile::write_byte (unsigned char a_x)
+{
+    m_l.push_back (a_x);
 }
 
 bool midifile::write_sequences (perform * a_perf)
 {
-    printf("FIXME midifile::write_sequences()\n");
-#if 0
-    /* open binary file */
-    ofstream file (m_name.c_str (), ios::out | ios::binary | ios::trunc);
-
-    if (!file.is_open ())
-        return false;
-
-    /* used in small loops */
-    int i;
-
-    /* sequence pointer */
-    sequence * seq;
-    event e;
-    list<char> l;
-
     int numtracks = 0;
 
-    /* get number of tracks */
-    for (i = 0; i < c_max_track; i++)
+    /* get number of track sequences */
+    for (int i = 0; i < c_max_track; i++)
     {
-        if (a_perf->is_active_track (i))
-            numtracks++;
+        if (a_perf->is_active_track(i))
+        {
+            numtracks += a_perf->get_track(i)->get_number_of_sequences();
+        }
     }
 
-    //printf ("numtracks[%d]\n", numtracks );
+    printf ("numtracks[%d]\n", numtracks );
 
     /* write header */
     /* 'MThd' and length of 6 */
@@ -565,69 +558,86 @@ bool midifile::write_sequences (perform * a_perf)
     write_short (c_ppqn);
 
     /* We should be good to load now   */
-    /* for each Track in the midi file */
-    for (int curTrack = 0; curTrack < c_max_sequence; curTrack++)
+    /* for each Track Sequence in the midi file */
+
+    numtracks = 0; // reset for seq->fill_list position
+
+    for (int curTrack = 0; curTrack < c_max_track; curTrack++)
     {
-
-        if (a_perf->is_active_track (curTrack))
+        //printf ("track[%d]\n", curTrack );
+        if (a_perf->is_active_track(curTrack))
         {
+            unsigned int num_seq = a_perf->get_track(curTrack)->get_number_of_sequences();
 
-            //printf ("track[%d]\n", curTrack );
-
-            seq = a_perf->get_sequence (curTrack);
-            seq->fill_list (&l, curTrack);
-
-            /* magic number 'MTrk' */
-            write_long (0x4D54726B);
-            write_long (l.size ());
-
-            //printf("MTrk len[%d]\n", l.size());
-
-            while (l.size () > 0)
+            /* sequence pointer */
+            for (unsigned int a_seq = 0; a_seq < num_seq; a_seq++ )
             {
-                m_l.push_front (l.back ());
-                l.pop_back ();
+                sequence * seq = a_perf->get_track(curTrack)->get_sequence(a_seq);
+
+                //printf ("seq[%d]\n", a_seq );
+
+                list<char> l;
+                seq->fill_list (&l, numtracks);
+
+                /* magic number 'MTrk' */
+                write_long (0x4D54726B);
+                write_long (l.size ());
+
+                //printf("MTrk len[%d]\n", l.size());
+
+                while (l.size () > 0)
+                {
+                    write_byte (l.back ());
+                    l.pop_back ();
+                }
+
+                numtracks++;
             }
         }
     }
+
+
+    /* midi control */
+    write_long (c_midictrl);
+    write_long (0);
 
     /* bus mute/unmute data */
     write_long (c_midiclocks);
     write_long (0);
 
+    /* notepad data */
+    write_long (c_notes);
+    write_short (0);
 
     /* bpm */
     write_long (c_bpmtag);
     write_long (a_perf->get_bpm ());
 
+    /* write out the mute groups */
+    write_long(c_mutegroups);
+    write_long(0);
 
-    int data_size = m_l.size ();
-    m_d = (unsigned char *) new char[data_size];
+    /* open binary file */
+    ofstream file (m_name.c_str (), ios::out | ios::binary | ios::trunc);
 
-    m_pos = 0;
+    if (!file.is_open ())
+        return false;
 
-    for (list < unsigned char >::reverse_iterator ri = m_l.rbegin ();
-            ri != m_l.rend (); ri++)
+    /* enable bufferization */
+    char file_buffer[1024];
+    file.rdbuf()->pubsetbuf(file_buffer, sizeof file_buffer);
+
+    for (list < unsigned char >::iterator i = m_l.begin ();
+            i != m_l.end (); i++)
     {
-        read_byte () = *ri;
+      char c = *i;
+      file.write(&c, 1);
     }
 
     m_l.clear ();
 
-    // super slow
-    //while ( m_l.size() > 0 ){
-    //read_byte () =  m_l.back();
-    //  m_l.pop_back();
-    //}
-
-    file.write ((char *) m_d, data_size);
-    file.close ();
-
-    delete[]m_d;
-
     return true;
-#endif
-    return false; // FIXME
+
 }
 
 
