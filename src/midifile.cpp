@@ -455,7 +455,7 @@ bool midifile::parse (perform * a_perf)
     if ((file_size - m_pos) > (int) sizeof (unsigned long))
     {
         ID = read_long ();
-        if (ID == c_midictrl) // Not used: all the read_byte() change m_pos to correct position for c_bpmtag
+        if (ID == c_midictrl) // Not used: SEQ24 stuff -  change m_pos to correct position for c_bpmtag
         {
             unsigned long len = read_long ();
             m_pos += len;
@@ -474,7 +474,7 @@ bool midifile::parse (perform * a_perf)
         }
     }
 
-    if ((file_size - m_pos) > (int) sizeof (unsigned long)) // FIXME there has got to be a better way
+    if ((file_size - m_pos) > (int) sizeof (unsigned long)) // SEQ24 stuff for matching
     {
         /* Get ID + Length */
         ID = read_long ();
@@ -500,6 +500,55 @@ bool midifile::parse (perform * a_perf)
         {
             long bpm = read_long ();
             a_perf->set_bpm (bpm);
+        }
+    }
+
+    // read in the mute group info -- SEQ24 stuff
+    if ((file_size - m_pos) > (int) sizeof (unsigned long))
+    {
+        ID = read_long ();
+        if (ID == c_mutegroups)
+        {
+            long length = read_long ();
+
+            if(length != 0) // means came from SEQ24
+            {
+                if (1024 != length) // c_gmute_tracks = 32 * 32 = 1024 (from seq24)
+                {
+                    printf( "corrupt data in mutegroup section\n" );
+                }
+
+                for (int i = 0; i < 32; i++) // c_seqs_in_set == 4 * 8 = 32 (from seq24)
+                {
+                    read_long (); // a_perf->select_group_mute(read_long ());
+                    for (int k = 0; k < 32; ++k)
+                    {
+                        read_long ();// a_perf->set_group_mute_state(k, read_long ());
+                    }
+                }
+            }
+        }
+    }
+
+    if ((file_size - m_pos) > (int) sizeof (unsigned int))
+    {
+        /* Get ID + Length */
+        ID = read_long ();
+        if (ID == c_bp_measure)
+        {
+            long bp_mes = read_long ();
+            a_perf->set_bp_measure(bp_mes);
+        }
+    }
+
+    if ((file_size - m_pos) > (int) sizeof (unsigned int))
+    {
+        /* Get ID + Length */
+        ID = read_long ();
+        if (ID == c_beat_width)
+        {
+            long bw = read_long ();
+            a_perf->set_bw(bw);
         }
     }
 
@@ -616,6 +665,14 @@ bool midifile::write_sequences (perform * a_perf)
     /* write out the mute groups */
     write_long(c_mutegroups);
     write_long(0);
+
+    /* write out the beats per measure */
+    write_long(c_bp_measure);
+    write_long(a_perf->get_bp_measure());
+
+    /* write out the beat width */
+    write_long(c_beat_width);
+    write_long(a_perf->get_bw());
 
     /* open binary file */
     ofstream file (m_name.c_str (), ios::out | ios::binary | ios::trunc);
