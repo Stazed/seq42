@@ -2835,11 +2835,14 @@ sequence::fill_list( list<char> *a_list, int a_pos )
     a_list->push_front( 0x03 );
 
     int length =  m_name.length();
-    if ( length > 0x7F ) length = 0x7f;
+
+    if ( length > 0x7F )
+        length = 0x7f;
+
     a_list->push_front( length );
 
     for ( int i=0; i< length; i++ )
-	a_list->push_front( m_name.c_str()[i] );
+        a_list->push_front( m_name.c_str()[i] );
 
     long timestamp = 0, delta_time = 0, prev_timestamp = 0;
     list<event>::iterator i;
@@ -2889,6 +2892,8 @@ sequence::fill_list( list<char> *a_list, int a_pos )
         }
     }
 
+    /* triggers for this sequence */
+
     track *a_track = get_track();
     list < trigger > seq_list_trigger;
     trigger *a_trig;
@@ -2910,9 +2915,7 @@ sequence::fill_list( list<char> *a_list, int a_pos )
     seq_list_trigger.sort();
 
     int num_triggers = seq_list_trigger.size();
-//    int num_triggers = m_list_trigger.size();
     list<trigger>::iterator t = seq_list_trigger.begin();
-//    list<trigger>::iterator t = m_list_trigger.begin();
     list<trigger>::iterator p;
 
     addListVar( a_list, 0 );
@@ -2930,8 +2933,9 @@ sequence::fill_list( list<char> *a_list, int a_pos )
         //        (*t).m_tick_start, (*t).m_tick_end, (*t).m_offset );
 
         addLongList( a_list, (*t).m_tick_start );
-            addLongList( a_list, (*t).m_tick_end );
-            addLongList( a_list, (*t).m_offset );
+        addLongList( a_list, (*t).m_tick_end );
+        addLongList( a_list, (*t).m_offset );
+
         t++;
     }
 

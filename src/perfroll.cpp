@@ -747,8 +747,19 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                     ret = true;
                 }
                 /* copy */
-                if ( a_p0->keyval == GDK_c || a_p0->keyval == GDK_C ){
+                if ( a_p0->keyval == GDK_c || a_p0->keyval == GDK_C )
+                {
+                    /* for cross-track trigger paste we need to clear all previous trigger copies
+                       or the cross track routine will just grab the earliest one if leftover */
 
+                    for ( int t=0; t<c_max_track; ++t )
+                    {
+                        if (! m_mainperf->is_active_track( t ))
+                        {
+                            continue;
+                        }
+                        m_mainperf->get_track(t)->unset_trigger_copied(); // clear previous copies
+                    }
                     m_mainperf->get_track( m_drop_track )->copy_selected_trigger();
                     cross_track_paste = false;
                     ret = true;
