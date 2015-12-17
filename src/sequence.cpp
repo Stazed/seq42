@@ -2846,53 +2846,73 @@ sequence::fill_list( list<char> *a_list, int a_pos )
 
     for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
 
-	event e = (*i);
-	timestamp = e.get_timestamp();
-	delta_time = timestamp - prev_timestamp;
-	prev_timestamp = timestamp;
+        event e = (*i);
+        timestamp = e.get_timestamp();
+        delta_time = timestamp - prev_timestamp;
+        prev_timestamp = timestamp;
 
-	/* encode delta_time */
-	addListVar( a_list, delta_time );
+        /* encode delta_time */
+        addListVar( a_list, delta_time );
 
-	/* now that the timestamp is encoded, do the status and
-	   data */
+        /* now that the timestamp is encoded, do the status and
+           data */
 
-    /* FIXME: move channel stuff to track */
-	a_list->push_front( e.m_status | get_midi_channel() );
+        /* FIXME: move channel stuff to track */
+        a_list->push_front( e.m_status | get_midi_channel() );
 
-	switch( e.m_status & 0xF0 ){
+        switch( e.m_status & 0xF0 ){
 
-            case 0x80:
-            case 0x90:
-            case 0xA0:
-            case 0xB0:
-            case 0xE0:
+                case 0x80:
+                case 0x90:
+                case 0xA0:
+                case 0xB0:
+                case 0xE0:
 
-                a_list->push_front(  e.m_data[0] );
-                a_list->push_front(  e.m_data[1] );
+                    a_list->push_front(  e.m_data[0] );
+                    a_list->push_front(  e.m_data[1] );
 
-                //printf ( "- d[%2X %2X]\n" , e.m_data[0], e.m_data[1] );
+                    //printf ( "- d[%2X %2X]\n" , e.m_data[0], e.m_data[1] );
 
-                break;
+                    break;
 
-            case 0xC0:
-            case 0xD0:
+                case 0xC0:
+                case 0xD0:
 
-                a_list->push_front(  e.m_data[0] );
+                    a_list->push_front(  e.m_data[0] );
 
-                //printf ( "- d[%2X]\n" , e.m_data[0] );
+                    //printf ( "- d[%2X]\n" , e.m_data[0] );
 
-                break;
+                    break;
 
-            default:
-                break;
-	}
+                default:
+                    break;
+        }
     }
 
-// FIXME: this needs to be refactored to take tracks into account
-/*
-    int num_triggers = m_list_trigger.size();
-    list<trigger>::iterator t = m_list_trigger.begin();
+    track *a_track = get_track();
+    list < trigger > seq_list_trigger;
+    trigger *a_trig;
+
+    std::vector<trigger> trig_vect;
+    a_track->get_trak_triggers(trig_vect); // all triggers for the track
+
+    for(unsigned ii = 0; ii < trig_vect.size(); ii++)
+    {
+        a_trig = &trig_vect[ii];
+
+        if(a_trig->m_sequence == a_track->get_sequence_index(this)) // select only triggers for this sequence
+        {
+           seq_list_trigger.push_front( *a_trig );
+        }
+        a_trig = NULL;
+    }
+
+    seq_list_trigger.sort();
+
+    int num_triggers = seq_list_trigger.size();
+//    int num_triggers = m_list_trigger.size();
+    list<trigger>::iterator t = seq_list_trigger.begin();
+//    list<trigger>::iterator t = m_list_trigger.begin();
     list<trigger>::iterator p;
 
     addListVar( a_list, 0 );
@@ -2909,12 +2929,12 @@ sequence::fill_list( list<char> *a_list, int a_pos )
         //printf( "> start[%d] end[%d] offset[%d]\n",
         //        (*t).m_tick_start, (*t).m_tick_end, (*t).m_offset );
 
-	addLongList( a_list, (*t).m_tick_start );
-        addLongList( a_list, (*t).m_tick_end );
-        addLongList( a_list, (*t).m_offset );
-	t++;
+        addLongList( a_list, (*t).m_tick_start );
+            addLongList( a_list, (*t).m_tick_end );
+            addLongList( a_list, (*t).m_offset );
+        t++;
     }
-*/
+
 
     /* FIXME: move bus and channel stuff into track */
     /* bus */
