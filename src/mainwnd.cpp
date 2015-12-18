@@ -269,18 +269,12 @@ mainwnd::mainwnd(perform *a_p)
     m_menu_snap->items().push_back(MenuElem("1/40",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 40  )));
     m_menu_snap->items().push_back(SeparatorElem());
     m_menu_snap->items().push_back(MenuElem("1/7",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 7  )));
-    m_menu_snap->items().push_back(MenuElem("1/14",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 14  )));
-    m_menu_snap->items().push_back(MenuElem("1/28",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 28  )));
-    m_menu_snap->items().push_back(MenuElem("1/56",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 56  )));
-    m_menu_snap->items().push_back(SeparatorElem());
     m_menu_snap->items().push_back(MenuElem("1/9",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 9  )));
-    m_menu_snap->items().push_back(MenuElem("1/18",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 18  )));
     m_menu_snap->items().push_back(MenuElem("1/11",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 11  )));
-    m_menu_snap->items().push_back(MenuElem("1/22",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 22  )));
     m_menu_snap->items().push_back(MenuElem("1/13",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 13  )));
-    m_menu_snap->items().push_back(MenuElem("1/26",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 26  )));
+    m_menu_snap->items().push_back(MenuElem("1/14",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 14  )));
     m_menu_snap->items().push_back(MenuElem("1/15",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 15  )));
-    m_menu_snap->items().push_back(MenuElem("1/30",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 30  )));
+
 
     /* snap */
     m_button_snap = manage( new Button());
