@@ -133,8 +133,8 @@ mainwnd::mainwnd(perform *a_p)
 
     m_menu_edit->items().push_back(MenuElem("_Midi export (Seq 24)",
             sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 1)));
-    m_menu_edit->items().push_back(MenuElem("_Midi export song",
-            sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 2)));
+//    m_menu_edit->items().push_back(MenuElem("_Midi export song",
+//           sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 2)));
 
     /* help menu items */
     m_menu_help->items().push_back(MenuElem("_About...",
@@ -858,7 +858,7 @@ void mainwnd::file_save_as(int type)
 {
     // default type 0 = .s42
     //         type 1 = .mid .midi etc for Seq24 export
-    //         type 2 = .mid .midi etc for midi song export
+    //         type 2 = .mid .midi etc for midi song export - TODO
 
     Gtk::FileChooserDialog dialog("Save file as",
                       Gtk::FILE_CHOOSER_ACTION_SAVE);
@@ -951,7 +951,7 @@ void mainwnd::file_save_as(int type)
                 export_sequences(fname);
             }
 
-            if(type == 2)
+            if(type == 2) // TODO
             {
                 export_song(fname);
             }

@@ -40,7 +40,7 @@ F8 loop off
 
 [ ] Add to Edit menu a new action "Delete all untriggered sequences"
 
-[ ] Add to Edit menu a new action "Pack track list" (shifts all active tracks 
+[x] Add to Edit menu a new action "Pack track list" (shifts all active tracks 
     to the top of the track list).  After this change, change the file save 
     format such that each active track in the file includes an index int. 
     Loading a file should put each track back in the same slot (allowing for
