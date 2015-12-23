@@ -2257,6 +2257,34 @@ perform::load( const Glib::ustring& a_filename )
         }
     }
 
+    /* for some reason, the initial load does not fully fill the song triggers with seq data */
+    /* so this is my inefficient solution until I figure out why... FIXME */
+
+    for(int i = 0; i < c_max_track; i++)
+    {
+        if ( is_active_track(i) == true )
+        {
+           m_tracks_clipboard[i] = *get_track(i);
+        }
+        else
+            m_tracks_clipboard[i].m_is_NULL = true;
+    }
+
+    for(int i = 0; i < c_max_track; i++)
+    {
+        if ( is_active_track(i) == true )
+        {
+            delete_track(i);
+            if(!m_tracks_clipboard[i].m_is_NULL)
+            {
+                new_track(i);
+                *get_track(i) = m_tracks_clipboard[i];
+                get_track(i)->set_dirty();
+            }
+        }
+    }
+    /* End inefficient solution */
+
     file.close();
     return true;
 }
