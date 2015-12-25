@@ -966,10 +966,25 @@ perform::pop_perf_redo( void )
     set_have_undo();
 }
 
+void
+perform::check_max_undo_redo( void )
+{
+    if(m_undo_track_count > 100 || m_redo_track_count > 100 ||
+        m_undo_perf_count > 40 || m_redo_perf_count > 40 )
+    {
+        m_undo_track_count = 0;
+        m_redo_track_count = 0;
+        m_undo_perf_count = 0;
+        m_redo_perf_count = 0;
+        undo_vect.clear();
+        redo_vect.clear();
+    }
+}
 
 void
 perform::set_have_undo( void )
 {
+    check_max_undo_redo();
     if(undo_vect.size() > 0)
     {
         m_have_undo = true;
@@ -984,6 +999,7 @@ perform::set_have_undo( void )
 void
 perform::set_have_redo( void )
 {
+    check_max_undo_redo();
     if(redo_vect.size() > 0)
     {
         m_have_redo = true;

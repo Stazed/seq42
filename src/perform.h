@@ -206,11 +206,12 @@ class perform
     void push_track_undo(int a_track );
     void pop_track_undo(int a_track );
     void pop_track_redo(int a_track );
-    // track insert, track squash, midi import
+    // row insert/delete, track pack, midi import
     void push_perf_undo( void );
     void pop_perf_undo( void );
     void pop_perf_redo( void );
 
+    void check_max_undo_redo( void );
     void set_have_undo( void );
     void set_have_redo( void );
     void set_have_modified(bool m_modified);
