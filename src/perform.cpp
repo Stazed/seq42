@@ -978,6 +978,11 @@ perform::check_max_undo_redo( void )
         m_redo_perf_count = 0;
         undo_vect.clear();
         redo_vect.clear();
+        for(int i = 0; i < c_max_track; i++)
+        {
+            if ( is_active_track(i) == true )
+                m_tracks[i]->clear_trigger_undo_redo();
+        }
     }
 }
 

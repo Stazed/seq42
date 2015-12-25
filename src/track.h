@@ -98,6 +98,7 @@ class track
     void push_trigger_undo (void);
     void pop_trigger_undo (void);
     void pop_trigger_redo (void);
+    void clear_trigger_undo_redo ( void );
 
     int new_sequence( );
     void delete_sequence( int a_num );

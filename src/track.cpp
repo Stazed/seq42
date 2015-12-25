@@ -332,6 +332,15 @@ track::pop_trigger_redo( void )
     unlock();
 }
 
+void
+track::clear_trigger_undo_redo ( void )
+{
+    if(m_list_trigger_undo.size() > 0)
+        m_list_trigger_undo.pop();
+
+    if(m_list_trigger_redo.size() > 0)
+        m_list_trigger_redo.pop();
+}
 
 void
 track::set_master_midi_bus( mastermidibus *a_mmb )
