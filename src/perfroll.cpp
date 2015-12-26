@@ -788,7 +788,6 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                                 ret = true;
                                 cross_track_paste = true;
                                 cross_track = true;
-                                //m_mainperf->push_track_undo(m_drop_track);
                                 break;
                             }
                         }
@@ -800,7 +799,7 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                         {
                             m_mainperf->push_trigger_undo(m_drop_track);
                             m_mainperf->get_track( m_drop_track )->paste_trigger();
-                            cross_track = false; // is this necessary?
+                            cross_track = false;
                             ret = true;
                         }
 

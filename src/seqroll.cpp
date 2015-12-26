@@ -1886,6 +1886,7 @@ bool Seq42SeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& ths
              a_ev->button == 2 )
         {
 
+
             /* selection, normal x */
             ths.m_current_x = ths.m_drop_x = norm_x;
 
@@ -1901,6 +1902,7 @@ bool Seq42SeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& ths
                 ths.m_current_x = ths.m_drop_x = snapped_x;
                 ths.convert_xy( ths.m_drop_x, ths.m_drop_y, &tick_s, &note_h );
 
+                ths.m_seqkeys_wid->on_button_press_event(a_ev); // FIXME play note
                 // test if a note is already there
                 // fake select, if so, no add
                 if ( ! ths.m_seq->select_note_events( tick_s, note_h,
@@ -1929,7 +1931,6 @@ bool Seq42SeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& ths
                         ths.m_seq->unselect();
                     }
 
-
                     /* on direct click select only one event */
                     numsel = ths.m_seq->select_note_events( tick_s,note_h,tick_s,note_h,
                                                         sequence::e_select_one );
@@ -1951,12 +1952,12 @@ bool Seq42SeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& ths
                                                 tick_s, note_h,
                                                 sequence::e_is_selected ))
                 {
+                    ths.m_seqkeys_wid->on_button_press_event(a_ev); // FIXME play note
                     // moving - left click only
                     if ( a_ev->button == 1 && !(a_ev->state & GDK_CONTROL_MASK) )
                     {
                         ths.m_moving_init = true;
                         needs_update = true;
-
 
                         /* get the box that selected elements are in */
                         ths.m_seq->get_selected_box( &tick_s, &note_h,
@@ -2061,7 +2062,6 @@ bool Seq42SeqRollInput::on_button_release_event(GdkEventButton* a_ev, seqroll& t
             ths.convert_xy( x+w, y+h, &tick_f, &note_l );
 
             ths.m_seq->select_note_events( tick_s, note_h, tick_f, note_l, sequence::e_select );
-
             needs_update = true;
         }
 
@@ -2128,6 +2128,9 @@ bool Seq42SeqRollInput::on_button_release_event(GdkEventButton* a_ev, seqroll& t
         //redraw_events();
 
     }
+    ths.m_seqkeys_wid->on_button_release_event(a_ev); // FIXME play note off
+    ths.m_seqkeys_wid->m_keying = false; // FIXME For shut off piano roll
+
     return true;
 }
 
@@ -2152,8 +2155,14 @@ bool Seq42SeqRollInput::on_motion_notify_event(GdkEventMotion* a_ev, seqroll& th
 
     if ( ths.m_selecting || ths.m_moving || ths.m_growing || ths.m_paste ){
 
-        if ( ths.m_moving || ths.m_paste ){
+        if ( ths.m_moving || ths.m_paste )
+        {
             ths.snap_x( &ths.m_current_x );
+        }
+
+        if(ths.m_moving)
+        {
+            ths.m_seqkeys_wid->on_motion_notify_event(a_ev);//  play note FIXME note off
         }
 
         ths.draw_selection_on_window();
@@ -2167,6 +2176,9 @@ bool Seq42SeqRollInput::on_motion_notify_event(GdkEventMotion* a_ev, seqroll& th
         ths.convert_xy( ths.m_current_x, ths.m_current_y, &tick, &note );
 
         ths.m_seq->add_note( tick, ths.m_note_length - c_note_off_margin, note, true );
+
+        ths.m_seqkeys_wid->on_motion_notify_event(a_ev);//  play note FIXME note off
+
         return true;
     }
 

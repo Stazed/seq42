@@ -43,29 +43,29 @@
 /* holds the left side piano */
 class seqkeys : public Gtk::DrawingArea
 {
- private: 
+ private:
 
     Glib::RefPtr<Gdk::GC> m_gc;
     Glib::RefPtr<Gdk::Window> m_window;
     Gdk::Color    m_black, m_white, m_grey;
 
     Glib::RefPtr<Gdk::Pixmap> m_pixmap;
-    
+
     sequence *m_seq;
 
     Gtk::Adjustment   *m_vadjust;
-    
+
     int m_scroll_offset_key;
     int m_scroll_offset_y;
 
     int m_window_x;
     int m_window_y;
-    
+
     void on_realize();
     bool on_expose_event(GdkEventExpose* a_ev);
-    bool on_button_press_event(GdkEventButton* a_ev); 
-    bool on_button_release_event(GdkEventButton* a_ev);
-    bool on_motion_notify_event(GdkEventMotion* a_p0);
+//    bool on_button_press_event(GdkEventButton* a_ev);
+//    bool on_button_release_event(GdkEventButton* a_ev);
+//    bool on_motion_notify_event(GdkEventMotion* a_p0);
     bool on_leave_notify_event(GdkEventCrossing* p0);
     bool on_enter_notify_event(GdkEventCrossing* p0);
     bool on_scroll_event( GdkEventScroll* a_ev);
@@ -77,7 +77,7 @@ class seqkeys : public Gtk::DrawingArea
     bool m_hint_state;
     int m_hint_key;
 
-    bool m_keying;
+//    bool m_keying;
     int m_keying_note;
 
     int          m_scale;
@@ -85,7 +85,7 @@ class seqkeys : public Gtk::DrawingArea
 
     void draw_key( int a_key, bool a_state );
     void on_size_allocate(Gtk::Allocation&);
-    
+
     void change_vert( void );
     void force_draw( void );
 
@@ -95,6 +95,10 @@ class seqkeys : public Gtk::DrawingArea
 
 public:
 
+    bool on_button_press_event(GdkEventButton* a_ev); // FIXME encapsulate
+    bool on_button_release_event(GdkEventButton* a_ev);// FIXME
+    bool on_motion_notify_event(GdkEventMotion* a_p0);// FIXME
+    bool m_keying;// FIXME
     /* sets key to grey */
     void set_hint_key( int a_key );
 
@@ -104,7 +108,7 @@ public:
     seqkeys( sequence *a_seq,
              Gtk::Adjustment *a_vadjust );
 
-    
+
     void set_scale( int a_scale );
     void set_key( int a_key );
 
