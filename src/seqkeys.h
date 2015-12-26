@@ -63,9 +63,9 @@ class seqkeys : public Gtk::DrawingArea
 
     void on_realize();
     bool on_expose_event(GdkEventExpose* a_ev);
-//    bool on_button_press_event(GdkEventButton* a_ev);
-//    bool on_button_release_event(GdkEventButton* a_ev);
-//    bool on_motion_notify_event(GdkEventMotion* a_p0);
+    bool on_button_press_event(GdkEventButton* a_ev);
+    bool on_button_release_event(GdkEventButton* a_ev);
+    bool on_motion_notify_event(GdkEventMotion* a_p0);
     bool on_leave_notify_event(GdkEventCrossing* p0);
     bool on_enter_notify_event(GdkEventCrossing* p0);
     bool on_scroll_event( GdkEventScroll* a_ev);
@@ -77,7 +77,7 @@ class seqkeys : public Gtk::DrawingArea
     bool m_hint_state;
     int m_hint_key;
 
-//    bool m_keying;
+    bool m_keying;
     int m_keying_note;
 
     int          m_scale;
@@ -95,10 +95,10 @@ class seqkeys : public Gtk::DrawingArea
 
 public:
 
-    bool on_button_press_event(GdkEventButton* a_ev); // FIXME encapsulate
-    bool on_button_release_event(GdkEventButton* a_ev);// FIXME
-    bool on_motion_notify_event(GdkEventMotion* a_p0);// FIXME
-    bool m_keying;// FIXME
+    void set_listen_button_press(GdkEventButton* a_ev);
+    void set_listen_button_release(GdkEventButton* a_ev);
+    void set_listen_motion_notify(GdkEventMotion* a_p0);
+
     /* sets key to grey */
     void set_hint_key( int a_key );
 
