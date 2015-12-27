@@ -640,26 +640,13 @@ mainwnd::redo_perf()
 void
 mainwnd::start_playing( void )
 {
-    // Sam decided to no longer auto switch mode.
-    //global_jack_start_mode = true;  // set song mode
-
-    if(global_jack_start_mode) {
-        m_mainperf->position_jack( true );
-        m_mainperf->start_jack( );
-        m_mainperf->start( true );
-    } else {
-        m_mainperf->position_jack( false );
-        m_mainperf->start( false );
-        m_mainperf->start_jack( );
-    }
+    m_mainperf->start_playing();
 }
 
 void
 mainwnd::stop_playing( void )
 {
-
-    m_mainperf->stop_jack();
-    m_mainperf->stop();
+    m_mainperf->stop_playing();
 }
 
 void

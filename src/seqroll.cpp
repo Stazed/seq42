@@ -1062,12 +1062,12 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
     // allow toggling when the same key is mapped to both triggers (i.e. SPACEBAR)
     bool dont_toggle = m_perform->m_key_start != m_perform->m_key_stop;
     if ( a_p0->keyval ==  m_perform->m_key_start && (dont_toggle || !is_pattern_playing) ){
-        start_playing();
+        m_perform->start_playing();
         is_pattern_playing=true;
         return true;
     }
     else if ( a_p0->keyval ==  m_perform->m_key_stop && (dont_toggle || is_pattern_playing) ){
-        stop_playing();
+        m_perform->stop_playing();
         is_pattern_playing=false;
         return true;
     }
@@ -1236,34 +1236,6 @@ seqroll::on_scroll_event( GdkEventScroll* a_ev )
     m_vadjust->clamp_page( val, val + m_vadjust->get_page_size() );
     return true;
 }
-
-void
-seqroll::start_playing( void )
-{
-    // Sam decided not to automatically set live mode and playing flag.
-    //global_jack_start_mode = false;  // set live mode
-    //m_seq->set_playing( true );
-    //m_toggle_play->set_active( true );
-
-    if(global_jack_start_mode) {
-        m_perform->position_jack( true );
-        m_perform->start_jack( );
-        m_perform->start( true );
-    } else {
-        m_perform->position_jack( false );
-        m_perform->start( false );
-        m_perform->start_jack( );
-    }
-}
-
-void
-seqroll::stop_playing( void )
-{
-    m_perform->stop_jack();
-    m_perform->stop();
-}
-
-
 
 //////////////////////////
 // interaction methods

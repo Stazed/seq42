@@ -611,17 +611,14 @@ void
 perfroll::start_playing( void )
 {
     // keep in sync with perfedit's start_playing... wish i could call it directly...
-    m_mainperf->position_jack( true );
-    m_mainperf->start_jack( );
-    m_mainperf->start( true );
+    m_mainperf->start_playing();
 }
 
 void
 perfroll::stop_playing( void )
 {
     // keep in sync with perfedit's stop_playing... wish i could call it directly...
-    m_mainperf->stop_jack();
-    m_mainperf->stop();
+    m_mainperf->stop_playing();
 }
 
 

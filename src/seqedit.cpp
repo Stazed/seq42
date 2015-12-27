@@ -1624,13 +1624,13 @@ seqedit::on_key_press_event( GdkEventKey* a_ev )
 void
 seqedit::start_playing( void )
 {
-    m_seqroll_wid->start_playing();
+    m_mainperf->start_playing();
 }
 
 void
 seqedit::stop_playing( void )
 {
-    m_seqroll_wid->stop_playing();
+    m_mainperf->stop_playing();
 }
 
 void

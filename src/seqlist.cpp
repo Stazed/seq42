@@ -249,25 +249,13 @@ seqlist::del_seq( track *a_track, int a_seq )
 void
 seqlist::start_playing( void )
 {
-    // Sam decided to no longer auto switch mode.
-    //global_jack_start_mode = false;  // set live mode
-
-    if(global_jack_start_mode) {
-        m_perf->position_jack( true );
-        m_perf->start_jack( );
-        m_perf->start( true );
-    } else {
-        m_perf->position_jack( false );
-        m_perf->start( false );
-        m_perf->start_jack( );
-    }
+    m_perf->start_playing();
 }
 
 void
 seqlist::stop_playing( void )
 {
-    m_perf->stop_jack();
-    m_perf->stop();
+   m_perf->stop_playing();
 }
 
 void

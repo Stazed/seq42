@@ -268,6 +268,27 @@ perform::~perform()
 }
 
 
+void
+perform::start_playing( void )
+{
+    if(global_jack_start_mode) {
+        position_jack( true );
+        start_jack( );
+        start( true );
+    } else {
+        position_jack( false );
+        start( false );
+        start_jack( );
+    }
+}
+
+void
+perform::stop_playing( void )
+{
+    stop_jack();
+    stop();
+}
+
 void perform::set_left_tick( long a_tick )
 {
     m_left_tick = a_tick;
