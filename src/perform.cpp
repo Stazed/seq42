@@ -1086,10 +1086,14 @@ void perform::position_jack( bool a_state )
 
 #ifdef JACK_SUPPORT
 
-    if ( m_jack_running ){
+    /*if ( m_jack_running ){
         jack_transport_locate( m_jack_client, 0 );
     }
-    return;
+    return;*/
+
+    if(!m_jack_running)
+        return;
+
 
 
     jack_nframes_t rate = jack_get_sample_rate( m_jack_client ) ;
@@ -1103,9 +1107,11 @@ void perform::position_jack( bool a_state )
     jack_position_t pos;
 
     pos.valid = JackPositionBBT;
-    pos.beats_per_bar = 4;
-    pos.beat_type = 4;
-    pos.ticks_per_beat = c_ppqn * 10;
+    pos.beats_per_bar = m_bp_measure;
+    //pos.beats_per_bar = 4;
+    pos.beat_type = m_bw;
+    //pos.beat_type = 4;
+    pos.ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
     pos.beats_per_minute =  m_master_bus.get_bpm();
 
     /* Compute BBT info from frame number.  This is relatively
@@ -1122,8 +1128,19 @@ void perform::position_jack( bool a_state )
 
     pos.bar_start_tick = pos.bar * pos.beats_per_bar * pos.ticks_per_beat;
     pos.frame_rate = rate;
-    pos.frame = (jack_nframes_t) ( (current_tick * rate * 60.0)
-            / (pos.ticks_per_beat * pos.beats_per_minute) );
+    //pos.frame = (jack_nframes_t) ( (current_tick * rate * 60.0)
+    //        / (pos.ticks_per_beat * pos.beats_per_minute) );
+
+    intmax_t ctticks = ((intmax_t)rate * current_tick * 60.0);
+    long tpb_min = pos.ticks_per_beat * pos.beats_per_minute;
+    intmax_t frame = ctticks / tpb_min;
+    pos.frame = (uint32_t) frame;
+
+    //printf("current_tick [%ld]", current_tick);
+    //printf("rate [%zu]", rate);
+    //printf("ctticks [%jd]\n", (intmax_t)ctticks);
+    //printf("tpb_min [%ld]\n", tpb_min);
+
 
     /*
        ticks * 10 = jack ticks;
@@ -1579,6 +1596,8 @@ void perform::output_func(void)
 
                         if ( current_tick >= get_right_tick() ){
 
+                            position_jack(true); // maybe??
+
                             while ( current_tick >= get_right_tick() ){
 
                                 double size = get_right_tick() - get_left_tick();
@@ -1707,6 +1726,7 @@ void perform::output_func(void)
                 {
                     if ( current_tick >= get_right_tick() )
                     {
+                        position_jack(true); // maybe??
                         double leftover_tick = current_tick - (get_right_tick());
 
                         play( get_right_tick() - 1 );
