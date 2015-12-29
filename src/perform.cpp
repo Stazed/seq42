@@ -25,7 +25,7 @@
 #include <fstream>
 #ifndef __WIN32__
 #  include <time.h>
-#endif
+#endif // __WIN32__
 #include <sched.h>
 
 //For keys
@@ -152,7 +152,7 @@ void perform::init_jack( void )
         } while (0);
     }
 
-#endif
+#endif // JACK_SUPPORT
 }
 
 
@@ -182,7 +182,7 @@ void perform::deinit_jack( void )
         printf( "[JACK sync disabled]\n");
     }
 
-#endif
+#endif // JACK_SUPPORT
 }
 
 
@@ -1066,7 +1066,7 @@ void perform::start_jack(  )
 #ifdef JACK_SUPPORT
     if ( m_jack_running)
         jack_transport_start (m_jack_client );
-#endif
+#endif // JACK_SUPPORT
 }
 
 
@@ -1076,7 +1076,7 @@ void perform::stop_jack(  )
 #ifdef JACK_SUPPORT
     if( m_jack_running )
         jack_transport_stop (m_jack_client);
-#endif
+#endif // JACK_SUPPORT
 }
 
 
@@ -1159,7 +1159,7 @@ void perform::position_jack( bool a_state )
 
     jack_transport_reposition( m_jack_client, &pos );
 
-#endif
+#endif // JACK_SUPPORT
 }
 
 
@@ -1323,16 +1323,16 @@ void* output_thread_func(void *a_pef )
                     " (FIFO), you need to be root.\n");
             pthread_exit(0);
         }
-#endif
+#endif // __WIN32__
     }
 
 #ifdef __WIN32__
     timeBeginPeriod(1);
-#endif
+#endif // __WIN32__
     p->output_func();
 #ifdef __WIN32__
     timeEndPeriod(1);
-#endif
+#endif // __WIN32__
 
     return 0;
 }
@@ -1391,7 +1391,7 @@ int jack_sync_callback(jack_transport_state_t state,
     return 1;
 }
 
-#endif
+#endif // JACK_SUPPORT
 
 
 void perform::output_func(void)
@@ -1439,7 +1439,7 @@ void perform::output_func(void)
 
         /* difference between last and current */
         long delta;
-#endif
+#endif // __WIN32__
 
         /* tick and tick fraction */
         double current_tick   = 0.0;
@@ -1468,7 +1468,10 @@ void perform::output_func(void)
         double jack_ticks_converted = 0.0;
         double jack_ticks_converted_last = 0.0;
         double jack_ticks_delta = 0.0;
-#endif
+        if(m_jack_running && !global_with_jack_master_cond)
+            jack_transport_locate( m_jack_client, m_left_frame );
+#endif // JACK_SUPPORT
+
         for( int i=0; i<100; i++ ){
             stats_all[i] = 0;
             stats_clock[i] = 0;
@@ -1483,7 +1486,6 @@ void perform::output_func(void)
             set_orig_ticks( m_starting_tick );
         }
 
-
         int ppqn = m_master_bus.get_ppqn();
 #ifndef __WIN32__
         /* get start time position */
@@ -1497,7 +1499,7 @@ void perform::output_func(void)
 
         if ( global_stats )
             stats_last_clock_us= last * 1000;
-#endif
+#endif // __WIN32__
 
         while( m_running ){
 
@@ -1516,7 +1518,7 @@ void perform::output_func(void)
                 clock_gettime(CLOCK_REALTIME, &stats_loop_start);
 #else
                 stats_loop_start = timeGetTime();
-#endif
+#endif // __WIN32__
             }
 
 
@@ -1532,7 +1534,7 @@ void perform::output_func(void)
             delta = current - last;
             long delta_us = delta * 1000;
             //printf( "  delta [0x%x]\n", delta );
-#endif
+#endif // __WIN32__
 
             /* delta time to ticks */
             /* bpm */
@@ -1599,8 +1601,6 @@ void perform::output_func(void)
 
                         if ( current_tick >= get_right_tick() ){
 
-                            //position_jack(true); // maybe??
-
                             while ( current_tick >= get_right_tick() ){
 
                                 double size = get_right_tick() - get_left_tick();
@@ -1611,7 +1611,7 @@ void perform::output_func(void)
                             reset_sequences();
                             set_orig_ticks( (long)current_tick );
 
-                            if(m_jack_running)
+                            if(m_jack_running && !global_with_jack_master_cond)
                                 jack_transport_locate( m_jack_client, m_left_frame );
                         }
                     }
@@ -1707,7 +1707,7 @@ void perform::output_func(void)
             } /* if jack running */
             else
             {
-#endif
+#endif // JACK_SUPPORT
                 /* default if jack is not compiled in, or not running */
                 /* add delta to current ticks */
                 clock_tick     += delta_tick;
@@ -1717,10 +1717,12 @@ void perform::output_func(void)
 
 #ifdef JACK_SUPPORT
             }
-#endif
+#endif // JACK_SUPPORT
 
             /* init_clock will be true when we run for the first time, or
              * as soon as jack gets a good lock on playback */
+
+
 
             if (init_clock) {
                 m_master_bus.init_clock( clock_tick );
@@ -1739,9 +1741,10 @@ void perform::output_func(void)
 
                         set_orig_ticks( get_left_tick() );
                         current_tick = (double) get_left_tick() + leftover_tick;
-                        if(m_jack_running)
+#ifdef JACK_SUPPORT
+                        if(m_jack_running && !global_with_jack_master_cond)
                             jack_transport_locate( m_jack_client, m_left_frame );
-                        //position_jack(true); // maybe??
+#endif // JACK_SUPPORT
                         //printf("current_tick - outputting [%ld]\n",(long) current_tick);
                     }
                 }
@@ -1764,7 +1767,7 @@ void perform::output_func(void)
                             long current_us = (current.tv_sec * 1000000) + (current.tv_nsec / 1000);
 #else
                             long current_us = current * 1000;
-#endif
+#endif // __WIN32__
                             stats_clock_width_us = current_us - stats_last_clock_us;
                             stats_last_clock_us = current_us;
 
@@ -1799,7 +1802,7 @@ void perform::output_func(void)
             delta = current - last;
             long elapsed_us = delta * 1000;
             //printf( "        elapsed_us[%ld]\n", elapsed_us );
-#endif
+#endif // __WIN32__
 
             /* now, we want to trigger every c_thread_trigger_width_ms,
                and it took us delta_us to play() */
@@ -1839,7 +1842,7 @@ void perform::output_func(void)
                 Sleep(delta);
 
             }
-#endif
+#endif // __WIN32__
 
             else {
 
@@ -1852,7 +1855,7 @@ void perform::output_func(void)
                 clock_gettime(CLOCK_REALTIME, &stats_loop_finish);
 #else
                 stats_loop_finish = timeGetTime();
-#endif
+#endif // __WIN32__
             }
 
             if ( global_stats ){
@@ -1864,7 +1867,7 @@ void perform::output_func(void)
 #else
                 delta = stats_loop_finish - stats_loop_start;
                 long delta_us = delta * 1000;
-#endif
+#endif // __WIN32__
 
                 int index = delta_us / 100;
                 if ( index >= 100  ) index = 99;
@@ -1950,17 +1953,17 @@ void* input_thread_func(void *a_pef )
                     " (FIFO), you need to be root.\n");
             pthread_exit(0);
         }
-#endif
+#endif // __WIN32__
     }
 #ifdef __WIN32__
     timeBeginPeriod(1);
-#endif
+#endif // __WIN32__
 
     p->input_func();
 
 #ifdef __WIN32__
     timeEndPeriod(1);
-#endif
+#endif // __WIN32__
 
     return 0;
 }
@@ -2220,10 +2223,10 @@ int main ( void )
     return 0;
 }
 
-#endif
+#endif // 0
 
 
-#endif
+#endif // JACK_SUPPORT
 
 
 bool
