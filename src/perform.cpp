@@ -62,6 +62,7 @@ perform::perform()
     m_left_tick = 0;
     m_right_tick = c_ppqn * 16;
     m_starting_tick = 0;
+    m_left_frame = 0;
 
     m_key_bpm_up = GDK_apostrophe;
     m_key_bpm_dn = GDK_semicolon;
@@ -1136,6 +1137,8 @@ void perform::position_jack( bool a_state )
     intmax_t frame = ctticks / tpb_min;
     pos.frame = (uint32_t) frame;
 
+    m_left_frame = (uint32_t) frame; // save for looping in jack
+
     //printf("current_tick [%ld]", current_tick);
     //printf("rate [%zu]", rate);
     //printf("ctticks [%jd]\n", (intmax_t)ctticks);
@@ -1596,7 +1599,7 @@ void perform::output_func(void)
 
                         if ( current_tick >= get_right_tick() ){
 
-                            position_jack(true); // maybe??
+                            //position_jack(true); // maybe??
 
                             while ( current_tick >= get_right_tick() ){
 
@@ -1607,6 +1610,9 @@ void perform::output_func(void)
                             }
                             reset_sequences();
                             set_orig_ticks( (long)current_tick );
+
+                            if(m_jack_running)
+                                jack_transport_locate( m_jack_client, m_left_frame );
                         }
                     }
                 }
@@ -1726,7 +1732,6 @@ void perform::output_func(void)
                 {
                     if ( current_tick >= get_right_tick() )
                     {
-                        position_jack(true); // maybe??
                         double leftover_tick = current_tick - (get_right_tick());
 
                         play( get_right_tick() - 1 );
@@ -1734,9 +1739,12 @@ void perform::output_func(void)
 
                         set_orig_ticks( get_left_tick() );
                         current_tick = (double) get_left_tick() + leftover_tick;
+                        if(m_jack_running)
+                            jack_transport_locate( m_jack_client, m_left_frame );
+                        //position_jack(true); // maybe??
+                        //printf("current_tick - outputting [%ld]\n",(long) current_tick);
                     }
                 }
-
                 /* play */
                 play( (long) current_tick );
                 //printf( "play[%d]\n", current_tick );

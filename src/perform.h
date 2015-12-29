@@ -104,6 +104,7 @@ class perform
     long m_left_tick;
     long m_right_tick;
     long m_starting_tick;
+    uint32_t m_left_frame;
 
     long m_tick;
     bool m_usemidiclock;
