@@ -62,7 +62,6 @@ perform::perform()
     m_left_tick = 0;
     m_right_tick = c_ppqn * 16;
     m_starting_tick = 0;
-    m_left_frame = 0;
 
     m_key_bpm_up = GDK_apostrophe;
     m_key_bpm_dn = GDK_semicolon;
@@ -272,6 +271,9 @@ perform::~perform()
 void
 perform::start_playing( void )
 {
+    if(global_jack_start_mode && !m_jack_master && m_jack_running)
+        return;
+
     if(global_jack_start_mode) {
         position_jack( true );
         start_jack( );
@@ -1079,6 +1081,22 @@ void perform::stop_jack(  )
 #endif // JACK_SUPPORT
 }
 
+jack_nframes_t perform::set_left_frame( void )
+{
+    long current_tick = 0;
+    jack_nframes_t rate = jack_get_sample_rate( m_jack_client ) ;
+
+    current_tick = m_left_tick;
+    current_tick *= 10;
+    long ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
+    long beats_per_minute =  m_master_bus.get_bpm();
+    intmax_t ctticks = ((intmax_t)rate * current_tick * 60.0);
+    long tpb_min = ticks_per_beat * beats_per_minute;
+    intmax_t frame = ctticks / tpb_min;
+
+    return (uint32_t) frame;
+}
+
 
 void perform::position_jack( bool a_state )
 {
@@ -1101,9 +1119,9 @@ void perform::position_jack( bool a_state )
 
     long current_tick = 0;
 
-    if ( a_state ){
+/*    if ( a_state ){
         current_tick = m_left_tick;
-    }
+    }*/
 
     jack_position_t pos;
 
@@ -1132,12 +1150,17 @@ void perform::position_jack( bool a_state )
     //pos.frame = (jack_nframes_t) ( (current_tick * rate * 60.0)
     //        / (pos.ticks_per_beat * pos.beats_per_minute) );
 
-    intmax_t ctticks = ((intmax_t)rate * current_tick * 60.0);
-    long tpb_min = pos.ticks_per_beat * pos.beats_per_minute;
-    intmax_t frame = ctticks / tpb_min;
-    pos.frame = (uint32_t) frame;
+    if ( !a_state ){
+        pos.frame = 0;
+    }
+    else
+        pos.frame = set_left_frame();
 
-    m_left_frame = (uint32_t) frame; // save for looping in jack
+//    intmax_t ctticks = ((intmax_t)rate * current_tick * 60.0);
+//    long tpb_min = pos.ticks_per_beat * pos.beats_per_minute;
+//    intmax_t frame = ctticks / tpb_min;
+//    pos.frame = (uint32_t) frame;
+
 
     //printf("current_tick [%ld]", current_tick);
     //printf("rate [%zu]", rate);
@@ -1468,8 +1491,8 @@ void perform::output_func(void)
         double jack_ticks_converted = 0.0;
         double jack_ticks_converted_last = 0.0;
         double jack_ticks_delta = 0.0;
-        if(m_jack_running && !global_with_jack_master_cond)
-            jack_transport_locate( m_jack_client, m_left_frame );
+        if(m_jack_running && m_jack_master)
+            jack_transport_locate( m_jack_client, set_left_frame());
 #endif // JACK_SUPPORT
 
         for( int i=0; i<100; i++ ){
@@ -1601,18 +1624,22 @@ void perform::output_func(void)
 
                         if ( current_tick >= get_right_tick() ){
 
-                            while ( current_tick >= get_right_tick() ){
-
-                                double size = get_right_tick() - get_left_tick();
-                                current_tick = current_tick - size;
-
-                                //printf( "> current_tick[%lf]\n", current_tick );
+                            if(m_jack_master)
+                            {
+                                jack_transport_locate( m_jack_client, set_left_frame() );
                             }
-                            reset_sequences();
-                            set_orig_ticks( (long)current_tick );
+                            else // FIXME shut off in slave mode
+                            {
+                                while ( current_tick >= get_right_tick() ){
 
-                            if(m_jack_running && !global_with_jack_master_cond)
-                                jack_transport_locate( m_jack_client, m_left_frame );
+                                    double size = get_right_tick() - get_left_tick();
+                                    current_tick = current_tick - size;
+
+                                    //printf( "> current_tick[%lf]\n", current_tick );
+                                }
+                                reset_sequences();
+                                set_orig_ticks( (long)current_tick );
+                            }
                         }
                     }
                 }
@@ -1734,18 +1761,22 @@ void perform::output_func(void)
                 {
                     if ( current_tick >= get_right_tick() )
                     {
-                        double leftover_tick = current_tick - (get_right_tick());
+                        if(m_jack_running && m_jack_master)
+                        {
+                            jack_transport_locate( m_jack_client, set_left_frame() );
+                        }
+                        else if(!m_jack_running) // slave mode do not loop - only seq42 loop when not connected to jack
+                        {
+                            double leftover_tick = current_tick - (get_right_tick());
 
-                        play( get_right_tick() - 1 );
-                        reset_sequences();
+                            play( get_right_tick() - 1 );
+                            reset_sequences();
 
-                        set_orig_ticks( get_left_tick() );
-                        current_tick = (double) get_left_tick() + leftover_tick;
-#ifdef JACK_SUPPORT
-                        if(m_jack_running && !global_with_jack_master_cond)
-                            jack_transport_locate( m_jack_client, m_left_frame );
-#endif // JACK_SUPPORT
-                        //printf("current_tick - outputting [%ld]\n",(long) current_tick);
+                            set_orig_ticks( get_left_tick() );
+                            current_tick = (double) get_left_tick() + leftover_tick;
+
+                            //printf("current_tick - outputting [%ld]\n",(long) current_tick);
+                        }
                     }
                 }
                 /* play */
