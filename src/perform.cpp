@@ -141,6 +141,9 @@ void perform::init_jack( void )
             }
             else {
                 printf("[JACK transport slave]\n");
+                // since slave mode did not work - just set to master in jack, then use m_jack_master to
+                // identify the mode and modify to work as slave later in the code
+                jack_set_timebase_callback(m_jack_client,false,jack_timebase_callback, this);
                 m_jack_master = false;
 
             }
@@ -272,14 +275,14 @@ perform::~perform()
 void
 perform::start_playing( void )
 {
-    if(global_jack_start_mode && !m_jack_master && m_jack_running)
+    if(!m_jack_master && m_jack_running) // slave mode with jack don't allow start
         return;
 
-    if(global_jack_start_mode) {
+    if(global_jack_start_mode) { // song mode
         position_jack( true );
         start_jack( );
-        start( true );
-    } else {
+        start( true );           // true for setting song m_playback_mode = true
+    } else {                     // live mode
         position_jack( false );
         start( false );
         start_jack( );
@@ -1087,6 +1090,11 @@ void perform::stop_jack(  )
 
 void perform::set_left_frame( void )
 {
+#ifdef JACK_SUPPORT
+
+    if(!m_jack_running)
+        return;
+
     long current_tick = 0;
     jack_nframes_t rate = jack_get_sample_rate( m_jack_client ) ;
 
@@ -1095,12 +1103,18 @@ void perform::set_left_frame( void )
     long ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
     long beats_per_minute =  m_master_bus.get_bpm();
     uint64_t ctticks = ((uint64_t)rate * current_tick * 60.0);
-    //intmax_t ctticks = ((intmax_t)rate * current_tick * 60.0);
     long tpb_min = ticks_per_beat * beats_per_minute;
     uint64_t frame = ctticks / tpb_min;
-    //intmax_t frame = ctticks / tpb_min;
 
     m_left_frame = (uint32_t) frame;
+
+
+    //printf("current_tick [%ld]", current_tick);
+    //printf("rate [%zu]", rate);
+    //printf("ctticks [%jd]\n", (uint64_t)ctticks);
+    //printf("tpb_min [%ld]\n", tpb_min);
+
+#endif // JACK_SUPPORT
 }
 
 
@@ -1111,23 +1125,20 @@ void perform::position_jack( bool a_state )
 
 #ifdef JACK_SUPPORT
 
-    /*if ( m_jack_running ){
-        jack_transport_locate( m_jack_client, 0 );
-    }
-    return;*/
-
-    if(!m_jack_running)
+    if(!m_jack_running) // disconnected from jack sync
         return;
 
+    if ( !a_state ) //  master in live mode
+    {
+        jack_transport_locate( m_jack_client, 0 );
+        return;
+    }
 
+    /*  following is only used when in jack master mode during song play */
 
     jack_nframes_t rate = jack_get_sample_rate( m_jack_client ) ;
 
     long current_tick = 0;
-
-/*    if ( a_state ){
-        current_tick = m_left_tick;
-    }*/
 
     jack_position_t pos;
 
@@ -1153,26 +1164,12 @@ void perform::position_jack( bool a_state )
 
     pos.bar_start_tick = pos.bar * pos.beats_per_bar * pos.ticks_per_beat;
     pos.frame_rate = rate;
+
+    set_left_frame();
+    pos.frame = m_left_frame;
+
     //pos.frame = (jack_nframes_t) ( (current_tick * rate * 60.0)
     //        / (pos.ticks_per_beat * pos.beats_per_minute) );
-
-    if ( !a_state ){
-        pos.frame = 0;
-    }
-    else
-        pos.frame = m_left_frame;
-
-//    intmax_t ctticks = ((intmax_t)rate * current_tick * 60.0);
-//    long tpb_min = pos.ticks_per_beat * pos.beats_per_minute;
-//    intmax_t frame = ctticks / tpb_min;
-//    pos.frame = (uint32_t) frame;
-
-
-    //printf("current_tick [%ld]", current_tick);
-    //printf("rate [%zu]", rate);
-    //printf("ctticks [%jd]\n", (intmax_t)ctticks);
-    //printf("tpb_min [%ld]\n", tpb_min);
-
 
     /*
        ticks * 10 = jack ticks;
@@ -1497,7 +1494,7 @@ void perform::output_func(void)
         double jack_ticks_converted = 0.0;
         double jack_ticks_converted_last = 0.0;
         double jack_ticks_delta = 0.0;
-        if(m_jack_running && m_jack_master)
+        if(m_jack_running && m_jack_master && m_playback_mode)
             jack_transport_locate( m_jack_client, m_left_frame);
 #endif // JACK_SUPPORT
 
@@ -1634,8 +1631,10 @@ void perform::output_func(void)
                             {
                                 jack_transport_locate( m_jack_client, m_left_frame );
                             }
-                            else // FIXME shut off in slave mode
+                            /*else // FIXME shut off in slave mode
                             {
+                                printf("slave mode\n");
+
                                 while ( current_tick >= get_right_tick() ){
 
                                     double size = get_right_tick() - get_left_tick();
@@ -1645,7 +1644,7 @@ void perform::output_func(void)
                                 }
                                 reset_sequences();
                                 set_orig_ticks( (long)current_tick );
-                            }
+                            }*/
                         }
                     }
                 }
