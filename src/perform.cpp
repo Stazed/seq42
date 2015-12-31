@@ -128,6 +128,7 @@ void perform::init_jack( void )
             jack_on_shutdown( m_jack_client, jack_shutdown,(void *) this );
             jack_set_sync_callback(m_jack_client, jack_sync_callback,
                     (void *) this );
+            jack_set_process_callback(m_jack_client, jack_process_callback, NULL);
 
             /* true if we want to fail if there is already a master */
             bool cond = global_with_jack_master_cond;
@@ -1332,40 +1333,41 @@ void* output_thread_func(void *a_pef )
     perform *p = (perform *) a_pef;
     assert(p);
 
-    struct sched_param *schp = new sched_param;
+    struct sched_param schp;
     /*
      * set the process to realtime privs
      */
 
     if ( global_priority ){
 
-        memset(schp, 0, sizeof(sched_param));
-        schp->sched_priority = 1;
+        memset(&schp, 0, sizeof(sched_param));
+        schp.sched_priority = 1;
 
 #ifndef __WIN32__
         // Not in MinGW RCB
-        if (sched_setscheduler(0, SCHED_FIFO, schp) != 0) 	{
+        if (sched_setscheduler(0, SCHED_FIFO, &schp) != 0) 	{
             printf("output_thread_func: couldnt sched_setscheduler"
                     " (FIFO), you need to be root.\n");
             pthread_exit(0);
         }
-#endif // __WIN32__
+#endif
     }
 
 #ifdef __WIN32__
     timeBeginPeriod(1);
-#endif // __WIN32__
+#endif
     p->output_func();
 #ifdef __WIN32__
     timeEndPeriod(1);
-#endif // __WIN32__
+#endif
 
     return 0;
 }
 
-
-
 #ifdef JACK_SUPPORT
+
+int jack_process_callback(jack_nframes_t nframes, void* arg)
+{return 0;}
 
 int jack_sync_callback(jack_transport_state_t state,
         jack_position_t *pos, void *arg)

@@ -330,6 +330,7 @@ void print_jack_pos( jack_position_t* jack_pos );
 void jack_shutdown(void *arg);
 void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
                             jack_position_t *pos, int new_pos, void *arg);
+int jack_process_callback(jack_nframes_t nframes, void* arg);
 #endif
 
 
