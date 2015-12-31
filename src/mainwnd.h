@@ -101,8 +101,8 @@ class mainwnd : public Gtk::Window
     Entry *m_entry_xpose;
 
     ToggleButton *m_button_loop;
-
     ToggleButton *m_button_mode;
+    ToggleButton *m_button_jack;
 
     Button *m_button_expand;
     Button *m_button_collapse;
@@ -181,6 +181,8 @@ class mainwnd : public Gtk::Window
 
     void set_song_mode (void);
     void toggle_song_mode (void);
+    void set_jack_mode( void );
+    void toggle_jack_mode( void );
 
     void expand (void);
     void collapse (void);

@@ -170,11 +170,22 @@ mainwnd::mainwnd(perform *a_p)
         m_button_mode->set_active( true );
     }
 
+#ifdef JACK_SUPPORT
+    m_button_jack = manage( new ToggleButton( "Jack mode" ) );
+    m_button_jack->signal_toggled().connect(  mem_fun( *this, &mainwnd::set_jack_mode ));
+    add_tooltip( m_button_jack, "Toggle Jack connection" );
+    if(global_with_jack_transport) {
+        m_button_jack->set_active( true );
+    }
+#endif
+
     hbox1->pack_start( *m_button_stop , false, false );
     hbox1->pack_start( *m_button_play , false, false );
     hbox1->pack_start( *m_button_loop , false, false );
     hbox1->pack_start(*m_button_mode, false, false );
-
+#ifdef JACK_SUPPORT
+    hbox1->pack_start(*m_button_jack, false, false );
+#endif
 
     // adjust placement...
     VBox *vbox_b = manage( new VBox() );
@@ -699,7 +710,22 @@ mainwnd::toggle_song_mode( void )
     m_button_mode->set_active( ! m_button_mode->get_active() );
 }
 
+void
+mainwnd::set_jack_mode ( void )
+{
+    if(m_button_jack->get_active())
+        m_mainperf->init_jack ();
 
+    if(!m_button_jack->get_active())
+        m_mainperf->deinit_jack ();
+}
+
+void
+mainwnd::toggle_jack_mode( void )
+{
+    // Note that this will trigger the button signal callback.
+    m_button_jack->set_active( ! m_button_jack->get_active() );
+}
 
 void
 mainwnd::popup_menu(Menu *a_menu)
