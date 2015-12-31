@@ -27,8 +27,11 @@
 lash::lash(int *argc, char ***argv)
 {
 #ifdef LASH_SUPPORT
+    m_perform = NULL;
+
     m_client = lash_init(lash_extract_args(argc, argv), PACKAGE_NAME,
         LASH_Config_File, LASH_PROTOCOL(2, 0));
+
     if (m_client == NULL) {
         fprintf(stderr, "Failed to connect to LASH.  Session management will not occur.\n");
     } else {

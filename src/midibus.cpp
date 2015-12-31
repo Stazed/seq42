@@ -874,10 +874,11 @@ mastermidibus::mastermidibus()
 
     /* set up our clients queue */
     m_queue = snd_seq_alloc_queue( m_alsa_seq );
-#endif
+
 #ifdef LASH_SUPPORT
 	/* notify lash of our client ID so it can restore connections */
 	lash_driver->set_alsa_client_id(snd_seq_client_id(m_alsa_seq));
+#endif
 #endif
 }
 
