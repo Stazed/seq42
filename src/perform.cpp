@@ -276,9 +276,6 @@ perform::~perform()
 void
 perform::start_playing( void )
 {
-    if(!m_jack_master && m_jack_running) // slave mode with jack don't allow start
-        return;
-
     if(global_jack_start_mode) { // song mode
         position_jack( true );
         start_jack( );
@@ -1130,12 +1127,16 @@ void perform::position_jack( bool a_state )
         return;
 
     if ( !a_state ) //  master in live mode
-    {
-        jack_transport_locate( m_jack_client, 0 );
         return;
-    }
+
+    if(!m_jack_master && m_jack_running) // slave mode
+        return;
 
     /*  following is only used when in jack master mode during song play */
+    set_left_frame(); // make sure it gets initial set if m_left_tick moved when !m_jack_running
+    return;
+
+    /*  following is NOT used  */
 
     jack_nframes_t rate = jack_get_sample_rate( m_jack_client ) ;
 
@@ -1496,8 +1497,10 @@ void perform::output_func(void)
         double jack_ticks_converted = 0.0;
         double jack_ticks_converted_last = 0.0;
         double jack_ticks_delta = 0.0;
-        if(m_jack_running && m_jack_master && m_playback_mode)
+        if(m_jack_running && m_jack_master && m_playback_mode) // song mode master start left tick marker
             jack_transport_locate( m_jack_client, m_left_frame);
+        if(m_jack_running && m_jack_master && !m_playback_mode)// live mode master start at zero
+            jack_transport_locate( m_jack_client, 0);
 #endif // JACK_SUPPORT
 
         for( int i=0; i<100; i++ ){
