@@ -275,7 +275,7 @@ options::options (Gtk::Window & parent, perform * a_p):
     vbox2->pack_start (*check, false, false);
 
 
-    Gtk::Button * button = manage (new Button ("Connect"));
+/*    Gtk::Button * button = manage (new Button ("Connect"));
     add_tooltip( button, "Connect to Jack.");
     button->signal_clicked().connect(bind(mem_fun(*this,
                     &options::transport_callback), e_jack_connect, button));
@@ -286,6 +286,7 @@ options::options (Gtk::Window & parent, perform * a_p):
     button->signal_clicked().connect(bind(mem_fun(*this,
                     &options::transport_callback), e_jack_disconnect, button));
     vbox2->pack_start (*button, false, false);
+*/
 #endif
 
     /* show everything */

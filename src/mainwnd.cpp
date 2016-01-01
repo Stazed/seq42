@@ -108,8 +108,8 @@ mainwnd::mainwnd(perform *a_p)
 
 
     /* edit menu items */
-    m_menu_edit->items().push_back(MenuElem("_Sequence list",
-                mem_fun(*this, &mainwnd::open_seqlist)));
+//    m_menu_edit->items().push_back(MenuElem("_Sequence list",
+//                mem_fun(*this, &mainwnd::open_seqlist)));
 
     m_menu_edit->items().push_back(MenuElem("_Mute all tracks",
                 sigc::bind(mem_fun(*this, &mainwnd::set_song_mute), MUTE_ON)));
@@ -171,21 +171,26 @@ mainwnd::mainwnd(perform *a_p)
     }
 
 #ifdef JACK_SUPPORT
-    m_button_jack = manage( new ToggleButton( "Jack mode" ) );
+    m_button_jack = manage( new ToggleButton( "Jack sync" ) );
     m_button_jack->signal_toggled().connect(  mem_fun( *this, &mainwnd::set_jack_mode ));
-    add_tooltip( m_button_jack, "Toggle Jack connection" );
+    add_tooltip( m_button_jack, "Toggle Jack sync connection" );
     if(global_with_jack_transport) {
         m_button_jack->set_active( true );
     }
 #endif
 
+    m_button_seq = manage( new Button( "Seq list" ) );
+    m_button_seq->signal_clicked().connect(  mem_fun( *this, &mainwnd::open_seqlist ));
+    add_tooltip( m_button_seq, "Open sequence list" );
+
     hbox1->pack_start( *m_button_stop , false, false );
     hbox1->pack_start( *m_button_play , false, false );
     hbox1->pack_start( *m_button_loop , false, false );
-    hbox1->pack_start(*m_button_mode, false, false );
+    hbox1->pack_start( *m_button_mode , false, false );
 #ifdef JACK_SUPPORT
     hbox1->pack_start(*m_button_jack, false, false );
 #endif
+    hbox1->pack_start( *m_button_seq , false, false );
 
     // adjust placement...
     VBox *vbox_b = manage( new VBox() );
@@ -691,7 +696,7 @@ mainwnd::set_looped( void )
 }
 
 void
-mainwnd::toggle_looped( void )
+mainwnd::toggle_looped( void ) // for key mapping
 {
     // Note that this will trigger the button signal callback.
     m_button_loop->set_active( ! m_button_loop->get_active() );
@@ -704,7 +709,7 @@ mainwnd::set_song_mode( void )
 }
 
 void
-mainwnd::toggle_song_mode( void )
+mainwnd::toggle_song_mode( void ) // FIXME not called - would be used by key mapping
 {
     // Note that this will trigger the button signal callback.
     m_button_mode->set_active( ! m_button_mode->get_active() );
@@ -713,18 +718,16 @@ mainwnd::toggle_song_mode( void )
 void
 mainwnd::set_jack_mode ( void )
 {
-    if(m_button_jack->get_active())
+    if(m_button_jack->get_active() && !m_mainperf->is_running())
         m_mainperf->init_jack ();
 
-    if(!m_button_jack->get_active())
+    if(!m_button_jack->get_active() && !m_mainperf->is_running())
         m_mainperf->deinit_jack ();
-}
 
-void
-mainwnd::toggle_jack_mode( void )
-{
-    // Note that this will trigger the button signal callback.
-    m_button_jack->set_active( ! m_button_jack->get_active() );
+    if(m_mainperf->is_jack_running())
+        m_button_jack->set_active(true);
+    else
+        m_button_jack->set_active(false);
 }
 
 void

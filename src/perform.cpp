@@ -461,6 +461,11 @@ bool perform::is_running( void )
     return m_running;
 }
 
+bool perform::is_jack_running()
+{
+    return m_jack_running;
+}
+
 void perform::set_bpm(int a_bpm)
 {
     if ( a_bpm < 20 )  a_bpm = 20;

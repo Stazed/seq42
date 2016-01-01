@@ -153,6 +153,7 @@ class perform
     bool m_have_modified;
 
     bool is_running();
+    bool is_jack_running();
 
     unsigned int m_key_bpm_up;
     unsigned int m_key_bpm_dn;
