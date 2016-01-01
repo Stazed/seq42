@@ -1132,13 +1132,17 @@ void perform::position_jack( bool a_state )
         return;
 
     if ( !a_state ) //  master in live mode
+    {
+        jack_transport_locate( m_jack_client, 0);
         return;
+    }
 
     if(!m_jack_master && m_jack_running) // slave mode
         return;
 
     /*  following is only used when in jack master mode during song play */
     set_left_frame(); // make sure it gets initial set if m_left_tick moved when !m_jack_running
+    jack_transport_locate( m_jack_client, m_left_frame);
     return;
 
     /*  following is NOT used  */
