@@ -1645,10 +1645,8 @@ void perform::output_func(void)
                             {
                                 jack_transport_locate( m_jack_client, m_left_frame );
                             }
-                            /*else // FIXME shut off in slave mode
+                            else
                             {
-                                printf("slave mode\n");
-
                                 while ( current_tick >= get_right_tick() ){
 
                                     double size = get_right_tick() - get_left_tick();
@@ -1658,7 +1656,7 @@ void perform::output_func(void)
                                 }
                                 reset_sequences();
                                 set_orig_ticks( (long)current_tick );
-                            }*/
+                            }
                         }
                     }
                 }
@@ -1784,7 +1782,7 @@ void perform::output_func(void)
                         {
                             jack_transport_locate( m_jack_client, m_left_frame );
                         }
-                        else if(!m_jack_running) // slave mode do not loop - only seq42 loop when not connected to jack
+                        else
                         {
                             double leftover_tick = current_tick - (get_right_tick());
 
