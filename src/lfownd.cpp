@@ -84,6 +84,7 @@ lfownd::lfownd(sequence *a_seq, seqdata *a_seqdata){
 void lfownd::toggle_visible(){
     m_seq->push_undo();
     show_all();
+    raise();
 }
 
 void lfownd::scale_lfo_change() {
