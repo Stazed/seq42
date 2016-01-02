@@ -379,6 +379,7 @@ trackmenu::trk_paste(){
         m_mainperf->push_track_undo(m_current_trk);
         m_mainperf->new_track( m_current_trk  );
         *(m_mainperf->get_track( m_current_trk )) = m_clipboard;
+        m_mainperf->get_track( m_current_trk )->set_song_mute(false); // since this is copied for undo/redo and file load - reset here
         m_mainperf->get_track( m_current_trk )->set_dirty();
     }
 }

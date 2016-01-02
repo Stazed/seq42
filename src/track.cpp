@@ -67,7 +67,7 @@ track::operator=(const track& other)
         m_name = other.m_name;
         m_bus = other.m_bus;
         m_midi_channel = other.m_midi_channel;
-        m_song_mute = false;
+        m_song_mute = other.m_song_mute;  // for undo/redo and load from file - set to false for user copy/paste
         m_transposable = other.m_transposable;
         m_masterbus = other.m_masterbus;
 
