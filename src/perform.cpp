@@ -277,6 +277,7 @@ void
 perform::start_playing( void )
 {
     if(global_jack_start_mode) { // song mode
+        set_left_frame();        // make sure it gets initial set if m_left_tick moved when !m_jack_running
         position_jack( true );
         start_jack( );
         start( true );           // true for setting song m_playback_mode = true
@@ -1131,21 +1132,17 @@ void perform::position_jack( bool a_state )
     if(!m_jack_running) // disconnected from jack sync
         return;
 
-    if ( !a_state ) //  master in live mode
-    {
-        jack_transport_locate( m_jack_client, 0);
-        return;
-    }
-
     if(!m_jack_master && m_jack_running) // slave mode
         return;
 
-    /*  following is only used when in jack master mode during song play */
-    set_left_frame(); // make sure it gets initial set if m_left_tick moved when !m_jack_running
-    jack_transport_locate( m_jack_client, m_left_frame);
-    return;
+    if ( !a_state ) //  master in live mode
+    {
+        m_left_frame = 0;
+    }
 
-    /*  following is NOT used  */
+
+    /*  following is only used when in jack master mode  */
+
 
     jack_nframes_t rate = jack_get_sample_rate( m_jack_client ) ;
 
@@ -1155,9 +1152,7 @@ void perform::position_jack( bool a_state )
 
     pos.valid = JackPositionBBT;
     pos.beats_per_bar = m_bp_measure;
-    //pos.beats_per_bar = 4;
-    pos.beat_type = m_bw;
-    //pos.beat_type = 4;
+    pos.beat_type = 4;
     pos.ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
     pos.beats_per_minute =  m_master_bus.get_bpm();
 
@@ -1175,8 +1170,6 @@ void perform::position_jack( bool a_state )
 
     pos.bar_start_tick = pos.bar * pos.beats_per_bar * pos.ticks_per_beat;
     pos.frame_rate = rate;
-
-    set_left_frame();
     pos.frame = m_left_frame;
 
     //pos.frame = (jack_nframes_t) ( (current_tick * rate * 60.0)
@@ -1507,9 +1500,10 @@ void perform::output_func(void)
         double jack_ticks_converted_last = 0.0;
         double jack_ticks_delta = 0.0;
         if(m_jack_running && m_jack_master && m_playback_mode) // song mode master start left tick marker
-            jack_transport_locate( m_jack_client, m_left_frame);
+            position_jack(true);
         if(m_jack_running && m_jack_master && !m_playback_mode)// live mode master start at zero
-            jack_transport_locate( m_jack_client, 0);
+            position_jack(false);
+
 #endif // JACK_SUPPORT
 
         for( int i=0; i<100; i++ ){
@@ -1643,7 +1637,7 @@ void perform::output_func(void)
 
                             if(m_jack_master)
                             {
-                                jack_transport_locate( m_jack_client, m_left_frame );
+                                position_jack(true);
                             }
                             else
                             {
@@ -1780,7 +1774,7 @@ void perform::output_func(void)
                     {
                         if(m_jack_running && m_jack_master)
                         {
-                            jack_transport_locate( m_jack_client, m_left_frame );
+                            position_jack(true);
                         }
                         else
                         {
@@ -2129,10 +2123,10 @@ void jack_timebase_callback(jack_transport_state_t state,
     perform *p = (perform *) arg;
     current_frame = jack_get_current_transport_frame( p->m_jack_client );
 
-    printf( "jack_timebase_callback() [%d] [%d] [%d]\n", state, new_pos, current_frame);
+    //printf( "jack_timebase_callback() [%d] [%d] [%d]\n", state, new_pos, current_frame);
 
     pos->valid = JackPositionBBT;
-    pos->beats_per_bar = 4;
+    pos->beats_per_bar = p->m_bp_measure;
     pos->beat_type = 4;
     pos->ticks_per_beat = c_ppqn * 10;
     pos->beats_per_minute = p->get_bpm();
@@ -2147,7 +2141,7 @@ void jack_timebase_callback(jack_transport_state_t state,
     if (  state_last    ==  JackTransportStarting &&
             state_current ==  JackTransportRolling ){
 
-        printf ( "Starting [%d] [%d]\n", last_frame, current_frame );
+        //printf ( "Starting [%d] [%d]\n", last_frame, current_frame );
 
         jack_tick = 0.0;
         last_frame = current_frame;
@@ -2182,7 +2176,7 @@ void jack_timebase_callback(jack_transport_state_t state,
     pos->bar_start_tick = pos->bar * pos->beats_per_bar *
         pos->ticks_per_beat;
 
-    printf( " bbb [%2d:%2d:%4d]\n", pos->bar, pos->beat, pos->tick );
+    //printf( " bbb [%2d:%2d:%4d]\n", pos->bar, pos->beat, pos->tick );
 
     state_last = state_current;
 }
