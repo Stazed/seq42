@@ -274,10 +274,16 @@ void
 perform::start_playing( void )
 {
     if(global_jack_start_mode) { // song mode
-        set_left_frame();        // make sure it gets initial set if m_left_tick moved when !m_jack_running
+        if(m_jack_master)
+        {
+            set_left_frame();        // make sure it gets initial set if m_left_tick moved when !m_jack_running
+            position_jack(true);     // for cosmetic reasons - to stop transport line flicker on start
+        }
         start_jack( );
         start( true );           // true for setting song m_playback_mode = true
     } else {                     // live mode
+        if(m_jack_master)
+            position_jack(false);   // for cosmetic reasons - to stop transport line flicker on start
         start( false );
         start_jack( );
     }
