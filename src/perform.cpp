@@ -1596,6 +1596,15 @@ void perform::output_func(void)
                 m_jack_transport_state = jack_transport_query( m_jack_client, &m_jack_pos );
                 m_jack_frame_current =  jack_get_current_transport_frame( m_jack_client );
 
+                if( (uint32_t)m_jack_pos.beats_per_bar == 0 ) // to fix the case of no master set while in slave mode
+                {
+                    // in this case the bbt info will be 0 so just plug it so it will play
+                    m_jack_pos.beats_per_bar = m_bp_measure;
+                    m_jack_pos.beat_type = 4;
+                    m_jack_pos.ticks_per_beat = c_ppqn * 10;
+                    m_jack_pos.beats_per_minute =  m_master_bus.get_bpm();
+                }
+
                 if ( m_jack_transport_state_last  ==  JackTransportStarting &&
                         m_jack_transport_state       == JackTransportRolling ){
 
@@ -1711,9 +1720,9 @@ void perform::output_func(void)
 
                     //pbar  = (long) ((long) m_jack_tick / (m_jack_pos.ticks_per_beat *  m_jack_pos.beats_per_bar ));
 
-                    long pbeat = (long) ((long) m_jack_tick % (long)
-                                     (m_jack_pos.ticks_per_beat *  m_jack_pos.beats_per_bar ));
-                    pbeat = pbeat / (long) m_jack_pos.ticks_per_beat;
+                    //long pbeat = (long) ((long) m_jack_tick % (long)
+                    //                 (m_jack_pos.ticks_per_beat *  m_jack_pos.beats_per_bar ));
+                    //pbeat = pbeat / (long) m_jack_pos.ticks_per_beat;
 
                     //ptick = (long) m_jack_tick % (long) m_jack_pos.ticks_per_beat;
 
