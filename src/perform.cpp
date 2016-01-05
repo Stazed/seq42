@@ -1596,7 +1596,7 @@ void perform::output_func(void)
                 m_jack_transport_state = jack_transport_query( m_jack_client, &m_jack_pos );
                 m_jack_frame_current =  jack_get_current_transport_frame( m_jack_client );
 
-                if( (uint32_t)m_jack_pos.beats_per_bar == 0 ) // to fix the case of no master set while in slave mode
+                if( (uint)m_jack_pos.beats_per_bar == 0 ) // to fix the case of no master set while in slave mode
                 {
                     // in this case the bbt info will be 0 so just plug it so it will play
                     m_jack_pos.beats_per_bar = m_bp_measure;

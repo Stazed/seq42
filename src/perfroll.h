@@ -126,6 +126,8 @@ class perfroll : public Gtk::DrawingArea
     bool on_motion_notify_event(GdkEventMotion* a_ev);
     bool on_scroll_event( GdkEventScroll* a_ev ) ;
 
+    void auto_scroll_horz(double progress);
+
     bool on_focus_in_event(GdkEventFocus*);
     bool on_focus_out_event(GdkEventFocus*);
 

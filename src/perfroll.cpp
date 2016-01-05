@@ -305,6 +305,8 @@ perfroll::draw_progress()
 		       progress_x, m_window_y);
 
     m_old_progress_ticks = tick;
+
+    auto_scroll_horz((double)tick/c_perf_scale_x/c_ppen);
 }
 
 
@@ -660,6 +662,18 @@ perfroll::on_button_release_event(GdkEventButton* a_ev)
     }
     return result;
 }
+
+void
+perfroll::auto_scroll_horz(double progress)
+{
+
+    //printf("val [%f]: progress [%f]\n", val, progress);
+
+    if(progress > 3)
+        m_hadjust->set_value(progress - 3);
+
+}
+
 
 bool
 perfroll::on_scroll_event( GdkEventScroll* a_ev )
