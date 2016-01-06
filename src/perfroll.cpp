@@ -306,7 +306,8 @@ perfroll::draw_progress()
 
     m_old_progress_ticks = tick;
 
-    auto_scroll_horz((double)tick/c_perf_scale_x/c_ppen);
+    if(m_mainperf->is_running())
+        auto_scroll_horz((double)tick/c_perf_scale_x/c_ppen);
 }
 
 
@@ -666,12 +667,8 @@ perfroll::on_button_release_event(GdkEventButton* a_ev)
 void
 perfroll::auto_scroll_horz(double progress)
 {
-
-    //printf("val [%f]: progress [%f]\n", val, progress);
-
-    if(progress > 3)
-        m_hadjust->set_value(progress - 3);
-
+    if((progress > (m_hadjust->get_page_size()/2)) || (m_hadjust->get_value() > progress))
+        m_hadjust->set_value(progress - (m_hadjust->get_page_size()/2));
 }
 
 
