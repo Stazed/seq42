@@ -540,6 +540,13 @@ seqroll::draw_progress_on_window()
                 m_old_progress_x,
                 m_window_y);
     }
+
+    if(m_perform->is_running())
+    {
+        double tick = m_seq->get_last_tick()/m_zoom;
+        auto_scroll_horz((double)(tick));
+        //auto_scroll_horz((double)(tick/c_perf_scale_x/c_ppen));
+    }
 }
 
 
@@ -1209,6 +1216,17 @@ seqroll::on_size_allocate(Gtk::Allocation& a_r )
 
     update_sizes();
 
+}
+
+void
+seqroll::auto_scroll_horz(double progress)
+{
+//    progress *= m_window_x;
+    printf("progress[%f]: get_upper[%f]: get_value[%f]: page_size[%f]\n",progress,m_hadjust->get_upper(),m_hadjust->get_value(),m_hadjust->get_page_size());
+
+    if((progress > (m_hadjust->get_upper()/4)) || (m_hadjust->get_value() > progress))
+        m_hadjust->set_value(progress - (m_hadjust->get_upper()/4));
+        //m_hadjust->set_value(progress - (m_hadjust->get_page_size()/2));
 }
 
 
