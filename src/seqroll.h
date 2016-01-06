@@ -172,7 +172,7 @@ class seqroll : public Gtk::DrawingArea
     bool on_focus_out_event(GdkEventFocus*);
     bool on_scroll_event( GdkEventScroll* a_ev);
 
-    void auto_scroll_horz(double progress);
+    void auto_scroll_horz(long progress);
 
     bool on_leave_notify_event	(GdkEventCrossing* a_p0);
     bool on_enter_notify_event	(GdkEventCrossing* a_p0);

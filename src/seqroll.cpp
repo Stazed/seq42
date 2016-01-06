@@ -543,9 +543,7 @@ seqroll::draw_progress_on_window()
 
     if(m_perform->is_running())
     {
-        double tick = m_seq->get_last_tick()/m_zoom;
-        auto_scroll_horz((double)(tick));
-        //auto_scroll_horz((double)(tick/c_perf_scale_x/c_ppen));
+        auto_scroll_horz(m_seq->get_last_tick());
     }
 }
 
@@ -1219,14 +1217,20 @@ seqroll::on_size_allocate(Gtk::Allocation& a_r )
 }
 
 void
-seqroll::auto_scroll_horz(double progress)
+seqroll::auto_scroll_horz(long progress)
 {
-//    progress *= m_window_x;
-    printf("progress[%f]: get_upper[%f]: get_value[%f]: page_size[%f]\n",progress,m_hadjust->get_upper(),m_hadjust->get_value(),m_hadjust->get_page_size());
+    printf("progress[%ld]: get_upper[%f]: get_value[%f]: page_size[%f]\n",progress,m_hadjust->get_upper(),m_hadjust->get_value(),m_hadjust->get_page_size());
+    printf("m_zoom[%d]\n",m_zoom);
 
-    if((progress > (m_hadjust->get_upper()/4)) || (m_hadjust->get_value() > progress))
-        m_hadjust->set_value(progress - (m_hadjust->get_upper()/4));
-        //m_hadjust->set_value(progress - (m_hadjust->get_page_size()/2));
+    if(progress > (m_hadjust->get_page_size()/2) &&
+         ((m_hadjust->get_value() + m_hadjust->get_page_size()) <= m_hadjust->get_upper()))
+    {
+        m_hadjust->set_value(progress - (m_hadjust->get_page_size()/2)); // FIXME don't adjust every tick: optimize
+    }
+
+    if(progress >= m_hadjust->get_upper()-10) // FIXME progress stops before upper
+        m_hadjust->set_value(0);
+
 }
 
 
