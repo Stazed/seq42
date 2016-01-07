@@ -668,7 +668,7 @@ void
 perfroll::auto_scroll_horz(double progress)
 {
     if((progress > (m_hadjust->get_page_size()/2)) || (m_hadjust->get_value() > progress))
-        m_hadjust->set_value(progress - (m_hadjust->get_page_size()/2));
+        m_hadjust->set_value(progress - (m_hadjust->get_page_size()/2) + 1);
 }
 
 
