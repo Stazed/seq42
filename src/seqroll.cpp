@@ -1220,16 +1220,16 @@ void
 seqroll::auto_scroll_horz(long progress)
 {
     //printf("progress[%ld]: get_upper[%f]: get_value[%f]: page_size[%f]\n",progress,m_hadjust->get_upper(),m_hadjust->get_value(),m_hadjust->get_page_size());
+    if(m_hadjust->get_upper() <= 3072) // don't scroll on seq <= 4 bars(at 4 X 4)
+        return;
 
     long rnd_progress = progress / 600 ;
     rnd_progress *= 600;
 
-    //printf("m_zoom[%d]: rnd_progress[%ld]\n",m_zoom,rnd_progress);
-
     if(progress > ((m_hadjust->get_page_size()/2) + 300) ||
          ((m_hadjust->get_value() + m_hadjust->get_page_size()) <= m_hadjust->get_upper()))
     {
-        if(progress - rnd_progress >= 575 )
+        if(progress - rnd_progress >= 590 )
         {
             if((m_hadjust->get_value() + m_hadjust->get_page_size()) <= m_hadjust->get_upper())
             {
@@ -1238,6 +1238,7 @@ seqroll::auto_scroll_horz(long progress)
                    m_hadjust->set_value(m_hadjust->get_upper() - m_hadjust->get_page_size());
                 else
                     m_hadjust->set_value(calc_value);
+                //printf("calc_value [%ld]: get_upper [%f]\n",calc_value,m_hadjust->get_upper());
             }
         }
     }
