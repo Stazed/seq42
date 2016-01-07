@@ -1219,18 +1219,23 @@ seqroll::on_size_allocate(Gtk::Allocation& a_r )
 void
 seqroll::auto_scroll_horz(long progress)
 {
-    printf("progress[%ld]: get_upper[%f]: get_value[%f]: page_size[%f]\n",progress,m_hadjust->get_upper(),m_hadjust->get_value(),m_hadjust->get_page_size());
-    printf("m_zoom[%d]\n",m_zoom);
+    //printf("progress[%ld]: get_upper[%f]: get_value[%f]: page_size[%f]\n",progress,m_hadjust->get_upper(),m_hadjust->get_value(),m_hadjust->get_page_size());
 
-    if(progress > (m_hadjust->get_page_size()/2) &&
+    long rnd_progress = progress / 200 ;
+    rnd_progress *= 200;
+
+    //printf("m_zoom[%d]: rnd_progress[%ld]\n",m_zoom,rnd_progress);
+
+    if(progress > (m_hadjust->get_page_size()/2) ||
          ((m_hadjust->get_value() + m_hadjust->get_page_size()) <= m_hadjust->get_upper()))
     {
-        m_hadjust->set_value(progress - (m_hadjust->get_page_size()/2)); // FIXME don't adjust every tick: optimize
+        if(progress - rnd_progress >= 150 &&
+            ((m_hadjust->get_value() + m_hadjust->get_page_size()) <= m_hadjust->get_upper()))
+            m_hadjust->set_value(progress - (m_hadjust->get_page_size()/2));
     }
 
-    if(progress >= m_hadjust->get_upper()-10) // FIXME progress stops before upper
+    if(progress >= m_hadjust->get_upper()-10)
         m_hadjust->set_value(0);
-
 }
 
 
