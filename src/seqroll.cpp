@@ -1221,17 +1221,25 @@ seqroll::auto_scroll_horz(long progress)
 {
     //printf("progress[%ld]: get_upper[%f]: get_value[%f]: page_size[%f]\n",progress,m_hadjust->get_upper(),m_hadjust->get_value(),m_hadjust->get_page_size());
 
-    long rnd_progress = progress / 200 ;
-    rnd_progress *= 200;
+    long rnd_progress = progress / 600 ;
+    rnd_progress *= 600;
 
     //printf("m_zoom[%d]: rnd_progress[%ld]\n",m_zoom,rnd_progress);
 
-    if(progress > (m_hadjust->get_page_size()/2) ||
+    if(progress > ((m_hadjust->get_page_size()/2) + 300) ||
          ((m_hadjust->get_value() + m_hadjust->get_page_size()) <= m_hadjust->get_upper()))
     {
-        if(progress - rnd_progress >= 150 &&
-            ((m_hadjust->get_value() + m_hadjust->get_page_size()) <= m_hadjust->get_upper()))
-            m_hadjust->set_value(progress - (m_hadjust->get_page_size()/2));
+        if(progress - rnd_progress >= 575 )
+        {
+            if((m_hadjust->get_value() + m_hadjust->get_page_size()) <= m_hadjust->get_upper())
+            {
+                long calc_value = progress - (m_hadjust->get_page_size()/2) + 300;
+                if((calc_value + m_hadjust->get_page_size()) >= m_hadjust->get_upper()) // don't scroll past upper
+                   m_hadjust->set_value(m_hadjust->get_upper() - m_hadjust->get_page_size());
+                else
+                    m_hadjust->set_value(calc_value);
+            }
+        }
     }
 
     if(progress >= m_hadjust->get_upper()-10)
