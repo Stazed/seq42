@@ -30,13 +30,20 @@ Here are some of the other enhancements of seq42:
 * NEW - fix 'fruity' input method to work for trigger popup menu (middle mouse button). Split trigger is ctrl-L and paste is middle mouse or ctrl-L.
 * NEW - merge sequence: right click on existing track name - select Merge Sequence - Select the sequence from the available list.  The Sequences AND song triggers will be added to the track. Now you can easily combine those seq24 tracks!! - any overlapping trigger will be overwritten and/or split - just create a new sequence for them...
 * NEW - ctrl-C song trigger and paste to any location. Middle mouse button click to location ctrl-V will paste to the location grid-snapped. Subsequent ctrl-V will paste directly after previous paste location. If no paste location is selected, then default will paste after copied trigger. 
-* NEW - Copy song triggers across different tracks. This will also copy the sequence into the new track.  Select trigger with mouse, ctrl-C: middle mouse click on new track location, ctrl-V. After paste, the subsequent ctrl-V will revert to default behavior - paste track only after previous paste. Paste across track is only allowed once per ctrl-C action... to prevent accidental duplication of sequence copies.
+* NEW - Copy song triggers across different tracks. This will also copy the sequence into the new track.  Select trigger with mouse, ctrl-C: middle mouse click on new track location, ctrl-V. After paste, the subsequent ctrl-V will revert to default behavior - paste trigger only after previous paste. Paste across track is only allowed once per ctrl-C action... to prevent accidental duplication of sequence copies.
 * NEW - Track row insert/delete/pack. Right click the track name - popup menu - all sequence editors and track edit must be closed.
 * NEW - Tracks no longer auto packed on save. Track index location is saved and track mute status is saved.
 * NEW - Undo/Redo completely re-written. All tirgger, sequence, track actions can be undone/redone. Redo is cleared upon any new edit of track items.  This is done to eliminate the possibility of undo pushing to redo items such as trigger edits, then deleting the track. If redo were not cleared, then attempting to redo items on a track that no longer exists would not work. Undo/redo does not change
 the track edit items (name,channel,bus,transpose,mute)... except when undo/redo row insert/delete/pack or deleting midi import. Sequence copies will now copy the seq level undo/redo. For track level undo/redo, (insert/delete/pack,copy,seq copy), the track editor and sequence editor windows must be closed.
 * NEW - Now beats-per-measure, beat-width song editor are saved to file. Also these now work for trigger default length selection. New grid-snaps were added to accomodate.
 * NEW - Export midi files - sequences in seq24 format
+* NEW - Note listen added to sequence draw notes and move notes.
+* NEW - Fixed Jack master to work properly. Start as master on left tick marker and looping works.
+* NEW - Jack slave and master conditional work - and will follow the jack frame without master BBT
+* NEW - Fixed BBT calcualtions as master to send correct starting position.
+* NEW - Added Jack sync button to main window and removed from options menu.
+* NEW - Added sequence list button popup to main window and removed from edit.
+* NEW - Added auto scroll to song editor and sequence editor(seq only on larger sequences)
 
 
 What to do with a fresh repository checkout?

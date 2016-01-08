@@ -40,7 +40,7 @@ F8 loop off
 
 [ ] Add to Edit menu a new action "Delete all untriggered sequences"
 
-[x] Add to Edit menu a new action "Pack track list" (shifts all active tracks 
+[X] Add to Edit menu a new action "Pack track list" (shifts all active tracks 
     to the top of the track list).  After this change, change the file save 
     format such that each active track in the file includes an index int. 
     Loading a file should put each track back in the same slot (allowing for
@@ -66,9 +66,10 @@ F8 loop off
     Alternatively (if undo/redo is made more robust).... ditch all the modified stuff and look at the size of the
     undo stack to determine whether or not save dialog is needed.
 
-[ ] Add option to Load dialog and method that appends the tracks of a file to the current
+[X] Add option to Load dialog and method that appends the tracks of a file to the current
     performance.  Handy for copying sequences from another song.  You could even have a 
     file that contains re-usable sequences (like various drum rolls or CC patterns).
+    This is how midi import works now...
 
 
 [X] Don't switch song/live mode automatically anymore.  Show mode in main window (with a toggle button).
@@ -164,7 +165,7 @@ Seq24 stuff below......
 [X] Make the sequence editor grow tool stretch over the length.
 [x] Bump default song length way up.
 [X] Stretch Notes ( Rubber Band)
-[ ] Listen to notes as you draw / move?
+[X] Listen to notes as you draw / move?
 [X] Vertical Lines at grid snap ?
 [ ] exclusive groups (only one item in row or column can be active)
 [x] copy and paste between sequences (make clipboard static)
