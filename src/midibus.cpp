@@ -36,20 +36,22 @@ midibus::midibus( int a_localclient,
 		  snd_seq_t *a_seq,
 		  const char *a_client_name,
 		  const char *a_port_name,
-		  int a_id, int a_queue )
+		  int a_id, int a_queue ) :
+    m_id(a_id),
+
+    m_clock_type(e_clock_off),
+    m_inputing(false),
+
+    m_seq(a_seq),
+
+    m_dest_addr_client(a_destclient),
+    m_dest_addr_port(a_destport),
+
+    m_local_addr_client(a_localclient),
+    m_local_addr_port(-1),
+
+    m_queue(a_queue)
 {
-    /* set members */
-    m_local_addr_client = a_localclient;
-    m_dest_addr_client = a_destclient;
-    m_dest_addr_port   = a_destport;
-    m_seq            = a_seq;
-    m_queue          = a_queue;
-
-    m_id = a_id;
-    m_clock_type = e_clock_off;
-    m_inputing = false;
-
-
     char name[60];
     if ( global_user_midi_bus_definitions[m_id].alias.length() > 0 )
     {
@@ -74,17 +76,16 @@ midibus::midibus( int a_localclient,
 
 midibus::midibus( int a_localclient,
 		  snd_seq_t *a_seq,
-		  int a_id, int a_queue )
+		  int a_id, int a_queue ) :
+    m_id(a_id),
+    m_clock_type(e_clock_off),
+    m_inputing(false),
+    m_seq(a_seq),
+    m_dest_addr_client(-1),
+    m_dest_addr_port(-1),
+    m_local_addr_client(a_localclient),
+    m_queue(a_queue)
 {
-    /* set members */
-    m_local_addr_client = a_localclient;
-    m_seq            = a_seq;
-    m_queue          = a_queue;
-
-    m_id = a_id;
-    m_clock_type = e_clock_off;
-    m_inputing = false;
-
     /* copy names */
     char tmp[60];
     snprintf( tmp, 59, "[%d] seq42 %d",
