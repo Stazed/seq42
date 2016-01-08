@@ -1223,24 +1223,29 @@ seqroll::auto_scroll_horz(long progress)
     if(m_hadjust->get_upper() <= 3072) // don't scroll on seq <= 4 bars(at 4 X 4)
         return;
 
-    long rnd_progress = progress / 600 ;
+    long rnd_progress = progress / 600 ; // this is just to avoid redraw every tick mark - so one every 600 ticks
     rnd_progress *= 600;
 
-    if(progress > ((m_hadjust->get_page_size()/2) + 300) ||
+    static bool set_progress = true; // to prevent multiple set_value() settings
+
+    if(progress > ((m_hadjust->get_page_size()/2) + 300) || // the 300 is just offset for reading easier
          ((m_hadjust->get_value() + m_hadjust->get_page_size()) <= m_hadjust->get_upper()))
     {
-        if(progress - rnd_progress >= 590 )
+        if(progress - rnd_progress >= 300 ) // 1/2 of 600  for middle set_value() - magic... could be anything from 0 - 600 if tick hits
         {
             if((m_hadjust->get_value() + m_hadjust->get_page_size()) <= m_hadjust->get_upper())
             {
                 long calc_value = progress - (m_hadjust->get_page_size()/2) + 300;
-                if((calc_value + m_hadjust->get_page_size()) >= m_hadjust->get_upper()) // don't scroll past upper
+                if((calc_value + m_hadjust->get_page_size()) >= m_hadjust->get_upper() && set_progress) // don't scroll past upper
                    m_hadjust->set_value(m_hadjust->get_upper() - m_hadjust->get_page_size());
-                else
+                else if(set_progress)
                     m_hadjust->set_value(calc_value);
-                //printf("calc_value [%ld]: get_upper [%f]\n",calc_value,m_hadjust->get_upper());
+                //printf("calc_value [%ld]: set_value [%f]\n",calc_value,m_hadjust->get_value());
+
+                set_progress = false; // since we just set_value() - now shut off
             }
-        }
+        } else
+            set_progress = true;  //  < 300 this means we are on the next set of ticks so turn on until we set_value() again
     }
 
     if(progress >= m_hadjust->get_upper()-10)
