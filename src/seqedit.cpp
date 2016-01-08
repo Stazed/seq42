@@ -59,8 +59,8 @@
 int seqedit::m_initial_zoom = 2;
 int seqedit::m_initial_snap = c_ppqn / 4;
 int seqedit::m_initial_note_length = c_ppqn / 4;
-//int seqedit::m_initial_scale = 0;
-int seqedit::m_initial_scale = c_scale_major;
+int seqedit::m_initial_scale = 0;
+//int seqedit::m_initial_scale = c_scale_major;
 int seqedit::m_initial_key = 0;
 int seqedit::m_initial_bg_seq = -1;
 int seqedit::m_initial_bg_trk = -1;
