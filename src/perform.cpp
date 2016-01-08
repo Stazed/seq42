@@ -1490,6 +1490,15 @@ void perform::output_func(void)
         double jack_ticks_converted = 0.0;
         double jack_ticks_converted_last = 0.0;
         double jack_ticks_delta = 0.0;
+
+        /* A note about jack:  For some reason the position_jack() info does not seem to register with some
+        other programs (non-timeline) when sent without jack running. Thus the need for the entries below.
+        This is somewhat redundant since the position was previously sent by start_playing(). The jack_position()
+        set in start_playing() was set for cosmetic reasons to stop start up flicker when the transport
+        position is different from the left frame start position and there was a brief flash of the transport
+        line before being set correctly here. The below position_jack() settings also serves to allow seq42
+        to correctly start as master when another program is used to start the transport rolling. */
+
         if(m_jack_running && m_jack_master && m_playback_mode) // song mode master start left tick marker
             position_jack(true);
         if(m_jack_running && m_jack_master && !m_playback_mode)// live mode master start at zero
