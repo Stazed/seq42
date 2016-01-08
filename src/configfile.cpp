@@ -21,18 +21,15 @@
 #include "configfile.h"
 #include <iostream>
 
-configfile::configfile(const Glib::ustring& a_name)
+configfile::configfile(const Glib::ustring& a_name) :
+    m_pos(0),
+    m_name(a_name)
 {
-    m_name = a_name;
-    m_pos = 0;
 }
 
 configfile::~configfile( )
 {
-
 }
-
-
 
 void
 configfile::next_data_line( ifstream *a_file)
@@ -56,7 +53,7 @@ configfile::line_after( ifstream *a_file, string a_tag)
     while ( strncmp( m_line, a_tag.c_str(), a_tag.length()) != 0  &&
             !a_file->eof() )
     {
-        a_file->getline( m_line, sizeof(m_line) );    
+        a_file->getline( m_line, sizeof(m_line) );
     }
     next_data_line( a_file );
 }
