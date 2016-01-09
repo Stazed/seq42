@@ -18,8 +18,6 @@
 //
 //-----------------------------------------------------------------------------
 
-// FIXME: re-use some of this code if I ever implement export to midi
-
 #include "midifile.h"
 #include "seqedit.h"
 #include <iostream>
@@ -594,7 +592,7 @@ bool midifile::write_sequences (perform * a_perf)
         }
     }
 
-    printf ("numtracks[%d]\n", numtracks );
+    //printf ("numtracks[%d]\n", numtracks );
 
     /* write header */
     /* 'MThd' and length of 6 */

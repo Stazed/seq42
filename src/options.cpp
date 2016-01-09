@@ -274,19 +274,6 @@ options::options (Gtk::Window & parent, perform * a_p):
 
     vbox2->pack_start (*check, false, false);
 
-
-/*    Gtk::Button * button = manage (new Button ("Connect"));
-    add_tooltip( button, "Connect to Jack.");
-    button->signal_clicked().connect(bind(mem_fun(*this,
-                    &options::transport_callback), e_jack_connect, button));
-    vbox2->pack_start (*button, false, false);
-
-    button = manage (new Button ("Disconnect"));
-    add_tooltip( button, "Disconnect Jack.");
-    button->signal_clicked().connect(bind(mem_fun(*this,
-                    &options::transport_callback), e_jack_disconnect, button));
-    vbox2->pack_start (*button, false, false);
-*/
 #endif
 
     /* show everything */
@@ -370,19 +357,6 @@ options::transport_callback (button a_type, Button * a_check)
         case e_jack_master_cond:
             {
                 global_with_jack_master_cond = check->get_active ();
-            }
-            break;
-
-        case e_jack_connect:
-            {
-                m_perf->init_jack ();
-            }
-            break;
-
-
-        case e_jack_disconnect:
-            {
-                m_perf->deinit_jack ();
             }
             break;
 

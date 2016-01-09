@@ -34,7 +34,7 @@
 #include <gtkmm/table.h>
 #include <gtkmm/drawingarea.h>
 #include <gtkmm/label.h>
-#include <gtkmm/frame.h> 
+#include <gtkmm/frame.h>
 #include <gtkmm/fileselection.h>
 #include <gtkmm/dialog.h>
 #include <gtkmm/arrow.h>
@@ -67,16 +67,13 @@ class options : public Gtk::Dialog
 
 
     Table   *m_table;
-    
+
     Notebook *m_notebook;
 
     enum button {
         e_jack_transport,
         e_jack_master,
-        e_jack_master_cond,
-
-        e_jack_connect,
-        e_jack_disconnect
+        e_jack_master_cond
     };
 
     void clock_callback_off( int a_bus, RadioButton *a_button );
@@ -85,13 +82,13 @@ class options : public Gtk::Dialog
 
     void clock_mod_callback( Adjustment *adj );
     void interaction_method_callback( Adjustment *adj );
-    
+
     void input_callback( int a_bus, Button *a_button );
 
     void transport_callback( button a_type, Button *a_button );
-    
+
 public:
-    
+
     options( Gtk::Window &parent, perform *a_p );
 };
 
