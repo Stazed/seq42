@@ -21,9 +21,15 @@
 #include "font.h"
 
 
-perfnames::perfnames( perform *a_perf, Adjustment *a_vadjust ): DrawingArea(), trackmenu(a_perf)
+perfnames::perfnames( perform *a_perf, Adjustment *a_vadjust ):
+    trackmenu(a_perf),
+    m_black(Gdk::Color( "black" )),
+    m_white(Gdk::Color( "white" )),
+    m_grey(Gdk::Color( "grey" )),
+    m_mainperf(a_perf),
+    m_vadjust(a_vadjust),
+    m_track_offset(0)
 {
-    m_mainperf = a_perf;
 
     add_events( Gdk::BUTTON_PRESS_MASK |
 		Gdk::BUTTON_RELEASE_MASK |
@@ -35,31 +41,17 @@ perfnames::perfnames( perform *a_perf, Adjustment *a_vadjust ): DrawingArea(), t
     // in the construor you can only allocate colors,
     // get_window() returns 0 because we have not be realized
     Glib::RefPtr<Gdk::Colormap>  colormap= get_default_colormap();
-
-
-
-    m_black = Gdk::Color( "black" );
-    m_white = Gdk::Color( "white" );
-    m_grey  = Gdk::Color( "grey" );
-
     colormap->alloc_color( m_black );
     colormap->alloc_color( m_white );
     colormap->alloc_color( m_grey );
 
-    m_vadjust = a_vadjust;
     m_vadjust->signal_value_changed().connect( mem_fun( *(this), &perfnames::change_vert ));
-
-    m_track_offset = 0;
 
     set_double_buffered( false );
 
     for( int i=0; i<c_max_track; ++i )
         m_track_active[i]=false;
-
 }
-
-
-
 
 void
 perfnames::on_realize()
