@@ -79,9 +79,6 @@ midibus::unlock( )
 }
 
 
-
-
-
 bool midibus::init_out( )
 {
     PmError err = Pm_OpenOutput( &m_pms, m_pm_num, NULL, 100, NULL, NULL, 0);
@@ -325,8 +322,6 @@ midibus::stop()
 }
 
 
-
-
 // generates midi clock
 void
 midibus::clock( long a_tick )
@@ -366,8 +361,6 @@ midibus::clock( long a_tick )
 
     unlock();
 }
-
-
 
 
 void
@@ -477,7 +470,6 @@ mastermidibus::flush()
 }
 
 
-
 /* fills the array with our buses */
 mastermidibus::mastermidibus()
 {
@@ -533,7 +525,6 @@ mastermidibus::init( )
             else
             {
                 delete m_buses_out[m_num_out_buses];
-                m_buses_out[m_num_out_buses] = NULL;
             }
         }
 
@@ -553,7 +544,6 @@ mastermidibus::init( )
             else
             {
                 delete  m_buses_in[m_num_in_buses];
-                m_buses_in[m_num_in_buses] = NULL;
             }
         }
     }
@@ -578,15 +568,9 @@ mastermidibus::init( )
 mastermidibus::~mastermidibus()
 {
     for ( int i=0; i<m_num_out_buses; i++ )
-    {
         delete m_buses_out[i];
-        m_buses_out[i] = NULL;
-    }
     for ( int i=0; i<m_num_in_buses; i++ )
-    {
         delete m_buses_in[i];
-        m_buses_in[i] = NULL;
-    }
 
     Pm_Terminate();
 
@@ -762,9 +746,6 @@ mastermidibus::is_more_input( ){
 
     return ( size > 0 );
 }
-
-
-
 
 
 bool

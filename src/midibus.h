@@ -70,14 +70,13 @@ class midibus
 
     /* sequencer client handle */
 #if HAVE_LIBASOUND
-    //snd_seq_t *m_seq;
     snd_seq_t * const m_seq;
 
     /* address of client */
-    int m_dest_addr_client;
-    int m_dest_addr_port;
+    const int m_dest_addr_client;
+    const int m_dest_addr_port;
 
-    int m_local_addr_client;
+    const int m_local_addr_client;
     int m_local_addr_port;
 #endif
 

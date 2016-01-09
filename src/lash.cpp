@@ -71,7 +71,6 @@ bool
 lash::process_events()
 {
     lash_event_t  *ev = NULL;
-    //lash_config_t *conf = NULL;
 
     // Process events
     while ((ev = lash_get_event(m_client)) != NULL) {
