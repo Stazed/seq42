@@ -22,11 +22,6 @@
 #include "seqedit.h"
 #include "font.h"
 
-const int c_perfroll_background_x = (c_ppqn * 4 * 16) / c_perf_scale_x;
-const int c_perfroll_size_box_w = 3;
-const int c_perfroll_size_box_click_w = c_perfroll_size_box_w+1 ;
-
-
 
 perfroll::perfroll( perform *a_perf,
 		    Adjustment * a_hadjust,
