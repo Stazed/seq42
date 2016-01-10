@@ -1086,6 +1086,21 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
             ret = true;
         }
 
+        if (!is_pattern_playing) {
+			if ( a_p0->keyval == GDK_Home ){
+				m_seq->set_orig_tick(0);
+				ret = true;
+			}
+			if ( ( a_p0->keyval == GDK_Left) && (a_p0->state & GDK_CONTROL_MASK)){
+				m_seq->set_orig_tick(m_seq->get_last_tick()- m_snap);
+				ret = true;
+			}
+			if ( (a_p0->keyval == GDK_Right)  && (a_p0->state & GDK_CONTROL_MASK)){
+				m_seq->set_orig_tick(m_seq->get_last_tick() + m_snap);
+				ret = true;
+			}
+		}
+
         if ( a_p0->keyval ==  GDK_Up ){
 
             m_seq->push_undo();
@@ -1107,7 +1122,7 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
             ret = true;
         }
 
-        if ( a_p0->keyval ==  GDK_Right ){
+        if ( (a_p0->keyval ==  GDK_Right) && !(a_p0->state & GDK_CONTROL_MASK) ){
 
             m_seq->push_undo();
             if ( a_p0->state & GDK_SHIFT_MASK ){
@@ -1117,7 +1132,7 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
             }
             ret = true;
         }
-        if ( a_p0->keyval ==  GDK_Left ){
+        if ( (a_p0->keyval ==  GDK_Left) && !(a_p0->state & GDK_CONTROL_MASK) ){
 
             m_seq->push_undo();
             if ( a_p0->state & GDK_SHIFT_MASK ){

@@ -63,6 +63,9 @@ class sequence
     list < event >::iterator m_iterator_play;
     list < event >::iterator m_iterator_draw;
 
+    /* polyphonic step edit note counter */
+    int m_notes_on;
+
     /* map for noteon, used when muting, to shut off current
        messages */
     int m_playing_notes[c_midi_notes];
