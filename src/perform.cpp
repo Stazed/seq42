@@ -2336,6 +2336,11 @@ perform::load( const Glib::ustring& a_filename )
     int version;
     file.read((char *) &version, sizeof(int));
 
+    if (version < 0 || version > c_file_version) {
+        fprintf(stderr, "Invalid file version detected: %d\n", version);
+        return false;
+    }
+
     int bpm;
     file.read((char *) &bpm, sizeof(int));
     set_bpm(bpm);

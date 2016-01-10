@@ -42,7 +42,7 @@
 static struct
 option long_options[] = {
 
-    {"file",     required_argument, 0, 'f'},
+//    {"file",     required_argument, 0, 'f'},
     {"help",     0, 0, 'h'},
     {"showmidi",     0, 0, 's'},
     {"show_keys",     0, 0, 'k' },
@@ -56,7 +56,6 @@ option long_options[] = {
     {"jack_start_mode", required_argument, 0, 'M' },
     {"manual_alsa_ports", 0, 0, 'm' },
     {"pass_sysex", 0, 0, 'P'},
-    {"show_keys", 0,0,'k'},
     {0, 0, 0, 0}
 
 };
@@ -102,6 +101,11 @@ lash *lash_driver = NULL;
 int
 main (int argc, char *argv[])
 {
+    /* Scan the argument vector and strip off all parameters known to
+     * GTK+. */
+    Gtk::Main kit(argc, argv);
+
+    /*prepare global MIDI definitions*/
     for ( int i=0; i<c_maxBuses; i++ )
     {
         for ( int j=0; j<16; j++ )
@@ -114,60 +118,61 @@ main (int argc, char *argv[])
             global_user_instrument_definitions[i].controllers_active[j] = false;
     }
 
-	/* init the lash driver (strips lash specific cmdline arguments */
+    /* Init the lash driver (strip lash specific command line
+     * arguments and connect to daemon) */
 #ifdef LASH_SUPPORT
 	lash_driver = new lash(&argc, &argv);
 #endif
 
     /* the main performance object */
+    /* lash must be initialized here because mastermidibus uses the global
+    * lash_driver variable*/
     perform p;
 
-    /* all GTK applications must have a gtk_main(). Control ends here
-       and waits for an event to occur (like a key press or mouse event). */
-    Gtk::Main kit(argc, argv);
-
-    p_font_renderer = new font();
-
-
-    if ( getenv( HOME ) != NULL ){
-
+    /* read user preferences files */
+    if ( getenv( HOME ) != NULL )
+    {
         Glib::ustring home( getenv( HOME ));
         last_used_dir = home;
         Glib::ustring total_file = home + SLASH + config_filename;
-        printf( "Reading [%s]\n", total_file.c_str());
 
-        optionsfile options( total_file );
+        if (Glib::file_test(total_file, Glib::FILE_TEST_EXISTS))
+        {
+            printf( "Reading [%s]\n", total_file.c_str());
 
-        if ( !options.parse( &p ) ){
-            printf( "Error Reading [%s]\n", total_file.c_str());
+            optionsfile options( total_file );
+
+            if ( !options.parse( &p ) ){
+                printf( "Error Reading [%s]\n", total_file.c_str());
+            }
         }
 
         total_file = home + SLASH + user_filename;
-        printf( "Reading [%s]\n", total_file.c_str());
+        if (Glib::file_test(total_file, Glib::FILE_TEST_EXISTS))
+        {
+            printf( "Reading [%s]\n", total_file.c_str());
 
-        userfile user( total_file );
+            userfile user( total_file );
 
-        if ( !user.parse( &p ) ){
-            printf( "Error Reading [%s]\n", total_file.c_str());
+            if ( !user.parse( &p ) ){
+                printf( "Error Reading [%s]\n", total_file.c_str());
+            }
         }
 
-    } else {
-
-        printf( "Error calling getenv( \"%s\" )\n", HOME );
     }
-
+    else
+        printf( "Error calling getenv( \"%s\" )\n", HOME );
 
 
     /* parse parameters */
     int c;
 
-
-    while (1){
+    while (true){
 
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long (argc, argv, "p:f:v", long_options, &option_index);
+        c = getopt_long (argc, argv, "C:hi:jJmM:pPsS:x:", long_options, &option_index);
 
         /* Detect the end of the options. */
         if (c == -1)
@@ -178,25 +183,26 @@ main (int argc, char *argv[])
             case '?':
             case 'h':
 
-                printf( "usage: seq42 [options]\n\n" );
-                printf( "options:\n" );
-                printf( "    --help : show this message\n" );
-                printf( "    --file <filename> : load midi file on startup\n" );
-                printf( "    --manual_alsa_ports : seq42 won't attach alsa ports\n" );
-                printf( "    --showmidi : dumps incoming midi to screen\n" );
-                printf( "    --priority : runs higher priority with FIFO scheduler (must be root)\n" );
-                printf( "    --pass_sysex : passes any incoming sysex messages to all outputs \n" );
-                printf( "    --show_keys : prints pressed key value\n" );
-                printf( "    --interaction_method <number>: see .seq42rc for methods to use\n" );
-                printf( "    --jack_transport : seq42 will sync to jack transport\n" );
-                printf( "    --jack_master : seq42 will try to be jack master\n" );
-                printf( "    --jack_master_cond : jack master will fail if there is already a master\n" );
-                printf( "    --jack_start_mode <x> : when seq42 is synced to jack, the following play\n" );
+                printf( "   -h, --help: show this message\n" );
+//                printf( "   -v, --version: show program version information\n" );
+                printf( "   -m, --manual_alsa_ports: seq42 won't attach alsa ports\n" );
+                printf( "   -s, --showmidi: dumps incoming midi events to screen\n" );
+                printf( "   -p, --priority: runs higher priority with FIFO scheduler (must be root)\n" );
+                printf( "   -P, --pass_sysex: passes any incoming sysex messages to all outputs \n" );
+                printf( "   -i, --ignore <number>: ignore ALSA device\n" );
+                printf( "   -k, --show_keys: prints pressed key value\n" );
+                printf( "   -x, --interaction_method <number>: see .seq42rc for methods to use\n" );
+                printf( "   -j, --jack_transport: seq42 will sync to jack transport\n" );
+                printf( "   -J, --jack_master: seq42 will try to be jack master\n" );
+                printf( "   -C, --jack_master_cond: jack master will fail if there is already a master\n" );
+                printf( "   -M, --jack_start_mode <mode>: when seq42 is synced to jack, the following play\n" );
                 printf( "                          modes are available (0 = live mode)\n");
                 printf( "                                              (1 = song mode) (default)\n" );
+                printf( "   -S, --stats: show statistics\n" );
+//                printf( "   -U, --jack_session_uuid <uuid>: set uuid for jack session\n" );
                 printf( "\n\n\n" );
 
-                return 0;
+                return EXIT_SUCCESS;
                 break;
 
             case 'S':
@@ -244,10 +250,6 @@ main (int argc, char *argv[])
                 global_manual_alsa_ports = true;
                 break;
 
-            case 'f':
-                global_filename = Glib::ustring(optarg);
-               break;
-
             case 'i':
                 /* ignore alsa device */
                 global_device_ignore = true;
@@ -272,16 +274,20 @@ main (int argc, char *argv[])
     p.launch_output_thread();
     p.init_jack();
 
+
+    p_font_renderer = new font();
+
     mainwnd seq42_window( &p );
 
-    if (global_filename != "") {
-        //midifile *f = new midifile(global_filename);
-        //f->parse( &p );
-        //delete f;
-
-        p.load(global_filename);
+    if (optind < argc)
+    {
+        if (Glib::file_test(argv[optind], Glib::FILE_TEST_EXISTS))
+            seq42_window.open_file(argv[optind]);
+        else
+            printf("File not found: %s\n", argv[optind]);
     }
 
+    /* connect to lash daemon and poll events*/
 #ifdef LASH_SUPPORT
 	lash_driver->start( &p );
 #endif
