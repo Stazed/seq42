@@ -1091,11 +1091,11 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
 				m_seq->set_orig_tick(0);
 				ret = true;
 			}
-			if ( ( a_p0->keyval == GDK_Left) && (a_p0->state & GDK_CONTROL_MASK)){
+			if ( ( a_p0->keyval == GDK_Left) && !(a_p0->state & GDK_CONTROL_MASK) && !( a_p0->state & GDK_SHIFT_MASK )){
 				m_seq->set_orig_tick(m_seq->get_last_tick()- m_snap);
 				ret = true;
 			}
-			if ( (a_p0->keyval == GDK_Right)  && (a_p0->state & GDK_CONTROL_MASK)){
+			if ( (a_p0->keyval == GDK_Right) && !(a_p0->state & GDK_CONTROL_MASK) && !( a_p0->state & GDK_SHIFT_MASK )){
 				m_seq->set_orig_tick(m_seq->get_last_tick() + m_snap);
 				ret = true;
 			}
@@ -1122,28 +1122,34 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
             ret = true;
         }
 
-        if ( (a_p0->keyval ==  GDK_Right) && !(a_p0->state & GDK_CONTROL_MASK) ){
-
-            m_seq->push_undo();
-            if ( a_p0->state & GDK_SHIFT_MASK ){
+        if ( a_p0->keyval ==  GDK_Right )
+        {
+            if ( a_p0->state & GDK_SHIFT_MASK )
+            {
+                m_seq->push_undo();
                 m_seq->shift_notes(1);
-            } else {
+            } else if(a_p0->state & GDK_CONTROL_MASK)
+            {
+                m_seq->push_undo();
                 m_seq->shift_notes(m_snap);
             }
             ret = true;
         }
-        if ( (a_p0->keyval ==  GDK_Left) && !(a_p0->state & GDK_CONTROL_MASK) ){
-
-            m_seq->push_undo();
-            if ( a_p0->state & GDK_SHIFT_MASK ){
+        if ( a_p0->keyval ==  GDK_Left )
+        {
+            if ( a_p0->state & GDK_SHIFT_MASK )
+            {
+                m_seq->push_undo();
                 m_seq->shift_notes(-1);
-            } else {
+            } else if(a_p0->state & GDK_CONTROL_MASK)
+            {
+                m_seq->push_undo();
                 m_seq->shift_notes(-m_snap);
             }
             ret = true;
         }
 
-        if ( a_p0->state & GDK_MOD1_MASK ){
+        if ( a_p0->state & GDK_MOD1_MASK ){ // Alt key
             if ( a_p0->keyval ==  GDK_q ){
 
                 m_seq->push_undo();
