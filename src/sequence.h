@@ -331,7 +331,7 @@ class sequence
 
     /* deletes events */
     void remove_marked();
-    void mark_selected();
+    bool mark_selected();
     void unpaint_all();
 
     /* unselects every event */

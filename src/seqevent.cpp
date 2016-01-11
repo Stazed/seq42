@@ -687,8 +687,9 @@ seqevent::on_key_press_event(GdkEventKey* a_p0)
 
         if ( a_p0->keyval ==  GDK_Delete || a_p0->keyval == GDK_BackSpace ){
 
-            m_seq->push_undo();
-            m_seq->mark_selected();
+            if(m_seq->mark_selected())
+                m_seq->push_undo();
+
             m_seq->remove_marked();
             ret = true;
         }
@@ -698,8 +699,10 @@ seqevent::on_key_press_event(GdkEventKey* a_p0)
             /* cut */
             if ( a_p0->keyval == GDK_x || a_p0->keyval == GDK_X ){
 
+                if(m_seq->mark_selected())
+                    m_seq->push_undo();
+
                 m_seq->copy_selected();
-                m_seq->mark_selected();
                 m_seq->remove_marked();
 
                 ret = true;

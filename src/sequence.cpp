@@ -578,26 +578,29 @@ sequence::remove_marked()
 }
 
 
-
-void
+bool
 sequence::mark_selected( )
 {
-    list<event>::iterator i, t;
+    list<event>::iterator i;
+    bool have_selected = false;
 
     lock();
 
     i = m_list_event.begin();
     while( i != m_list_event.end() ){
 
-    if ((*i).is_selected()){
-
+    if ((*i).is_selected())
+    {
         (*i).mark();
+        have_selected = true;
     }
     ++i;
     }
     reset_draw_marker();
 
     unlock();
+
+    return have_selected;
 }
 
 void
@@ -1054,7 +1057,10 @@ sequence::move_selected_notes( long a_delta_tick, int a_delta_note )
     long timestamp=0;
 
     lock();
-    mark_selected();
+
+    if(mark_selected())
+        push_undo();
+
     list<event>::iterator i;
 
     for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
@@ -1138,7 +1144,8 @@ sequence::stretch_selected( long a_delta_tick )
 
     if( new_len > 1) {
 
-        mark_selected();
+        if(mark_selected())
+            push_undo();
 
         for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
             if ( (*i).is_marked() ){
@@ -1195,7 +1202,8 @@ sequence::stretch_selected( long a_delta_tick )
 
     if( new_len > 1) {
 
-        mark_selected();
+        if(mark_selected())
+            push_undo();
 
         for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
             if ( (*i).is_marked() &&
@@ -1239,7 +1247,8 @@ sequence::grow_selected( long a_delta_tick )
 
     list<event>::iterator i;
 
-    mark_selected();
+    if(mark_selected())
+        push_undo();
 
     for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
 
@@ -2559,7 +2568,8 @@ sequence::transpose_notes( int a_steps, int a_scale )
 
     lock();
 
-    mark_selected();
+    if(mark_selected())
+        push_undo();
 
     list<event>::iterator i;
 
@@ -2626,7 +2636,8 @@ sequence::shift_notes( int a_ticks )
 
     lock();
 
-    mark_selected();
+    if(mark_selected())
+        push_undo();
 
     list<event>::iterator i;
 
@@ -2685,7 +2696,8 @@ sequence::quanize_events( unsigned char a_status, unsigned char a_cc,
 
     list<event> quantized_events;
 
-    mark_selected();
+    if(mark_selected())
+        push_undo();
 
     for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
 

@@ -1062,7 +1062,6 @@ bool
 seqroll::on_key_press_event(GdkEventKey* a_p0)
 {
     bool ret = false;
-
     // the start/end key may be the same key (i.e. SPACEBAR)
     // allow toggling when the same key is mapped to both triggers (i.e. SPACEBAR)
     bool dont_toggle = m_perform->m_key_start != m_perform->m_key_stop;
@@ -1080,8 +1079,9 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
     if ( a_p0->type == GDK_KEY_PRESS ){
         if ( a_p0->keyval ==  GDK_Delete || a_p0->keyval == GDK_BackSpace ){
 
-            m_seq->push_undo();
-            m_seq->mark_selected();
+            if(m_seq->mark_selected())
+                m_seq->push_undo();
+
             m_seq->remove_marked();
             ret = true;
         }
@@ -1103,7 +1103,7 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
 
         if ( a_p0->keyval ==  GDK_Up ){
 
-            m_seq->push_undo();
+            //m_seq->push_undo();
             if ( a_p0->state & GDK_SHIFT_MASK ){
                 m_seq->transpose_notes(12, 0);
             } else {
@@ -1113,7 +1113,7 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
         }
         if ( a_p0->keyval ==  GDK_Down ){
 
-            m_seq->push_undo();
+            //m_seq->push_undo();
             if ( a_p0->state & GDK_SHIFT_MASK ){
                 m_seq->transpose_notes(-12, 0);
             } else {
@@ -1126,11 +1126,9 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
         {
             if ( a_p0->state & GDK_SHIFT_MASK )
             {
-                m_seq->push_undo();
                 m_seq->shift_notes(1);
             } else if(a_p0->state & GDK_CONTROL_MASK)
             {
-                m_seq->push_undo();
                 m_seq->shift_notes(m_snap);
             }
             ret = true;
@@ -1139,11 +1137,9 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
         {
             if ( a_p0->state & GDK_SHIFT_MASK )
             {
-                m_seq->push_undo();
                 m_seq->shift_notes(-1);
             } else if(a_p0->state & GDK_CONTROL_MASK)
             {
-                m_seq->push_undo();
                 m_seq->shift_notes(-m_snap);
             }
             ret = true;
@@ -1163,9 +1159,10 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
             /* cut */
             if ( a_p0->keyval == GDK_x || a_p0->keyval == GDK_X ){
 
-                m_seq->push_undo();
+                if(m_seq->mark_selected())
+                    m_seq->push_undo();
+
                 m_seq->copy_selected();
-                m_seq->mark_selected();
                 m_seq->remove_marked();
 
                 ret = true;
@@ -1578,8 +1575,10 @@ bool FruitySeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& th
                     ths.m_seq->select_note_events( tick_s, note_h,
                                                 tick_s, note_h,
                                                 sequence::e_select_one );
-                    ths.m_seq->push_undo();
-                    ths.m_seq->mark_selected();
+
+                    if(ths.m_seq->mark_selected())
+                        ths.m_seq->push_undo();
+
                     ths.m_seq->remove_marked();
                 }
                 /* right click: remove only the note under the cursor,
