@@ -727,6 +727,18 @@ seqevent::on_key_press_event(GdkEventKey* a_p0)
                 m_seq->pop_undo();
                 ret = true;
             }
+            /* Redo */
+            if ( a_p0->keyval == GDK_r || a_p0->keyval == GDK_R ){
+
+                m_seq->pop_redo();
+                ret = true;
+            }
+            /* select all events */
+            if ( a_p0->keyval == GDK_a || a_p0->keyval == GDK_A ){
+
+                m_seq->select_all();
+                ret = true;
+            }
          }
     }
 

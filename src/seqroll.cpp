@@ -337,8 +337,8 @@ seqroll::update_background()
 
     for ( int i=0; i< (m_window_y / c_key_y) + 1; i++ )
     {
-        if (global_interactionmethod == e_fruity_interaction)
-        {
+//        if (global_interactionmethod == e_fruity_interaction)
+//        {
             if (0 == (((c_num_keys - i) - m_scroll_offset_key + ( 12 - m_key )) % 12))
             {
                 /* draw horz black lines at C */
@@ -357,7 +357,7 @@ seqroll::update_background()
                                            Gdk::CAP_NOT_LAST,
                                            Gdk::JOIN_MITER );
             }
-        }
+//        }
 
         m_background->draw_line(m_gc,
                             0,
