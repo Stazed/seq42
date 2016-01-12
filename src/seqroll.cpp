@@ -915,6 +915,10 @@ seqroll::start_paste( )
      int note_h;
      int note_l;
 
+     /* get the box that selected elements are in */
+     if(!m_seq->get_clipboard_box( &tick_s, &note_h,&tick_f, &note_l ))
+        return; // if nothing selected
+
      snap_x( &m_current_x );
      snap_y( &m_current_x );
 
@@ -922,10 +926,6 @@ seqroll::start_paste( )
      m_drop_y = m_current_y;
 
      m_paste = true;
-
-     /* get the box that selected elements are in */
-     m_seq->get_clipboard_box( &tick_s, &note_h,
-			       &tick_f, &note_l );
 
      convert_tn_box_to_rect( tick_s, tick_f, note_h, note_l,
 			     &m_selected.x,
@@ -1092,11 +1092,11 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
 				m_seq->set_orig_tick(0);
 				ret = true;
 			}
-			if ( ( a_p0->keyval == GDK_Left) && !(a_p0->state & GDK_CONTROL_MASK) && !( a_p0->state & GDK_SHIFT_MASK )){
+			if ( ( a_p0->keyval == GDK_Left) && (a_p0->state & GDK_CONTROL_MASK)){
 				m_seq->set_orig_tick(m_seq->get_last_tick()- m_snap);
 				ret = true;
 			}
-			if ( (a_p0->keyval == GDK_Right) && !(a_p0->state & GDK_CONTROL_MASK) && !( a_p0->state & GDK_SHIFT_MASK )){
+			if ( (a_p0->keyval == GDK_Right) && (a_p0->state & GDK_CONTROL_MASK)){
 				m_seq->set_orig_tick(m_seq->get_last_tick() + m_snap);
 				ret = true;
 			}
@@ -1126,7 +1126,7 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
             if ( a_p0->state & GDK_SHIFT_MASK )
             {
                 m_seq->shift_notes(1);
-            } else if(a_p0->state & GDK_CONTROL_MASK)
+            } else if(!(a_p0->state & GDK_CONTROL_MASK))
             {
                 m_seq->shift_notes(m_snap);
             }
@@ -1137,7 +1137,7 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
             if ( a_p0->state & GDK_SHIFT_MASK )
             {
                 m_seq->shift_notes(-1);
-            } else if(a_p0->state & GDK_CONTROL_MASK)
+            } else if(!(a_p0->state & GDK_CONTROL_MASK))
             {
                 m_seq->shift_notes(-m_snap);
             }

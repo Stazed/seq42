@@ -292,7 +292,7 @@ class sequence
 			   long *a_tick_f, int *a_note_l);
 
     /* returns the 'box' of selected items */
-    void get_clipboard_box (long *a_tick_s, int *a_note_h,
+    bool get_clipboard_box (long *a_tick_s, int *a_note_h,
 			    long *a_tick_f, int *a_note_l);
 
     /* removes and adds readds selected in position */

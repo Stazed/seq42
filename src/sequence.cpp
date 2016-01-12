@@ -659,10 +659,13 @@ sequence::get_selected_box( long *a_tick_s, int *a_note_h,
     unlock();
 }
 
-void
+bool
 sequence::get_clipboard_box( long *a_tick_s, int *a_note_h,
                  long *a_tick_f, int *a_note_l )
 {
+
+    if ( m_list_clipboard.size() == 0 )
+        return false;
 
     list<event>::iterator i;
 
@@ -676,10 +679,6 @@ sequence::get_clipboard_box( long *a_tick_s, int *a_note_h,
     int note;
 
     lock();
-
-    if ( m_list_clipboard.size() == 0 ) {
-    *a_tick_s = *a_tick_f = *a_note_h = *a_note_l = 0;
-    }
 
     for ( i = m_list_clipboard.begin(); i != m_list_clipboard.end(); i++ ){
 
@@ -695,6 +694,8 @@ sequence::get_clipboard_box( long *a_tick_s, int *a_note_h,
     }
 
     unlock();
+
+    return true;
 }
 
 

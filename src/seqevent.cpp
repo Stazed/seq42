@@ -505,6 +505,10 @@ seqevent::start_paste( )
      int note_l;
      int x, w;
 
+     /* get the box that selected elements are in */
+     if(!m_seq->get_clipboard_box( &tick_s, &note_h,&tick_f, &note_l ))
+        return; // if nothing selected
+
      snap_x( &m_current_x );
      snap_y( &m_current_x );
 
@@ -512,10 +516,6 @@ seqevent::start_paste( )
      m_drop_y = m_current_y;
 
      m_paste = true;
-
-     /* get the box that selected elements are in */
-     m_seq->get_clipboard_box( &tick_s, &note_h,
-			       &tick_f, &note_l );
 
      /* convert box to X,Y values */
      convert_t( tick_s, &x );
