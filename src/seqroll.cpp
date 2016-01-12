@@ -1080,9 +1080,10 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
         if ( a_p0->keyval ==  GDK_Delete || a_p0->keyval == GDK_BackSpace ){
 
             if(m_seq->mark_selected())
+            {
                 m_seq->push_undo();
-
-            m_seq->remove_marked();
+                m_seq->remove_marked();
+            }
             ret = true;
         }
 
@@ -1103,7 +1104,6 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
 
         if ( a_p0->keyval ==  GDK_Up ){
 
-            //m_seq->push_undo();
             if ( a_p0->state & GDK_SHIFT_MASK ){
                 m_seq->transpose_notes(12, 0);
             } else {
@@ -1113,7 +1113,6 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
         }
         if ( a_p0->keyval ==  GDK_Down ){
 
-            //m_seq->push_undo();
             if ( a_p0->state & GDK_SHIFT_MASK ){
                 m_seq->transpose_notes(-12, 0);
             } else {
@@ -1146,9 +1145,8 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
         }
 
         if ( a_p0->state & GDK_MOD1_MASK ){ // Alt key
-            if ( a_p0->keyval ==  GDK_q ){
 
-                m_seq->push_undo();
+            if ( a_p0->keyval ==  GDK_q ){
                 m_seq->quanize_events(EVENT_NOTE_ON, 0, m_snap, 1 , true);
                 ret = true;
             }
@@ -1160,10 +1158,11 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
             if ( a_p0->keyval == GDK_x || a_p0->keyval == GDK_X ){
 
                 if(m_seq->mark_selected())
+                {
                     m_seq->push_undo();
-
-                m_seq->copy_selected();
-                m_seq->remove_marked();
+                    m_seq->copy_selected();
+                    m_seq->remove_marked();
+                }
 
                 ret = true;
             }
@@ -1577,9 +1576,10 @@ bool FruitySeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& th
                                                 sequence::e_select_one );
 
                     if(ths.m_seq->mark_selected())
+                    {
                         ths.m_seq->push_undo();
-
-                    ths.m_seq->remove_marked();
+                        ths.m_seq->remove_marked();
+                    }
                 }
                 /* right click: remove only the note under the cursor,
                    leave the selection intact */
