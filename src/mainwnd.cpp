@@ -54,15 +54,15 @@ bool is_pattern_playing = false;
 #   define add_tooltip( obj, text ) m_tooltips->set_tip( *obj, text );
 #endif
 
-mainwnd::mainwnd(perform *a_p)
+mainwnd::mainwnd(perform *a_p):
+    m_mainperf(a_p),
+    m_modified(false),
+    m_options(NULL),
+    m_snap(c_ppqn / 4)
 {
     using namespace Menu_Helpers;
 
     set_icon(Gdk::Pixbuf::create_from_xpm_data(seq42_32_xpm));
-
-    /* set the performance */
-    m_mainperf = a_p;
-    m_snap = c_ppqn / 4;
 
     /* main window */
     update_window_title();
@@ -468,9 +468,6 @@ mainwnd::mainwnd(perform *a_p)
     m_timeout_connect = Glib::signal_timeout().connect(
             mem_fun(*this, &mainwnd::timer_callback), 25);
 
-    m_modified = false;
-
-    m_options = NULL;
 
     m_sigpipe[0] = -1;
     m_sigpipe[1] = -1;
@@ -480,8 +477,7 @@ mainwnd::mainwnd(perform *a_p)
 
 mainwnd::~mainwnd()
 {
-    if ( m_options != NULL )
-        delete m_options;
+    delete m_options;
 
     if (m_sigpipe[0] != -1)
         close(m_sigpipe[0]);

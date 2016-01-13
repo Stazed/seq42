@@ -47,6 +47,7 @@ class mainwnd : public Gtk::Window
 {
  private:
 
+    perform  *m_mainperf;
     bool      m_modified;
     static int m_sigpipe[2];
 
@@ -58,7 +59,7 @@ class mainwnd : public Gtk::Window
     Menu     *m_menu_edit;
     Menu     *m_menu_help;
 
-    perform  *m_mainperf;
+//    perform  *m_mainperf;
 
     maintime *m_main_time;
 
