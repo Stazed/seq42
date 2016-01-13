@@ -60,7 +60,6 @@ int seqedit::m_initial_zoom = 2;
 int seqedit::m_initial_snap = c_ppqn / 4;
 int seqedit::m_initial_note_length = c_ppqn / 4;
 int seqedit::m_initial_scale = 0;
-//int seqedit::m_initial_scale = c_scale_major;
 int seqedit::m_initial_key = 0;
 int seqedit::m_initial_bg_seq = -1;
 int seqedit::m_initial_bg_trk = -1;
@@ -99,22 +98,21 @@ seqedit::menu_action_quantise( void )
 
 
 seqedit::seqedit( sequence *a_seq,
-		  perform *a_perf)
-{
-    set_icon(Gdk::Pixbuf::create_from_xpm_data(seq_editor_xpm));
+		  perform *a_perf) :
 
     /* set the performance */
-    m_seq = a_seq;
+    m_seq(a_seq),
+    m_mainperf(a_perf),
 
-    m_zoom        =  m_initial_zoom;
-    m_snap        =  m_initial_snap;
-    m_note_length = m_initial_note_length;
-    m_scale       = m_initial_scale;
-    m_key         =   m_initial_key;
-    m_bg_seq    = m_initial_bg_seq;
-    m_bg_trk    = m_initial_bg_trk;
-
-    m_mainperf = a_perf;
+    m_zoom(m_initial_zoom),
+    m_snap(m_initial_snap),
+    m_note_length(m_initial_note_length),
+    m_scale(m_initial_scale),
+    m_key(m_initial_key),
+    m_bg_seq(m_initial_bg_seq),
+    m_bg_trk(m_initial_bg_trk)
+{
+    set_icon(Gdk::Pixbuf::create_from_xpm_data(seq_editor_xpm));
 
     /* main window */
     std::string title = "seq42 - sequence - ";

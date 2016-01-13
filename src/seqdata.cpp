@@ -21,12 +21,23 @@
 #include "seqdata.h"
 #include "font.h"
 
+seqdata::seqdata(sequence *a_seq, int a_zoom,  Gtk::Adjustment   *a_hadjust):
+    //m_text_font_5_7(Gdk_Font( c_font_5_7 )),
+    m_black(Gdk::Color("black")),
+    m_white(Gdk::Color("white")),
+    m_grey(Gdk::Color("grey")),
 
-seqdata::seqdata(sequence *a_seq, int a_zoom,  Gtk::Adjustment   *a_hadjust): DrawingArea()
+    m_seq(a_seq),
+
+    m_zoom(a_zoom),
+
+    m_hadjust(a_hadjust),
+
+    m_scroll_offset_ticks(0),
+    m_scroll_offset_x(0),
+
+    m_dragging(false)
 {
-    m_seq = a_seq;
-    m_zoom = a_zoom;
-
     add_events( Gdk::BUTTON_PRESS_MASK |
 		Gdk::BUTTON_RELEASE_MASK |
 		Gdk::POINTER_MOTION_MASK |
@@ -36,28 +47,14 @@ seqdata::seqdata(sequence *a_seq, int a_zoom,  Gtk::Adjustment   *a_hadjust): Dr
     // in the construor you can only allocate colors,
     // get_window() returns 0 because we have not be realized
     Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
-
-    //m_text_font_5_7 = Gdk_Font( c_font_5_7 );
-
-    m_black = Gdk::Color( "black" );
-    m_white = Gdk::Color( "white" );
-    m_grey  = Gdk::Color( "grey" );
-
     colormap->alloc_color( m_black );
     colormap->alloc_color( m_white );
     colormap->alloc_color( m_grey );
-
-    m_dragging = false;
 
     set_flags(Gtk::CAN_FOCUS );
     set_double_buffered( false );
 
     set_size_request( 10,  c_dataarea_y );
-
-    m_hadjust = a_hadjust;
-
-    m_scroll_offset_ticks = 0;
-    m_scroll_offset_x = 0;
 }
 
 void

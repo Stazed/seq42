@@ -28,7 +28,6 @@ clamp( long val, long low, long hi )
      return val < low ? low : hi < val ? hi : val;
 }
 
-
 seqroll::seqroll(perform *a_perf,
                  sequence *a_seq,
                  int a_zoom,
@@ -38,34 +37,65 @@ seqroll::seqroll(perform *a_perf,
                  seqkeys *a_seqkeys_wid,
                  Adjustment *a_hadjust,
                  Adjustment *a_vadjust,
-                 ToggleButton *a_toggle_play)
-: DrawingArea()
+                 ToggleButton *a_toggle_play):
+    m_black(Gdk::Color("black")),
+    m_white(Gdk::Color("white")),
+    m_grey(Gdk::Color("gray")),
+    m_dk_grey(Gdk::Color("gray50")),
+    m_red(Gdk::Color("orange")),
+
+    m_seq(a_seq),
+    m_perform(a_perf),
+    m_seqdata_wid(a_seqdata_wid),
+    m_seqevent_wid(a_seqevent_wid),
+    m_seqkeys_wid(a_seqkeys_wid),
+
+    m_zoom(a_zoom),
+    m_snap(a_snap),
+
+    m_scale(0),
+    m_key(0),
+
+    m_window_x(10),
+    m_window_y(10),
+
+    m_selecting(false),
+    m_moving(false),
+    m_moving_init(false),
+    m_growing(false),
+    m_painting(false),
+    m_paste(false),
+    m_is_drag_pasting(false),
+    m_is_drag_pasting_start(false),
+    m_justselected_one(false),
+
+    m_old_progress_x(0),
+
+    m_vadjust(a_vadjust),
+    m_hadjust(a_hadjust),
+
+    m_scroll_offset_ticks(0),
+    m_scroll_offset_key(0),
+
+    m_scroll_offset_x(0),
+    m_scroll_offset_y(0),
+
+    m_background_track(0),
+    m_background_sequence(0),
+    m_drawing_background_seq(false),
+
+    m_ignore_redraw(false)
 {
     using namespace Menu_Helpers;
 
     Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
-
-    m_black = Gdk::Color( "black" );
-    m_white = Gdk::Color( "white" );
-    m_grey  = Gdk::Color( "gray" );
-    m_dk_grey = Gdk::Color( "gray50" );
-    m_red = Gdk::Color( "orange" );
-
     colormap->alloc_color( m_black );
     colormap->alloc_color( m_white );
     colormap->alloc_color( m_grey );
     colormap->alloc_color( m_dk_grey );
     colormap->alloc_color( m_red );
 
-    m_perform = a_perf;
-    m_seq =   a_seq;
-    m_zoom = a_zoom;
-    m_snap =  a_snap;
-    m_seqdata_wid = a_seqdata_wid;
-    m_seqevent_wid = a_seqevent_wid;
-    m_seqkeys_wid = a_seqkeys_wid;
     m_toggle_play = a_toggle_play;
-
     m_clipboard = new sequence( );
 
     add_events( Gdk::BUTTON_PRESS_MASK |
@@ -78,42 +108,8 @@ seqroll::seqroll(perform *a_perf,
 		Gdk::LEAVE_NOTIFY_MASK |
 		Gdk::SCROLL_MASK);
 
-    m_selecting = false;
-    m_moving    = false;
-	m_moving_init = false;
-    m_growing   = false;
-    m_painting  = false;
-    m_paste     = false;
-    m_is_drag_pasting = false;
-    m_is_drag_pasting_start = false;
-    m_justselected_one = false;
-
-    m_old_progress_x = 0;
-
-    m_scale = 0;
-    m_key = 0;
-
-    m_vadjust = a_vadjust;
-    m_hadjust = a_hadjust;
-
-    m_window_x = 10;
-    m_window_y = 10;
-
-    m_scroll_offset_ticks = 0;
-    m_scroll_offset_key = 0;
-
-    m_scroll_offset_x = 0;
-    m_scroll_offset_y = 0;
-
-    m_background_track = 0;
-    m_background_sequence = 0;
-    m_drawing_background_seq = false;
-
     set_double_buffered( false );
-
-    m_ignore_redraw = false;
 }
-
 
 void
 seqroll::set_background_sequence( bool a_state, int a_trk, int a_seq )

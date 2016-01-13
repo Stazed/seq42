@@ -51,6 +51,9 @@ class seqedit : public Gtk::Window
     static const int c_min_zoom = 1;
     static const int c_max_zoom = 32;
 
+    sequence   * const m_seq;
+    perform    * const m_mainperf;
+
     MenuBar    *m_menubar;
 
     Menu       *m_menu_tools;
@@ -73,10 +76,6 @@ class seqedit : public Gtk::Window
 
     SpinButton  *m_spinbutton_vel;
     Adjustment  *m_adjust_vel;
-
-
-    sequence   *m_seq;
-    perform    *m_mainperf;
 
     int         m_pos;
 

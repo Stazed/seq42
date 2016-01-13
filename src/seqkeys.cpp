@@ -22,12 +22,19 @@
 
 
 seqkeys::seqkeys(sequence *a_seq,
-                 Gtk::Adjustment *a_vadjust ): DrawingArea()
+                 Gtk::Adjustment *a_vadjust ):
+    m_black(Gdk::Color("black")),
+    m_white(Gdk::Color("white")),
+    m_grey(Gdk::Color("grey")),
+    m_seq(a_seq),
+    m_vadjust(a_vadjust),
+    m_scroll_offset_key(0),
+    m_scroll_offset_y(0),
+    m_hint_state(false),
+    m_keying(false),
+    m_scale(0),
+    m_key(0)
 {
-    m_seq = a_seq;
-
-    m_vadjust = a_vadjust;
-
     add_events( Gdk::BUTTON_PRESS_MASK |
 		Gdk::BUTTON_RELEASE_MASK |
 		Gdk::ENTER_NOTIFY_MASK |
@@ -45,22 +52,9 @@ seqkeys::seqkeys(sequence *a_seq,
     // get_window() returns 0 because we have not be realized
     Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
 
-    m_black = Gdk::Color( "black" );
-    m_white = Gdk::Color( "white" );
-    m_grey = Gdk::Color( "grey" );
-
     colormap->alloc_color( m_black );
     colormap->alloc_color( m_white );
     colormap->alloc_color( m_grey );
-
-    m_keying = false;
-    m_hint_state = false;
-
-    m_scroll_offset_key = 0;
-    m_scroll_offset_y = 0;
-
-    m_scale = 0;
-    m_key = 0;
 
     set_double_buffered( false );
 }

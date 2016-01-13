@@ -25,26 +25,36 @@ seqevent::seqevent(sequence *a_seq,
                    int a_zoom,
                    int a_snap,
                    seqdata *a_seqdata_wid,
-                   Gtk::Adjustment   *a_hadjust): DrawingArea()
+                   Gtk::Adjustment   *a_hadjust):
+    m_black(Gdk::Color("black")),
+    m_white(Gdk::Color("white")),
+    m_grey(Gdk::Color("grey")),
+    m_red(Gdk::Color("orange")),
+    m_hadjust(a_hadjust),
+
+    m_scroll_offset_ticks(0),
+    m_scroll_offset_x(0),
+
+    m_seq(a_seq),
+    m_seqdata_wid(a_seqdata_wid),
+
+    m_zoom(a_zoom),
+    m_snap(a_snap),
+
+    m_selecting(false),
+    m_moving_init(false),
+    m_moving(false),
+    m_growing(false),
+    m_painting(false),
+    m_paste(false),
+
+    m_status(EVENT_NOTE_ON)
 {
-
     Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
-
-    m_black = Gdk::Color( "black" );
-    m_white = Gdk::Color( "white" );
-    m_grey  = Gdk::Color( "grey" );
-    m_red  = Gdk::Color( "orange" );
-
     colormap->alloc_color( m_black );
     colormap->alloc_color( m_white );
     colormap->alloc_color( m_grey );
     colormap->alloc_color( m_red );
-
-
-    m_seq =   a_seq;
-    m_zoom = a_zoom;
-    m_snap =  a_snap;
-    m_seqdata_wid = a_seqdata_wid;
 
     add_events( Gdk::BUTTON_PRESS_MASK |
 		Gdk::BUTTON_RELEASE_MASK |
@@ -53,28 +63,11 @@ seqevent::seqevent(sequence *a_seq,
 		Gdk::KEY_RELEASE_MASK |
 		Gdk::FOCUS_CHANGE_MASK );
 
-    m_selecting = false;
-    m_moving    = false;
-    m_moving_init = false;
-    m_growing   = false;
-    m_paste     = false;
-    m_painting  = false;
-
-    m_status = EVENT_NOTE_ON;
-
     set_size_request( 10, c_eventarea_y );
-
-
-    m_hadjust = a_hadjust;
-
-    m_scroll_offset_ticks = 0;
-    m_scroll_offset_x = 0;
-
     set_double_buffered( false );
 
     memset(&m_old, 0, sizeof m_old);
 }
-
 
 void
 seqevent::on_realize()

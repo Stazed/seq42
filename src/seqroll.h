@@ -101,12 +101,12 @@ class seqroll : public Gtk::DrawingArea
     rect         m_old;
     rect         m_selected;
 
-    sequence     *m_seq;
-    sequence     *m_clipboard;
-    perform      *m_perform;
-    seqdata      *m_seqdata_wid;
-    seqevent     *m_seqevent_wid;
-    seqkeys      *m_seqkeys_wid;
+    sequence     * const m_seq;
+    sequence     * m_clipboard;
+    perform      * const m_perform;
+    seqdata      * const m_seqdata_wid;
+    seqevent     * const m_seqevent_wid;
+    seqkeys      * const m_seqkeys_wid;
 
     ToggleButton *m_toggle_play;
 
@@ -147,8 +147,8 @@ class seqroll : public Gtk::DrawingArea
 
     int m_old_progress_x;
 
-    Adjustment   *m_vadjust;
-    Adjustment   *m_hadjust;
+    Adjustment   * const m_vadjust;
+    Adjustment   * const m_hadjust;
 
     int m_scroll_offset_ticks;
     int m_scroll_offset_key;
