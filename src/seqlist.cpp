@@ -272,12 +272,12 @@ seqlist::on_key_press_event(GdkEventKey* a_p0)
     bool dont_toggle = m_perf->m_key_start != m_perf->m_key_stop;
     if ( a_p0->keyval ==  m_perf->m_key_start && (dont_toggle || !is_pattern_playing) ){
         start_playing();
-        is_pattern_playing=true;
+        //is_pattern_playing=true;
         return true;
     }
     else if ( a_p0->keyval ==  m_perf->m_key_stop && (dont_toggle || is_pattern_playing) ){
         stop_playing();
-        is_pattern_playing=false;
+        //is_pattern_playing=false;
         return true;
     }
 

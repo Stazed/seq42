@@ -1820,7 +1820,7 @@ sequence::stream_event(  event *a_ev  )
 		{
 			add_event( a_ev );
 			set_dirty();
-		} else {
+		} else {    // this would be step edit, so set generic default note length, vol, to snap
 			if ( a_ev->is_note_on() )
 			{
 				push_undo();
