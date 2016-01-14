@@ -25,7 +25,7 @@
 #if GTK_MINOR_VERSION >= 12
 #   define add_tooltip( obj, text ) obj->set_tooltip_text( text);
 #else
-#   define add_tooltip( obj, text ) tooltips->set_tip( *obj, text );
+#   define add_tooltip( obj, text ) m_tooltips->set_tip( *obj, text );
 #endif
 
 // GTK text edit widget for getting keyboard button values (for binding keys)
@@ -74,9 +74,13 @@ public:
 
 
 options::options (Gtk::Window & parent, perform * a_p):
-    Gtk::Dialog ("Options", parent, true, true)
+    Gtk::Dialog ("Options", parent, true, true),
+    m_perf(a_p)
 {
-    m_perf = a_p;
+#if GTK_MINOR_VERSION < 12
+    m_tooltips = manage(new Tooltips());
+#endif
+
     VBox *vbox = NULL;
 
     HBox *hbox = manage (new HBox ());
@@ -104,8 +108,6 @@ options::options (Gtk::Window & parent, perform * a_p):
 
     CheckButton *check;
     Label *label;
-
-//    Gtk::Tooltips * tooltips = manage (new Tooltips ());
 
     for (int i = 0; i < buses; i++)
     {

@@ -59,6 +59,10 @@ class options : public Gtk::Dialog
 
  private:
 
+#if GTK_MINOR_VERSION < 12
+    Tooltips *m_tooltips;
+#endif
+
     perform *m_perf;
 
     Button  *m_button_ok;

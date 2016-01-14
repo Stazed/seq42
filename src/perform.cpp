@@ -2018,7 +2018,93 @@ void* input_thread_func(void *a_pef )
     return 0;
 }
 
+void perform::input_func(void)
+{
+    event ev;
 
+    while (m_inputing) {
+
+        if ( m_master_bus.poll_for_midi() > 0 ){
+
+            do {
+
+                if (m_master_bus.get_midi_event(&ev) ){
+
+                    // Obey MidiTimeClock:
+                    if (ev.get_status() == EVENT_MIDI_START)
+                    {
+                        stop();
+                        start(false);
+                        m_midiclockrunning = true;
+                        m_usemidiclock = true;
+                        m_midiclocktick = 0;
+                        m_midiclockpos = 0;
+                    }
+                    // midi continue: start from current pos.
+                    else if (ev.get_status() == EVENT_MIDI_CONTINUE)
+                    {
+                        m_midiclockrunning = true;
+                        start(false);
+                        //m_usemidiclock = true;
+                    }
+                    else if (ev.get_status() == EVENT_MIDI_STOP)
+                    {
+                        // do nothing, just let the system pause
+                        // since we're not getting ticks after the stop, the song wont advance
+                        // when start is recieved, we'll reset the position, or
+                        // when continue is recieved, we wont
+                        m_midiclockrunning = false;
+                        all_notes_off();
+                    }
+                    else if (ev.get_status() == EVENT_MIDI_CLOCK)
+                    {
+                        if (m_midiclockrunning)
+                            m_midiclocktick += 8;
+                    }
+                    // not tested (todo: test it!)
+                    else if (ev.get_status() == EVENT_MIDI_SONG_POS)
+                    {
+                        unsigned char a, b;
+                        ev.get_data(&a, &b);
+                        m_midiclockpos = ((int)a << 7) && (int)b;
+                    }
+
+                    /* filter system wide messages */
+                    if (ev.get_status() <= EVENT_SYSEX) {
+
+                        if( global_showmidi)
+                            ev.print();
+
+                        /* is there a sequence set ? */
+                        if (m_master_bus.is_dumping()) {
+
+                            ev.set_timestamp(m_tick);
+
+
+                            /* dump to it */
+                            (m_master_bus.get_sequence())->stream_event(&ev);
+
+                        }
+                    }
+
+                    if (ev.get_status() == EVENT_SYSEX) {
+
+                        if (global_showmidi)
+                            ev.print();
+
+                        if (global_pass_sysex)
+                            m_master_bus.sysex(&ev);
+                    }
+                }
+
+            } while (m_master_bus.is_more_input());
+        }
+    }
+    pthread_exit(0);
+}
+
+
+#if 0
 void perform::input_func(void)
 {
     event ev;
@@ -2113,7 +2199,7 @@ void perform::input_func(void)
     }
     pthread_exit(0);
 }
-
+#endif // 0
 
 #ifdef JACK_SUPPORT
 void jack_timebase_callback(jack_transport_state_t state,
