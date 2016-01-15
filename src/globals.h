@@ -173,7 +173,6 @@ extern bool global_manual_alsa_ports;
 extern Glib::ustring global_filename;
 extern Glib::ustring last_used_dir;
 extern Glib::ustring last_midi_dir;
-//extern bool is_pattern_playing;
 extern bool m_running;
 
 extern bool global_print_keys;

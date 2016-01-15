@@ -1061,16 +1061,12 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
     // the start/end key may be the same key (i.e. SPACEBAR)
     // allow toggling when the same key is mapped to both triggers (i.e. SPACEBAR)
     bool dont_toggle = m_perform->m_key_start != m_perform->m_key_stop;
-//    if ( a_p0->keyval ==  m_perform->m_key_start && (dont_toggle || !is_pattern_playing) ){
     if ( a_p0->keyval ==  m_perform->m_key_start && (dont_toggle || !m_perform->is_running()) ){
         m_perform->start_playing();
-        //is_pattern_playing=true;
         return true;
     }
-//    else if ( a_p0->keyval ==  m_perform->m_key_stop && (dont_toggle || is_pattern_playing) ){
     else if ( a_p0->keyval ==  m_perform->m_key_stop && (dont_toggle || m_perform->is_running()) ){
         m_perform->stop_playing();
-        //is_pattern_playing=false;
         return true;
     }
 
@@ -1085,7 +1081,6 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
             ret = true;
         }
 
-//        if (!is_pattern_playing) {
         if (!m_perform->is_running()) {
 			if ( a_p0->keyval == GDK_Home ){
 				m_seq->set_orig_tick(0);

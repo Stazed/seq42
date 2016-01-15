@@ -287,7 +287,6 @@ perform::start_playing( void )
         start( false );
         start_jack( );
     }
-//    is_pattern_playing = true;
 }
 
 void
@@ -295,7 +294,6 @@ perform::stop_playing( void )
 {
     stop_jack();
     stop();
-//    is_pattern_playing = false;
 }
 
 void perform::set_left_tick( long a_tick )
@@ -2044,14 +2042,12 @@ void perform::input_func(void)
                         m_usemidiclock = true;
                         m_midiclocktick = 0;
                         m_midiclockpos = 0;
-//                        is_pattern_playing = true; // TODO Test this
                     }
                     // midi continue: start from current pos.
                     else if (ev.get_status() == EVENT_MIDI_CONTINUE)
                     {
                         m_midiclockrunning = true;
                         start(false);   // the false sets playback_mode to live
-//                        is_pattern_playing = true; // TODO Test this
                         //m_usemidiclock = true;
                     }
                     else if (ev.get_status() == EVENT_MIDI_STOP)
@@ -2062,7 +2058,6 @@ void perform::input_func(void)
                         // when continue is recieved, we wont
                         m_midiclockrunning = false;
                         all_notes_off();
-//                        is_pattern_playing = false; // TODO Test this
                     }
                     else if (ev.get_status() == EVENT_MIDI_CLOCK)
                     {
