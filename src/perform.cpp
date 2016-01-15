@@ -473,7 +473,6 @@ void perform::set_bpm(int a_bpm)
     if ( a_bpm < 20 )  a_bpm = 20;
     if ( a_bpm > 500 ) a_bpm = 500;
 
-//    if ( ! (m_jack_running && m_running )){
     if ( ! (m_jack_running && is_running() )){
         m_master_bus.set_bpm( a_bpm );
     }
@@ -1425,7 +1424,6 @@ void perform::output_func(void)
 
         m_condition_var.lock();
 
-//        while (!m_running) {
         while (!is_running()) {
 
             m_condition_var.wait();
@@ -1537,7 +1535,6 @@ void perform::output_func(void)
             stats_last_clock_us= last * 1000;
 #endif // __WIN32__
 
-//        while( m_running ){
         while( is_running() ){
 
             /************************************

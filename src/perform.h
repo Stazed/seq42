@@ -92,7 +92,6 @@ class perform
     bool m_out_thread_launched;
     bool m_in_thread_launched;
 
-//    bool m_running;
     bool m_inputing;
     bool m_outputing;
     bool m_looping;
