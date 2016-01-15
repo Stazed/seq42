@@ -45,7 +45,8 @@
 
 using namespace sigc;
 
-bool is_pattern_playing = false;
+//bool is_pattern_playing = false;
+bool m_running = false;
 
 // tooltip helper, for old vs new gtk...
 #if GTK_MINOR_VERSION >= 12
@@ -1236,7 +1237,8 @@ mainwnd::file_import_dialog( void )
 void mainwnd::file_exit()
 {
     if (is_save()) {
-        if (is_pattern_playing)
+//        if (is_pattern_playing)
+        if (m_mainperf->is_running())
             stop_playing();
         hide();
     }
@@ -1247,7 +1249,8 @@ bool
 mainwnd::on_delete_event(GdkEventAny *a_e)
 {
     bool result = is_save();
-    if (result && is_pattern_playing)
+//    if (result && is_pattern_playing)
+    if (result && m_mainperf->is_running())
             stop_playing();
 
     return !result;

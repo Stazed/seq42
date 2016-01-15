@@ -1816,7 +1816,8 @@ sequence::stream_event(  event *a_ev  )
 
     if ( m_recording )
 	{
-		if ( is_pattern_playing )
+//		if ( is_pattern_playing )
+		if ( m_running )
 		{
 			add_event( a_ev );
 			set_dirty();
