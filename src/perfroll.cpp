@@ -301,7 +301,7 @@ perfroll::draw_progress()
 
     m_old_progress_ticks = tick;
 
-    if(m_mainperf->is_running())
+    if(global_is_running)
         auto_scroll_horz((double)tick/c_perf_scale_x/c_ppen);
 }
 

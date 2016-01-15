@@ -1816,7 +1816,7 @@ sequence::stream_event(  event *a_ev  )
 
     if ( m_recording )
 	{
-		if ( m_running )
+		if ( global_is_running )
 		{
 			add_event( a_ev );
 			set_dirty();

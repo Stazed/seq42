@@ -170,10 +170,18 @@ extern bool global_with_jack_master_cond;
 extern bool global_jack_start_mode;
 extern bool global_manual_alsa_ports;
 
+/*
+    global_is_running:
+    initialize in mainwnd.cpp = false:
+    set in perform::inner_start() = true:
+    set in perform::inner_stop() = false:
+    This should not be reset under any other circumstance!
+*/
+extern bool global_is_running;
+
 extern Glib::ustring global_filename;
 extern Glib::ustring last_used_dir;
 extern Glib::ustring last_midi_dir;
-extern bool m_running;
 
 extern bool global_print_keys;
 

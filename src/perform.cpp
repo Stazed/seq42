@@ -47,7 +47,6 @@ perform::perform()
 
     m_seqlist_open = false;
     m_seqlist_raise = false;
-    m_running = false;
     m_looping = false;
     m_inputing = true;
     m_outputing = true;
@@ -251,7 +250,6 @@ perform::~perform()
 {
     m_inputing = false;
     m_outputing = false;
-    m_running = false;
 
     m_condition_var.signal();
 
@@ -452,17 +450,6 @@ mastermidibus* perform::get_master_midi_bus( )
 }
 
 
-void perform::set_running( bool a_running )
-{
-    m_running = a_running;
-}
-
-
-bool perform::is_running( void )
-{
-    return m_running;
-}
-
 bool perform::is_jack_running()
 {
     return m_jack_running;
@@ -473,7 +460,7 @@ void perform::set_bpm(int a_bpm)
     if ( a_bpm < 20 )  a_bpm = 20;
     if ( a_bpm > 500 ) a_bpm = 500;
 
-    if ( ! (m_jack_running && is_running() )){
+    if ( ! (m_jack_running && global_is_running )){
         m_master_bus.set_bpm( a_bpm );
     }
 }
@@ -1208,14 +1195,15 @@ void perform::inner_start(bool a_state)
 {
     m_condition_var.lock();
 
-    if (!is_running()) {
+    //if (!is_running()) {
+    if (!global_is_running) {
 
         set_playback_mode( a_state );
 
         if (a_state)
             off_sequences();
 
-        set_running(true);
+        global_is_running = true;
         m_condition_var.signal();
     }
 
@@ -1225,7 +1213,7 @@ void perform::inner_start(bool a_state)
 
 void perform::inner_stop()
 {
-    set_running(false);
+    global_is_running = false;
     //off_sequences();
     reset_sequences();
     m_usemidiclock = false;
@@ -1424,7 +1412,7 @@ void perform::output_func(void)
 
         m_condition_var.lock();
 
-        while (!is_running()) {
+        while (!global_is_running) {
 
             m_condition_var.wait();
 
@@ -1535,7 +1523,7 @@ void perform::output_func(void)
             stats_last_clock_us= last * 1000;
 #endif // __WIN32__
 
-        while( is_running() ){
+        while( global_is_running ){
 
             /************************************
 

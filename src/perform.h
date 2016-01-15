@@ -114,8 +114,6 @@ class perform
     int m_bp_measure;
     int m_bw;
 
-    void set_running( bool a_running );
-
     void set_playback_mode( bool a_playback_mode );
 
     condition_var m_condition_var;
@@ -151,7 +149,6 @@ class perform
     bool m_have_redo;
     bool m_have_modified;
 
-    bool is_running();
     bool is_jack_running();
 
     unsigned int m_key_bpm_up;

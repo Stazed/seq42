@@ -45,7 +45,7 @@
 
 using namespace sigc;
 
-bool m_running = false;
+bool global_is_running = false;
 
 // tooltip helper, for old vs new gtk...
 #if GTK_MINOR_VERSION >= 12
@@ -714,10 +714,10 @@ mainwnd::toggle_song_mode( void ) // FIXME not called - would be used by key map
 void
 mainwnd::set_jack_mode ( void )
 {
-    if(m_button_jack->get_active() && !m_mainperf->is_running())
+    if(m_button_jack->get_active() && !global_is_running)
         m_mainperf->init_jack ();
 
-    if(!m_button_jack->get_active() && !m_mainperf->is_running())
+    if(!m_button_jack->get_active() && !global_is_running)
         m_mainperf->deinit_jack ();
 
     if(m_mainperf->is_jack_running())
@@ -1236,7 +1236,7 @@ mainwnd::file_import_dialog( void )
 void mainwnd::file_exit()
 {
     if (is_save()) {
-        if (m_mainperf->is_running())
+        if (global_is_running)
             stop_playing();
         hide();
     }
@@ -1247,8 +1247,8 @@ bool
 mainwnd::on_delete_event(GdkEventAny *a_e)
 {
     bool result = is_save();
-    if (result && m_mainperf->is_running())
-            stop_playing();
+    if (result && global_is_running)
+        stop_playing();
 
     return !result;
 }
@@ -1363,12 +1363,12 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
         // the start/end key may be the same key (i.e. SPACE)
         // allow toggling when the same key is mapped to both triggers (i.e. SPACEBAR)
         bool dont_toggle = m_mainperf->m_key_start != m_mainperf->m_key_stop;
-        if ( a_ev->keyval == m_mainperf->m_key_start && (dont_toggle || !m_mainperf->is_running()) )
+        if ( a_ev->keyval == m_mainperf->m_key_start && (dont_toggle || !global_is_running) )
         {
             start_playing();
             return true;
         }
-        else if ( a_ev->keyval == m_mainperf->m_key_stop && (dont_toggle || m_mainperf->is_running()) )
+        else if ( a_ev->keyval == m_mainperf->m_key_stop && (dont_toggle || global_is_running) )
         {
             stop_playing();
             return true;
