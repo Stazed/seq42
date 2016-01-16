@@ -1146,8 +1146,7 @@ sequence::stretch_selected( long a_delta_tick )
 
     if( new_len > 1) {
 
-        if(mark_selected())
-            push_undo();
+        mark_selected();
 
         for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
             if ( (*i).is_marked() ){
@@ -1204,8 +1203,7 @@ sequence::stretch_selected( long a_delta_tick )
 
     if( new_len > 1) {
 
-        if(mark_selected())
-            push_undo();
+        mark_selected();
 
         for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
             if ( (*i).is_marked() &&
