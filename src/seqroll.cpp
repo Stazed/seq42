@@ -226,7 +226,6 @@ seqroll::change_horz( )
     m_scroll_offset_ticks = (int) m_hadjust->get_value();
     m_scroll_offset_x = m_scroll_offset_ticks / m_zoom;
 
-
     if ( m_ignore_redraw )
         return;
 
@@ -1231,22 +1230,29 @@ void
 seqroll::auto_scroll_horz(long progress)
 {
     //printf("progress[%ld]: get_upper[%f]: get_value[%f]: page_size[%f]\n",progress,m_hadjust->get_upper(),m_hadjust->get_value(),m_hadjust->get_page_size());
-    if(m_hadjust->get_upper() <= 3072) // don't scroll on seq <= 4 bars(at 4 X 4)
+
+    if(m_hadjust->get_upper() <= (c_ppqn * 16) )// don't scroll on seq <= 4 bars(at 4 X 4)
         return;
 
-    long rnd_progress = progress / 600 ; // this is just to avoid redraw every tick mark - so one every 600 ticks
-    rnd_progress *= 600;
+    int zoom_adjust = m_zoom / 2;
+    if(m_zoom < 2)
+        zoom_adjust = m_zoom;
+
+    zoom_adjust *= (c_ppqn * 4); // bar
+    long rnd_progress = progress /  zoom_adjust; //  to avoid redraw every tick mark
+    rnd_progress *=  zoom_adjust ;
 
     static bool set_progress = true; // to prevent multiple set_value() settings
 
-    if(progress > ((m_hadjust->get_page_size()/2) + 300) || // the 300 is just offset for reading easier
+    if(progress > ((m_hadjust->get_page_size()/2) + zoom_adjust/2) || // offset for reading easier
          ((m_hadjust->get_value() + m_hadjust->get_page_size()) <= m_hadjust->get_upper()))
     {
-        if(progress - rnd_progress >= 300 ) // 1/2 of 600  for middle set_value() - magic... could be anything from 0 - 600 if tick hits
+
+        if(progress - rnd_progress >= zoom_adjust/2 ) // 1/2 of zoom_adjust for middle set_value()
         {
             if((m_hadjust->get_value() + m_hadjust->get_page_size()) <= m_hadjust->get_upper())
             {
-                long calc_value = progress - (m_hadjust->get_page_size()/2) + 300;
+                long calc_value = progress - (m_hadjust->get_page_size()/2) + zoom_adjust/2;
                 if((calc_value + m_hadjust->get_page_size()) >= m_hadjust->get_upper() && set_progress) // don't scroll past upper
                    m_hadjust->set_value(m_hadjust->get_upper() - m_hadjust->get_page_size());
                 else if(set_progress)
@@ -1256,10 +1262,10 @@ seqroll::auto_scroll_horz(long progress)
                 set_progress = false; // since we just set_value() - now shut off
             }
         } else
-            set_progress = true;  //  < 300 this means we are on the next set of ticks so turn on until we set_value() again
+            set_progress = true;  //  <  this means we are on the next set of ticks so turn on until we set_value() again
     }
 
-    if(progress >= m_hadjust->get_upper()-10)
+    if(progress >= m_hadjust->get_upper()-30) // -30 (magic guess) because progress will never reach get_upper since we limit above
         m_hadjust->set_value(0);
 }
 
