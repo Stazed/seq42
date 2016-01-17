@@ -705,7 +705,7 @@ mainwnd::set_song_mode( void )
 }
 
 void
-mainwnd::toggle_song_mode( void ) // FIXME not called - would be used by key mapping
+mainwnd::toggle_song_mode( void )
 {
     // Note that this will trigger the button signal callback.
     m_button_mode->set_active( ! m_button_mode->get_active() );
@@ -724,6 +724,13 @@ mainwnd::set_jack_mode ( void )
         m_button_jack->set_active(true);
     else
         m_button_jack->set_active(false);
+}
+
+void
+mainwnd::toggle_jack( void )
+{
+    // Note that this will trigger the button signal callback.
+    m_button_jack->set_active( ! m_button_jack->get_active() );
 }
 
 void
@@ -1355,11 +1362,26 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
             return true;
         }
 
+        if ( a_ev->keyval ==  m_mainperf->m_key_seqlist ){
+            open_seqlist();
+            return true;
+        }
+
         if ( a_ev->keyval ==  m_mainperf->m_key_loop ){
             toggle_looped();
             return true;
         }
 
+        if ( a_ev->keyval ==  m_mainperf->m_key_song ){
+            toggle_song_mode();
+            return true;
+        }
+#ifdef JACK_SUPPORT
+        if ( a_ev->keyval ==  m_mainperf->m_key_jack ){
+            toggle_jack();
+            return true;
+        }
+#endif // JACK_SUPPORT
         // the start/end key may be the same key (i.e. SPACE)
         // allow toggling when the same key is mapped to both triggers (i.e. SPACEBAR)
         bool dont_toggle = m_mainperf->m_key_start != m_mainperf->m_key_stop;

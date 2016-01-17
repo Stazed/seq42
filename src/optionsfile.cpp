@@ -78,6 +78,17 @@ optionsfile::parse( perform *a_perf )
 
     sscanf( m_line, "%u", &a_perf->m_key_bpm_up );
 
+    line_after( &file, "[New-keys]" );
+    sscanf( m_line, "%u", &a_perf->m_key_song );
+    next_data_line( &file );
+
+    sscanf( m_line, "%u", &a_perf->m_key_seqlist );
+
+#ifdef JACK_SUPPORT
+    next_data_line( &file );
+    sscanf( m_line, "%u", &a_perf->m_key_jack );
+#endif // JACK_SUPPORT
+
     line_after( &file, "[jack-transport]" );
     long flag = 0;
 
@@ -233,6 +244,22 @@ optionsfile::write( perform *a_perf  )
          << gdk_keyval_name( a_perf->m_key_bpm_up )
          << " BPM up\n";
 
+    file << "\n\n\n[New-keys]\n";
+
+    file << a_perf->m_key_song << "        # "
+         << gdk_keyval_name( a_perf->m_key_song )
+         << " song mode\n";
+
+    file << a_perf->m_key_seqlist << "        # "
+         << gdk_keyval_name( a_perf->m_key_seqlist )
+         << " sequence list\n";
+
+#ifdef JACK_SUPPORT
+    file << a_perf->m_key_jack << "        # "
+         << gdk_keyval_name( a_perf->m_key_jack )
+         << " jack sync\n";
+#endif // JACK_SUPPORT
+
     file << "\n\n\n[jack-transport]\n\n"
 
 
@@ -252,6 +279,7 @@ optionsfile::write( perform *a_perf  )
     file << "\n\n\n[last-midi-dir]\n\n"
          << "# Last midi directory.\n"
          << last_midi_dir << "\n\n";
+
 
     file.close();
     return true;

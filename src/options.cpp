@@ -236,6 +236,14 @@ options::options (Gtk::Window & parent, perform * a_p):
         AddKey( "bpm up:", m_perf->m_key_bpm_up );
         vbox->pack_start (*hbox, false, false);
 
+        hbox = manage (new HBox ());
+        AddKey( "song mode:", m_perf->m_key_song );
+#ifdef JACK_SUPPORT
+        AddKey( "jack sync:", m_perf->m_key_jack );
+#endif // JACK_SUPPORT
+        AddKey( "seqlist:", m_perf->m_key_seqlist );
+        vbox->pack_start (*hbox, false, false);
+
         #undef AddKey
     }
 

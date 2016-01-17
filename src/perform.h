@@ -158,6 +158,9 @@ class perform
     unsigned int m_key_stop;
 
     unsigned int m_key_loop;
+    unsigned int m_key_song;
+    unsigned int m_key_jack;
+    unsigned int m_key_seqlist;
 
     perform();
     ~perform();

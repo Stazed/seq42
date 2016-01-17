@@ -182,7 +182,9 @@ class mainwnd : public Gtk::Window
 
     void set_song_mode (void);
     void toggle_song_mode (void);
-    void set_jack_mode( void );
+
+    void set_jack_mode(void);
+    void toggle_jack(void);
 
     void expand (void);
     void collapse (void);
