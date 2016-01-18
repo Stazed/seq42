@@ -38,7 +38,7 @@ F8 loop off
 
 [ ] Show midi bus and channel in sequence list.
 
-[ ] Clean up is_pattern_playing stuff and consolidate global key (start, stop, loop, bpm, etc) handling.
+[X] Clean up is_pattern_playing stuff and consolidate global key (start, stop, loop, bpm, etc) handling.
 
 [ ] Add to Edit menu a new action "Delete all untriggered sequences"
 
