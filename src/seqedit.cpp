@@ -175,6 +175,7 @@ seqedit::seqedit( sequence *a_seq,
     m_menu_bpm = manage( new Menu() );
     m_menu_bw = manage( new Menu() );
     m_menu_swing_mode = manage( new Menu());
+    m_menu_rec_vol = manage( new Menu() );
 
     m_menu_sequences = NULL;
 
@@ -269,6 +270,12 @@ seqedit::seqedit( sequence *a_seq,
             mem_fun( *this, &seqedit::q_rec_change_callback));
     add_tooltip( m_toggle_q_rec, "Quantized Record." );
 
+    m_button_rec_vol = manage( new Button());
+    m_button_rec_vol->add( *manage( new Label("Vol")));
+    m_button_rec_vol->signal_clicked().connect(
+            sigc::bind<Menu *>( mem_fun( *this, &seqedit::popup_menu), m_menu_rec_vol  ));
+    add_tooltip( m_button_rec_vol, "Select volume" );
+
     m_toggle_thru = manage( new ToggleButton(  ));
     m_toggle_thru->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( thru_xpm ))));
     m_toggle_thru->signal_clicked().connect(
@@ -280,8 +287,7 @@ seqedit::seqedit( sequence *a_seq,
     m_toggle_record->set_active( m_seq->get_recording());
     m_toggle_thru->set_active( m_seq->get_thru());
 
-    dhbox->pack_end( *m_spinbutton_vel, false, false);
-    dhbox->pack_end( *(manage( new Label( "Vel" ))), false, false, 4);
+    dhbox->pack_end( *m_button_rec_vol, false, false, 4);
     dhbox->pack_end( *m_toggle_q_rec, false, false);
     dhbox->pack_end( *m_toggle_record, false, false);
     dhbox->pack_end( *m_toggle_thru, false, false);
@@ -477,13 +483,25 @@ seqedit::create_menus( void )
     m_menu_bw->items().push_back(MenuElem("16",
                 sigc::bind(mem_fun(*this, &seqedit::set_bw), 16 )));
 
-    /* velocity spin button */
-    m_adjust_vel = manage(new Adjustment(m_seq->get_track()->get_default_velocity(), 1, 127, 1));
-    m_spinbutton_vel = manage( new SpinButton( *m_adjust_vel ));
-    m_spinbutton_vel->set_editable( false );
-    m_adjust_vel->signal_value_changed().connect(
-        mem_fun(*this, &seqedit::adj_callback_vel ));
-    add_tooltip( m_spinbutton_vel, "Adjust track's default velocity." );
+    /* note volume */
+    m_menu_rec_vol->items().push_back(MenuElem("Free",
+                sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 0)));
+    m_menu_rec_vol->items().push_back(MenuElem("Fixed 8",
+                sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 127)));
+    m_menu_rec_vol->items().push_back(MenuElem("Fixed 7",
+                sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 111)));
+    m_menu_rec_vol->items().push_back(MenuElem("Fixed 6",
+                sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 95)));
+    m_menu_rec_vol->items().push_back(MenuElem("Fixed 5",
+                sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 79)));
+    m_menu_rec_vol->items().push_back(MenuElem("Fixed 4",
+                sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 63)));
+    m_menu_rec_vol->items().push_back(MenuElem("Fixed 3",
+                sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 47)));
+    m_menu_rec_vol->items().push_back(MenuElem("Fixed 2",
+                sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 31)));
+    m_menu_rec_vol->items().push_back(MenuElem("Fixed 1",
+                sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 15)));
 
     /* music scale */
     m_menu_scale->items().push_back(MenuElem(c_scales_text[0],
@@ -1643,9 +1661,8 @@ seqedit::trk_edit()
 }
 
 void
-seqedit::adj_callback_vel()
+seqedit::set_rec_vol( int a_rec_vol  )
 {
-    m_seq->get_track()->set_default_velocity( (int) m_adjust_vel->get_value() );
+    m_seq->get_track()->set_default_velocity( a_rec_vol );
 }
-
 

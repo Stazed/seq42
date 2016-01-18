@@ -1816,6 +1816,9 @@ sequence::stream_event(  event *a_ev  )
 	{
 		if ( global_is_running )
 		{
+            if((int)get_track()->get_default_velocity() != 100)
+                a_ev->set_note_velocity((int)get_track()->get_default_velocity());
+
 			add_event( a_ev );
 			set_dirty();
 		} else {    // this would be step edit, so set generic default note length, vol, to snap

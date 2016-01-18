@@ -74,8 +74,7 @@ class seqedit : public Gtk::Window
 
     Menu       *m_menu_swing_mode;
 
-    SpinButton  *m_spinbutton_vel;
-    Adjustment  *m_adjust_vel;
+    Menu       *m_menu_rec_vol;
 
     int         m_pos;
 
@@ -150,6 +149,8 @@ class seqedit : public Gtk::Window
     Button	    *m_button_lfo;
     lfownd      *m_lfo_wnd;
 
+    Button	*m_button_rec_vol;
+
     ToggleButton *m_toggle_play;
     ToggleButton *m_toggle_record;
     ToggleButton *m_toggle_q_rec;
@@ -197,6 +198,7 @@ class seqedit : public Gtk::Window
 
     void set_bpm( int a_beats_per_measure );
     void set_bw( int a_beat_width );
+    void set_rec_vol( int a_rec_vol );
     void set_measures( int a_length_measures, bool a_adjust_triggers  );
     void apply_length( int a_bpm, int a_bw, int a_measures, bool a_adjust_triggers );
     long get_measures( void );
@@ -216,8 +218,6 @@ class seqedit : public Gtk::Window
     void thru_change_callback( void );
     void undo_callback( void );
     void redo_callback( void );
-
-    void adj_callback_vel( );
 
     void set_data_type( unsigned char a_status,
 			unsigned char a_control = 0 );
@@ -264,15 +264,5 @@ class seqedit : public Gtk::Window
     bool on_key_press_event(GdkEventKey* a_ev);
 
 };
-
-
-
-
-
-
-
-
-
-
 
 #endif
