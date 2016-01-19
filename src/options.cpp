@@ -31,6 +31,7 @@
 // GTK text edit widget for getting keyboard button values (for binding keys)
 // put cursor in text box, hit a key, something like  'a' (42)  appears...
 // each keypress replaces the previous text.
+
 class KeyBindEntry : public Entry
 {
 public:
@@ -81,8 +82,6 @@ options::options (Gtk::Window & parent, perform * a_p):
     m_tooltips = manage(new Tooltips());
 #endif
 
-    VBox *vbox = NULL;
-
     HBox *hbox = manage (new HBox ());
     get_vbox ()->pack_start (*hbox, false, false);
 
@@ -96,23 +95,31 @@ options::options (Gtk::Window & parent, perform * a_p):
 
     m_notebook = manage (new Notebook ());
     hbox->pack_start (*m_notebook);
+    add_midi_clock_page();
+    add_midi_input_page();
+    add_keyboard_page();
+    add_mouse_page();
+    add_jack_sync_page();
+}
 
+
+/*MIDI Clock page*/
+void
+options::add_midi_clock_page()
+{
     // Clock  Buses
     int buses = m_perf->get_master_midi_bus ()->get_num_out_buses ();
-    //Notebook *clock_notebook = manage( new Notebook());
-    //clock_notebook->set_scrollable(true);
 
-    vbox = manage(new VBox());
-    m_notebook->pages().push_back(Notebook_Helpers::TabElem(*vbox,
-                "MIDI Clock"));
+    VBox *vbox = manage(new VBox());
+    vbox->set_border_width(6);
+    m_notebook->append_page(*vbox, "MIDI _Clock", true);
 
-    CheckButton *check;
-    Label *label;
+    manage (new Tooltips ());
 
     for (int i = 0; i < buses; i++)
     {
         HBox *hbox2 = manage (new HBox ());
-        label = manage( new Label(m_perf->get_master_midi_bus ()->
+        Label *label = manage( new Label(m_perf->get_master_midi_bus ()->
                                             get_midi_out_bus_name (i), 0));
 
         hbox2->pack_start (*label, false, false);
@@ -132,9 +139,12 @@ options::options (Gtk::Window & parent, perform * a_p):
         rb_on->set_group (group);
         rb_mod->set_group (group);
 
-        rb_off->signal_toggled().connect (sigc::bind(mem_fun (*this, &options::clock_callback_off), i, rb_off ));
-        rb_on->signal_toggled ().connect (sigc::bind(mem_fun (*this, &options::clock_callback_on),  i, rb_on  ));
-        rb_mod->signal_toggled().connect (sigc::bind(mem_fun (*this, &options::clock_callback_mod), i, rb_mod ));
+        rb_off->signal_toggled().connect (sigc::bind(mem_fun (*this,
+                        &options::clock_callback_off), i, rb_off ));
+        rb_on->signal_toggled ().connect (sigc::bind(mem_fun (*this,
+                        &options::clock_callback_on),  i, rb_on  ));
+        rb_mod->signal_toggled().connect (sigc::bind(mem_fun (*this,
+                        &options::clock_callback_mod), i, rb_mod ));
 
         hbox2->pack_end (*rb_mod, false, false );
         hbox2->pack_end (*rb_on, false, false);
@@ -148,148 +158,200 @@ options::options (Gtk::Window & parent, perform * a_p):
             case e_clock_pos: rb_on->set_active(1); break;
             case e_clock_mod: rb_mod->set_active(1); break;
         }
-
-        // SET DEFAULT STATES check->set_active (m_perf->get_master_midi_bus ()->get_clock (i));
     }
 
-    Adjustment *clock_mod_adj = new Adjustment( midibus::get_clock_mod(), 1, 16 << 10, 1 );
+    Adjustment *clock_mod_adj = new Adjustment(midibus::get_clock_mod(),
+            1, 16 << 10, 1 );
     SpinButton *clock_mod_spin = new SpinButton( *clock_mod_adj );
 
     HBox *hbox2 = manage (new HBox ());
 
     //m_spinbutton_bpm->set_editable( false );
-    hbox2->pack_start(*(manage( new Label( "Clock Start Modulo (1/16 Notes)"))), false, false, 4);
+    hbox2->pack_start(*(manage(new Label(
+                        "Clock Start Modulo (1/16 Notes)"))), false, false, 4);
     hbox2->pack_start(*clock_mod_spin, false, false );
 
     vbox->pack_start( *hbox2, false, false );
 
-    clock_mod_adj->signal_value_changed().connect( sigc::bind(mem_fun(*this,&options::clock_mod_callback),clock_mod_adj));
+    clock_mod_adj->signal_value_changed().connect(sigc::bind(mem_fun(*this,
+                    &options::clock_mod_callback), clock_mod_adj));
+}
 
-    // add controls for input method
-    {
-        Adjustment *adj = new Adjustment( global_interactionmethod, 0, e_number_of_interactions-1, 1 );
-        SpinButton *spin = new SpinButton( *adj );
 
-        HBox *hbox2 = manage (new HBox ());
-        HBox *hbox3 = manage (new HBox ());
-
-        //m_spinbutton_bpm->set_editable( false );
-        interaction_method_label = new Label("Input Method");
-        hbox2->pack_start(*(manage( interaction_method_label )), false, false, 4);
-        hbox2->pack_start(*spin, false, false );
-
-        vbox->pack_start( *hbox2, false, false );
-
-        interaction_method_desc_label = new Label(" ----- ");
-        hbox3->pack_start(*(manage( interaction_method_desc_label )), false, false, 4);
-        vbox->pack_start(*hbox3, false, false );
-
-        adj->signal_value_changed().connect( sigc::bind(mem_fun(*this,&options::interaction_method_callback),adj));
-
-        // force it to refresh.
-        interaction_method_callback( adj );
-    }
-
+/*MIDI Input page*/
+void
+options::add_midi_input_page()
+{
     // Input Buses
-    buses = m_perf->get_master_midi_bus ()->get_num_in_buses ();
+    int buses = m_perf->get_master_midi_bus ()->get_num_in_buses ();
 
-    vbox = manage (new VBox ());
-    m_notebook->pages ().
-        push_back (Notebook_Helpers::TabElem (*vbox, "MIDI Input"));
+    VBox *vbox = manage(new VBox ());
+    vbox->set_border_width(6);
+    m_notebook->append_page(*vbox, "MIDI _Input", true);
 
     for (int i = 0; i < buses; i++)
     {
+        CheckButton *check = manage(new CheckButton(
+                    m_perf->get_master_midi_bus()->get_midi_in_bus_name(i), 0));
+        check->signal_toggled().connect(bind(mem_fun(*this,
+                        &options::input_callback), i, check));
+        check->set_active(m_perf->get_master_midi_bus()->get_input(i));
 
-        check =
-            manage (new
-                    CheckButton (m_perf->get_master_midi_bus ()->
-                        get_midi_in_bus_name (i), 0));
-        check->signal_toggled ().
-            connect (bind (mem_fun (*this, &options::input_callback), i, check));
-        check->set_active (m_perf->get_master_midi_bus ()->get_input (i));
-
-        vbox->pack_start (*check, false, false);
+        vbox->pack_start(*check, false, false);
     }
-
-    // KeyBoard keybinding setup (editor for .seq42rc keybindings.
-    vbox = manage (new VBox ());
-    m_notebook->pages ().push_back (Notebook_Helpers::TabElem (*vbox, "Keyboard"));
-    {
-        Label* label;
-        KeyBindEntry* entry;
-        HBox *hbox;
-
-        #define AddKey(text, integer) \
-            label = manage (new Label( text )); \
-            hbox->pack_start (*label, false, false, 4); \
-            entry = manage (new KeyBindEntry( &integer )); \
-            hbox->pack_start (*entry, false, false, 4);
-
-        hbox = manage (new HBox ());
-        AddKey( "start:", m_perf->m_key_start );
-        AddKey( "stop:", m_perf->m_key_stop );
-        AddKey( "toggle looping:", m_perf->m_key_loop );
-        vbox->pack_start (*hbox, false, false);
-
-        hbox = manage (new HBox ());
-        AddKey( "bpm dn:", m_perf->m_key_bpm_dn );
-        AddKey( "bpm up:", m_perf->m_key_bpm_up );
-        vbox->pack_start (*hbox, false, false);
-
-        hbox = manage (new HBox ());
-        AddKey( "song mode:", m_perf->m_key_song );
-#ifdef JACK_SUPPORT
-        AddKey( "jack sync:", m_perf->m_key_jack );
-#endif // JACK_SUPPORT
-        AddKey( "seqlist:", m_perf->m_key_seqlist );
-        vbox->pack_start (*hbox, false, false);
-
-        #undef AddKey
-    }
-
-    // Jack
-#ifdef JACK_SUPPORT
-    VBox *vbox2 = manage (new VBox ());
-    vbox2->set_border_width (4);
-    m_notebook->pages().push_back(Notebook_Helpers::TabElem(*vbox2,
-                "Jack Sync"));
-
-    check = manage (new CheckButton ("Jack Transport"));
-    check->set_active (global_with_jack_transport);
-    add_tooltip( check, "Enable sync with JACK Transport.");
-    check->signal_toggled ().
-        connect (bind
-                (mem_fun (*this, &options::transport_callback), e_jack_transport,
-                 check));
-    vbox2->pack_start (*check, false, false);
-
-    check = manage (new CheckButton ("Transport Master"));
-    check->set_active (global_with_jack_master);
-    add_tooltip( check, "Seq42 will attempt to serve as JACK Master.");
-    check->signal_toggled ().
-        connect (bind
-                (mem_fun (*this, &options::transport_callback), e_jack_master,
-                 check));
-
-    vbox2->pack_start (*check, false, false);
-
-    check = manage (new CheckButton ("Master Conditional"));
-    check->set_active (global_with_jack_master_cond);
-    add_tooltip( check,
-            "Seq42 will fail to be master if there is already a master set.");
-    check->signal_toggled ().
-        connect (bind
-                (mem_fun (*this, &options::transport_callback), e_jack_master_cond,
-                 check));
-
-    vbox2->pack_start (*check, false, false);
-
-#endif
-
-    /* show everything */
-    show_all_children ();
 }
 
+
+/*Keyboard page*/
+/*Keybinding setup (editor for .seq24rc keybindings).*/
+void
+options::add_keyboard_page()
+{
+    VBox *mainbox = manage(new VBox());
+    mainbox->set_spacing(6);
+    m_notebook->append_page(*mainbox, "_Keyboard", true);
+
+    Label* label;
+    KeyBindEntry* entry;
+
+    /*Frame for sequence toggle keys*/
+    Frame* controlframe = manage(new Frame("Control keys"));
+    controlframe->set_border_width(4);
+    mainbox->pack_start(*controlframe, Gtk::PACK_SHRINK);
+
+    Table* controltable = manage(new Table(4, 8, false));
+    controltable->set_border_width(4);
+    controltable->set_spacings(4);
+    controlframe->add(*controltable);
+
+    label = manage(new Label("Start", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_start));
+    controltable->attach(*label, 0, 1, 0, 1);
+    controltable->attach(*entry, 1, 2, 0, 1);
+
+    label = manage(new Label("Stop", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_stop));
+    controltable->attach(*label, 0, 1, 1, 2);
+    controltable->attach(*entry, 1, 2, 1, 2);
+
+    label = manage(new Label("Song", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_song));
+    controltable->attach(*label, 0, 1, 2, 3);
+    controltable->attach(*entry, 1, 2, 2, 3);
+#ifdef JACK_SUPPORT
+    label = manage(new Label("Jack", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_jack));
+    controltable->attach(*label, 0, 1, 3, 4);
+    controltable->attach(*entry, 1, 2, 3, 4);
+#endif // JACK_SUPPORT
+
+    label = manage(new Label("bpm down", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_bpm_dn));
+    controltable->attach(*label, 2, 3, 0, 1);
+    controltable->attach(*entry, 3, 4, 0, 1);
+
+    label = manage(new Label("bpm up", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_bpm_up));
+    controltable->attach(*label, 2, 3, 1, 2);
+    controltable->attach(*entry, 3, 4, 1, 2);
+
+    label = manage(new Label("seqlist", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_seqlist));
+    controltable->attach(*label, 2, 3, 2, 3);
+    controltable->attach(*entry, 3, 4, 2, 3);
+}
+
+/*Mouse page*/
+void
+options::add_mouse_page()
+{
+    VBox *vbox = manage(new VBox());
+    m_notebook->append_page(*vbox, "_Mouse", true);
+
+    /*Frame for transport options*/
+    Frame* interactionframe = manage(new Frame("Interaction method"));
+    interactionframe->set_border_width(4);
+    vbox->pack_start(*interactionframe, Gtk::PACK_SHRINK);
+
+    VBox *interactionbox = manage(new VBox());
+    interactionbox->set_border_width(4);
+    interactionframe->add(*interactionbox);
+
+    Gtk::RadioButton *rb_seq42 = manage(new RadioButton(
+                "se_q42 (original style)", true));
+    interactionbox->pack_start(*rb_seq42, Gtk::PACK_SHRINK);
+
+    Gtk::RadioButton * rb_fruity = manage(new RadioButton(
+                "_fruity (similar to a certain well known sequencer)", true));
+    interactionbox->pack_start(*rb_fruity, Gtk::PACK_SHRINK);
+
+    Gtk::RadioButton::Group group = rb_seq42->get_group();
+    rb_fruity->set_group(group);
+
+    switch(global_interactionmethod)
+    {
+        case e_fruity_interaction:
+            rb_fruity->set_active();
+            break;
+
+        case e_seq42_interaction:
+        default:
+            rb_seq42->set_active();
+            break;
+    }
+
+    rb_seq42->signal_toggled().connect(sigc::bind(mem_fun(*this,
+                    &options::mouse_seq42_callback), rb_seq42));
+
+    rb_fruity->signal_toggled().connect(sigc::bind(mem_fun(*this,
+                    &options::mouse_fruity_callback), rb_fruity));
+}
+
+
+/*Jack Sync page */
+void
+options::add_jack_sync_page()
+{
+#ifdef JACK_SUPPORT
+    VBox *vbox = manage(new VBox());
+    vbox->set_border_width(4);
+    m_notebook->append_page(*vbox, "_Jack Sync", true);
+
+    /*Frame for transport options*/
+    Frame* transportframe = manage(new Frame("Transport"));
+    transportframe->set_border_width(4);
+    vbox->pack_start(*transportframe, Gtk::PACK_SHRINK);
+
+    VBox *transportbox = manage(new VBox());
+    transportbox->set_border_width(4);
+    transportframe->add(*transportbox);
+
+    CheckButton *check = manage(new CheckButton("Jack _Transport", true));
+    check->set_active (global_with_jack_transport);
+    add_tooltip( check, "Enable sync with JACK Transport.");
+    check->signal_toggled().connect(bind(mem_fun(*this,
+                    &options::transport_callback), e_jack_transport, check));
+    transportbox->pack_start(*check, false, false);
+
+    check = manage(new CheckButton("Trans_port Master", true));
+    check->set_active (global_with_jack_master);
+    add_tooltip( check, "Seq24 will attempt to serve as JACK Master.");
+    check->signal_toggled().connect(bind(mem_fun(*this,
+                    &options::transport_callback), e_jack_master, check));
+
+    transportbox->pack_start(*check, false, false);
+
+    check = manage (new CheckButton ("Master C_onditional", true));
+    check->set_active (global_with_jack_master_cond);
+    add_tooltip( check,
+            "Seq24 will fail to be master if there is already a master set.");
+    check->signal_toggled().connect(bind(mem_fun(*this,
+                    &options::transport_callback), e_jack_master_cond, check));
+
+    transportbox->pack_start(*check, false, false);
+
+#endif
+}
 
 
 void
@@ -320,22 +382,6 @@ options::clock_mod_callback( Adjustment *adj )
 }
 
 void
-options::interaction_method_callback( Adjustment *adj )
-{
-    global_interactionmethod = (interaction_method_e)(int)adj->get_value();
-    std::string text = "Interaction Method (";
-    text += c_interaction_method_names[(int)adj->get_value()];
-    text += "): ";
-    interaction_method_label->set_text( text.c_str() );
-
-    text = "     (";
-    text += c_interaction_method_descs[(int)adj->get_value()];
-    text += ")";
-    interaction_method_desc_label->set_text( text.c_str() );
-}
-
-
-    void
 options::input_callback (int a_bus, Button * i_button)
 {
     CheckButton *a_button = (CheckButton *) i_button;
@@ -343,8 +389,21 @@ options::input_callback (int a_bus, Button * i_button)
     m_perf->get_master_midi_bus ()->set_input (a_bus, input);
 }
 
+void
+options::mouse_seq42_callback(Gtk::RadioButton *btn)
+{
+    if (btn->get_active())
+        global_interactionmethod = e_seq42_interaction;
+}
 
-    void
+void
+options::mouse_fruity_callback(Gtk::RadioButton *btn)
+{
+    if (btn->get_active())
+        global_interactionmethod = e_fruity_interaction;
+}
+
+void
 options::transport_callback (button a_type, Button * a_check)
 {
     CheckButton *check = (CheckButton *) a_check;

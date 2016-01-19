@@ -85,11 +85,19 @@ class options : public Gtk::Dialog
     void clock_callback_mod( int a_bus, RadioButton *a_button );
 
     void clock_mod_callback( Adjustment *adj );
-    void interaction_method_callback( Adjustment *adj );
 
     void input_callback( int a_bus, Button *a_button );
 
     void transport_callback( button a_type, Button *a_button );
+
+    void mouse_seq42_callback(Gtk::RadioButton*);
+    void mouse_fruity_callback(Gtk::RadioButton*);
+    /*notebook pages*/
+    void add_midi_clock_page();
+    void add_midi_input_page();
+    void add_keyboard_page();
+    void add_mouse_page();
+    void add_jack_sync_page();
 
 public:
 
