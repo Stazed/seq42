@@ -21,8 +21,8 @@
 #include "seqlist.h"
 #include "seqedit.h"
 
-#include "stop.xpm"
-#include "play2.xpm"
+#include "pixmaps/stop.xpm"
+#include "pixmaps/play2.xpm"
 
 seqlist::seqlist (perform *a_perf)
 {

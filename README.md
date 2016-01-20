@@ -48,5 +48,6 @@ the track edit items (name,channel,bus,transpose,mute)... except when undo/redo 
 
 What to do with a fresh repository checkout?
 --------------------------------------------
+Apply "autoreconf -i" to get a configure script, then:
 Run the usual "./configure" then "make".  Finally copy the "seq42" binary (in the "src" directory) wherever you like.
 

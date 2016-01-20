@@ -31,17 +31,17 @@
 #include "font.h"
 #include "seqlist.h"
 
-#include "seq42_32.xpm"
-#include "play2.xpm"
-#include "stop.xpm"
-#include "snap.xpm"
-#include "expand.xpm"
-#include "collapse.xpm"
-#include "loop.xpm"
-#include "copy.xpm"
-#include "undo.xpm"
-#include "redo.xpm"
-#include "down.xpm"
+#include "pixmaps/seq42_32.xpm"
+#include "pixmaps/play2.xpm"
+#include "pixmaps/stop.xpm"
+#include "pixmaps/snap.xpm"
+#include "pixmaps/expand.xpm"
+#include "pixmaps/collapse.xpm"
+#include "pixmaps/loop.xpm"
+#include "pixmaps/copy.xpm"
+#include "pixmaps/undo.xpm"
+#include "pixmaps/redo.xpm"
+#include "pixmaps/down.xpm"
 
 using namespace sigc;
 

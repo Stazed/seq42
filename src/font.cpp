@@ -24,8 +24,8 @@
 #include "string.h"
 
 
-#include "font_w.xpm"
-#include "font_b.xpm"
+#include "pixmaps/font_w.xpm"
+#include "pixmaps/font_b.xpm"
 
 
 font::font( )

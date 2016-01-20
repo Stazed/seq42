@@ -1,5 +1,7 @@
 # Makefile.am for seq42
 
+SUBDIRS = pixmaps
+
 AM_CXXFLAGS = $(GTKMM_CFLAGS) $(JACK_CFLAGS) $(LASH_CFLAGS) -Wall
 seq42_LDADD = $(GTKMM_LIBS) $(ALSA_LIBS) $(JACK_LIBS) $(LASH_LIBS)
 
@@ -39,7 +41,7 @@ seq42_SOURCES = \
 	userfile.cpp userfile.h \
 	lfownd.cpp lfownd.h
 
-EXTRA_DIST = configwin32.h *.xpm 
+EXTRA_DIST = configwin32.h
 
 MOSTLYCLEANFILES = *~
 

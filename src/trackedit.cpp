@@ -19,8 +19,8 @@
 //-----------------------------------------------------------------------------
 
 #include "trackedit.h"
-#include "bus.xpm"
-#include "midi.xpm"
+#include "pixmaps/bus.xpm"
+#include "pixmaps/midi.xpm"
 
 // tooltip helper, for old vs new gtk...
 #if GTK_MINOR_VERSION >= 12
