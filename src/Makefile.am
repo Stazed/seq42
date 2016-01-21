@@ -13,6 +13,7 @@ seq42_SOURCES = \
 	event.cpp event.h \
 	font.cpp font.h \
 	globals.h \
+	keybindentry.cpp keybindentry.h \
 	lash.cpp lash.h \
 	maintime.cpp maintime.h \
 	mainwnd.cpp mainwnd.h \

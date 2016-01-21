@@ -19,6 +19,7 @@
 //-----------------------------------------------------------------------------
 
 #include "options.h"
+#include "keybindentry.h"
 #include <sstream>
 
 // tooltip helper, for old vs new gtk...
@@ -27,51 +28,6 @@
 #else
 #   define add_tooltip( obj, text ) m_tooltips->set_tip( *obj, text );
 #endif
-
-// GTK text edit widget for getting keyboard button values (for binding keys)
-// put cursor in text box, hit a key, something like  'a' (42)  appears...
-// each keypress replaces the previous text.
-
-class KeyBindEntry : public Entry
-{
-public:
-    KeyBindEntry( unsigned int* location_to_write = NULL,
-                  perform* p = NULL,
-                  long s = 0 ) :  Entry(),
-                                  m_key( location_to_write ),
-                                  m_perf( p )
-    {
-        if (m_key) set( *m_key );
-    }
-
-    void set( unsigned int val )
-    {
-        char buf[256] = "";
-        char* special = gdk_keyval_name( val );
-        char* p_buf = &buf[strlen(buf)];
-        if (special)
-            snprintf( p_buf, sizeof buf - (p_buf - buf), "%s", special );
-        else
-            snprintf( p_buf, sizeof buf - (p_buf - buf), "'%c'", (char)val );
-        set_text( buf );
-        int width = strlen(buf);
-        set_width_chars( 1 <= width ? width : 1 );
-    }
-
-    virtual bool on_key_press_event(GdkEventKey* event)
-    {
-        bool result = Entry::on_key_press_event( event );
-        set( event->keyval );
-        if (m_key) {
-            *m_key = event->keyval;
-            return true;
-        }
-        return result;
-    }
-
-    unsigned int* m_key;
-    perform* m_perf;
-};
 
 
 options::options (Gtk::Window & parent, perform * a_p):

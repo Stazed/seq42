@@ -94,8 +94,8 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_seq42_OBJECTS = configfile.$(OBJEXT) event.$(OBJEXT) font.$(OBJEXT) \
-	lash.$(OBJEXT) maintime.$(OBJEXT) mainwnd.$(OBJEXT) \
-	midibus.$(OBJEXT) midibus_portmidi.$(OBJEXT) \
+	keybindentry.$(OBJEXT) lash.$(OBJEXT) maintime.$(OBJEXT) \
+	mainwnd.$(OBJEXT) midibus.$(OBJEXT) midibus_portmidi.$(OBJEXT) \
 	midifile.$(OBJEXT) mutex.$(OBJEXT) options.$(OBJEXT) \
 	optionsfile.$(OBJEXT) perfnames.$(OBJEXT) perform.$(OBJEXT) \
 	perfroll.$(OBJEXT) perftime.$(OBJEXT) seq42.$(OBJEXT) \
@@ -331,6 +331,7 @@ seq42_SOURCES = \
 	event.cpp event.h \
 	font.cpp font.h \
 	globals.h \
+	keybindentry.cpp keybindentry.h \
 	lash.cpp lash.h \
 	maintime.cpp maintime.h \
 	mainwnd.cpp mainwnd.h \
@@ -467,6 +468,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/configfile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/event.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/font.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/keybindentry.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lash.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lfownd.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/maintime.Po@am__quote@
