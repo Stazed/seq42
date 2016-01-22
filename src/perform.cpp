@@ -116,21 +116,18 @@ void perform::init_jack( void )
 
         do {
 
-            char client_name[100];
-            snprintf(client_name, sizeof(client_name), "seq42 (%d)", getpid());
-
             /* become a new client of the JACK server */
 #ifdef JACK_SESSION
 	    if (global_jack_session_uuid.empty())
-		m_jack_client = jack_client_open(client_name, JackNullOption, NULL);
+		m_jack_client = jack_client_open(PACKAGE, JackNullOption, NULL);
 	    else
-		m_jack_client = jack_client_open(client_name, JackSessionID, NULL,
+		m_jack_client = jack_client_open(PACKAGE, JackSessionID, NULL,
                         global_jack_session_uuid.c_str());
 #else
-	    m_jack_client = jack_client_open(client_name, JackNullOption, NULL );
+	    m_jack_client = jack_client_open(PACKAGE, JackNullOption, NULL );
 #endif
 
-        if (m_jack_client == 0) {
+            if (m_jack_client == 0) {
                 printf( "JACK server is not running.\n[JACK sync disabled]\n");
                 m_jack_running = false;
                 break;
