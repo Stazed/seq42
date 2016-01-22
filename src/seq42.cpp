@@ -54,6 +54,7 @@ option long_options[] = {
     {"jack_master",0, 0, 'J'},
     {"jack_master_cond",0,0,'C'},
     {"jack_start_mode", required_argument, 0, 'M' },
+    {"jack_session_uuid", required_argument, 0, 'U'},
     {"manual_alsa_ports", 0, 0, 'm' },
     {"pass_sysex", 0, 0, 'P'},
     {0, 0, 0, 0}
@@ -79,6 +80,7 @@ bool global_with_jack_transport = false;
 bool global_with_jack_master = false;
 bool global_with_jack_master_cond = false;
 bool global_jack_start_mode = true;
+Glib::ustring global_jack_session_uuid = "";
 
 user_midi_bus_definition   global_user_midi_bus_definitions[c_maxBuses];
 user_instrument_definition global_user_instrument_definitions[c_max_instruments];
@@ -172,7 +174,7 @@ main (int argc, char *argv[])
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long (argc, argv, "Chi:jJkmM:pPsSx:", long_options, &option_index);
+        c = getopt_long (argc, argv, "Chi:jJkmM:pPsSU:x:", long_options, &option_index);
 
         /* Detect the end of the options. */
         if (c == -1)
@@ -199,7 +201,7 @@ main (int argc, char *argv[])
                 printf( "                          modes are available (0 = live mode)\n");
                 printf( "                                              (1 = song mode) (default)\n" );
                 printf( "   -S, --stats: show statistics\n" );
-//                printf( "   -U, --jack_session_uuid <uuid>: set uuid for jack session\n" );
+                printf( "   -U, --jack_session_uuid <uuid>: set uuid for jack session\n" );
                 printf( "\n\n\n" );
 
                 return EXIT_SUCCESS;
@@ -255,7 +257,11 @@ main (int argc, char *argv[])
                 global_device_ignore = true;
                 global_device_ignore_num = atoi( optarg );
                 break;
-
+                
+            case 'U':
+                global_jack_session_uuid = Glib::ustring(optarg);
+                break;
+                
             case 'x':
                 global_interactionmethod = (interaction_method_e)atoi( optarg );
                 break;

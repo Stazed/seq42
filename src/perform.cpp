@@ -120,8 +120,17 @@ void perform::init_jack( void )
             snprintf(client_name, sizeof(client_name), "seq42 (%d)", getpid());
 
             /* become a new client of the JACK server */
-            if ((m_jack_client = jack_client_open(client_name,
-                            JackNullOption, NULL)) == 0) {
+#ifdef JACK_SESSION
+	    if (global_jack_session_uuid.empty())
+		m_jack_client = jack_client_open(client_name, JackNullOption, NULL);
+	    else
+		m_jack_client = jack_client_open(client_name, JackSessionID, NULL,
+                        global_jack_session_uuid.c_str());
+#else
+	    m_jack_client = jack_client_open(client_name, JackNullOption, NULL );
+#endif
+
+        if (m_jack_client == 0) {
                 printf( "JACK server is not running.\n[JACK sync disabled]\n");
                 m_jack_running = false;
                 break;
@@ -131,7 +140,11 @@ void perform::init_jack( void )
             jack_set_sync_callback(m_jack_client, jack_sync_callback,
                     (void *) this );
             jack_set_process_callback(m_jack_client, jack_process_callback, NULL);
-
+#ifdef JACK_SESSION
+	    if (jack_set_session_callback)
+		jack_set_session_callback(m_jack_client, jack_session_callback,
+			(void *) this );
+#endif
             /* true if we want to fail if there is already a master */
             bool cond = global_with_jack_master_cond;
 
@@ -1404,6 +1417,39 @@ int jack_sync_callback(jack_transport_state_t state,
     return 1;
 }
 
+#ifdef JACK_SESSION
+
+bool perform::jack_session_event()
+{
+    Glib::ustring fname( m_jsession_ev->session_dir );
+
+    fname += "file.s42";
+
+    Glib::ustring cmd( "seq42 \"${SESSION_DIR}file.s42\" --jack_session_uuid " );
+    cmd += m_jsession_ev->client_uuid;
+
+    save(fname);
+
+    m_jsession_ev->command_line = strdup( cmd.c_str() );
+
+    jack_session_reply( m_jack_client, m_jsession_ev );
+
+    if( m_jsession_ev->type == JackSessionSaveAndQuit )
+        Gtk::Main::quit();
+
+    jack_session_event_free (m_jsession_ev);
+
+    return false;
+}
+
+void jack_session_callback(jack_session_event_t *event, void *arg )
+{
+    perform *p = (perform *) arg;
+    p->m_jsession_ev = event;
+    Glib::signal_idle().connect( sigc::mem_fun( *p, &perform::jack_session_event) );
+}
+
+#endif // JACK_SESSION
 #endif // JACK_SUPPORT
 
 

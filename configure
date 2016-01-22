@@ -5576,6 +5576,20 @@ $as_echo "#define JACK_SUPPORT 1" >>confdefs.h
 
                 USER_LDFLAGS="${USER_LDFLAGS} $(pkg-config --libs jack )"
                 features_list="${features_list} (Jack)"
+                ac_fn_c_check_header_mongrel "$LINENO" "jack/session.h" "ac_cv_header_jack_session_h" "$ac_includes_default"
+if test "x$ac_cv_header_jack_session_h" = xyes; then :
+  jack_session_found="yes"
+else
+  jack_session_found="no"
+fi
+
+
+                if test "$jack_session_found" = "yes"; then
+
+$as_echo "#define JACK_SESSION 1" >>confdefs.h
+
+		        fi
+
         else
                 { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING:  *** Could not find the JACK library, disabling JACK support" >&5
 $as_echo "$as_me: WARNING:  *** Could not find the JACK library, disabling JACK support" >&2;}

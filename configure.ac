@@ -88,6 +88,11 @@ if test "$jack_support" != "no"; then
                 AC_DEFINE(JACK_SUPPORT, 1, [Define to enable JACK driver])
                 USER_LDFLAGS="${USER_LDFLAGS} $(pkg-config --libs jack )"
                 features_list="${features_list} (Jack)"
+                AC_CHECK_HEADER(jack/session.h, jack_session_found="yes", jack_session_found="no")
+                if test "$jack_session_found" = "yes"; then
+			          AC_DEFINE(JACK_SESSION, 1, [Define to enable jack session support])
+		        fi
+
         else
                 AC_MSG_WARN([ *** Could not find the JACK library, disabling JACK support])
         fi

@@ -42,6 +42,9 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
+/* Define to enable jack session support */
+#undef JACK_SESSION
+
 /* Define to enable JACK driver */
 #undef JACK_SUPPORT
 

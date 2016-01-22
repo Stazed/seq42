@@ -180,6 +180,7 @@ extern bool global_manual_alsa_ports;
 extern bool global_is_running;
 
 extern Glib::ustring global_filename;
+extern Glib::ustring global_jack_session_uuid;
 extern Glib::ustring last_used_dir;
 extern Glib::ustring last_midi_dir;
 
