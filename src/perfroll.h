@@ -47,42 +47,20 @@
 
 using namespace Gtk;
 
+#include "perfroll_input.h"
+
 const int c_perfroll_background_x = (c_ppqn * 4 * 16) / c_perf_scale_x;
 const int c_perfroll_size_box_w = 3;
 const int c_perfroll_size_box_click_w = c_perfroll_size_box_w+1 ;
-
-class perfroll;
-struct FruityPerfInput
-{
-    FruityPerfInput() : m_adding_pressed( false ), m_current_x( 0 ),
-                         m_current_y( 0 )
-    {}
-    bool on_button_press_event(GdkEventButton* a_ev, perfroll& ths);
-    bool on_button_release_event(GdkEventButton* a_ev, perfroll& ths);
-    bool on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths);
-    void updateMousePtr(perfroll& ths);
-    bool m_adding_pressed;
-    long m_current_x, m_current_y;
-};
-struct Seq42PerfInput
-{
-    Seq42PerfInput() : m_adding( false ), m_adding_pressed( false ) {}
-    bool on_button_press_event(GdkEventButton* a_ev, perfroll& ths);
-    bool on_button_release_event(GdkEventButton* a_ev, perfroll& ths);
-    bool on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths);
-    void set_adding( bool a_adding, perfroll& ths );
-    bool m_adding;
-    bool m_adding_pressed;
-};
 
 /* performance roll */
 class perfroll : public Gtk::DrawingArea
 {
  private:
-    friend struct FruityPerfInput;
+    friend class FruityPerfInput;
     FruityPerfInput m_fruity_interaction;
 
-    friend struct Seq42PerfInput;
+    friend class Seq42PerfInput;
     Seq42PerfInput m_seq42_interaction;
 
     Glib::RefPtr<Gdk::GC> m_gc;
@@ -180,7 +158,6 @@ class perfroll : public Gtk::DrawingArea
     /* Trigger menu callbacks */
     void new_sequence(track *a_track, trigger *a_trigger);
     void edit_sequence(track *a_track, trigger *a_trigger);
-    //void set_trigger_sequence( track *a_track, trigger *a_trigger, sequence *a_sequence );
     void set_trigger_sequence( track *a_track, trigger *a_trigger, int a_sequence );
     void del_trigger( track *a_track, long a_tick );
     void paste_trigger_sequence( track *p_track, sequence *a_sequence );

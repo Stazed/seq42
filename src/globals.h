@@ -353,5 +353,6 @@ const char* const c_interaction_method_descs[] =
 };
 
 extern interaction_method_e global_interactionmethod;
+extern bool global_interaction_method_change;
 
 #endif

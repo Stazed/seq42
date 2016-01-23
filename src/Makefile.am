@@ -26,6 +26,7 @@ seq42_SOURCES = \
 	perfnames.cpp perfnames.h \
 	perform.cpp perform.h \
 	perfroll.cpp perfroll.h \
+	perfroll_input.cpp perfroll_input.h \
 	perftime.cpp perftime.h \
 	seq42.cpp \
 	seqdata.cpp seqdata.h \

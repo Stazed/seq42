@@ -98,12 +98,12 @@ am_seq42_OBJECTS = configfile.$(OBJEXT) event.$(OBJEXT) font.$(OBJEXT) \
 	mainwnd.$(OBJEXT) midibus.$(OBJEXT) midibus_portmidi.$(OBJEXT) \
 	midifile.$(OBJEXT) mutex.$(OBJEXT) options.$(OBJEXT) \
 	optionsfile.$(OBJEXT) perfnames.$(OBJEXT) perform.$(OBJEXT) \
-	perfroll.$(OBJEXT) perftime.$(OBJEXT) seq42.$(OBJEXT) \
-	seqdata.$(OBJEXT) seqedit.$(OBJEXT) seqevent.$(OBJEXT) \
-	seqkeys.$(OBJEXT) seqlist.$(OBJEXT) seqroll.$(OBJEXT) \
-	seqtime.$(OBJEXT) sequence.$(OBJEXT) track.$(OBJEXT) \
-	trackedit.$(OBJEXT) trackmenu.$(OBJEXT) userfile.$(OBJEXT) \
-	lfownd.$(OBJEXT)
+	perfroll.$(OBJEXT) perfroll_input.$(OBJEXT) perftime.$(OBJEXT) \
+	seq42.$(OBJEXT) seqdata.$(OBJEXT) seqedit.$(OBJEXT) \
+	seqevent.$(OBJEXT) seqkeys.$(OBJEXT) seqlist.$(OBJEXT) \
+	seqroll.$(OBJEXT) seqtime.$(OBJEXT) sequence.$(OBJEXT) \
+	track.$(OBJEXT) trackedit.$(OBJEXT) trackmenu.$(OBJEXT) \
+	userfile.$(OBJEXT) lfownd.$(OBJEXT)
 seq42_OBJECTS = $(am_seq42_OBJECTS)
 am__DEPENDENCIES_1 =
 seq42_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -344,6 +344,7 @@ seq42_SOURCES = \
 	perfnames.cpp perfnames.h \
 	perform.cpp perform.h \
 	perfroll.cpp perfroll.h \
+	perfroll_input.cpp perfroll_input.h \
 	perftime.cpp perftime.h \
 	seq42.cpp \
 	seqdata.cpp seqdata.h \
@@ -482,6 +483,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/perfnames.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/perform.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/perfroll.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/perfroll_input.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/perftime.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/seq42.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/seqdata.Po@am__quote@

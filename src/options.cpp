@@ -29,6 +29,7 @@
 #   define add_tooltip( obj, text ) m_tooltips->set_tip( *obj, text );
 #endif
 
+bool global_interaction_method_change = false;
 
 options::options (Gtk::Window & parent, perform * a_p):
     Gtk::Dialog ("Options", parent, true, true),
@@ -349,7 +350,11 @@ void
 options::mouse_seq42_callback(Gtk::RadioButton *btn)
 {
     if (btn->get_active())
+    {
         global_interactionmethod = e_seq42_interaction;
+        global_interaction_method_change = true;
+    }
+
 }
 
 void
