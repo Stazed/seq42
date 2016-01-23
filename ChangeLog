@@ -1,3 +1,54 @@
+2016-01-22 stazed <stazed@mapson.com>
+	add auto-scroll to perfroll
+	add auto-scroll to seqroll
+	use initializer lists - code cleanup to sync with seq24
+	fix command line options
+	Fixed adding notes on the begining when midi record is on and not playing sequence
+    Monophonic Step Edit on Sequence
+    Plyphonic Step Edit - from seq24
+	fix unnecessary pushes to undo in seq edit
+	add redo and select all events to seqevent (ctrl-a, ctrl-r)
+	change step edit keys - ctrl-left/right now moves transport: left/right move notes:
+	shift left/right move notes by tick
+	refactor global is_pattern_playing and consolidate/simplify perform::is_running to 
+	single global_is_running
+	add keybinding for song/jack sync/seq list buttons
+	change default track volume to seq24 method and apply to midi record if set
+	move .xpm to pixmaps directory
+	change options menu to pages - via seq24
+	move keybindentry class to separate file
+	add jack session support - seq24
+	move perfroll interactions methods to separate file
+
+2015-12-31 stazed <stazed@mapson.com>
+	add/rewrite perform undo/redo
+	add integer division to compute delta_tick - seq24
+	add track insert row
+	add track delete row
+	add pack tracks
+	File version 3 - add track index and track mute to file save
+	File version 4 - add beats per measure, beat width (song) 
+	fix default trigger lenght to use beats per measure and beat width
+	add additional grid snap items to match beats per measure
+	add midi export of sequences (seq24 format) 
+	add listen/play notes on note draw and note move
+	move start/stop playing to perform
+	fix jack frame rounding on BBT
+	fix jack Master to start on left tick (frame) and looping
+	fix jack slave mode to follow transport using internal BBT if no master
+	add jack connect toggle button to mainwnd and remove from options
+	add seq list button to mainwnd and remove from edit
+	
+2015-11-30 stazed <stazed@mapson.com>
+	added SIGINT and SIGUSR1
+	fix trigger offset to load at beginning of sequence 
+	added Midi Import
+	add trigger split to grid snap - middle mouse button (ctrl-L 'fruity)
+	add trigger paste ctrl-v to midlle mouse button mark
+	fix 'fruity' trigger popup - middle mouse button
+	add sequence merge
+	add cross-track trigge paste
+
 2012-10-06 Sam Brauer <sam.brauer@gmail.com>
     added song transpose (temporary with option to apply permanently)
     added dynamic swing

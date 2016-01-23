@@ -1,4 +1,4 @@
-[ ] Revise FruityPerfInput() & Seq24PerfInput() to sync with seq24 method.
+[X] Revise FruityPerfInput() & Seq24PerfInput() to sync with seq24 method.
 
 [X] Fix trigger offset bug!
 I think that will involve adding "adjust_offset" stuff back to move_selected_triggers_to()
