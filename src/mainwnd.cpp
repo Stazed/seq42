@@ -702,6 +702,7 @@ void
 mainwnd::set_song_mode( void )
 {
     global_jack_start_mode = m_button_mode->get_active();
+    m_mainperf->set_left_frame();
 }
 
 void
@@ -709,6 +710,7 @@ mainwnd::toggle_song_mode( void )
 {
     // Note that this will trigger the button signal callback.
     m_button_mode->set_active( ! m_button_mode->get_active() );
+    m_mainperf->set_left_frame();
 }
 
 void
