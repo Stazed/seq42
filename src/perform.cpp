@@ -284,7 +284,7 @@ perform::~perform()
 void
 perform::start_playing( void )
 {
-    if(global_jack_start_mode) { // song mode
+    if(global_song_start_mode) { // song mode
         if(m_jack_master)
         {
             set_left_frame();        // make sure it gets initial set if m_left_tick moved when !m_jack_running
@@ -1397,7 +1397,7 @@ int jack_sync_callback(jack_transport_state_t state,
 
         case JackTransportStarting:
             //printf( "[JackTransportStarting]\n" );
-            p->inner_start( global_jack_start_mode );
+            p->inner_start( global_song_start_mode );
             break;
 
         case JackTransportLooping:
