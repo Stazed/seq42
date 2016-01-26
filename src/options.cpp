@@ -191,31 +191,37 @@ options::add_keyboard_page()
     controltable->attach(*label, 0, 1, 1, 2);
     controltable->attach(*entry, 1, 2, 1, 2);
 
-    label = manage(new Label("Song", Gtk::ALIGN_RIGHT));
-    entry = manage(new KeyBindEntry(&m_perf->m_key_song));
+    label = manage(new Label("looping", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_loop));
     controltable->attach(*label, 0, 1, 2, 3);
     controltable->attach(*entry, 1, 2, 2, 3);
+
+    label = manage(new Label("Song", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_song));
+    controltable->attach(*label, 0, 1, 3, 4);
+    controltable->attach(*entry, 1, 2, 3, 4);
 #ifdef JACK_SUPPORT
     label = manage(new Label("Jack", Gtk::ALIGN_RIGHT));
     entry = manage(new KeyBindEntry(&m_perf->m_key_jack));
-    controltable->attach(*label, 0, 1, 3, 4);
-    controltable->attach(*entry, 1, 2, 3, 4);
-#endif // JACK_SUPPORT
-
-    label = manage(new Label("bpm down", Gtk::ALIGN_RIGHT));
-    entry = manage(new KeyBindEntry(&m_perf->m_key_bpm_dn));
     controltable->attach(*label, 2, 3, 0, 1);
     controltable->attach(*entry, 3, 4, 0, 1);
-
-    label = manage(new Label("bpm up", Gtk::ALIGN_RIGHT));
-    entry = manage(new KeyBindEntry(&m_perf->m_key_bpm_up));
-    controltable->attach(*label, 2, 3, 1, 2);
-    controltable->attach(*entry, 3, 4, 1, 2);
+#endif // JACK_SUPPORT
 
     label = manage(new Label("seqlist", Gtk::ALIGN_RIGHT));
     entry = manage(new KeyBindEntry(&m_perf->m_key_seqlist));
+    controltable->attach(*label, 2, 3, 1, 2);
+    controltable->attach(*entry, 3, 4, 1, 2);
+
+    label = manage(new Label("bpm down", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_bpm_dn));
     controltable->attach(*label, 2, 3, 2, 3);
     controltable->attach(*entry, 3, 4, 2, 3);
+
+    label = manage(new Label("bpm up", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_bpm_up));
+    controltable->attach(*label, 2, 3, 3, 4);
+    controltable->attach(*entry, 3, 4, 3, 4);
+
 }
 
 /*Mouse page*/

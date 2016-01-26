@@ -431,8 +431,8 @@ mainwnd::mainwnd(perform *a_p):
     m_hlbox->pack_start(*m_spinbutton_swing_amount16, false, false );
     m_hlbox->pack_start(*(manage( new Label( "1/16" ))), false, false, 4);
 
-    Button w;
-    m_hlbox->set_focus_child( w ); // clear the focus
+//    Button w;
+//    m_hlbox->set_focus_child( w ); // clear the focus
 
 
     /* set up a vbox, put the menu in it, and add it */
@@ -1325,10 +1325,6 @@ bool
 mainwnd::on_key_press_event(GdkEventKey* a_ev)
 {
     // control and modifier key combinations matching
-    // menu items have first priority
-    /*if (*/Gtk::Window::on_key_press_event(a_ev);
-        //return true;  // on win32, it'd always return true here (i.e. for SPACE bar)... ?
-
     if ( a_ev->state & GDK_CONTROL_MASK )
     {
         /* Ctrl-Z: Undo */
@@ -1390,12 +1386,14 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
         if ( a_ev->keyval == m_mainperf->m_key_start && (dont_toggle || !global_is_running) )
         {
             start_playing();
-            return true;
+            if(a_ev->keyval == GDK_space)
+                return true;
         }
         else if ( a_ev->keyval == m_mainperf->m_key_stop && (dont_toggle || global_is_running) )
         {
             stop_playing();
-            return true;
+            if(a_ev->keyval == GDK_space)
+                return true;
         }
         // FIXME: make key configurable?
         else if (a_ev->keyval == GDK_F12)
@@ -1406,7 +1404,7 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
         }
     }
 
-    return false;
+    return Gtk::Window::on_key_press_event(a_ev);
 }
 
 void

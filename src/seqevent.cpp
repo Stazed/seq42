@@ -684,8 +684,8 @@ seqevent::on_key_press_event(GdkEventKey* a_p0)
             {
                 m_seq->push_undo();
                 m_seq->remove_marked();
+                ret = true;
             }
-            ret = true;
         }
 
         if ( a_p0->state & GDK_CONTROL_MASK ){
@@ -698,9 +698,9 @@ seqevent::on_key_press_event(GdkEventKey* a_p0)
                     m_seq->push_undo();
                     m_seq->copy_selected();
                     m_seq->remove_marked();
+                    ret = true;
                 }
 
-                ret = true;
             }
             /* copy */
             if ( a_p0->keyval == GDK_c || a_p0->keyval == GDK_C ){
