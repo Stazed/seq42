@@ -431,10 +431,6 @@ mainwnd::mainwnd(perform *a_p):
     m_hlbox->pack_start(*m_spinbutton_swing_amount16, false, false );
     m_hlbox->pack_start(*(manage( new Label( "1/16" ))), false, false, 4);
 
-//    Button w;
-//    m_hlbox->set_focus_child( w ); // clear the focus
-
-
     /* set up a vbox, put the menu in it, and add it */
     VBox *vbox = new VBox();
     vbox->pack_start(*hbox1, false, false );
@@ -511,6 +507,9 @@ mainwnd::timer_callback(  )
     if ( m_bw != m_mainperf->get_bw()){
         set_bw( m_mainperf->get_bw());
     }
+
+    if (m_button_mode->get_active() != global_song_start_mode)
+        m_button_mode->set_active(global_song_start_mode);
 
     if ( m_adjust_swing_amount8->get_value() != m_mainperf->get_swing_amount8()){
         m_adjust_swing_amount8->set_value( m_mainperf->get_swing_amount8());

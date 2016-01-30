@@ -1093,6 +1093,11 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
 				m_seq->set_orig_tick(m_seq->get_last_tick() + m_snap);
 				ret = true;
 			}
+
+            if ( a_p0->keyval ==  m_perform->m_key_song ){
+                m_perform->toggle_song_mode();
+                return true;
+            }
 		}
 
         if ( a_p0->keyval ==  GDK_Up ){

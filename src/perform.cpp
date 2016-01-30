@@ -307,6 +307,17 @@ perform::stop_playing( void )
     stop();
 }
 
+void perform::toggle_song_mode( void )
+{
+    if(global_song_start_mode)
+        global_song_start_mode = false;
+    else
+    {
+        global_song_start_mode = true;
+        set_left_frame();
+    }
+}
+
 void perform::set_left_tick( long a_tick )
 {
     m_left_tick = a_tick;

@@ -175,6 +175,7 @@ class perform
 
     void start_playing( void );
     void stop_playing( void );
+    void toggle_song_mode( void );
 
     void init( void );
 
