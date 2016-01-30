@@ -134,8 +134,8 @@ void FruityPerfInput::on_left_button_pressed(GdkEventButton* a_ev, perfroll& ths
                 {
                     //m_adding = false;
                     m_adding_pressed = false;
-                    ths.have_button_press = true; // flag to tell motion notify to push_trigger_undo
-                    ths.m_mainperf->get_track( ths.m_drop_track )->select_trigger( tick );
+                    // flag to tell motion notify to push_trigger_undo
+                    ths.have_button_press = ths.m_mainperf->get_track( ths.m_drop_track )->select_trigger( tick );
 
                     long start_tick = ths.m_mainperf->get_track( ths.m_drop_track )->get_selected_trigger_start_tick();
                     long end_tick = ths.m_mainperf->get_track( ths.m_drop_track )->get_selected_trigger_end_tick();
@@ -383,9 +383,8 @@ bool Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
         else {
 
             if ( ths.m_mainperf->is_active_track( ths.m_drop_track )){
-
-                ths.have_button_press = true; // flag to tell motion notify to push_trigger_undo
-                ths.m_mainperf->get_track( ths.m_drop_track )->select_trigger( tick );
+                // flag to tell motion notify to push_trigger_undo
+                ths.have_button_press = ths.m_mainperf->get_track( ths.m_drop_track )->select_trigger( tick );
 
                 long start_tick = ths.m_mainperf->get_track( ths.m_drop_track )->get_selected_trigger_start_tick();
                 long end_tick = ths.m_mainperf->get_track( ths.m_drop_track )->get_selected_trigger_end_tick();
