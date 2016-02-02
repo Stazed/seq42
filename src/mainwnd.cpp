@@ -133,8 +133,9 @@ mainwnd::mainwnd(perform *a_p):
 
     m_menu_edit->items().push_back(MenuElem("_Midi export (Seq 24)",
             sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 1)));
-//    m_menu_edit->items().push_back(MenuElem("_Midi export song",
-//           sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 2)));
+
+    m_menu_edit->items().push_back(MenuElem("_Midi export song",
+           sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 2)));
 
     /* help menu items */
     m_menu_help->items().push_back(MenuElem("_About...",
@@ -964,18 +965,19 @@ void mainwnd::file_save_as(int type)
                 global_filename = fname;
                 update_window_title();
                 save_file();
-            }
+            }else
+                export_midi(fname, type);
 
-            if(type == 1)
+/*            if(type == 1)
             {
-                export_sequences(fname);
+                export_midi(fname, type);
             }
 
             if(type == 2) // TODO
             {
                 export_song(fname);
             }
-
+*/
             break;
         }
 
@@ -984,6 +986,29 @@ void mainwnd::file_save_as(int type)
     }
 }
 
+void mainwnd::export_midi(const Glib::ustring& fn, int type)
+{
+    bool result = false;
+
+    midifile f(fn);
+
+    if(type == 1)
+        result = f.write_sequences(m_mainperf);
+    else
+        result = f.write_song(m_mainperf);
+
+    if (!result) {
+        Gtk::MessageDialog errdialog(*this,
+                "Error writing file.", false,
+                Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
+        errdialog.run();
+    }
+
+    if(result)
+        last_midi_dir = fn.substr(0, fn.rfind("/") + 1);
+}
+
+/*
 void mainwnd::export_sequences(const Glib::ustring& fn)
 {
     bool result = false;
@@ -1002,6 +1027,8 @@ void mainwnd::export_sequences(const Glib::ustring& fn)
         last_midi_dir = fn.substr(0, fn.rfind("/") + 1);
 }
 
+
+
 void mainwnd::export_song(const Glib::ustring& fn)
 {
     bool result = false;
@@ -1019,7 +1046,7 @@ void mainwnd::export_song(const Glib::ustring& fn)
     if(result)
         last_midi_dir = fn.substr(0, fn.rfind("/") + 1);
 }
-
+*/
 void mainwnd::open_file(const Glib::ustring& fn)
 {
     bool result;

@@ -385,6 +385,10 @@ class sequence
 
     void fill_list (list < char >*a_list, int a_pos);
 
+    void song_fill_list_track_name( list<char> *a_list, int a_pos, string trackname );// TODO move to track
+    long song_fill_list_seq_event( list<char> *a_list, trigger *a_trig, long prev_timestamp );
+    void song_fill_list_seq_trigger( list<char> *a_list, trigger *a_trig, long a_length, long prev_timestamp );
+
     void select_events (unsigned char a_status, unsigned char a_cc,
 			bool a_inverse = false);
     void quanize_events (unsigned char a_status, unsigned char a_cc,

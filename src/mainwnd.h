@@ -152,8 +152,8 @@ class mainwnd : public Gtk::Window
     void file_open();
     void file_save();
     void file_save_as(int type);
-    void export_sequences(const Glib::ustring&);
-    void export_song(const Glib::ustring& );
+    void export_midi(const Glib::ustring&, int type);
+
     void file_exit();
     void new_file();
     bool save_file();
