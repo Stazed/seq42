@@ -1640,6 +1640,9 @@ seqedit::on_key_press_event( GdkEventKey* a_ev )
 void
 seqedit::start_playing( void )
 {
+    if(!global_song_start_mode)
+        m_seq->set_playing( m_toggle_play->get_active(),true );
+
     m_mainperf->start_playing();
 }
 
