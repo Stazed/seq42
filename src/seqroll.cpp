@@ -1061,6 +1061,11 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
     // allow toggling when the same key is mapped to both triggers (i.e. SPACEBAR)
     bool dont_toggle = m_perform->m_key_start != m_perform->m_key_stop;
     if ( a_p0->keyval ==  m_perform->m_key_start && (dont_toggle || !global_is_running) ){
+        if(!global_song_start_mode)
+        {
+            if(m_toggle_play->get_active())
+                m_seq->set_playing(true,true);
+        }
         m_perform->start_playing();
         return true;
     }
