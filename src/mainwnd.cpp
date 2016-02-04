@@ -131,10 +131,10 @@ mainwnd::mainwnd(perform *a_p):
 
     m_menu_edit->items().push_back(SeparatorElem());
 
-    m_menu_edit->items().push_back(MenuElem("_Midi export (Seq 24)",
+    m_menu_edit->items().push_back(MenuElem("Midi e_xport (Seq 24)",
             sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 1)));
 
-    m_menu_edit->items().push_back(MenuElem("_Midi export song",
+    m_menu_edit->items().push_back(MenuElem("Midi export _song",
            sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 2)));
 
     /* help menu items */
@@ -968,16 +968,6 @@ void mainwnd::file_save_as(int type)
             }else
                 export_midi(fname, type);
 
-/*            if(type == 1)
-            {
-                export_midi(fname, type);
-            }
-
-            if(type == 2) // TODO
-            {
-                export_song(fname);
-            }
-*/
             break;
         }
 
@@ -1008,45 +998,6 @@ void mainwnd::export_midi(const Glib::ustring& fn, int type)
         last_midi_dir = fn.substr(0, fn.rfind("/") + 1);
 }
 
-/*
-void mainwnd::export_sequences(const Glib::ustring& fn)
-{
-    bool result = false;
-
-    midifile f(fn);
-    result = f.write_sequences(m_mainperf);
-
-    if (!result) {
-        Gtk::MessageDialog errdialog(*this,
-                "Error writing file.", false,
-                Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
-        errdialog.run();
-    }
-
-    if(result)
-        last_midi_dir = fn.substr(0, fn.rfind("/") + 1);
-}
-
-
-
-void mainwnd::export_song(const Glib::ustring& fn)
-{
-    bool result = false;
-
-    midifile f(fn);
-    result = f.write_song(m_mainperf);
-
-    if (!result) {
-        Gtk::MessageDialog errdialog(*this,
-                "Error writing file.", false,
-                Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
-        errdialog.run();
-    }
-
-    if(result)
-        last_midi_dir = fn.substr(0, fn.rfind("/") + 1);
-}
-*/
 void mainwnd::open_file(const Glib::ustring& fn)
 {
     bool result;

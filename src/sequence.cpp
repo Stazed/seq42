@@ -2946,17 +2946,16 @@ sequence::fill_list( list<char> *a_list, int a_pos )
 }
 
 
-void // TODO move to track
+void
 sequence::song_fill_list_track_name( list<char> *a_list, int a_pos, string trackname )
 {
-
     lock();
 
     /* clear list */
     *a_list = list<char>();
 
     /* sequence number */
-    addListVar( a_list, 0 ); // will have to be called from track TODO
+    addListVar( a_list, 0 );
     a_list->push_front( 0xFF );
     a_list->push_front( 0x00 );
     a_list->push_front( 0x02 );
@@ -2964,12 +2963,11 @@ sequence::song_fill_list_track_name( list<char> *a_list, int a_pos, string track
     a_list->push_front( (a_pos & 0x00FF)      );
 
     /* name */
-    addListVar( a_list, 0 ); // will have to be called from track TODO
+    addListVar( a_list, 0 );
     a_list->push_front( 0xFF );
     a_list->push_front( 0x03 );
 
     int length =  trackname.length();
-    //int length =  m_name.length();
 
     if ( length > 0x7F )
         length = 0x7f;
@@ -2978,36 +2976,41 @@ sequence::song_fill_list_track_name( list<char> *a_list, int a_pos, string track
 
     for ( int i=0; i< length; i++ )
         a_list->push_front( trackname.c_str()[i] );
-        //a_list->push_front( m_name.c_str()[i] );
 
+    unlock();
 }
 
 long
 sequence::song_fill_list_seq_event( list<char> *a_list, trigger *a_trig, long prev_timestamp )
 {
-    // TODO need to adjust events to offset based on a_trig trigger position
-    // and trigger size if bigger than events
-    long adjust = a_trig->m_tick_start;
-    //if(a_trig->m_offset != a_trig->m_tick_start)
-    //    adjust += a_trig->m_offset;
+    lock();
+    long trigger_offset = (a_trig->m_offset % m_length);
+    long start_offset = (a_trig->m_tick_start % m_length);
 
-    //long prev_timestamp = 0;
+    long timestamp_adjust = a_trig->m_tick_start - start_offset + trigger_offset;
 
-    int trigloop = 0, partial = 0;
+    if((trigger_offset - start_offset) > 0) // in this case the total offset is m_length too far
+        timestamp_adjust -= m_length;
+
+    //long total_offset = trigger_offset - start_offset;
+    //printf("trigger_offset [%ld]: start_offset [%ld]: total_offset [%ld]: timestamp_adjust [%ld]\n",
+    //         trigger_offset,start_offset,total_offset,timestamp_adjust);
+
+    int times_played = 0;
+    int note_is_used[c_midi_notes];
+
+    /* initialize to off */
+    for (int i=0; i< c_midi_notes; i++ )
+        note_is_used[i] = 0;
 
     if(a_trig->m_tick_end - a_trig->m_tick_start > m_length) // if trigger is longer than sequence
     {
-        trigloop = (a_trig->m_tick_end - a_trig->m_tick_start)/ m_length;
-    } // use trigloop to determine how many times to trigger events for this trigger
-    // also need to figure for partial triggers
-    if((trigloop * m_length) < (a_trig->m_tick_end - a_trig->m_tick_start)) // partial
-    {
-        partial = (a_trig->m_tick_end - a_trig->m_tick_start) - (trigloop * m_length);
-    }
+        times_played = (a_trig->m_tick_end - a_trig->m_tick_start)/ m_length;
+        times_played += 1; // for partial sequences
+    } // use times_played to determine how many times to trigger sequence
 
-    bool skip = false;
 
-    for(int ii = 0; ii <= trigloop; ii++ )
+    for(int ii = 0; ii <= times_played; ii++ )
     {
         /* events */
 
@@ -3015,42 +3018,69 @@ sequence::song_fill_list_seq_event( list<char> *a_list, trigger *a_trig, long pr
 
         list<event>::iterator i;
 
-
         for ( i = m_list_event.begin(); i != m_list_event.end(); i++ ){
 
             event e = (*i);
 
-            if(e.get_timestamp() < (c_ppwn - a_trig->m_offset))
+            timestamp = e.get_timestamp();
+            timestamp += timestamp_adjust;
+
+            /* if the event is after the trigger start */
+            if(timestamp >= a_trig->m_tick_start )
             {
-                if(!skip)
+                // need to save the event note if note_on, then eliminate the note_off if the note_on is NOT used
+                unsigned char note = e.get_note();
+
+                if ( e.is_note_on() )
                 {
-                    //adjust -= (c_ppwn - a_trig->m_offset);
-                    adjust -= a_trig->m_offset;
-                    i++;
-                    skip = true;
-                    continue;
+                    if(timestamp > a_trig->m_tick_end)
+                    {
+                        continue;                   // skip
+                    }
+                    else
+                        note_is_used[note]++;       // save the note
                 }
+                if ( e.is_note_off() )
+                {
+                    if ( note_is_used[note] <= 0 )  // if NO note_on then skip
+                    {
+                        continue;
+                    }
+                    else                            // we have a note_on
+                    {
+                        if(timestamp >= a_trig->m_tick_end) // if past the end of trigger then use trigger end
+                        {
+                            note_is_used[note]--;           // turn off the note_on
+                            timestamp = a_trig->m_tick_end;
+                        }else                               // not past end so just use it
+                            note_is_used[note]--;
+
+                    }
+                }
+            }else // event is before the trigger start - skip
+                continue;
 
 
+            /* if the event is past the trigger end - for non notes - skip */
+            if(timestamp >= a_trig->m_tick_end )
+            {
+                if ( !e.is_note_on() && !e.is_note_off() ) // these were already taken care of...
+                    continue;
             }
 
-            timestamp = e.get_timestamp();
-            timestamp += adjust;
 
             delta_time = timestamp - prev_timestamp;
             prev_timestamp = timestamp;
 
-            printf ( "timestamp[%ld]: e.get_timestamp[%ld]: deltatime[%ld]: prev_timestamp[%ld]\n" , timestamp, e.get_timestamp(),delta_time,prev_timestamp );
+            //printf ( "timestamp[%ld]: e.get_timestamp[%ld]: deltatime[%ld]: prev_timestamp[%ld]\n" , timestamp, e.get_timestamp(),delta_time,prev_timestamp );
+            //printf ( "trig offset[%ld]: trig start[%ld]: sequence[%d]\n" , a_trig->m_offset, a_trig->m_tick_start,a_trig->m_sequence );
 
-            printf ( "trig offset[%ld]: trig start[%ld]: sequence[%d]\n" , a_trig->m_offset, a_trig->m_tick_start,a_trig->m_sequence );
             /* encode delta_time */
             addListVar( a_list, delta_time );
 
-            //adjust = 0;
             /* now that the timestamp is encoded, do the status and
                data */
 
-            /* FIXME: move channel stuff to track */
             a_list->push_front( e.m_status | get_midi_channel() );
 
             switch( e.m_status & 0xF0 ){
@@ -3082,20 +3112,19 @@ sequence::song_fill_list_seq_event( list<char> *a_list, trigger *a_trig, long pr
             }
         }
 
-        adjust += m_length;
+        timestamp_adjust += m_length;
     }
+    unlock();
     return prev_timestamp;
 }
 
 void
 sequence::song_fill_list_seq_trigger( list<char> *a_list, trigger *a_trig, long a_length, long prev_timestamp )
 {
-
+    lock();
     /* trigger for whole sequence */
 
     int num_triggers = 1; // only one
-    //int num_triggers = seq_list_trigger.size();
-    //list<trigger>::iterator t = seq_list_trigger.begin();
 
     addListVar( a_list, 0 );
     a_list->push_front( 0xFF );
@@ -3103,28 +3132,10 @@ sequence::song_fill_list_seq_trigger( list<char> *a_list, trigger *a_trig, long 
     addListVar( a_list, (num_triggers * 3 * 4) + 4);
     addLongList( a_list, c_triggers_new );
 
-
-    //addLongList( a_list, (a_trig)->m_tick_start );
     addLongList( a_list, 0 ); // start tick
     addLongList( a_list, (a_trig)->m_tick_end );
     addLongList( a_list, 0 ); // offset - done in event
-    //addLongList( a_list, (a_trig)->m_offset );
-    //printf( "num_triggers[%d]\n", num_triggers );
-/*
-    for ( int i=0; i<num_triggers; i++ ){
 
-        //printf( "> start[%d] end[%d] offset[%d]\n",
-        //        (*t).m_tick_start, (*t).m_tick_end, (*t).m_offset );
-
-        addLongList( a_list, (*t).m_tick_start );
-        addLongList( a_list, (*t).m_tick_end );
-        addLongList( a_list, (*t).m_offset );
-
-        t++;
-    }
-*/
-
-    /* FIXME: move bus and channel stuff into track */
     /* bus */
     addListVar( a_list, 0 );
     a_list->push_front( 0xFF );
@@ -3150,10 +3161,9 @@ sequence::song_fill_list_seq_trigger( list<char> *a_list, trigger *a_trig, long 
     addLongList( a_list, c_midich );
     a_list->push_front( get_midi_channel() );
 
+    long delta_time = a_length - prev_timestamp;
 
-    long delta_time = a_length - prev_timestamp; // TODO Fixme
-//    delta_time = m_length - prev_timestamp;
-    printf("delta_time [%ld]: a_length [%ld]: prev_timestamp[%ld]\n",delta_time,a_length,prev_timestamp);
+   //printf("delta_time [%ld]: a_length [%ld]: prev_timestamp[%ld]\n",delta_time,a_length,prev_timestamp);
 
     /* meta track end */
     addListVar( a_list, delta_time );

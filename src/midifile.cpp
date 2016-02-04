@@ -698,8 +698,6 @@ bool midifile::write_sequences (perform * a_perf)
 
 bool midifile::write_song (perform * a_perf)
 {
-    printf("FIXME midifile::write_song()\n");
-//#if 0
     int numtracks = 0;
 
     /* get number of tracks  */
@@ -708,7 +706,6 @@ bool midifile::write_song (perform * a_perf)
         if (a_perf->is_active_track(i))
         {
             numtracks += 1;
-            //numtracks += a_perf->get_track(i)->get_number_of_sequences();
         }
     }
 
@@ -727,10 +724,6 @@ bool midifile::write_song (perform * a_perf)
     /* We should be good to load now   */
     /* for each Track Sequence in the midi file */
 
-
-
-    numtracks = 0; // reset for seq->fill_list position
-
     for (int curTrack = 0; curTrack < c_max_track; curTrack++)
     {
         //printf ("track[%d]\n", curTrack );
@@ -745,38 +738,36 @@ bool midifile::write_song (perform * a_perf)
             a_track->get_trak_triggers(trig_vect); // all triggers for the track
 
             int vect_size = trig_vect.size();
+            if(vect_size < 1)
+                continue; // skip tracks with no triggers
 
             /*  track name */
             string track_name = a_perf->get_track(curTrack)->get_name();
-            sequence * seq = a_perf->get_track(curTrack)->get_sequence(trig_vect[0].m_sequence); // trig_vect use first
+            sequence * seq = a_perf->get_track(curTrack)->get_sequence(trig_vect[0].m_sequence);
 
             list<char> l;
-            seq->song_fill_list_track_name(&l,curTrack,track_name);
+            seq->song_fill_list_track_name(&l,curTrack,track_name); // sequence does not matter - s/b moved to track FIXME
+
             // now for each trigger get sequence and add events to list char below - fill_list one by one in order,
             // essentially creating a single long sequence.
             // then set a single trigger for the big sequence - start at zero, end at last trigger end.
 
-
             long total_seq_length = 0;
             long prev_timestamp = 0;
-            //unsigned int num_seq = a_perf->get_track(curTrack)->get_number_of_sequences();
 
-            /* sequence pointer */
-            //for (unsigned int a_seq = 0; a_seq < num_seq; a_seq++ )
-            for (unsigned int i = 0; i < vect_size; i++)
+            for (int i = 0; i < vect_size; i++)
             {
                 a_trig = &trig_vect[i]; // get the trigger
                 sequence * seq = a_perf->get_track(curTrack)->get_sequence(a_trig->m_sequence); // get trigger sequence
 
-                prev_timestamp = seq->song_fill_list_seq_event(&l,a_trig,prev_timestamp); // last one last
-
+                prev_timestamp = seq->song_fill_list_seq_event(&l,a_trig,prev_timestamp); // put events on list
             }
 
             total_seq_length = trig_vect[vect_size-1].m_tick_end;
 
-            printf("total_seq_length = [%ld]\n",total_seq_length);
-            seq->song_fill_list_seq_trigger(&l,a_trig,total_seq_length + 768 ,prev_timestamp); // FIXME 768
-            //seq->song_fill_list_seq_trigger(&l,a_trig,total_seq_length,prev_timestamp);
+            //printf("total_seq_length = [%ld]\n",total_seq_length);
+            seq->song_fill_list_seq_trigger(&l,a_trig,total_seq_length,prev_timestamp); // the big sequence trigger
+
             /* magic number 'MTrk' */
             write_long (0x4D54726B);
             write_long (l.size ());
@@ -788,9 +779,6 @@ bool midifile::write_song (perform * a_perf)
                 write_byte (l.back ());
                 l.pop_back ();
             }
-
-                //numtracks++;
-
         }
     }
 
@@ -843,8 +831,5 @@ bool midifile::write_song (perform * a_perf)
     m_l.clear ();
 
     return true;
-
-//#endif
-//    return false; // FIXME
 }
 
