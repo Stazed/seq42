@@ -36,7 +36,8 @@ Here are some of the other enhancements of seq42:
 * NEW - Undo/Redo completely re-written. All tirgger, sequence, track actions can be undone/redone. Redo is cleared upon any new edit of track items.  This is done to eliminate the possibility of undo pushing to redo items such as trigger edits, then deleting the track. If redo were not cleared, then attempting to redo items on a track that no longer exists would not work. Undo/redo does not change
 the track edit items (name,channel,bus,transpose,mute)... except when undo/redo row insert/delete/pack or deleting midi import. Sequence copies will now copy the seq level undo/redo. For track level undo/redo, (insert/delete/pack,copy,seq copy), the track editor and sequence editor windows must be closed.
 * NEW - Now beats-per-measure, beat-width song editor are saved to file. Also these now work for trigger default length selection. New grid-snaps were added to accomodate.
-* NEW - Export midi files - sequences in seq24 format
+* NEW - Export midi files - sequences in seq24 format - edit menu, export(seq24).
+* NEW - Export midi song render - combines all triggers on track together - can be used in conventional midi players. From edit menu, export song.
 * NEW - Note listen added to sequence draw notes and move notes.
 * NEW - Fixed Jack master to work properly. Start as master on left tick marker and looping works.
 * NEW - Jack slave and master conditional work - and will follow the jack frame without master BBT

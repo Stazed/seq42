@@ -1,3 +1,13 @@
+2016-02-06 stazed <stazed@mapson.com>
+	fix left frame reset on song mode change
+	rename global_jack_start_mode to global_song_mode: change for command line
+	stop button press on space bar if in focus
+	optimize code for mark_selected() - unnecessary redraw
+	add toggle song mode to seqroll
+	stop push to undo when nothing selected in perfroll - motion notify
+	add midi song render export
+	fix sequence play (thru) to work with song toggle keybind
+
 2016-01-22 stazed <stazed@mapson.com>
 	add auto-scroll to perfroll
 	add auto-scroll to seqroll
