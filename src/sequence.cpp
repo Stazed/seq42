@@ -2996,7 +2996,7 @@ sequence::song_fill_list_seq_event( list<char> *a_list, trigger *a_trig, long pr
     //printf("trigger_offset [%ld]: start_offset [%ld]: total_offset [%ld]: timestamp_adjust [%ld]\n",
     //         trigger_offset,start_offset,total_offset,timestamp_adjust);
 
-    int times_played = 0;
+    int times_played = 1;
     int note_is_used[c_midi_notes];
 
     /* initialize to off */
@@ -3009,6 +3009,7 @@ sequence::song_fill_list_seq_event( list<char> *a_list, trigger *a_trig, long pr
         times_played += 1; // for partial sequences
     } // use times_played to determine how many times to trigger sequence
 
+    //printf("times_played [%d]\n",times_played);
 
     for(int ii = 0; ii <= times_played; ii++ )
     {
