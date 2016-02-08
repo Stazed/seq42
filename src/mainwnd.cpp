@@ -42,6 +42,7 @@
 #include "pixmaps/undo.xpm"
 #include "pixmaps/redo.xpm"
 #include "pixmaps/down.xpm"
+#include "pixmaps/jack.xpm"
 
 using namespace sigc;
 
@@ -172,7 +173,9 @@ mainwnd::mainwnd(perform *a_p):
     }
 
 #ifdef JACK_SUPPORT
-    m_button_jack = manage( new ToggleButton( "Jack sync" ) );
+    //m_button_jack = manage( new ToggleButton( "Jack sync" ) );
+    m_button_jack = manage( new ToggleButton() );
+    m_button_jack->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( jack_xpm ))));
     m_button_jack->signal_toggled().connect(  mem_fun( *this, &mainwnd::set_jack_mode ));
     add_tooltip( m_button_jack, "Toggle Jack sync connection" );
     if(global_with_jack_transport) {

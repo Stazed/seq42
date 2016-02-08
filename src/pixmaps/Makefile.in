@@ -220,6 +220,7 @@ EXTRA_DIST = \
 	expand.xpm \
 	font_b.xpm \
 	font_w.xpm \
+	jack.xpm\
 	key.xpm \
 	learn2.xpm \
 	learn.xpm \
