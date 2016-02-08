@@ -86,7 +86,6 @@ track::operator=(const track& other)
             m_vector_sequence[i]->set_track(this);
         }
 #endif
-//#if 0
         //printf("copying sequences...\n");
         // Copy the other track's sequences.
         m_vector_sequence.clear();
@@ -97,7 +96,6 @@ track::operator=(const track& other)
             a_seq->set_track(this);
             m_vector_sequence.push_back(a_seq);
         }
-//#endif
     }
     unlock();
     return *this;

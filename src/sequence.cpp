@@ -2984,18 +2984,10 @@ long
 sequence::song_fill_list_seq_event( list<char> *a_list, trigger *a_trig, long prev_timestamp )
 {
     lock();
+
     long trigger_offset = (a_trig->m_offset % m_length);
     long start_offset = (a_trig->m_tick_start % m_length);
-
     long timestamp_adjust = a_trig->m_tick_start - start_offset + trigger_offset;
-
-    if((trigger_offset - start_offset) > 0) // in this case the total offset is m_length too far
-        timestamp_adjust -= m_length;
-
-    //long total_offset = trigger_offset - start_offset;
-    //printf("trigger_offset [%ld]: start_offset [%ld]: total_offset [%ld]: timestamp_adjust [%ld]\n",
-    //         trigger_offset,start_offset,total_offset,timestamp_adjust);
-
     int times_played = 1;
     int note_is_used[c_midi_notes];
 
@@ -3003,12 +2995,14 @@ sequence::song_fill_list_seq_event( list<char> *a_list, trigger *a_trig, long pr
     for (int i=0; i< c_midi_notes; i++ )
         note_is_used[i] = 0;
 
-    if(a_trig->m_tick_end - a_trig->m_tick_start > m_length) // if trigger is longer than sequence
-    {
-        times_played = (a_trig->m_tick_end - a_trig->m_tick_start)/ m_length;
-        times_played += 1; // for partial sequences
-    } // use times_played to determine how many times to trigger sequence
+    times_played += (a_trig->m_tick_end - a_trig->m_tick_start)/ m_length;
 
+    if((trigger_offset - start_offset) > 0) // in this case the total offset is m_length too far
+        timestamp_adjust -= m_length;
+
+    //long total_offset = trigger_offset - start_offset;
+    //printf("trigger_offset [%ld]: start_offset [%ld]: total_offset [%ld]: timestamp_adjust [%ld]\n",
+    //         trigger_offset,start_offset,total_offset,timestamp_adjust);
     //printf("times_played [%d]\n",times_played);
 
     for(int ii = 0; ii <= times_played; ii++ )
