@@ -46,6 +46,7 @@ class midifile
     unsigned long read_var();
 
     void write_long( unsigned long );
+    void write_mid( unsigned long );
     void write_short( unsigned short );
     void write_byte( unsigned char );
 

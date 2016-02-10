@@ -181,7 +181,7 @@ bool midifile::parse (perform * a_perf)
         /* Get ID + Length */
         ID = read_long ();
         TrackLength = read_long ();
-        //printf( "[%8lX] len[%8lX]\n", ID,  TrackLength );
+        printf( "[%8lX] len[%8lX]\n", ID,  TrackLength );
 
         /* magic number 'MTrk' */
         if (ID == 0x4D54726B)
@@ -564,6 +564,13 @@ midifile::write_long (unsigned long a_x)
     write_byte ((a_x & 0x000000FF));
 }
 
+void
+midifile::write_mid (unsigned long a_x)
+{
+    write_byte ((a_x & 0xFF0000) >> 16);
+    write_byte ((a_x & 0x00FF00) >> 8);
+    write_byte ((a_x & 0x0000FF));
+}
 
 void
 midifile::write_short (unsigned short a_x)
@@ -718,8 +725,40 @@ bool midifile::write_song (perform * a_perf)
 
     /* format 1, number of tracks, ppqn */
     write_short (0x0001);
-    write_short (numtracks);
+    write_short (numtracks + 1);  // + 1 for signature/tempo track
     write_short (c_ppqn);
+
+    //First, the track chunk for the time signature/tempo track.
+    /* magic number 'MTrk' */
+    write_long (0x4D54726B);
+    write_long (0x00000013); // s/b [00 00 00 14] = chunk length 20 bytes
+
+    /* time signature */
+    // 00 FF 58 04 04 02 18 08      time signature - 4/4
+    // 00 FF 51 03 07 A1 20         tempo
+    // 00 FF 2F 00                  end of track
+
+    write_byte(0x00); // delta time
+    write_short(0xFF58);
+    write_byte(0x04); // length of remaining bytes
+    write_byte(a_perf->get_bp_measure());   // nn
+    write_byte(2 ^ a_perf->get_bw());       // dd
+    write_short(0x2408);            // FIXME
+    //write_short(0x1808);            // FIXME
+
+    /* Tempo */
+    write_byte(0x00); // delta time
+    write_short(0xFF51);
+    write_byte(0x03); // length of bytes - must be 3?
+    long bpm = 60000000/a_perf->get_bpm(); // FIXME cant use long >> four bytes must use 3
+    write_mid(bpm);
+
+    /* track end */
+    write_byte(0x00); // delta time
+    write_byte(0xFF);
+    write_byte(0x2F);
+    write_byte(0x00);
+
 
     /* We should be good to load now   */
     /* for each Track Sequence in the midi file */
@@ -742,11 +781,11 @@ bool midifile::write_song (perform * a_perf)
                 continue; // skip tracks with no triggers
 
             /*  track name */
-            string track_name = a_perf->get_track(curTrack)->get_name();
+            string track_name = a_perf->get_track(curTrack)->get_name(); // FIXME use first sequence name
             sequence * seq = a_perf->get_track(curTrack)->get_sequence(trig_vect[0].m_sequence);
 
             list<char> l;
-            seq->song_fill_list_track_name(&l,curTrack,track_name); // sequence does not matter - s/b moved to track FIXME
+            seq->song_fill_list_track_name(&l,curTrack,track_name); // sequence does not matter - could be moved to track
 
             // now for each trigger get sequence and add events to list char below - fill_list one by one in order,
             // essentially creating a single long sequence.
@@ -782,34 +821,6 @@ bool midifile::write_song (perform * a_perf)
         }
     }
 
-
-    /* midi control */
-    write_long (c_midictrl);
-    write_long (0);
-
-    /* bus mute/unmute data */
-    write_long (c_midiclocks);
-    write_long (0);
-
-    /* notepad data */
-    write_long (c_notes);
-    write_short (0);
-
-    /* bpm */
-    write_long (c_bpmtag);
-    write_long (a_perf->get_bpm ());
-
-    /* write out the mute groups */
-    write_long(c_mutegroups);
-    write_long(0);
-
-    /* write out the beats per measure */
-    write_long(c_bp_measure);
-    write_long(a_perf->get_bp_measure());
-
-    /* write out the beat width */
-    write_long(c_beat_width);
-    write_long(a_perf->get_bw());
 
     /* open binary file */
     ofstream file (m_name.c_str (), ios::out | ios::binary | ios::trunc);
