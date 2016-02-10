@@ -183,6 +183,7 @@ class track
 
     long get_max_trigger (void);
     int get_trigger_count_for_seqidx(int a_seq);
+    int get_track_trigger_count( void );
 
     void move_triggers (long a_start_tick, long a_distance, bool a_direction);
     void copy_triggers (long a_start_tick, long a_distance);

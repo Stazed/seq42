@@ -478,6 +478,11 @@ track::get_trigger_count_for_seqidx(int a_seq)
     return count;
 }
 
+int
+track::get_track_trigger_count( void )
+{
+    return m_list_trigger.size();
+}
 
 void
 track::clear_triggers( void )

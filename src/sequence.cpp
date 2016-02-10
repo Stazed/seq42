@@ -2947,7 +2947,7 @@ sequence::fill_list( list<char> *a_list, int a_pos )
 
 
 void
-sequence::song_fill_list_track_name( list<char> *a_list, int a_pos, string trackname )
+sequence::song_fill_list_track_name( list<char> *a_list, int a_pos )
 {
     lock();
 
@@ -2967,7 +2967,7 @@ sequence::song_fill_list_track_name( list<char> *a_list, int a_pos, string track
     a_list->push_front( 0xFF );
     a_list->push_front( 0x03 );
 
-    int length =  trackname.length();
+    int length =  m_name.length();
 
     if ( length > 0x7F )
         length = 0x7f;
@@ -2975,7 +2975,7 @@ sequence::song_fill_list_track_name( list<char> *a_list, int a_pos, string track
     a_list->push_front( length );
 
     for ( int i=0; i< length; i++ )
-        a_list->push_front( trackname.c_str()[i] );
+        a_list->push_front( m_name.c_str()[i] );
 
     unlock();
 }
