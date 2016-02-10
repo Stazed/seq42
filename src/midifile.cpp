@@ -21,6 +21,7 @@
 #include "midifile.h"
 #include "seqedit.h"
 #include <iostream>
+#include <math.h>
 
 
 midifile::midifile(const Glib::ustring& a_name) :
@@ -710,7 +711,7 @@ bool midifile::write_song (perform * a_perf)
     /* get number of tracks  */
     for (int i = 0; i < c_max_track; i++)
     {
-        if (a_perf->is_active_track(i))
+        if (a_perf->is_active_track(i)) // FIXME this will be incorrect if the track has NO triggers!!!
         {
             numtracks += 1;
         }
@@ -731,33 +732,29 @@ bool midifile::write_song (perform * a_perf)
     //First, the track chunk for the time signature/tempo track.
     /* magic number 'MTrk' */
     write_long (0x4D54726B);
-    write_long (0x00000013); // s/b [00 00 00 14] = chunk length 20 bytes
+    write_long (0x00000013); // s/b [00 00 00 13] = chunk length 19 bytes
 
     /* time signature */
     // 00 FF 58 04 04 02 18 08      time signature - 4/4
-    // 00 FF 51 03 07 A1 20         tempo
+    // 00 FF 51 03 07 A1 20         tempo - last three bytes are the bpm - 140 here in hex
     // 00 FF 2F 00                  end of track
 
     write_byte(0x00); // delta time
     write_short(0xFF58);
     write_byte(0x04); // length of remaining bytes
     write_byte(a_perf->get_bp_measure());   // nn
-    write_byte(2 ^ a_perf->get_bw());       // dd
-    write_short(0x2408);            // FIXME
-    //write_short(0x1808);            // FIXME
+    write_byte(log(a_perf->get_bw())/log(2.0));
+    write_short(0x1808);            // FIXME ???
 
     /* Tempo */
     write_byte(0x00); // delta time
     write_short(0xFF51);
-    write_byte(0x03); // length of bytes - must be 3?
-    long bpm = 60000000/a_perf->get_bpm(); // FIXME cant use long >> four bytes must use 3
+    write_byte(0x03); // length of bytes - must be 3
+    long bpm = 60000000/a_perf->get_bpm();
     write_mid(bpm);
 
     /* track end */
-    write_byte(0x00); // delta time
-    write_byte(0xFF);
-    write_byte(0x2F);
-    write_byte(0x00);
+    write_long(0x00FF2F00);
 
 
     /* We should be good to load now   */
