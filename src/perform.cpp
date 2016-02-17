@@ -73,6 +73,7 @@ perform::perform()
     m_key_song   = GDK_F1;
     m_key_jack   = GDK_F2;
     m_key_seqlist   = GDK_F3;
+    m_key_follow_trans  = GDK_F4;
 
     m_jack_running = false;
     m_jack_master = false;
@@ -327,6 +328,11 @@ void perform::set_follow_transport(bool a_set)
 bool perform::get_follow_transport(void)
 {
     return m_follow_transport;
+}
+
+void perform::toggle_follow_transport(void)
+{
+    set_follow_transport(!m_follow_transport);
 }
 
 void perform::set_left_tick( long a_tick )

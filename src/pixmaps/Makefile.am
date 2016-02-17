@@ -36,5 +36,6 @@ EXTRA_DIST = \
 	stop.xpm \
 	thru.xpm \
 	tools.xpm \
+	transportFollow.xpm \
 	undo.xpm \
 	zoom.xpm

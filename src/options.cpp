@@ -203,12 +203,17 @@ options::add_keyboard_page()
 #ifdef JACK_SUPPORT
     label = manage(new Label("Jack", Gtk::ALIGN_RIGHT));
     entry = manage(new KeyBindEntry(&m_perf->m_key_jack));
-    controltable->attach(*label, 2, 3, 0, 1);
-    controltable->attach(*entry, 3, 4, 0, 1);
+    controltable->attach(*label, 0, 1, 4, 5);
+    controltable->attach(*entry, 1, 2, 4, 5);
 #endif // JACK_SUPPORT
 
     label = manage(new Label("seqlist", Gtk::ALIGN_RIGHT));
     entry = manage(new KeyBindEntry(&m_perf->m_key_seqlist));
+    controltable->attach(*label, 2, 3, 0, 1);
+    controltable->attach(*entry, 3, 4, 0, 1);
+
+    label = manage(new Label("transport", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_follow_trans));
     controltable->attach(*label, 2, 3, 1, 2);
     controltable->attach(*entry, 3, 4, 1, 2);
 

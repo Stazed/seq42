@@ -83,6 +83,9 @@ optionsfile::parse( perform *a_perf )
     next_data_line( &file );
 
     sscanf( m_line, "%u", &a_perf->m_key_seqlist );
+    next_data_line( &file );
+
+    sscanf( m_line, "%u", &a_perf->m_key_follow_trans );
 
 #ifdef JACK_SUPPORT
     next_data_line( &file );
@@ -253,6 +256,10 @@ optionsfile::write( perform *a_perf  )
     file << a_perf->m_key_seqlist << "        # "
          << gdk_keyval_name( a_perf->m_key_seqlist )
          << " sequence list\n";
+
+     file << a_perf->m_key_follow_trans << "        # "
+         << gdk_keyval_name( a_perf->m_key_follow_trans )
+         << " follow transport\n";
 
 #ifdef JACK_SUPPORT
     file << a_perf->m_key_jack << "        # "

@@ -189,6 +189,7 @@ class mainwnd : public Gtk::Window
     void toggle_jack(void);
 
     void set_follow_transport (void);
+    void toggle_follow_transport(void);
 
     void expand (void);
     void collapse (void);

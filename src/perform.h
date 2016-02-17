@@ -170,6 +170,7 @@ class perform
     unsigned int m_key_song;
     unsigned int m_key_jack;
     unsigned int m_key_seqlist;
+    unsigned int m_key_follow_trans;
 
     perform();
     ~perform();
@@ -180,6 +181,7 @@ class perform
 
     void set_follow_transport(bool a_set);
     bool get_follow_transport(void);
+    void toggle_follow_transport( void );
 
     void init( void );
 

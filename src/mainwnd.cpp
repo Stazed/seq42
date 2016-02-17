@@ -44,6 +44,7 @@
 #include "pixmaps/redo.xpm"
 #include "pixmaps/down.xpm"
 #include "pixmaps/jack.xpm"
+#include "pixmaps/transportFollow.xpm"
 
 using namespace sigc;
 
@@ -188,6 +189,12 @@ mainwnd::mainwnd(perform *a_p):
     m_button_seq->signal_clicked().connect(  mem_fun( *this, &mainwnd::open_seqlist ));
     add_tooltip( m_button_seq, "Open sequence list" );
 
+    m_button_follow = manage( new ToggleButton() );
+    m_button_follow->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( transportFollow_xpm ))));
+    m_button_follow->signal_clicked().connect(  mem_fun( *this, &mainwnd::set_follow_transport ));
+    add_tooltip( m_button_follow, "Follow transport" );
+    m_button_follow->set_active(true);
+
     hbox1->pack_start( *m_button_stop , false, false );
     hbox1->pack_start( *m_button_play , false, false );
     hbox1->pack_start( *m_button_loop , false, false );
@@ -196,14 +203,6 @@ mainwnd::mainwnd(perform *a_p):
     hbox1->pack_start(*m_button_jack, false, false );
 #endif
     hbox1->pack_start( *m_button_seq , false, false );
-
-    m_button_follow = manage( new ToggleButton( "Trans >>" ) );
-    //m_button_follow = manage( new ToggleButton() );
-    //m_button_follow->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( transport_xpm ))));
-    m_button_follow->signal_clicked().connect(  mem_fun( *this, &mainwnd::set_follow_transport ));
-    add_tooltip( m_button_follow, "Follow transport" );
-    m_button_follow->set_active(true);
-
     hbox1->pack_start( *m_button_follow, false, false );
 
 
@@ -526,6 +525,9 @@ mainwnd::timer_callback(  )
     if (m_button_mode->get_active() != global_song_start_mode)
         m_button_mode->set_active(global_song_start_mode);
 
+    if (m_button_follow->get_active() != m_mainperf->get_follow_transport())
+        m_button_follow->set_active(m_mainperf->get_follow_transport());
+
     if ( m_adjust_swing_amount8->get_value() != m_mainperf->get_swing_amount8()){
         m_adjust_swing_amount8->set_value( m_mainperf->get_swing_amount8());
     }
@@ -753,6 +755,13 @@ void
 mainwnd::set_follow_transport(void)
 {
     m_mainperf->set_follow_transport(m_button_follow->get_active());
+}
+
+void
+mainwnd::toggle_follow_transport( void )
+{
+   // Note that this will trigger the button signal callback.
+    m_button_follow->set_active( ! m_button_follow->get_active() );
 }
 
 void
@@ -1369,6 +1378,11 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
 
         if ( a_ev->keyval ==  m_mainperf->m_key_song ){
             toggle_song_mode();
+            return true;
+        }
+
+        if ( a_ev->keyval ==  m_mainperf->m_key_follow_trans ){
+            toggle_follow_transport();
             return true;
         }
 #ifdef JACK_SUPPORT

@@ -1083,6 +1083,11 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
             }
         }
 
+        if ( a_p0->keyval ==  m_perform->m_key_follow_trans ){
+            m_perform->toggle_follow_transport();
+            return true;
+        }
+
         if (!global_is_running) {
 			if ( a_p0->keyval == GDK_Home ){
 				m_seq->set_orig_tick(0);
