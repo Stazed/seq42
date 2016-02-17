@@ -536,7 +536,7 @@ seqroll::draw_progress_on_window()
                 m_window_y);
     }
 
-    if(global_is_running)
+    if(global_is_running && m_perform->get_follow_transport())
     {
         auto_scroll_horz(m_seq->get_last_tick());
     }

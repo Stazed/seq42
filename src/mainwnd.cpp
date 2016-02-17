@@ -174,7 +174,6 @@ mainwnd::mainwnd(perform *a_p):
     }
 
 #ifdef JACK_SUPPORT
-    //m_button_jack = manage( new ToggleButton( "Jack sync" ) );
     m_button_jack = manage( new ToggleButton() );
     m_button_jack->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( jack_xpm ))));
     m_button_jack->signal_toggled().connect(  mem_fun( *this, &mainwnd::set_jack_mode ));
@@ -184,7 +183,6 @@ mainwnd::mainwnd(perform *a_p):
     }
 #endif
 
-    //m_button_seq = manage( new Button( "Seq list" ) );
     m_button_seq = manage( new Button() );
     m_button_seq->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( seqlist_xpm ))));
     m_button_seq->signal_clicked().connect(  mem_fun( *this, &mainwnd::open_seqlist ));
@@ -198,6 +196,16 @@ mainwnd::mainwnd(perform *a_p):
     hbox1->pack_start(*m_button_jack, false, false );
 #endif
     hbox1->pack_start( *m_button_seq , false, false );
+
+    m_button_follow = manage( new ToggleButton( "Trans >>" ) );
+    //m_button_follow = manage( new ToggleButton() );
+    //m_button_follow->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( transport_xpm ))));
+    m_button_follow->signal_clicked().connect(  mem_fun( *this, &mainwnd::set_follow_transport ));
+    add_tooltip( m_button_follow, "Follow transport" );
+    m_button_follow->set_active(true);
+
+    hbox1->pack_start( *m_button_follow, false, false );
+
 
     // adjust placement...
     VBox *vbox_b = manage( new VBox() );
@@ -739,6 +747,12 @@ mainwnd::toggle_jack( void )
 {
     // Note that this will trigger the button signal callback.
     m_button_jack->set_active( ! m_button_jack->get_active() );
+}
+
+void
+mainwnd::set_follow_transport(void)
+{
+    m_mainperf->set_follow_transport(m_button_follow->get_active());
 }
 
 void

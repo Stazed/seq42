@@ -106,6 +106,8 @@ class mainwnd : public Gtk::Window
     ToggleButton *m_button_jack;
     Button *m_button_seq;
 
+    ToggleButton *m_button_follow;
+
     Button *m_button_expand;
     Button *m_button_collapse;
     Button *m_button_copy;
@@ -185,6 +187,8 @@ class mainwnd : public Gtk::Window
 
     void set_jack_mode(void);
     void toggle_jack(void);
+
+    void set_follow_transport (void);
 
     void expand (void);
     void collapse (void);

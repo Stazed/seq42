@@ -81,6 +81,7 @@ perform::perform()
     m_in_thread_launched = false;
 
     m_playback_mode = false;
+    m_follow_transport = true;
 
     m_bp_measure = 4;
     m_bw = 4;
@@ -316,6 +317,16 @@ void perform::toggle_song_mode( void )
         global_song_start_mode = true;
         set_left_frame();
     }
+}
+
+void perform::set_follow_transport(bool a_set)
+{
+    m_follow_transport = a_set;
+}
+
+bool perform::get_follow_transport(void)
+{
+    return m_follow_transport;
 }
 
 void perform::set_left_tick( long a_tick )

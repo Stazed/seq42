@@ -100,6 +100,7 @@ class perform
     bool m_looping;
 
     bool m_playback_mode;
+    bool m_follow_transport;
 
     int thread_trigger_width_ms;
 
@@ -176,6 +177,9 @@ class perform
     void start_playing( void );
     void stop_playing( void );
     void toggle_song_mode( void );
+
+    void set_follow_transport(bool a_set);
+    bool get_follow_transport(void);
 
     void init( void );
 
