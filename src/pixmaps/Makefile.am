@@ -29,6 +29,7 @@ EXTRA_DIST = \
 	seq42_32.xpm \
 	seq42.xpm \
 	seq-editor.xpm \
+	seqlist.xpm \
 	sequences.xpm \
 	snap.xpm \
 	song-editor.xpm \

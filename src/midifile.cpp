@@ -737,11 +737,11 @@ bool midifile::write_song (perform * a_perf)
     write_long (0x4D54726B);
     write_long (0x00000013); // s/b [00 00 00 13] = chunk length 19 bytes
 
-    /* time signature */
     // 00 FF 58 04 04 02 18 08      time signature - 4/4
     // 00 FF 51 03 07 A1 20         tempo - last three bytes are the bpm - 140 here in hex
     // 00 FF 2F 00                  end of track
 
+    /* time signature */
     write_byte(0x00); // delta time
     write_short(0xFF58);
     write_byte(0x04); // length of remaining bytes

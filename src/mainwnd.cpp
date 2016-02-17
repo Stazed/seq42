@@ -33,6 +33,7 @@
 
 #include "pixmaps/seq42_32.xpm"
 #include "pixmaps/play2.xpm"
+#include "pixmaps/seqlist.xpm"
 #include "pixmaps/stop.xpm"
 #include "pixmaps/snap.xpm"
 #include "pixmaps/expand.xpm"
@@ -183,7 +184,9 @@ mainwnd::mainwnd(perform *a_p):
     }
 #endif
 
-    m_button_seq = manage( new Button( "Seq list" ) );
+    //m_button_seq = manage( new Button( "Seq list" ) );
+    m_button_seq = manage( new Button() );
+    m_button_seq->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( seqlist_xpm ))));
     m_button_seq->signal_clicked().connect(  mem_fun( *this, &mainwnd::open_seqlist ));
     add_tooltip( m_button_seq, "Open sequence list" );
 
