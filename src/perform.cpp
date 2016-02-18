@@ -76,6 +76,8 @@ perform::perform()
     m_key_follow_trans  = GDK_F4;
 
     m_jack_running = false;
+    m_toggle_jack = false;
+
     m_jack_master = false;
 
     m_out_thread_launched = false;
@@ -320,6 +322,27 @@ void perform::toggle_song_mode( void )
     }
 }
 
+void perform::toggle_jack_mode( void )
+{
+   set_jack_mode(!m_jack_running);
+}
+
+void perform::set_jack_mode(bool a_mode)
+{
+    m_toggle_jack = a_mode;
+}
+
+bool perform::get_toggle_jack()
+{
+    return m_toggle_jack;
+}
+
+bool perform::is_jack_running(void)
+{
+    return m_jack_running;
+}
+
+
 void perform::set_follow_transport(bool a_set)
 {
     m_follow_transport = a_set;
@@ -490,11 +513,6 @@ mastermidibus* perform::get_master_midi_bus( )
     return &m_master_bus;
 }
 
-
-bool perform::is_jack_running()
-{
-    return m_jack_running;
-}
 
 void perform::set_bpm(int a_bpm)
 {

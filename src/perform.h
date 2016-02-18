@@ -141,6 +141,7 @@ class perform
 #endif
 
     bool m_jack_running;
+    bool m_toggle_jack;
     bool m_jack_master;
 
     void inner_start( bool a_state );
@@ -157,8 +158,6 @@ class perform
     bool m_have_undo;
     bool m_have_redo;
     bool m_have_modified;
-
-    bool is_jack_running();
 
     unsigned int m_key_bpm_up;
     unsigned int m_key_bpm_dn;
@@ -177,7 +176,13 @@ class perform
 
     void start_playing( void );
     void stop_playing( void );
+
     void toggle_song_mode( void );
+
+    void toggle_jack_mode( void );
+    void set_jack_mode(bool a_mode);
+    bool get_toggle_jack( void );
+    bool is_jack_running(void);
 
     void set_follow_transport(bool a_set);
     bool get_follow_transport(void);

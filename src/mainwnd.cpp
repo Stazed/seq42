@@ -522,8 +522,11 @@ mainwnd::timer_callback(  )
         set_bw( m_mainperf->get_bw());
     }
 
-    if (m_button_mode->get_active() != global_song_start_mode)
+    if (m_button_mode->get_active() != global_song_start_mode)        // for seqroll keybinding
         m_button_mode->set_active(global_song_start_mode);
+
+    if (m_button_jack->get_active() != m_mainperf->get_toggle_jack()) // for seqroll keybinding
+        toggle_jack();
 
     if (m_button_follow->get_active() != m_mainperf->get_follow_transport())
         m_button_follow->set_active(m_mainperf->get_follow_transport());
@@ -742,6 +745,8 @@ mainwnd::set_jack_mode ( void )
         m_button_jack->set_active(true);
     else
         m_button_jack->set_active(false);
+
+    m_mainperf->set_jack_mode(m_mainperf->is_jack_running()); // for seqroll keybinding
 }
 
 void
