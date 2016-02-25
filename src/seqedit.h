@@ -222,8 +222,6 @@ class seqedit : public Gtk::Window
     void set_data_type( unsigned char a_status,
 			unsigned char a_control = 0 );
 
-    void update_all_windows( ); // FIXME not used??
-
     void fill_top_bar( void );
     void create_menus( void );
 

@@ -51,7 +51,7 @@ const int c_max_track = 64;  // FIXME: use a list instead of a fixed number arra
 
 const int c_ppqn         = 192;  /* default - doesn't change */
 const int c_ppwn         = c_ppqn * 4;  // whole note
-const int c_ppen         = c_ppqn / 2;  // eigth note
+const int c_ppen         = c_ppqn / 2;  // eighth note
 const int c_ppsn         = c_ppqn / 4;  // 16th note
 
 const int c_note_off_margin = 2;  // # ticks to shave off end of painted notes

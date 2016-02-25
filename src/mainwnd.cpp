@@ -1411,7 +1411,6 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
             if(a_ev->keyval == GDK_space)
                 return true;
         }
-        // FIXME: make key configurable?
         else if (a_ev->keyval == GDK_F12)
         {
             m_mainperf->print();

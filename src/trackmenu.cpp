@@ -87,6 +87,9 @@ trackmenu::popup_menu( void )
             m_menu->items().push_back(MenuElem("Cut", mem_fun(*this,&trackmenu::trk_cut)));
         }
 
+        if( m_mainperf->get_track( m_current_trk)->get_track_trigger_count() > 0 )
+            m_menu->items().push_back(MenuElem("Clear triggers", mem_fun(*this,&trackmenu::trk_clear_perf)));
+
         m_menu->items().push_back(SeparatorElem());
 
         if( m_mainperf->get_track( m_current_trk ) != NULL)
@@ -448,7 +451,7 @@ trackmenu::new_sequence(){
 }
 
 
-void    // FIXME this is never used - use it as Menu item
+void
 trackmenu::trk_clear_perf(){
 
     if ( m_mainperf->is_active_track( m_current_trk )){
@@ -457,7 +460,6 @@ trackmenu::trk_clear_perf(){
 
         m_mainperf->clear_track_triggers( m_current_trk  );
         m_mainperf->get_track( m_current_trk )->set_dirty();
-
     }
 }
 
