@@ -296,6 +296,11 @@ seqedit::seqedit( sequence *a_seq,
 
     fill_top_bar();
 
+    if(0 != strcmp(m_seq->get_name(), "Untitled") )
+    {
+        m_seqroll_wid->set_can_focus();
+        m_seqroll_wid->grab_focus();
+    }
 
     /* add table */
     this->add( *m_vbox );
@@ -1005,7 +1010,6 @@ seqedit::fill_top_bar( void )
 
     m_hbox2->pack_start( *m_button_sequence , false, false );
     m_hbox2->pack_start( *m_entry_sequence , true, true );
-
 }
 
 

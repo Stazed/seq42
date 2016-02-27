@@ -259,7 +259,7 @@ trackmenu::trk_insert(int a_track_location){
                 m_mainperf->get_track(i)->set_dirty();
             }
         }
-    }   // the last track will get lost????!!!!!
+    }   // the last track will get lost if > c_max_track ????!!!!!
 }
 
 // delete row at location
