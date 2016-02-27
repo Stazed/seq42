@@ -913,7 +913,7 @@ void mainwnd::file_save_as(int type)
 {
     // default type 0 = .s42
     //         type 1 = .mid .midi etc for Seq24 export
-    //         type 2 = .mid .midi etc for midi song export - TODO
+    //         type 2 = .mid .midi etc for midi song export
 
     Gtk::FileChooserDialog dialog("Save file as",
                       Gtk::FILE_CHOOSER_ACTION_SAVE);
@@ -956,8 +956,6 @@ void mainwnd::file_save_as(int type)
     switch (result) {
         case Gtk::RESPONSE_OK:
         {
-            bool result = false;
-
             std::string fname = dialog.get_filename();
             Gtk::FileFilter* current_filter = dialog.get_filter();
 
