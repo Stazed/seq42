@@ -594,7 +594,7 @@ bool midifile::write_sequences (perform * a_perf)
     /* get number of track sequences */
     for (int i = 0; i < c_max_track; i++)
     {
-        if (a_perf->is_active_track(i))
+        if (a_perf->is_active_track(i) && !a_perf->get_track(i)->get_song_mute())
         {
             numtracks += a_perf->get_track(i)->get_number_of_sequences();
         }
@@ -620,7 +620,7 @@ bool midifile::write_sequences (perform * a_perf)
     for (int curTrack = 0; curTrack < c_max_track; curTrack++)
     {
         //printf ("track[%d]\n", curTrack );
-        if (a_perf->is_active_track(curTrack))
+        if (a_perf->is_active_track(curTrack) && !a_perf->get_track(curTrack)->get_song_mute())
         {
             unsigned int num_seq = a_perf->get_track(curTrack)->get_number_of_sequences();
 
@@ -711,7 +711,8 @@ bool midifile::write_song (perform * a_perf)
     /* get number of tracks  */
     for (int i = 0; i < c_max_track; i++)
     {
-        if (a_perf->is_active_track(i) && a_perf->get_track(i)->get_track_trigger_count() > 0) // don't count tracks with NO triggers
+        if (a_perf->is_active_track(i) && a_perf->get_track(i)->get_track_trigger_count() > 0 &&
+            !a_perf->get_track(i)->get_song_mute()) // don't count tracks with NO triggers or muted
         {
             if(a_perf->get_track(i)->get_number_of_sequences() > 0) // don't count tracks with NO sequences(even if they have a trigger)
                 numtracks ++;
@@ -758,6 +759,7 @@ bool midifile::write_song (perform * a_perf)
     /* track end */
     write_long(0x00FF2F00);
 
+    numtracks = 1; // 0 is signature/tempo track
 
     /* We should be good to load now   */
     /* for each Track Sequence in the midi file */
@@ -765,7 +767,7 @@ bool midifile::write_song (perform * a_perf)
     for (int curTrack = 0; curTrack < c_max_track; curTrack++)
     {
         //printf ("track[%d]\n", curTrack );
-        if (a_perf->is_active_track(curTrack))
+        if (a_perf->is_active_track(curTrack) && !a_perf->get_track(curTrack)->get_song_mute())
         {
             if(a_perf->get_track(curTrack)->get_number_of_sequences() < 1) // skip tracks with NO sequences
                 continue;
@@ -794,14 +796,14 @@ bool midifile::write_song (perform * a_perf)
                 if(seq == NULL)
                     continue;
 
-                seq->song_fill_list_track_name(&l,curTrack);
+                seq->song_fill_list_track_name(&l,numtracks);
                 break;
             }
 
             if(seq == NULL) // this is the case of a track has only empty triggers(but has sequences!)
             {
                 seq = a_perf->get_track(curTrack)->get_sequence(0); // so just use the first one
-                seq->song_fill_list_track_name(&l,curTrack);
+                seq->song_fill_list_track_name(&l,numtracks);
             }
 
             // now for each trigger get sequence and add events to list char below - fill_list one by one in order,
@@ -838,6 +840,7 @@ bool midifile::write_song (perform * a_perf)
                 write_byte (l.back ());
                 l.pop_back ();
             }
+            numtracks++;
         }
     }
 
