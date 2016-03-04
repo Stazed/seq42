@@ -42,7 +42,6 @@
 static struct
 option long_options[] = {
 
-//    {"file",     required_argument, 0, 'f'},
     {"help",     0, 0, 'h'},
     {"showmidi",     0, 0, 's'},
     {"show_keys",     0, 0, 'k' },
@@ -57,9 +56,12 @@ option long_options[] = {
     {"jack_session_uuid", required_argument, 0, 'U'},
     {"manual_alsa_ports", 0, 0, 'm' },
     {"pass_sysex", 0, 0, 'P'},
+    {"version", 0, 0, 'v'},
     {0, 0, 0, 0}
 
 };
+
+static const char versiontext[] = PACKAGE " " VERSION "\n";
 
 bool global_manual_alsa_ports = false;
 bool global_showmidi = false;
@@ -174,7 +176,7 @@ main (int argc, char *argv[])
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long (argc, argv, "Chi:jJkmM:pPsSU:x:", long_options, &option_index);
+        c = getopt_long (argc, argv, "Chi:jJkmM:pPsSU:vx:", long_options, &option_index);
 
         /* Detect the end of the options. */
         if (c == -1)
@@ -186,7 +188,7 @@ main (int argc, char *argv[])
             case 'h':
 
                 printf( "   -h, --help: show this message\n" );
-//                printf( "   -v, --version: show program version information\n" );
+                printf( "   -v, --version: show program version information\n" );
                 printf( "   -m, --manual_alsa_ports: seq42 won't attach alsa ports\n" );
                 printf( "   -s, --showmidi: dumps incoming midi events to screen\n" );
                 printf( "   -p, --priority: runs higher priority with FIFO scheduler (must be root)\n" );
@@ -256,6 +258,11 @@ main (int argc, char *argv[])
                 /* ignore alsa device */
                 global_device_ignore = true;
                 global_device_ignore_num = atoi( optarg );
+                break;
+
+            case 'v':
+                printf("%s", versiontext);
+                return EXIT_SUCCESS;
                 break;
 
             case 'U':

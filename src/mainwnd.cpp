@@ -1282,10 +1282,11 @@ mainwnd::about_dialog( void )
     dialog.set_comments("Interactive MIDI Sequencer\n");
 
     dialog.set_copyright(
+            "(C) 2015 -      Stazed\n"
             "(C) 2010 - 2013 Sam Brauer\n"
             "(C) 2008 - 2009 Seq24team\n"
             "(C) 2002 - 2006 Rob C. Buse");
-    dialog.set_website("https://github.com/sbrauer/seq42");
+    dialog.set_website("https://github.com/Stazed/seq42");
 
     std::list<Glib::ustring> list_authors;
     list_authors.push_back("Rob C. Buse <rcb@filter24.org>");
@@ -1297,6 +1298,7 @@ mainwnd::about_dialog( void )
     list_authors.push_back("Daniel Ellis <mail@danellis.co.uk>");
     list_authors.push_back("Kevin Meinert <kevin@subatomicglue.com>");
     list_authors.push_back("Sam Brauer <sam.brauer@gmail.com>");
+    list_authors.push_back("Stazed <stazed@mapson.com>");
     dialog.set_authors(list_authors);
 
     std::list<Glib::ustring> list_documenters;

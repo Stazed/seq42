@@ -25,7 +25,7 @@ Here are some of the other enhancements of seq42:
 * sequence editor has new menu items to select notes that occur on specific beats (even 1/4, odd 1/4, even 1/8, odd 1/8, even 1/16, odd 1/16)
 * song window has new menu items to mute all tracks, unmute all tracks and toggle track mute status.
 * NEW - Add SIGINT and SIGUSR1 for session handling.
-* NEW - Import seq24 files, and any midi files!!
+* NEW - Import seq24 files, and any type 1 midi files. Maximum number of tracks is currently 64.
 * NEW - split trigger (middle mouse button) will now split on mouse pointer location - grid-snapped
 * NEW - fix 'fruity' input method to work for trigger popup menu (middle mouse button). Split trigger is ctrl-L and paste is middle mouse or ctrl-L.
 * NEW - merge sequence: right click on existing track name - select Merge Sequence - Select the sequence from the available list.  The Sequences AND song triggers will be added to the track. Now you can easily combine those seq24 tracks!! - any overlapping trigger will be overwritten and/or split - just create a new sequence for them...

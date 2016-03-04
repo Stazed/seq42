@@ -38,7 +38,7 @@
 	add pack tracks
 	File version 3 - add track index and track mute to file save
 	File version 4 - add beats per measure, beat width (song) 
-	fix default trigger lenght to use beats per measure and beat width
+	fix default trigger length to use beats per measure and beat width
 	add additional grid snap items to match beats per measure
 	add midi export of sequences (seq24 format) 
 	add listen/play notes on note draw and note move

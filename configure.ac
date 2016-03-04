@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(seq42, [0.1.0], [sam.brauer@gmail.com])
+AC_INIT(seq42, [1.0.0], [stazed@mapson.com])
 
 AC_CONFIG_SRCDIR([src/event.cpp])
 AC_CONFIG_HEADER([src/config.h])
