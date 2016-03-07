@@ -40,7 +40,7 @@ trackmenu::trackmenu( perform *a_p  )
 
 
 void
-trackmenu::popup_menu( void )
+trackmenu::popup_menu()
 {
 
     using namespace Menu_Helpers;

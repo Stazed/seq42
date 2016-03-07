@@ -160,12 +160,12 @@ class midibus
 
 	/* address of client */
 #if HAVE_LIBASOUND
-    int get_client( void ) {  return m_dest_addr_client; };
-    int get_port( void ) { return m_dest_addr_port; };
+    int get_client(void) {  return m_dest_addr_client; };
+    int get_port(void) { return m_dest_addr_port; };
 #endif
 
     static void set_clock_mod( int a_clock_mod );
-    static int get_clock_mod( void );
+    static int get_clock_mod();
 
 };
 
@@ -246,7 +246,7 @@ class mastermidibus
     string get_midi_in_bus_name( int a_bus );
 
     void set_transpose( int a_transpose ) { m_transpose = a_transpose; }
-    int get_transpose( void) { return m_transpose; }
+    int get_transpose() { return m_transpose; }
 
     void set_swing_amount8(int a_swing_amount)
     {

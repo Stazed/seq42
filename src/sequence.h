@@ -120,13 +120,13 @@ class sequence
     void put_event_on_bus (event * a_e);
 
     /* resets the location counters */
-    void reset_loop (void);
+    void reset_loop ();
 
-    void remove_all (void);
+    void remove_all ();
 
     /* sets m_trigger_offset and wraps it to length */
     void set_trigger_offset (long a_trigger_offset);
-    long get_trigger_offset (void);
+    long get_trigger_offset ();
 
     void remove( list<event>::iterator i );
     void remove( event* e );
@@ -140,41 +140,41 @@ class sequence
     bool m_have_undo;
     bool m_have_redo;
 
-    void push_undo (void);
-    void pop_undo (void);
-    void pop_redo (void);
+    void push_undo ();
+    void pop_undo ();
+    void pop_redo ();
 
     //
     //  Gets and Sets
     //
 
-    void set_have_undo( void );
-    void set_have_redo( void );
+    void set_have_undo();
+    void set_have_redo();
 
     void set_track (track *a_track);
-    track *get_track (void);
+    track *get_track ();
 
 
     void set_name (string a_name);
     void set_name (char *a_name);
     /* returns string of name */
-    const char *get_name (void);
+    const char *get_name ();
 
     void set_swing_mode (int a_mode) {
         m_swing_mode = a_mode;
     }
-    int get_swing_mode (void) {
+    int get_swing_mode () {
         return m_swing_mode;
     }
 
     void set_measures (long a_length_measures);
-    long get_measures (void);
+    long get_measures ();
 
     void set_bpm (long a_beats_per_measure);
-    long get_bpm (void);
+    long get_bpm ();
 
     void set_bw (long a_beat_width);
-    long get_bw (void);
+    long get_bw ();
     void set_rec_vol (long a_rec_vol);
 
 
@@ -182,7 +182,7 @@ class sequence
     {
 	m_editing = a_edit;
     };
-    bool get_editing (void)
+    bool get_editing ()
     {
 	return m_editing;
     };
@@ -190,7 +190,7 @@ class sequence
     {
 	m_raise = a_edit;
     };
-    bool get_raise (void)
+    bool get_raise ()
     {
 	return m_raise;
     };
@@ -246,7 +246,7 @@ class sequence
     bool intersectNotes( long position, long position_note, long& start, long& end, long& note );
     bool intersectEvents( long posstart, long posend, long status, long& start );
 
-    char get_midi_bus (void);
+    char get_midi_bus ();
     unsigned char get_midi_channel ();
 
     mastermidibus * get_master_midi_bus ();
@@ -275,7 +275,7 @@ class sequence
     int get_num_selected_notes ();
     int get_num_selected_events (unsigned char a_status, unsigned char a_cc);
 
-    void select_all (void);
+    void select_all ();
 
     /* given a note length (in ticks) and a boolean indicating even or odd,
     select all notes where the note on event occurs exactly on an even (or odd)
@@ -284,7 +284,7 @@ class sequence
     */
     int select_even_or_odd_notes(int note_len, bool even);
 
-    void copy_selected (void);
+    void copy_selected ();
     void paste_selected (long a_tick, int a_note);
 
     /* returns the 'box' of selected items */
@@ -344,7 +344,7 @@ class sequence
 
     /* resets everything to zero, used when
        sequencer stops */
-    void zero_markers (void);
+    void zero_markers ();
 
     /* flushes a note to the midibus to preview its
        sound, used by the virtual paino */
@@ -352,7 +352,7 @@ class sequence
     void play_note_off (int a_note);
 
     /* send a note off for all active notes */
-    void off_playing_notes (void);
+    void off_playing_notes ();
 
     //
     // Drawing functions
@@ -360,7 +360,7 @@ class sequence
 
     /* resets draw marker so calls to getNextnoteEvent
        will start from the first */
-    void reset_draw_marker (void);
+    void reset_draw_marker ();
 
     /* each call seqdata( sequence *a_seq, int a_scale );fills the passed refrences with a
        events elements, and returns true.  When it
@@ -401,7 +401,7 @@ class sequence
     bool save( ofstream *file );
     bool load( ifstream *file, int version );
 
-    void apply_song_transpose (void);
+    void apply_song_transpose ();
 };
 
 #endif

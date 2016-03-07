@@ -180,7 +180,7 @@ seqlist::on_realize()
 
 
 bool
-seqlist::timeout( void )
+seqlist::timeout()
 {
     if (m_perf->get_seqlist_raise())
     {
@@ -247,19 +247,19 @@ seqlist::del_seq( track *a_track, int a_seq )
 }
 
 void
-seqlist::start_playing( void )
+seqlist::start_playing()
 {
     m_perf->start_playing();
 }
 
 void
-seqlist::stop_playing( void )
+seqlist::stop_playing()
 {
    m_perf->stop_playing();
 }
 
 void
-seqlist::off_sequences( void )
+seqlist::off_sequences()
 {
     m_perf->off_sequences();
 }

@@ -174,28 +174,28 @@ class perform
     perform();
     ~perform();
 
-    void start_playing( void );
-    void stop_playing( void );
+    void start_playing();
+    void stop_playing();
 
-    void toggle_song_mode( void );
+    void toggle_song_mode();
 
-    void toggle_jack_mode( void );
+    void toggle_jack_mode();
     void set_jack_mode(bool a_mode);
-    bool get_toggle_jack( void );
-    bool is_jack_running(void);
+    bool get_toggle_jack();
+    bool is_jack_running();
 
     void set_follow_transport(bool a_set);
-    bool get_follow_transport(void);
-    void toggle_follow_transport( void );
+    bool get_follow_transport();
+    void toggle_follow_transport();
 
-    void init( void );
+    void init();
 
-    void clear_all( void );
+    void clear_all();
 
-    void launch_input_thread( void );
-    void launch_output_thread( void );
-    void init_jack( void );
-    void deinit_jack( void );
+    void launch_input_thread();
+    void launch_output_thread();
+    void init_jack();
+    void deinit_jack();
 
     void add_track( track *a_track, int a_pref );
     void delete_track( int a_num );
@@ -208,20 +208,20 @@ class perform
     long get_tick( ) { return m_tick; };
 
     void set_left_tick( long a_tick );
-    long get_left_tick( void );
+    long get_left_tick();
 
     void set_starting_tick( long a_tick );
-    long get_starting_tick( void );
+    long get_starting_tick();
 
     void set_right_tick( long a_tick );
-    long get_right_tick( void );
+    long get_right_tick();
 
     void move_triggers( bool a_direction );
     void copy_triggers(  );
      // collapse and expand - all tracks
-    void push_trigger_undo( void );
-    void pop_trigger_undo( void );
-    void pop_trigger_redo( void );
+    void push_trigger_undo();
+    void pop_trigger_undo();
+    void pop_trigger_redo();
      // single track items
     void push_trigger_undo( int a_track );
     void pop_trigger_undo( int a_track );
@@ -231,13 +231,13 @@ class perform
     void pop_track_undo(int a_track );
     void pop_track_redo(int a_track );
     // row insert/delete, track pack, midi import
-    void push_perf_undo( void );
-    void pop_perf_undo( void );
-    void pop_perf_redo( void );
+    void push_perf_undo();
+    void pop_perf_undo();
+    void pop_perf_redo();
 
-    void check_max_undo_redo( void );
-    void set_have_undo( void );
-    void set_have_redo( void );
+    void check_max_undo_redo();
+    void set_have_undo();
+    void set_have_redo();
     void set_have_modified(bool m_modified);
 
     void print();
@@ -247,11 +247,11 @@ class perform
 
     void start_jack();
     void stop_jack();
-    void set_left_frame( void ); // for jack looping
+    void set_left_frame(); // for jack looping
     void position_jack( bool a_state );
 
-    void off_sequences( void );
-    void all_notes_off( void );
+    void off_sequences();
+    void all_notes_off();
 
     void set_active(int a_track, bool a_active);
     void set_was_active( int a_track );
@@ -268,7 +268,7 @@ class perform
     track *get_track( int a_trk );
     sequence *get_sequence( int a_trk, int a_seq );
 
-    void reset_sequences( void );
+    void reset_sequences();
 
     void set_bpm(int a_bpm);
     int  get_bpm( );
@@ -293,7 +293,7 @@ class perform
     void output_func();
     void input_func();
 
-    long get_max_trigger( void );
+    long get_max_trigger();
 
     bool save( const Glib::ustring& a_filename );
     bool load( const Glib::ustring& a_filename );
@@ -309,7 +309,7 @@ class perform
         m_seqlist_open = a_edit;
     };
 
-    bool get_seqlist_open( void )
+    bool get_seqlist_open()
     {
         return m_seqlist_open;
     };
@@ -319,12 +319,12 @@ class perform
         m_seqlist_raise = a_raise;
     };
 
-    bool get_seqlist_raise( void )
+    bool get_seqlist_raise()
     {
         return m_seqlist_raise;
     };
 
-    void apply_song_transpose (void);
+    void apply_song_transpose ();
 
 #ifdef JACK_SUPPORT
 

@@ -462,7 +462,7 @@ seqdata::on_leave_notify_event(GdkEventCrossing* p0)
 
 
 void
-seqdata::draw_line_on_window( void )
+seqdata::draw_line_on_window()
 {
     int x,y,w,h;
     m_gc->set_foreground( m_black );
@@ -531,7 +531,7 @@ seqdata::on_size_allocate(Gtk::Allocation& a_r )
 
 
 void
-seqdata::force_draw(void )
+seqdata::force_draw()
 {
     m_window->draw_drawable(m_gc,
                             m_pixmap,

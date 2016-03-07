@@ -94,10 +94,10 @@ class track
     void free ();
 
     bool m_is_NULL;
-    void push_trigger_undo (void);
-    void pop_trigger_undo (void);
-    void pop_trigger_redo (void);
-    void clear_trigger_undo_redo ( void );
+    void push_trigger_undo ();
+    void pop_trigger_undo ();
+    void pop_trigger_redo ();
+    void clear_trigger_undo_redo ();
 
     int new_sequence( );
     void delete_sequence( int a_num );
@@ -106,7 +106,7 @@ class track
     int get_sequence_index( sequence *a_sequence );
 
     // How many sequences does this track have?
-    unsigned int get_number_of_sequences(void);
+    unsigned int get_number_of_sequences();
 
 
     //
@@ -115,20 +115,20 @@ class track
     void set_name (string a_name);
     void set_name (char *a_name);
     /* returns string of name */
-    const char *get_name (void);
+    const char *get_name ();
 
     void set_song_mute (bool a_mute);
-    bool get_song_mute (void);
+    bool get_song_mute ();
 
     void set_transposable (bool a_xpose);
-    bool get_transposable (void);
+    bool get_transposable ();
 
     /* midi channel */
     unsigned char get_midi_channel ();
     void set_midi_channel (unsigned char a_ch);
     /* sets the midibus to dump to */
     void set_midi_bus (char a_mb);
-    char get_midi_bus (void);
+    char get_midi_bus ();
 
     void set_master_midi_bus (mastermidibus * a_mmb);
     mastermidibus *get_master_midi_bus ();
@@ -161,48 +161,48 @@ class track
     sequence *get_trigger_sequence (trigger *a_trigger);
     //void set_trigger_sequence (trigger *a_trigger, sequence *a_sequence);
     void set_trigger_sequence (trigger *a_trigger, int a_sequence);
-    void set_trigger_copied ( void );
-    void unset_trigger_copied ( void );
-    bool get_trigger_copied ( void );
-    trigger *get_trigger_clipboard( void );
+    void set_trigger_copied ();
+    void unset_trigger_copied ();
+    bool get_trigger_copied ();
+    trigger *get_trigger_clipboard();
     bool select_trigger(long a_tick);
-    bool unselect_triggers (void);
+    bool unselect_triggers ();
     bool intersectTriggers( long position, long& start, long& end );
-    void del_selected_trigger( void );
-    void cut_selected_trigger( void );
-    void copy_selected_trigger( void );
-    void paste_trigger( void );
+    void del_selected_trigger();
+    void cut_selected_trigger();
+    void copy_selected_trigger();
+    void paste_trigger();
     void set_trigger_paste_tick(long a_tick);
-    long get_trigger_paste_tick( void );
+    long get_trigger_paste_tick();
     void move_selected_triggers_to(long a_tick, bool a_adjust_offset, int a_which=2);
     long adjust_offset( long a_offset, long a_length );
     void adjust_trigger_offsets_to_length( sequence *a_seq, long a_new_len );
-    long get_selected_trigger_start_tick( void );
-    long get_selected_trigger_end_tick( void );
+    long get_selected_trigger_start_tick();
+    long get_selected_trigger_end_tick();
 
-    long get_max_trigger (void);
+    long get_max_trigger ();
     int get_trigger_count_for_seqidx(int a_seq);
-    int get_track_trigger_count( void );
+    int get_track_trigger_count();
 
     void move_triggers (long a_start_tick, long a_distance, bool a_direction);
     void copy_triggers (long a_start_tick, long a_distance);
-    void clear_triggers (void);
+    void clear_triggers ();
 
 
-    void reset_draw_trigger_marker (void);
+    void reset_draw_trigger_marker ();
 
     // FIXME: Change API to just return a pointer to the next trigger (or a NULL pointer if no more triggers)?
     bool get_next_trigger (long *a_tick_on, long *a_tick_off, bool * a_selected, long *a_tick_offset, int *a_seq_idx);
 
     /* Return true if at least one of this track's sequences is being edited. */
-    bool get_sequence_editing( void );
+    bool get_sequence_editing();
 
     void set_editing( bool a_edit )
     {
         m_editing = a_edit;
     };
 
-    bool get_editing( void )
+    bool get_editing()
     {
         return m_editing;
     };
@@ -212,16 +212,16 @@ class track
         m_raise = a_raise;
     };
 
-    bool get_raise( void )
+    bool get_raise()
     {
         return m_raise;
     };
 
     void reset_sequences(bool a_playback_mode);
-    void set_playing_off(void);
+    void set_playing_off();
 
     /* send a note off for all active notes */
-    void off_playing_notes (void);
+    void off_playing_notes ();
 
     void play( long a_tick, bool a_playback_mode );
     void set_orig_tick (long a_tick);
@@ -229,7 +229,7 @@ class track
     bool save( ofstream *file );
     bool load( ifstream *file, int version );
 
-    void apply_song_transpose (void);
+    void apply_song_transpose ();
 
 };
 

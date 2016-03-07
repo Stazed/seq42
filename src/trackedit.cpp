@@ -142,7 +142,7 @@ trackedit::on_realize()
 
 
 bool
-trackedit::timeout( void )
+trackedit::timeout()
 {
 
     if (m_track->get_raise())
@@ -164,7 +164,7 @@ trackedit::name_change_callback ()
 }
 
 void
-trackedit::popup_midibus_menu( void )
+trackedit::popup_midibus_menu()
 {
     using namespace Menu_Helpers;
 
@@ -181,7 +181,7 @@ trackedit::popup_midibus_menu( void )
 }
 
 void
-trackedit::popup_midich_menu( void )
+trackedit::popup_midich_menu()
 {
     using namespace Menu_Helpers;
 

@@ -128,8 +128,8 @@ class perfroll : public Gtk::DrawingArea
     void draw_drawable_row( Glib::RefPtr<Gdk::Drawable> a_dest, Glib::RefPtr<Gdk::Drawable> a_src,  long a_y );
 
 
-    void change_horz( void );
-    void change_vert( void );
+    void change_horz();
+    void change_vert();
 
     void trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths);
 
@@ -147,7 +147,7 @@ class perfroll : public Gtk::DrawingArea
 
     void draw_progress();
 
-    void redraw_dirty_tracks( void );
+    void redraw_dirty_tracks();
 
     /* Trigger menu callbacks */
     void new_sequence(track *a_track, trigger *a_trigger);

@@ -38,7 +38,7 @@
 #include <gtkmm/table.h>
 #include <gtkmm/drawingarea.h>
 #include <gtkmm/widget.h>
-#include <gtkmm/adjustment.h> 
+#include <gtkmm/adjustment.h>
 
 using namespace Gtk;
 
@@ -47,14 +47,14 @@ using namespace Gtk;
 /* holds the left side piano */
 class perfnames : public virtual Gtk::DrawingArea, public virtual trackmenu
 {
- private: 
+ private:
 
     Glib::RefPtr<Gdk::GC>       m_gc;
     Glib::RefPtr<Gdk::Window>   m_window;
     Gdk::Color    m_black, m_white, m_grey;
 
     Glib::RefPtr<Gdk::Pixmap>   m_pixmap;
-   
+
     perform      *m_mainperf;
 
     Adjustment   *m_vadjust;
@@ -67,25 +67,25 @@ class perfnames : public virtual Gtk::DrawingArea, public virtual trackmenu
 
     void on_realize();
     bool on_expose_event(GdkEventExpose* a_ev);
-    bool on_button_press_event(GdkEventButton* a_ev); 
+    bool on_button_press_event(GdkEventButton* a_ev);
     bool on_button_release_event(GdkEventButton* a_ev);
     void on_size_allocate(Gtk::Allocation& );
     bool on_scroll_event( GdkEventScroll* a_ev ) ;
 
     void draw_area();
     void update_pixmap();
- 
+
     void convert_y( int a_y, int *a_note);
 
     void draw_track( int a_track );
 
-    void change_vert( void );
-    
+    void change_vert();
+
     void redraw( int a_track );
 
  public:
-    
-    void redraw_dirty_tracks( void );
+
+    void redraw_dirty_tracks();
 
     perfnames( perform *a_perf,
 	       Adjustment *a_vadjust   );

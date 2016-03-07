@@ -556,7 +556,7 @@ perfroll::on_expose_event(GdkEventExpose* e)
 
 
 void
-perfroll::redraw_dirty_tracks( void )
+perfroll::redraw_dirty_tracks()
 {
     bool draw = false;
 

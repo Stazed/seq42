@@ -135,9 +135,9 @@ class mainwnd : public Gtk::Window
     int m_bw;
     /* End variables that used to be in perfedit */
 
-    void file_import_dialog( void );
-    void options_dialog( void );
-    void about_dialog( void );
+    void file_import_dialog();
+    void options_dialog();
+    void about_dialog();
 
     //void adj_callback_ss( );
     void adj_callback_bpm( );
@@ -171,37 +171,37 @@ class mainwnd : public Gtk::Window
     void set_bw( int a_beat_width );
     void set_snap (int a_snap);
 
-    void set_guides( void );
+    void set_guides();
 
-    void apply_song_transpose (void);
+    void apply_song_transpose ();
 
-    void grow (void);
-    void open_seqlist (void);
+    void grow ();
+    void open_seqlist ();
     void set_song_mute(mute_op op);
 
-    void set_looped (void);
-    void toggle_looped (void);
+    void set_looped ();
+    void toggle_looped ();
 
-    void set_song_mode (void);
-    void toggle_song_mode (void);
+    void set_song_mode ();
+    void toggle_song_mode ();
 
-    void set_jack_mode(void);
-    void toggle_jack(void);
+    void set_jack_mode();
+    void toggle_jack();
 
-    void set_follow_transport (void);
-    void toggle_follow_transport(void);
+    void set_follow_transport ();
+    void toggle_follow_transport();
 
-    void expand (void);
-    void collapse (void);
-    void copy (void);
-    void undo_type( void );
+    void expand ();
+    void collapse ();
+    void copy ();
+    void undo_type();
     void undo_trigger(int a_track);
-    void undo_trigger( void );
+    void undo_trigger();
     void undo_track(int a_track );
-    void undo_perf( void );
-    void redo_type( void );
+    void undo_perf();
+    void redo_type();
     void redo_trigger (int a_track);
-    void redo_trigger ( void );
+    void redo_trigger ();
     void redo_track(int a_track );
     void redo_perf();
 

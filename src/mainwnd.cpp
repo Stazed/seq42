@@ -555,7 +555,7 @@ mainwnd::timer_callback(  )
 }
 
 void
-mainwnd::undo_type( void )
+mainwnd::undo_type()
 {
     char type = '\0';
     if(m_mainperf->undo_vect.size() > 0)
@@ -590,7 +590,7 @@ mainwnd::undo_trigger(int a_track)
 }
 
 void
-mainwnd::undo_trigger( void ) // collapse and expand
+mainwnd::undo_trigger() // collapse and expand
 {
     m_mainperf->pop_trigger_undo();
     m_perfroll->queue_draw();
@@ -604,14 +604,14 @@ mainwnd::undo_track( int a_track )
 }
 
 void
-mainwnd::undo_perf( void )
+mainwnd::undo_perf()
 {
     m_mainperf->pop_perf_undo();
     m_perfroll->queue_draw();
 }
 
 void
-mainwnd::redo_type( void )
+mainwnd::redo_type()
 {
     char type = '\0';
     if(m_mainperf->redo_vect.size() > 0)
@@ -647,7 +647,7 @@ mainwnd::redo_trigger(int a_track) // single track
 }
 
 void
-mainwnd::redo_trigger( void ) // collapse and expand
+mainwnd::redo_trigger() // collapse and expand
 {
     m_mainperf->pop_trigger_redo();
     m_perfroll->queue_draw();
@@ -669,19 +669,19 @@ mainwnd::redo_perf()
 
 
 void
-mainwnd::start_playing( void )
+mainwnd::start_playing()
 {
     m_mainperf->start_playing();
 }
 
 void
-mainwnd::stop_playing( void )
+mainwnd::stop_playing()
 {
     m_mainperf->stop_playing();
 }
 
 void
-mainwnd::collapse( void ) // all tracks
+mainwnd::collapse() // all tracks
 {
     m_mainperf->push_trigger_undo();
     m_mainperf->move_triggers( false );
@@ -689,7 +689,7 @@ mainwnd::collapse( void ) // all tracks
 }
 
 void
-mainwnd::copy( void ) // all tracks
+mainwnd::copy() // all tracks
 {
     m_mainperf->push_trigger_undo();
     m_mainperf->copy_triggers(  );
@@ -697,7 +697,7 @@ mainwnd::copy( void ) // all tracks
 }
 
 void
-mainwnd::expand( void ) // all tracks
+mainwnd::expand() // all tracks
 {
     m_mainperf->push_trigger_undo();
     m_mainperf->move_triggers( true );
@@ -705,27 +705,27 @@ mainwnd::expand( void ) // all tracks
 }
 
 void
-mainwnd::set_looped( void )
+mainwnd::set_looped()
 {
     m_mainperf->set_looping( m_button_loop->get_active());
 }
 
 void
-mainwnd::toggle_looped( void ) // for key mapping
+mainwnd::toggle_looped() // for key mapping
 {
     // Note that this will trigger the button signal callback.
     m_button_loop->set_active( ! m_button_loop->get_active() );
 }
 
 void
-mainwnd::set_song_mode( void )
+mainwnd::set_song_mode()
 {
     global_song_start_mode = m_button_mode->get_active();
     m_mainperf->set_left_frame();
 }
 
 void
-mainwnd::toggle_song_mode( void )
+mainwnd::toggle_song_mode()
 {
     // Note that this will trigger the button signal callback.
     m_button_mode->set_active( ! m_button_mode->get_active() );
@@ -733,7 +733,7 @@ mainwnd::toggle_song_mode( void )
 }
 
 void
-mainwnd::set_jack_mode ( void )
+mainwnd::set_jack_mode ()
 {
     if(m_button_jack->get_active() && !global_is_running)
         m_mainperf->init_jack ();
@@ -750,20 +750,20 @@ mainwnd::set_jack_mode ( void )
 }
 
 void
-mainwnd::toggle_jack( void )
+mainwnd::toggle_jack()
 {
     // Note that this will trigger the button signal callback.
     m_button_jack->set_active( ! m_button_jack->get_active() );
 }
 
 void
-mainwnd::set_follow_transport(void)
+mainwnd::set_follow_transport()
 {
     m_mainperf->set_follow_transport(m_button_follow->get_active());
 }
 
 void
-mainwnd::toggle_follow_transport( void )
+mainwnd::toggle_follow_transport()
 {
    // Note that this will trigger the button signal callback.
     m_button_follow->set_active( ! m_button_follow->get_active() );
@@ -775,7 +775,7 @@ mainwnd::popup_menu(Menu *a_menu)
     a_menu->popup(0,0);
 }
 void
-mainwnd::set_guides( void )
+mainwnd::set_guides()
 {
     long measure_ticks = (c_ppqn * 4) * m_bpm / m_bw;
     long snap_ticks =  measure_ticks / m_snap;
@@ -872,7 +872,7 @@ mainwnd::set_song_mute(mute_op op)
 }
 
 void
-mainwnd::options_dialog( void )
+mainwnd::options_dialog()
 {
     if ( m_options != NULL )
         delete m_options;
@@ -1187,7 +1187,7 @@ mainwnd::toLower(basic_string<char>& s) {
 }
 
 void
-mainwnd::file_import_dialog( void )
+mainwnd::file_import_dialog()
 {
     Gtk::FileChooserDialog dialog("Import MIDI file",
             Gtk::FILE_CHOOSER_ACTION_OPEN);
@@ -1273,7 +1273,7 @@ mainwnd::on_delete_event(GdkEventAny *a_e)
 
 
 void
-mainwnd::about_dialog( void )
+mainwnd::about_dialog()
 {
     Gtk::AboutDialog dialog;
     dialog.set_transient_for(*this);

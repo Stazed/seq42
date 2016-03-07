@@ -100,13 +100,13 @@ perform::perform()
 }
 
 
-void perform::init( void )
+void perform::init()
 {
     m_master_bus.init( );
 }
 
 
-void perform::init_jack( void )
+void perform::init_jack()
 {
 
 #ifdef JACK_SUPPORT
@@ -173,7 +173,7 @@ void perform::init_jack( void )
 }
 
 
-void perform::deinit_jack( void )
+void perform::deinit_jack()
 {
 #ifdef JACK_SUPPORT
 
@@ -203,7 +203,7 @@ void perform::deinit_jack( void )
 }
 
 
-void perform::clear_all( void )
+void perform::clear_all()
 {
     reset_sequences();
 
@@ -286,7 +286,7 @@ perform::~perform()
 
 
 void
-perform::start_playing( void )
+perform::start_playing()
 {
     if(global_song_start_mode) { // song mode
         if(m_jack_master)
@@ -305,13 +305,13 @@ perform::start_playing( void )
 }
 
 void
-perform::stop_playing( void )
+perform::stop_playing()
 {
     stop_jack();
     stop();
 }
 
-void perform::toggle_song_mode( void )
+void perform::toggle_song_mode()
 {
     if(global_song_start_mode)
         global_song_start_mode = false;
@@ -322,7 +322,7 @@ void perform::toggle_song_mode( void )
     }
 }
 
-void perform::toggle_jack_mode( void )
+void perform::toggle_jack_mode()
 {
    set_jack_mode(!m_jack_running);
 }
@@ -337,7 +337,7 @@ bool perform::get_toggle_jack()
     return m_toggle_jack;
 }
 
-bool perform::is_jack_running(void)
+bool perform::is_jack_running()
 {
     return m_jack_running;
 }
@@ -348,12 +348,12 @@ void perform::set_follow_transport(bool a_set)
     m_follow_transport = a_set;
 }
 
-bool perform::get_follow_transport(void)
+bool perform::get_follow_transport()
 {
     return m_follow_transport;
 }
 
-void perform::toggle_follow_transport(void)
+void perform::toggle_follow_transport()
 {
     set_follow_transport(!m_follow_transport);
 }
@@ -371,7 +371,7 @@ void perform::set_left_tick( long a_tick )
 }
 
 
-long perform::get_left_tick( void )
+long perform::get_left_tick()
 {
     return m_left_tick;
 }
@@ -383,7 +383,7 @@ void perform::set_starting_tick( long a_tick )
 }
 
 
-long perform::get_starting_tick( void )
+long perform::get_starting_tick()
 {
     return m_starting_tick;
 }
@@ -404,7 +404,7 @@ void perform::set_right_tick( long a_tick )
 }
 
 
-long perform::get_right_tick( void )
+long perform::get_right_tick()
 {
     return m_right_tick;
 }
@@ -680,7 +680,7 @@ void perform::move_triggers( bool a_direction )
 }
 
 // collapse and expand - all tracks
-void perform::push_trigger_undo( void )
+void perform::push_trigger_undo()
 {
     for (int i=0; i< c_max_track; i++ ){
 
@@ -700,7 +700,7 @@ void perform::push_trigger_undo( void )
     set_have_redo();
 }
 
-void perform::pop_trigger_undo( void )
+void perform::pop_trigger_undo()
 {
     for (int i=0; i< c_max_track; i++ ){
 
@@ -720,7 +720,7 @@ void perform::pop_trigger_undo( void )
     set_have_redo();
 }
 
-void perform::pop_trigger_redo( void )
+void perform::pop_trigger_redo()
 {
     for (int i=0; i< c_max_track; i++ ){
 
@@ -939,7 +939,7 @@ void perform::pop_track_redo( int a_track )
 
 
 void
-perform::push_perf_undo( void )
+perform::push_perf_undo()
 {
     for(int i = 0; i < c_max_track; i++)
     {
@@ -965,7 +965,7 @@ perform::push_perf_undo( void )
 }
 
 void
-perform::pop_perf_undo( void )
+perform::pop_perf_undo()
 {
     for(int i = 0; i < c_max_track; i++)//now delete and replace
     {
@@ -1007,7 +1007,7 @@ perform::pop_perf_undo( void )
 }
 
 void
-perform::pop_perf_redo( void )
+perform::pop_perf_redo()
 {
    for(int i = 0; i < c_max_track; i++)//now delete and replace
     {
@@ -1049,7 +1049,7 @@ perform::pop_perf_redo( void )
 }
 
 void
-perform::check_max_undo_redo( void )
+perform::check_max_undo_redo()
 {
     if(m_undo_track_count > 100 || m_redo_track_count > 100 ||
         m_undo_perf_count > 40 || m_redo_perf_count > 40 )
@@ -1069,7 +1069,7 @@ perform::check_max_undo_redo( void )
 }
 
 void
-perform::set_have_undo( void )
+perform::set_have_undo()
 {
     check_max_undo_redo();
     if(undo_vect.size() > 0)
@@ -1084,7 +1084,7 @@ perform::set_have_undo( void )
 }
 
 void
-perform::set_have_redo( void )
+perform::set_have_redo()
 {
     check_max_undo_redo();
     if(redo_vect.size() > 0)
@@ -1139,7 +1139,7 @@ void perform::stop_jack(  )
 #endif // JACK_SUPPORT
 }
 
-void perform::set_left_frame( void ) // jack master in song mode
+void perform::set_left_frame() // jack master in song mode
 {
 #ifdef JACK_SUPPORT
 
@@ -1279,7 +1279,7 @@ void perform::inner_stop()
 }
 
 
-void perform::off_sequences(void)
+void perform::off_sequences()
 {
     for (int i = 0; i < c_max_track; i++) {
         if (is_active_track(i)) {
@@ -1290,7 +1290,7 @@ void perform::off_sequences(void)
 }
 
 
-void perform::all_notes_off( void )
+void perform::all_notes_off()
 {
     for (int i=0; i< c_max_track; i++) {
 
@@ -1304,7 +1304,7 @@ void perform::all_notes_off( void )
 }
 
 
-void perform::reset_sequences(void)
+void perform::reset_sequences()
 {
     for (int i=0; i< c_max_track; i++) {
         if (is_active_track(i)) {
@@ -1317,7 +1317,7 @@ void perform::reset_sequences(void)
 }
 
 
-void perform::launch_output_thread(void)
+void perform::launch_output_thread()
 {
     int err;
 
@@ -1349,7 +1349,7 @@ void perform::launch_input_thread()
 }
 
 
-long perform::get_max_trigger( void )
+long perform::get_max_trigger()
 {
     long ret = 0, t;
 
@@ -1496,7 +1496,7 @@ void jack_session_callback(jack_session_event_t *event, void *arg )
 #endif // JACK_SUPPORT
 
 
-void perform::output_func(void)
+void perform::output_func()
 {
     while (m_outputing) {
 
@@ -2098,7 +2098,7 @@ void* input_thread_func(void *a_pef )
     return 0;
 }
 
-void perform::input_func(void)
+void perform::input_func()
 {
     event ev;
 
@@ -2185,7 +2185,7 @@ void perform::input_func(void)
 
 
 #if 0
-void perform::input_func(void)
+void perform::input_func()
 {
     event ev;
 
@@ -2385,7 +2385,7 @@ void print_jack_pos( jack_position_t* jack_pos ){
 
 #if 0
 
-int main ( void )
+int main ()
 {
     jack_client_t *client;
 

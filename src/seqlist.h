@@ -71,7 +71,7 @@ class seqlist : public Gtk::Window
     void off_sequences();
 
     void on_realize();
-    bool timeout( void );
+    bool timeout();
 
     bool on_delete_event(GdkEventAny *a_event);
     bool on_button_release_event(GdkEventButton* a_e);

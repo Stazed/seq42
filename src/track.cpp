@@ -174,7 +174,7 @@ track::get_midi_bus(  )
 
 
 unsigned int
-track::get_number_of_sequences(void)
+track::get_number_of_sequences()
 {
     return m_vector_sequence.size();
 }
@@ -253,7 +253,7 @@ track::is_dirty_seqlist( )
 }
 
 bool
-track::get_sequence_editing( void )
+track::get_sequence_editing()
 {
     // Return true if at least one of this track's sequences is being edited.
     for(unsigned i=0; i<m_vector_sequence.size(); i++) {
@@ -265,7 +265,7 @@ track::get_sequence_editing( void )
 }
 
 void
-track::set_playing_off( void )
+track::set_playing_off()
 {
     // Set playing off for all sequences.
     for(unsigned i=0; i<m_vector_sequence.size(); i++) {
@@ -288,7 +288,7 @@ track::reset_sequences(bool a_playback_mode)
 
 
 void
-track::push_trigger_undo( void )
+track::push_trigger_undo()
 {
     lock();
     m_list_trigger_undo.push( m_list_trigger );
@@ -304,7 +304,7 @@ track::push_trigger_undo( void )
 }
 
 void
-track::pop_trigger_undo( void )
+track::pop_trigger_undo()
 {
     lock();
 
@@ -318,7 +318,7 @@ track::pop_trigger_undo( void )
 }
 
 void
-track::pop_trigger_redo( void )
+track::pop_trigger_redo()
 {
     lock();
 
@@ -332,7 +332,7 @@ track::pop_trigger_redo( void )
 }
 
 void
-track::clear_trigger_undo_redo ( void )
+track::clear_trigger_undo_redo ()
 {
     if(m_list_trigger_undo.size() > 0)
         m_list_trigger_undo.pop();
@@ -366,7 +366,7 @@ track::set_song_mute( bool a_mute )
 }
 
 bool
-track::get_song_mute( void )
+track::get_song_mute()
 {
     return m_song_mute;
 }
@@ -378,7 +378,7 @@ track::set_transposable( bool a_xpose )
 }
 
 bool
-track::get_transposable( void )
+track::get_transposable()
 {
     return m_transposable;
 }
@@ -479,13 +479,13 @@ track::get_trigger_count_for_seqidx(int a_seq)
 }
 
 int
-track::get_track_trigger_count( void )
+track::get_track_trigger_count()
 {
     return m_list_trigger.size();
 }
 
 void
-track::clear_triggers( void )
+track::clear_triggers()
 {
     lock();
     m_list_trigger.clear();
@@ -890,7 +890,7 @@ track::move_triggers( long a_start_tick,
 }
 
 long
-track::get_selected_trigger_start_tick( void )
+track::get_selected_trigger_start_tick()
 {
     long ret = -1;
     lock();
@@ -912,7 +912,7 @@ track::get_selected_trigger_start_tick( void )
 }
 
 long
-track::get_selected_trigger_end_tick( void )
+track::get_selected_trigger_end_tick()
 {
     long ret = -1;
     lock();
@@ -1054,7 +1054,7 @@ track::move_selected_triggers_to( long a_tick, bool a_adjust_offset, int a_which
 
 
 long
-track::get_max_trigger( void )
+track::get_max_trigger()
 {
     lock();
 
@@ -1144,23 +1144,23 @@ void track::set_trigger_sequence( trigger *a_trigger, int a_sequence )
     }
 }
 
-void track::set_trigger_copied ( void )
+void track::set_trigger_copied ()
 {
     m_trigger_copied = true;
 }
 
-void track::unset_trigger_copied ( void )
+void track::unset_trigger_copied ()
 {
     m_trigger_copied = false;
 }
 
-bool track::get_trigger_copied ( void )
+bool track::get_trigger_copied ()
 {
     return m_trigger_copied;
 }
 
 trigger*
-track::get_trigger_clipboard( void )
+track::get_trigger_clipboard()
 {
     return &m_trigger_clipboard;
 }
@@ -1190,7 +1190,7 @@ track::select_trigger( long a_tick )
 
 
 bool
-track::unselect_triggers( void )
+track::unselect_triggers()
 {
     lock();
 
@@ -1209,7 +1209,7 @@ track::unselect_triggers( void )
 
 
 void
-track::del_selected_trigger( void )
+track::del_selected_trigger()
 {
     lock();
 
@@ -1228,7 +1228,7 @@ track::del_selected_trigger( void )
 
 
 void
-track::cut_selected_trigger( void )
+track::cut_selected_trigger()
 {
     copy_selected_trigger();
     del_selected_trigger();
@@ -1236,7 +1236,7 @@ track::cut_selected_trigger( void )
 
 
 void
-track::copy_selected_trigger( void )
+track::copy_selected_trigger()
 {
     set_trigger_paste_tick(-1); // reset to default for any carryover of unpasted click on track
     lock();
@@ -1256,7 +1256,7 @@ track::copy_selected_trigger( void )
 }
 
 void
-track::paste_trigger( void )
+track::paste_trigger()
 {
      // empty trigger = segfault via get_length - don't allow w/o sequence
     if (m_trigger_clipboard.m_sequence < 0)
@@ -1308,13 +1308,13 @@ track::set_trigger_paste_tick(long a_tick)
 }
 
 long
-track::get_trigger_paste_tick(void)
+track::get_trigger_paste_tick()
 {
     return m_paste_tick;
 }
 
 void
-track::reset_draw_trigger_marker( void )
+track::reset_draw_trigger_marker()
 {
     lock();
 

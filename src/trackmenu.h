@@ -65,7 +65,7 @@ class trackmenu : public virtual Glib::ObjectBase
 
     void trk_insert(int a_track_location);
     void trk_delete(int a_track_location);
-    void pack_tracks( void );
+    void pack_tracks();
     void trk_copy();
     void trk_cut();
     void trk_paste();

@@ -59,7 +59,7 @@ sequence::sequence( ) :
 }
 
 void
-sequence::push_undo( void )
+sequence::push_undo()
 {
     lock();
     m_list_undo.push( m_list_event );
@@ -69,7 +69,7 @@ sequence::push_undo( void )
 
 
 void
-sequence::pop_undo( void )
+sequence::pop_undo()
 {
     lock();
 
@@ -87,7 +87,7 @@ sequence::pop_undo( void )
 }
 
 void
-sequence::pop_redo( void )
+sequence::pop_redo()
 {
     lock();
 
@@ -105,7 +105,7 @@ sequence::pop_redo( void )
 }
 
 void
-sequence::set_have_undo( void )
+sequence::set_have_undo()
 {
     if(m_list_undo.size() > 0)
     {
@@ -117,7 +117,7 @@ sequence::set_have_undo( void )
 }
 
 void
-sequence::set_have_redo( void )
+sequence::set_have_redo()
 {
     if(m_list_redo.size() > 0)
     {
@@ -138,7 +138,7 @@ sequence::set_bpm( long a_beats_per_measure )
 }
 
 long
-sequence::get_bpm( void )
+sequence::get_bpm()
 {
     return m_time_beats_per_measure;
 }
@@ -153,7 +153,7 @@ sequence::set_bw( long a_beat_width )
 }
 
 long
-sequence::get_bw( void )
+sequence::get_bw()
 {
     return m_time_beat_width;
 }
@@ -203,7 +203,7 @@ sequence::set_trigger_offset( long a_trigger_offset )
 
 
 long
-sequence::get_trigger_offset( void )
+sequence::get_trigger_offset()
 {
     return m_trigger_offset;
 }
@@ -330,7 +330,7 @@ sequence::play(long a_tick, trigger *a_trigger)
 
 
 void
-sequence::zero_markers( void )
+sequence::zero_markers()
 {
     lock();
 
@@ -1021,7 +1021,7 @@ sequence::select_events( long a_tick_s, long a_tick_f,
 
 
 void
-sequence::select_all( void )
+sequence::select_all()
 {
     lock();
 
@@ -1036,7 +1036,7 @@ sequence::select_all( void )
 
 /* unselects every event */
 void
-sequence::unselect( void )
+sequence::unselect()
 {
     lock();
 
@@ -1355,7 +1355,7 @@ sequence::randomize_selected( unsigned char a_status, unsigned char a_control, i
 
 
 void
-sequence::copy_selected( void )
+sequence::copy_selected()
 {
     list<event>::iterator i;
 
@@ -1938,7 +1938,7 @@ bool sequence::intersectEvents( long posstart, long posend, long status, long& s
 
 /* this refreshes the play marker to the LastTick */
 void
-sequence::reset_draw_marker( void )
+sequence::reset_draw_marker()
 {
     lock();
 
@@ -1948,7 +1948,7 @@ sequence::reset_draw_marker( void )
 }
 
 int
-sequence::get_lowest_note_event( void )
+sequence::get_lowest_note_event()
 {
     lock();
 
@@ -1970,7 +1970,7 @@ sequence::get_lowest_note_event( void )
 
 
 int
-sequence::get_highest_note_event( void )
+sequence::get_highest_note_event()
 {
     lock();
 
@@ -2098,7 +2098,7 @@ sequence::get_next_event( unsigned char a_status,
 
 
 void
-sequence::remove_all( void )
+sequence::remove_all()
 {
     lock();
 
@@ -2331,7 +2331,7 @@ sequence::set_track( track *a_track )
 }
 
 track *
-sequence::get_track( void )
+sequence::get_track()
 {
     return m_track;
 }
