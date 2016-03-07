@@ -21,6 +21,7 @@
 #pragma once
 
 #include <stdio.h>
+#include <vector>
 
 #include "globals.h"
 
@@ -61,10 +62,7 @@ class event
     unsigned char m_data[2];
 
     /* data for sysex */
-    unsigned char *m_sysex;
-
-    /* size of sysex message */
-    long m_size;
+    vector<unsigned char> m_sysex;
 
     /* used to link note ons and offs together */
     event *m_linked;
@@ -85,7 +83,6 @@ class event
  public:
 
     event();
-    ~event();
 
     void set_timestamp( const unsigned long time );
     long get_timestamp();
