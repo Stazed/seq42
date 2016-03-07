@@ -18,8 +18,7 @@
 //
 //-----------------------------------------------------------------------------
 
-#ifndef SEQ42_TRACKEDIT
-#define SEQ42_TRACKEDIT
+#pragma once
 
 #include <gtkmm/button.h>
 #include <gtkmm/window.h>
@@ -84,5 +83,3 @@ public:
     bool on_delete_event(GdkEventAny *a_event);
 
 };
-
-#endif

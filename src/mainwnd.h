@@ -18,6 +18,7 @@
 //
 //-----------------------------------------------------------------------------
 
+#pragma once
 
 #include "perform.h"
 #include "sequence.h"
@@ -26,8 +27,7 @@
 #include "maintime.h"
 
 
-#ifndef SEQ42_MAINWINDOW
-#define SEQ42_MAINWINDOW
+//#pragma once
 
 #include <map>
 #include <gtkmm.h>
@@ -221,6 +221,3 @@ class mainwnd : public Gtk::Window
     bool on_key_press_event(GdkEventKey* a_ev);
 
 };
-
-
-#endif

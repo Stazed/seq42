@@ -18,26 +18,25 @@
 //
 //-----------------------------------------------------------------------------
 
-#ifndef SEQ42_MUTEX
-#define SEQ42_MUTEX
+#pragma once
 
 #include "globals.h"
 
 #include <pthread.h>
 
 class mutex {
-    
+
 private:
 
     static const pthread_mutex_t recmutex;
-    
+
 protected:
-    
+
     /* mutex lock */
     pthread_mutex_t  m_mutex_lock;
-    
+
 public:
-    
+
     mutex();
 
     void lock();
@@ -56,10 +55,8 @@ private:
 public:
 
     condition_var();
-    
+
     void wait();
     void signal();
-    
-};
 
-#endif
+};

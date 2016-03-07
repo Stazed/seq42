@@ -19,8 +19,7 @@
 //-----------------------------------------------------------------------------
 
 
-#ifndef SEQ42_SEQDATA
-#define SEQ42_SEQDATA
+#pragma once
 
 #include "sequence.h"
 #include "seqkeys.h"
@@ -128,4 +127,3 @@ class seqdata : public Gtk::DrawingArea
 
 };
 
-#endif

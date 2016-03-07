@@ -19,8 +19,7 @@
 //-----------------------------------------------------------------------------
 
 
-#ifndef SEQ42_TRACK
-#define SEQ42_TRACK
+#pragma once
 
 class track;
 
@@ -232,6 +231,3 @@ class track
     void apply_song_transpose ();
 
 };
-
-
-#endif

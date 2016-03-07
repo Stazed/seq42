@@ -19,8 +19,7 @@
 //-----------------------------------------------------------------------------
 
 
-#ifndef SEQ42_PERFNAME
-#define SEQ42_PERFNAME
+#pragma once
 
 #include "perform.h"
 #include "track.h"
@@ -93,4 +92,3 @@ class perfnames : public virtual Gtk::DrawingArea, public virtual trackmenu
 
 };
 
-#endif

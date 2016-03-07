@@ -18,8 +18,7 @@
 //
 //-----------------------------------------------------------------------------
 
-#ifndef SEQ42_USERFILE
-#define SEQ42_USERFILE
+#pragma once
 
 #include "perform.h"
 #include "configfile.h"
@@ -34,11 +33,8 @@ class userfile  : public configfile
 
     userfile( string a_name );
     ~userfile( );
-    
+
     bool parse( perform *a_perf );
     bool write( perform *a_perf );
 
 };
-
-
-#endif 

@@ -18,8 +18,7 @@
 //
 //-----------------------------------------------------------------------------
 
-#ifndef SEQ42_MIDIBUS_PORTMIDI
-#define SEQ42_MIDIBUS_PORTMIDI
+#pragma once
 
 class midibus;
 class mastermidibus;
@@ -223,5 +222,4 @@ class mastermidibus
 
 };
 
-#endif
 #endif

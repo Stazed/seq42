@@ -18,8 +18,7 @@
 //
 //-----------------------------------------------------------------------------
 
-#ifndef SEQ42_SEQEDIT
-#define SEQ42_SEQEDIT
+#pragma once
 
 #include "sequence.h"
 #include "seqkeys.h"
@@ -262,5 +261,3 @@ class seqedit : public Gtk::Window
     bool on_key_press_event(GdkEventKey* a_ev);
 
 };
-
-#endif

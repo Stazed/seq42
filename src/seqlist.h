@@ -18,8 +18,7 @@
 //
 //-----------------------------------------------------------------------------
 
-#ifndef SEQ42_SEQLIST
-#define SEQ42_SEQLIST
+#pragma once
 
 #include <gtkmm.h>
 #include <sigc++/bind.h>
@@ -87,5 +86,3 @@ public:
     ~seqlist();
 
 };
-
-#endif

@@ -18,8 +18,7 @@
 //
 //-----------------------------------------------------------------------------
 
-#ifndef SEQ42_EVENT
-#define SEQ42_EVENT
+#pragma once
 
 #include <stdio.h>
 
@@ -157,4 +156,3 @@ class event
     void load( ifstream *file );
 };
 
-#endif

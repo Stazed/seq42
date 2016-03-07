@@ -18,8 +18,7 @@
 //
 //-----------------------------------------------------------------------------
 
-#ifndef SEQ42_MIDIFILE
-#define SEQ42_MIDIFILE
+#pragma once
 
 #include "perform.h"
 #include <fstream>
@@ -61,6 +60,3 @@ class midifile
     bool write_song( perform *a_perf );
 
 };
-
-
-#endif

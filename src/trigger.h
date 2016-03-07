@@ -19,8 +19,7 @@
 //-----------------------------------------------------------------------------
 
 
-#ifndef SEQ42_TRIGGER
-#define SEQ42_TRIGGER
+#pragma once
 
 class trigger;
 
@@ -53,4 +52,3 @@ public:
     };
 };
 
-#endif

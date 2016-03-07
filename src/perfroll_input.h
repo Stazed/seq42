@@ -18,8 +18,8 @@
 //
 //-----------------------------------------------------------------------------
 //
-#ifndef SEQ42_PERFROLL_INPUT_H
-#define SEQ42_PERFROLL_INPUT_H
+
+#pragma once
 
 #include <gtkmm/button.h>
 
@@ -55,6 +55,4 @@ class Seq42PerfInput
         bool m_adding;
         bool m_adding_pressed;
 };
-
-#endif
 

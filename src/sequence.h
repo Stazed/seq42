@@ -19,8 +19,7 @@
 //-----------------------------------------------------------------------------
 
 
-#ifndef SEQ42_SEQUENCE
-#define SEQ42_SEQUENCE
+#pragma once
 
 class sequence;
 
@@ -404,4 +403,3 @@ class sequence
     void apply_song_transpose ();
 };
 
-#endif

@@ -19,8 +19,7 @@
 //-----------------------------------------------------------------------------
 
 
-#ifndef SEQ42_SEQTIME
-#define SEQ42_SEQTIME
+#pragma once
 
 #include "sequence.h"
 #include "seqtime.h"
@@ -94,5 +93,3 @@ class seqtime: public Gtk::DrawingArea
     void set_zoom( int a_zoom );
 
 };
-
-#endif

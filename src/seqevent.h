@@ -19,8 +19,7 @@
 //-----------------------------------------------------------------------------
 
 
-#ifndef SEQ42_SEQEVENT
-#define SEQ42_SEQEVENT
+#pragma once
 
 #include "sequence.h"
 #include "seqkeys.h"
@@ -186,4 +185,3 @@ class seqevent : public Gtk::DrawingArea
 
 };
 
-#endif

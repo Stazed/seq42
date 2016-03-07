@@ -17,12 +17,12 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 //-----------------------------------------------------------------------------
-#ifndef SEQ42_CONTROLLERS
-#define SEQ42_CONTROLLERS
+
+#pragma once
 
 string c_controller_names[128] = {
 
-    "0 Bank Select", 
+    "0 Bank Select",
     "1 Modulation Wheel ",
     "2 Breath controller ",
     "3 ",
@@ -150,25 +150,5 @@ string c_controller_names[128] = {
     "125 Omni Mode On",
     "126 Mono Operation",
     "127 Poly Operation"
-    
+
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#endif

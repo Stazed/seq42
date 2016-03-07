@@ -18,31 +18,30 @@
 //
 //-----------------------------------------------------------------------------
 
-#ifndef SEQ42_CONFIGFILE
-#define SEQ42_CONFIGFILE
+#pragma once
 
 #include "perform.h"
 #include <fstream>
 #include <string>
 #include <list>
 
-class configfile 
+class configfile
 {
 
  protected:
-    
+
     int m_pos;
     Glib::ustring m_name;
 
     /* holds our data */
     unsigned char *m_d;
-    
+
     list<unsigned char> m_l;
 
     char m_line[1024];
 
     bool m_done;
-    
+
     void next_data_line( ifstream *a_file);
     void line_after( ifstream *a_file, string a_tag);
 
@@ -55,6 +54,3 @@ class configfile
     virtual bool write( perform *a_perf ) = 0;
 
 };
-
-
-#endif 

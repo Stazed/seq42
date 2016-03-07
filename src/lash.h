@@ -18,8 +18,7 @@
 //
 //-----------------------------------------------------------------------------
 
-#ifndef SEQ42_LASH
-#define SEQ42_LASH
+#pragma once
 
 #ifdef __WIN32__
 #include "configwin32.h"
@@ -61,5 +60,3 @@ public:
 /* global lash driver, defined in seq42.cpp */
 extern lash *lash_driver;
 
-
-#endif // SEQ42_LASH

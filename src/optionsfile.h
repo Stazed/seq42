@@ -18,8 +18,7 @@
 //
 //-----------------------------------------------------------------------------
 
-#ifndef SEQ42_OPTIONSFILE
-#define SEQ42_OPTIONSFILE
+#pragma once
 
 #include "perform.h"
 #include "configfile.h"
@@ -35,6 +34,3 @@ class optionsfile : public configfile
     bool write( perform *a_perf );
 
 };
-
-
-#endif

@@ -18,8 +18,7 @@
 //
 //-----------------------------------------------------------------------------
 
-#ifndef SEQ42_MIDIBUS
-#define SEQ42_MIDIBUS
+#pragma once
 
 /* forward declarations*/
 class mastermidibus;
@@ -307,5 +306,4 @@ class mastermidibus
 
 };
 
-#endif
 #endif

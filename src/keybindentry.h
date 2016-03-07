@@ -23,8 +23,7 @@
 // each keypress replaces the previous text.
 // also supports keyevent and keygroup maps in the perform class
 
-#ifndef SEQ42_KEYBINDENTRY
-#define SEQ42_KEYBINDENTRY
+#pragma once
 
 #include <gtkmm/entry.h>
 
@@ -47,5 +46,3 @@ private:
     perform* m_perf;
 };
 
-
-#endif

@@ -19,16 +19,13 @@
 //-----------------------------------------------------------------------------
 
 
+#pragma once
 
 #include "globals.h"
 #include "perform.h"
 #include "trackedit.h"
 
 class trackmenu;
-
-#ifndef SEQ42_TRACKMENU
-#define SEQ42_TRACKMENU
-
 
 #include <gtkmm/button.h>
 #include <gtkmm/window.h>
@@ -90,5 +87,3 @@ class trackmenu : public virtual Glib::ObjectBase
     trackmenu( perform *a_p );
     virtual ~trackmenu( ){ };
 };
-
-#endif
