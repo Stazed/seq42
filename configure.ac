@@ -3,6 +3,7 @@ AC_INIT(seq42, [1.0.0], [stazed@mapson.com])
 
 AC_CONFIG_SRCDIR([src/event.cpp])
 AC_CONFIG_HEADER([src/config.h])
+AC_CONFIG_MACRO_DIRS([m4])
 
 AM_INIT_AUTOMAKE([dist-bzip2])
 
@@ -14,6 +15,7 @@ AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_LN_S
+AX_CXX_COMPILE_STDCXX_11(noext,mandatory)
 
 dnl Do we have -Wl,--as-needed?
 AC_MSG_CHECKING(if --as-needed works)
