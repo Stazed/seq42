@@ -20,10 +20,10 @@
 
 #pragma once
 
-#ifdef __WIN32__
-#    include "configwin32.h"
-#else
+#ifdef HAVE_CONFIG_H
 #    include "config.h"
+#else
+#    include "configdefault.h"
 #endif
 
 #include <string>

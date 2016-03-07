@@ -24,16 +24,17 @@
 class mastermidibus;
 class midibus;
 
-#ifdef __WIN32__
-#   include "configwin32.h"
-#   include "midibus_portmidi.h"
-#else
+#ifdef HAVE_CONFIG_H
 #include "config.h"
-
-#if HAVE_LIBASOUND
-#    include <alsa/asoundlib.h>
-#    include <alsa/seq_midi_event.h>
+#else
+#include "configdefault.h"
 #endif
+
+#ifndef HAVE_LIBASOUND
+#include "midibus_portmidi.h"
+#else
+#include <alsa/asoundlib.h>
+#include <alsa/seq_midi_event.h>
 
 #include <string>
 
