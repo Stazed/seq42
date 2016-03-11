@@ -79,6 +79,7 @@ seqroll::seqroll(perform *a_perf,
 
     m_scroll_offset_x(0),
     m_scroll_offset_y(0),
+    m_scroll_page(0),
 
     m_background_track(0),
     m_background_sequence(0),
@@ -534,11 +535,6 @@ seqroll::draw_progress_on_window()
                 0,
                 m_old_progress_x,
                 m_window_y);
-    }
-
-    if(global_is_running && m_perform->get_follow_transport())
-    {
-        auto_scroll_horz(m_seq->get_last_tick());
     }
 }
 
@@ -1245,12 +1241,34 @@ seqroll::on_size_allocate(Gtk::Allocation& a_r )
 }
 
 void
-seqroll::auto_scroll_horz(long progress)
+seqroll::follow_progress ()
+{
+    long progress_tick = m_seq->get_last_tick();
+
+    if (progress_tick > 0)
+    {
+        int progress_x = progress_tick / m_zoom + 10;
+        int page = progress_x / m_window_x;
+        if (page != m_scroll_page)
+        {
+            long left_tick = page * m_window_x * m_zoom;
+            m_scroll_page = page;
+
+            if((left_tick + m_hadjust->get_page_size()) >= m_hadjust->get_upper()) // don't scroll past upper
+                m_hadjust->set_value(m_hadjust->get_upper() - m_hadjust->get_page_size());
+            else
+                m_hadjust->set_value(double(left_tick));
+        }
+    }
+}
+
+#if 0
+void
+seqroll::auto_scroll_horz()
 {
     //printf("progress[%ld]: get_upper[%f]: get_value[%f]: page_size[%f]\n",progress,m_hadjust->get_upper(),m_hadjust->get_value(),m_hadjust->get_page_size());
 
-    if(m_hadjust->get_upper() <= (c_ppqn * 16) )// don't scroll on seq <= 4 bars(at 4 X 4)
-        return;
+    long progress = m_seq->get_last_tick();
 
     int zoom_adjust = m_zoom / 2;
     if(m_zoom < 2)
@@ -1286,7 +1304,7 @@ seqroll::auto_scroll_horz(long progress)
     if(progress >= m_hadjust->get_upper()-30) // -30 (magic guess) because progress will never reach get_upper since we limit above
         m_hadjust->set_value(0);
 }
-
+#endif // 0
 
 bool
 seqroll::on_scroll_event( GdkEventScroll* a_ev )
