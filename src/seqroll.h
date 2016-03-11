@@ -231,7 +231,6 @@ class seqroll : public Gtk::DrawingArea
 
     void start_paste();
     void follow_progress();
-    //void auto_scroll_horz();
 
     void set_background_sequence( bool a_state, int a_trk, int a_seq );
 

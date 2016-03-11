@@ -1545,7 +1545,6 @@ seqedit::timeout()
     if(global_is_running && m_mainperf->get_follow_transport())
     {
         m_seqroll_wid->follow_progress();
-        //m_seqroll_wid->auto_scroll_horz();
     }
 
     // FIXME: ick
