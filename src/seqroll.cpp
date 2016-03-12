@@ -1263,49 +1263,6 @@ seqroll::follow_progress ()
     }
 }
 
-#if 0
-void
-seqroll::auto_scroll_horz()
-{
-    //printf("progress[%ld]: get_upper[%f]: get_value[%f]: page_size[%f]\n",progress,m_hadjust->get_upper(),m_hadjust->get_value(),m_hadjust->get_page_size());
-
-    long progress = m_seq->get_last_tick();
-
-    int zoom_adjust = m_zoom / 2;
-    if(m_zoom < 2)
-        zoom_adjust = m_zoom;
-
-    zoom_adjust *= (c_ppqn * 4); // bar
-    long rnd_progress = progress /  zoom_adjust; //  to avoid redraw every tick mark
-    rnd_progress *=  zoom_adjust ;
-
-    static bool set_progress = true; // to prevent multiple set_value() settings
-
-    if(progress > ((m_hadjust->get_page_size()/2) + zoom_adjust/2) || // offset for reading easier
-         ((m_hadjust->get_value() + m_hadjust->get_page_size()) <= m_hadjust->get_upper()))
-    {
-
-        if(progress - rnd_progress >= zoom_adjust/2 ) // 1/2 of zoom_adjust for middle set_value()
-        {
-            if((m_hadjust->get_value() + m_hadjust->get_page_size()) <= m_hadjust->get_upper())
-            {
-                long calc_value = progress - (m_hadjust->get_page_size()/2) + zoom_adjust/2;
-                if((calc_value + m_hadjust->get_page_size()) >= m_hadjust->get_upper() && set_progress) // don't scroll past upper
-                   m_hadjust->set_value(m_hadjust->get_upper() - m_hadjust->get_page_size());
-                else if(set_progress)
-                    m_hadjust->set_value(calc_value);
-                //printf("calc_value [%ld]: set_value [%f]\n",calc_value,m_hadjust->get_value());
-
-                set_progress = false; // since we just set_value() - now shut off
-            }
-        } else
-            set_progress = true;  //  <  this means we are on the next set of ticks so turn on until we set_value() again
-    }
-
-    if(progress >= m_hadjust->get_upper()-30) // -30 (magic guess) because progress will never reach get_upper since we limit above
-        m_hadjust->set_value(0);
-}
-#endif // 0
 
 bool
 seqroll::on_scroll_event( GdkEventScroll* a_ev )
