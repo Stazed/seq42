@@ -455,6 +455,9 @@ mainwnd::mainwnd(perform *a_p):
     ovbox->pack_start(*m_menubar, false, false );
     ovbox->pack_start( *vbox );
 
+    m_perfroll->set_can_focus();
+    m_perfroll->grab_focus();
+
     /* add box */
     this->add (*ovbox);
 
@@ -525,8 +528,31 @@ mainwnd::timer_callback(  )
     if (m_button_mode->get_active() != global_song_start_mode)        // for seqroll keybinding
         m_button_mode->set_active(global_song_start_mode);
 
+#ifdef JACK_SUPPORT
     if (m_button_jack->get_active() != m_mainperf->get_toggle_jack()) // for seqroll keybinding
         toggle_jack();
+
+    if(global_is_running)
+    {
+        if( m_button_jack->has_focus()) // needed to avoid segfault on get_focus() from on_key_press_event()
+            m_perfroll->grab_focus();  // when the focus is on non-sensitive m_button_jack
+
+        m_button_jack->set_sensitive(false);
+    }
+    else
+        m_button_jack->set_sensitive(true);
+
+#endif // JACK_SUPPORT
+
+    if(global_is_running)
+    {
+        if(m_button_mode->has_focus()) // needed to avoid segfault on get_focus() from on_key_press_event()
+            m_perfroll->grab_focus();  // when the focus is on non-sensitive m_button_mode
+
+        m_button_mode->set_sensitive(false);
+    }
+    else
+        m_button_mode->set_sensitive(true);
 
     if (m_button_follow->get_active() != m_mainperf->get_follow_transport())
         m_button_follow->set_active(m_mainperf->get_follow_transport());
@@ -728,8 +754,11 @@ void
 mainwnd::toggle_song_mode()
 {
     // Note that this will trigger the button signal callback.
-    m_button_mode->set_active( ! m_button_mode->get_active() );
-    m_mainperf->set_left_frame();
+    if(!global_is_running)
+    {
+        m_button_mode->set_active( ! m_button_mode->get_active() );
+        m_mainperf->set_left_frame();
+    }
 }
 
 void
