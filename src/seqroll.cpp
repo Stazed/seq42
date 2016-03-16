@@ -42,6 +42,7 @@ seqroll::seqroll(perform *a_perf,
     m_white(Gdk::Color("white")),
     m_grey(Gdk::Color("gray")),
     m_dk_grey(Gdk::Color("gray50")),
+    m_dk_cyan(Gdk::Color("dark cyan")),
     m_red(Gdk::Color("orange")),
 
     m_seq(a_seq),
@@ -94,6 +95,7 @@ seqroll::seqroll(perform *a_perf,
     colormap->alloc_color( m_white );
     colormap->alloc_color( m_grey );
     colormap->alloc_color( m_dk_grey );
+    colormap->alloc_color( m_dk_cyan );
     colormap->alloc_color( m_red );
 
     m_toggle_play = a_toggle_play;
@@ -628,10 +630,13 @@ void seqroll::draw_events_on( Glib::RefPtr<Gdk::Drawable> a_draw ) {
                 note_y -= m_scroll_offset_y;
 
                 m_gc->set_foreground(m_black);
+
                 /* draw boxes from sequence */
+                /* method 0 is background sequence */
 
                 if ( method == 0 )
-                    m_gc->set_foreground( m_dk_grey );
+                    m_gc->set_foreground( m_dk_cyan );
+                    //m_gc->set_foreground( m_dk_grey );
 
                 a_draw->draw_rectangle(	m_gc,true,
                         note_x,
