@@ -508,16 +508,16 @@ seqedit::create_menus()
     m_menu_rec_vol->items().push_back(MenuElem("Fixed 1",
                 sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 15)));
 
-    /* music scale */
-    m_menu_scale->items().push_back(MenuElem(c_scales_text[0],
-                sigc::bind(mem_fun(*this, &seqedit::set_scale),
-                    c_scale_off )));
-    m_menu_scale->items().push_back(MenuElem(c_scales_text[1],
-                sigc::bind(mem_fun(*this, &seqedit::set_scale),
-                    c_scale_major )));
-    m_menu_scale->items().push_back(MenuElem(c_scales_text[2],
-                sigc::bind(mem_fun(*this, &seqedit::set_scale),
-                    c_scale_minor )));
+//#define SET_SCALE   mem_fun(*this, &seqedit::set_scale)
+
+    for (int i = int(c_scale_off); i < int(c_scale_size); i++)
+    {
+        m_menu_scale->items().push_back                 /* music scale      */
+        (
+            MenuElem(c_scales_text[i], sigc::bind(mem_fun(*this, &seqedit::set_scale), i))
+        );
+    }
+
 
     for( int i=0; i<16; i++ ){
 

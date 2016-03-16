@@ -204,37 +204,54 @@ extern user_midi_bus_definition   global_user_midi_bus_definitions[c_maxBuses];
 extern user_instrument_definition global_user_instrument_definitions[c_max_instruments];
 
 /* scales */
-enum c_music_scales {
-  c_scale_off,
-  c_scale_major,
-  c_scale_minor,
-  c_scale_size
-
+enum c_music_scales
+{
+    c_scale_off,
+    c_scale_major,
+    c_scale_minor,
+    c_scale_harmonic_minor,
+    c_scale_melodic_minor,
+    c_scale_c_whole_tone,
+    c_scale_size            // a "maximum" or "size of set" value.
 };
 
 
 const bool c_scales_policy[c_scale_size][12] =
 {
-    /* off = chromatic */
-    { true,true,true,true,true,true,true,true,true,true,true,true},
-
-    /* major */
-    { true,false,true,false,true,true,false,true,false,true,false,true},
-
-    /* minor */
-    { true,false,true,true,false,true,false,true,true,false,true,false},
-
+    {                                                       /* off = chromatic */
+        true, true, true, true, true, true,
+        true, true, true, true, true, true
+    },
+    {                                                       /* major           */
+        true, false, true, false, true, true,
+        false, true, false, true, false, true
+    },
+    {                                                       /* minor           */
+        true, false, true, true, false, true,
+        false, true, true, false, true, false
+    },
+    {                                                       /* harmonic minor  */
+        true, false, true, true, false, true,
+        false, true, true, false, false, true
+    },
+    {                                                       /* melodic minor   */
+        true, false, true, true, false, true,
+        false, true, false, true, false, true
+    },
+    {                                                       /* whole tone      */
+        true, false, true, false, true, false,
+        true, false, true, false, true, false
+    },
 };
 
 const int c_scales_transpose_up[c_scale_size][12] =
 {
-    /* off = chromatic */
-    { 1,1,1,1,1,1,1,1,1,1,1,1},
-    /* major */
-    { 2,0,2,0,1,2,0,2,0,2,0,1},
-    /* minor */
-    { 2,0,1,2,0,2,0,1,2,0,2,0},
-
+    { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},              /* off = chromatic */
+    { 2, 0, 2, 0, 1, 2, 0, 2, 0, 2, 0, 1},              /* major           */
+    { 2, 0, 1, 2, 0, 2, 0, 1, 2, 0, 2, 0},              /* minor           */
+    { 2, 0, 1, 2, 0, 2, 0, 1, 3, 0, 0, 1},              /* harmonic minor  */
+    { 2, 0, 1, 2, 0, 2, 0, 2, 0, 2, 0, 1},              /* melodic minor   */
+    { 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0},              /* C whole tone    */
 };
 
 
@@ -242,13 +259,12 @@ const int c_scales_transpose_up[c_scale_size][12] =
 
 const int c_scales_transpose_dn[c_scale_size][12] =
 {
-    /* off = chromatic */
-    { -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    /* major */
-    { -1,0,-2,0,-2,-1,0,-2,0,-2,0,-2},
-    /* minor */
-    { -2,0,-2,-1,0,-2,0,-2,-1,0,-2,0},
-
+    { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},  /* off = chromatic */
+    { -1, 0, -2, 0, -2, -1, 0, -2, 0, -2, 0, -2},       /* major           */
+    { -2, 0, -2, -1, 0, -2, 0, -2, -1, 0, -2, 0},       /* minor           */
+    { -1, -0, -2, -1, 0, -2, 0, -2, -1, 0, 0, -3},      /* harmonic minor  */
+    { -1, 0, -2, -1, 0, -2, 0, -2, 0, -2, 0, -2},       /* melodic minor   */
+    { -2, 0, -2, 0, -2, 0, -2, 0, -2, 0, -2, 0},        /* C whole tone    */
 };
 
 const int c_scales_symbol[c_scale_size][12] =
@@ -268,11 +284,14 @@ const int c_scales_symbol[c_scale_size][12] =
 // down 129
 
 
-const char c_scales_text[c_scale_size][6] =
+const char c_scales_text[c_scale_size][32] =
 {
-    "Off",
+    "Off (chromatic)",
     "Major",
-    "Minor"
+    "Minor",
+    "Harmonic Minor",
+    "Melodic Minor",
+    "Whole Tone",
 };
 
 const char c_key_text[][3] =
