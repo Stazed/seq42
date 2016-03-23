@@ -1551,13 +1551,10 @@ seqedit::timeout()
     set_track_info();
 
     if(m_seq->m_have_undo)
-    {
         m_button_undo->set_sensitive(true);
-    }
     else
-    {
         m_button_undo->set_sensitive(false);
-    }
+
     if(m_seq->m_have_redo)
         m_button_redo->set_sensitive(true);
     else
@@ -1575,9 +1572,8 @@ bool
 seqedit::on_delete_event(GdkEventAny *a_event)
 {
     if(m_seq->m_have_undo)
-    {
         m_mainperf->set_have_modified(true);
-    }
+
     //printf( "seqedit::on_delete_event()\n" );
     m_seq->set_recording( false );
     m_mainperf->get_master_midi_bus()->set_sequence_input( false, NULL );
@@ -1642,8 +1638,14 @@ seqedit::on_key_press_event( GdkEventKey* a_ev )
 
     if ((a_ev->state & modifiers) == GDK_CONTROL_MASK && a_ev->keyval == 'w')
         return on_delete_event((GdkEventAny*)a_ev);
-    else
+
+    if(get_focus()->get_name() == "gtkmm__GtkEntry")  // if we are on the sequence name
+        return Gtk::Window::on_key_press_event(a_ev); // return = don't do anything else
+
+    if(! m_seqroll_wid->on_key_press_event(a_ev))     // seqroll has precedence - no duplicates
         return Gtk::Window::on_key_press_event(a_ev);
+
+    return false;
 }
 
 void

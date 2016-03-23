@@ -1124,6 +1124,7 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
             }
             ret = true;
         }
+
         if ( a_p0->keyval ==  GDK_Down ){
 
             if ( a_p0->state & GDK_SHIFT_MASK ){
@@ -1145,6 +1146,7 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
             }
             ret = true;
         }
+
         if ( a_p0->keyval ==  GDK_Left )
         {
             if ( a_p0->state & GDK_SHIFT_MASK )

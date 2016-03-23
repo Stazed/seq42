@@ -168,7 +168,6 @@ class seqroll : public Gtk::DrawingArea
     bool on_button_press_event(GdkEventButton* a_ev);
     bool on_button_release_event(GdkEventButton* a_ev);
     bool on_motion_notify_event(GdkEventMotion* a_ev);
-    bool on_key_press_event(GdkEventKey* a_p0);
     bool on_focus_in_event(GdkEventFocus*);
     bool on_focus_out_event(GdkEventFocus*);
     bool on_scroll_event( GdkEventScroll* a_ev);
@@ -208,6 +207,7 @@ class seqroll : public Gtk::DrawingArea
 
  public:
 
+    bool on_key_press_event(GdkEventKey* a_p0); // called from seqedit
     void reset();
     void redraw();
     void redraw_events();
