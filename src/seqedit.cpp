@@ -1554,12 +1554,26 @@ seqedit::timeout()
     if(m_seq->m_have_undo)
         m_button_undo->set_sensitive(true);
     else
-        m_button_undo->set_sensitive(false);
+    {   // must change focus on insensitive button or get_focus() from
+        // on_key_press_event() will segfault
+        if(m_button_undo->get_sensitive() && m_button_undo->has_focus())
+            m_seqroll_wid->grab_focus();
+
+        if(m_button_undo->get_sensitive())
+            m_button_undo->set_sensitive(false);
+    }
 
     if(m_seq->m_have_redo)
         m_button_redo->set_sensitive(true);
     else
-        m_button_redo->set_sensitive(false);
+    {   // must change focus on insensitive button or get_focus() from
+        // on_key_press_event() will segfault
+        if(m_button_redo->get_sensitive() && m_button_redo->has_focus())
+            m_seqroll_wid->grab_focus();
+
+        if(m_button_redo->get_sensitive())
+            m_button_redo->set_sensitive(false);
+    }
 
     return true;
 }
