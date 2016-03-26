@@ -532,26 +532,26 @@ mainwnd::timer_callback(  )
     if (m_button_jack->get_active() != m_mainperf->get_toggle_jack()) // for seqroll keybinding
         toggle_jack();
 
-    if(global_is_running)
+    if(global_is_running && m_button_jack->get_sensitive())
     {
         if( m_button_jack->has_focus()) // needed to avoid segfault on get_focus() from on_key_press_event()
             m_perfroll->grab_focus();  // when the focus is on non-sensitive m_button_jack
 
         m_button_jack->set_sensitive(false);
     }
-    else
+    else if(!global_is_running && !m_button_jack->get_sensitive())
         m_button_jack->set_sensitive(true);
 
 #endif // JACK_SUPPORT
 
-    if(global_is_running)
+    if(global_is_running && m_button_mode->get_sensitive())
     {
         if(m_button_mode->has_focus()) // needed to avoid segfault on get_focus() from on_key_press_event()
             m_perfroll->grab_focus();  // when the focus is on non-sensitive m_button_mode
 
         m_button_mode->set_sensitive(false);
     }
-    else
+    else if(!global_is_running && !m_button_mode->get_sensitive())
         m_button_mode->set_sensitive(true);
 
     if (m_button_follow->get_active() != m_mainperf->get_follow_transport())
@@ -564,14 +564,14 @@ mainwnd::timer_callback(  )
         m_adjust_swing_amount16->set_value( m_mainperf->get_swing_amount16());
     }
 
-    if(m_mainperf->m_have_undo)
+    if(m_mainperf->m_have_undo && !m_button_undo->get_sensitive())
         m_button_undo->set_sensitive(true);
-    else
+    else if(!m_mainperf->m_have_undo && m_button_undo->get_sensitive())
         m_button_undo->set_sensitive(false);
 
-    if(m_mainperf->m_have_redo)
+    if(m_mainperf->m_have_redo && !m_button_redo->get_sensitive())
         m_button_redo->set_sensitive(true);
-    else
+    else if(!m_mainperf->m_have_redo && m_button_redo->get_sensitive())
         m_button_redo->set_sensitive(false);
 
     if(m_mainperf->m_have_modified)
