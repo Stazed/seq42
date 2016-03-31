@@ -1748,7 +1748,7 @@ sequence::stream_event(  event *a_ev  )
 
     if ( m_recording )
 	{
-		if ( global_is_running )
+		if ( global_is_running ) // This and below are the reason we need a global, no perform access
 		{
             if((int)get_track()->get_default_velocity() != 100)
                 a_ev->set_note_velocity((int)get_track()->get_default_velocity());
@@ -1775,7 +1775,7 @@ sequence::stream_event(  event *a_ev  )
 
     link_new();
 
-    if ( m_quanized_rec && global_is_running ){
+    if ( m_quanized_rec && global_is_running ){ // need global here since we don't have perform access
         if (a_ev->is_note_off()) {
             select_note_events( a_ev->get_timestamp(), a_ev->get_note(),
             a_ev->get_timestamp(), a_ev->get_note(), e_select);
