@@ -203,7 +203,7 @@ seqtime::update_pixmap()
 
 */
 
-    int measure_length_32nds =  m_seq->get_bpm() * 32 /
+    int measure_length_32nds =  m_seq->get_bp_measure() * 32 /
         m_seq->get_bw();
 
     //printf ( "measure_length_32nds[%d]\n", measure_length_32nds );
@@ -214,7 +214,7 @@ seqtime::update_pixmap()
 
     //printf( "measures_per_line[%d]\n", measures_per_line );
 
-    int ticks_per_measure =  m_seq->get_bpm() * (4 * c_ppqn) / m_seq->get_bw();
+    int ticks_per_measure =  m_seq->get_bp_measure() * (4 * c_ppqn) / m_seq->get_bw();
     int ticks_per_step =  ticks_per_measure * measures_per_line;
     int start_tick = m_scroll_offset_ticks - (m_scroll_offset_ticks % ticks_per_step );
     int end_tick = (m_window_x * m_zoom) + m_scroll_offset_ticks;

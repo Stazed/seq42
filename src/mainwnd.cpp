@@ -315,7 +315,7 @@ mainwnd::mainwnd(perform *a_p):
     m_entry_snap->set_size_request( 40, -1 );
     m_entry_snap->set_editable( false );
 
-    m_menu_bpm = manage( new Menu() );
+    m_menu_bp_measure = manage( new Menu() );
     m_menu_bw = manage( new Menu() );
 
     /* bw */
@@ -332,8 +332,8 @@ mainwnd::mainwnd(perform *a_p):
         snprintf( b, sizeof(b), "%d", i+1 );
 
         /* length */
-        m_menu_bpm->items().push_back(MenuElem(b,
-                                               sigc::bind(mem_fun(*this,&mainwnd::set_bpm),
+        m_menu_bp_measure->items().push_back(MenuElem(b,
+                                               sigc::bind(mem_fun(*this,&mainwnd::set_bp_measure),
                                                     i+1 )));
     }
 
@@ -346,13 +346,13 @@ mainwnd::mainwnd(perform *a_p):
     add_tooltip( m_spinbutton_bpm, "Adjust beats per minute (BPM) value" );
 
     /* beats per measure */
-    m_button_bpm = manage( new Button());
-    m_button_bpm->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( down_xpm  ))));
-    m_button_bpm->signal_clicked().connect(  sigc::bind<Menu *>( mem_fun( *this, &mainwnd::popup_menu), m_menu_bpm  ));
-    add_tooltip( m_button_bpm, "Time Signature. Beats per Measure" );
-    m_entry_bpm = manage( new Entry());
-    m_entry_bpm->set_width_chars(2);
-    m_entry_bpm->set_editable( false );
+    m_button_bp_measure = manage( new Button());
+    m_button_bp_measure->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( down_xpm  ))));
+    m_button_bp_measure->signal_clicked().connect(  sigc::bind<Menu *>( mem_fun( *this, &mainwnd::popup_menu), m_menu_bp_measure  ));
+    add_tooltip( m_button_bp_measure, "Time Signature. Beats per Measure" );
+    m_entry_bp_measure = manage( new Entry());
+    m_entry_bp_measure->set_width_chars(2);
+    m_entry_bp_measure->set_editable( false );
 
 
     /* beat width */
@@ -422,8 +422,8 @@ mainwnd::mainwnd(perform *a_p):
     m_hlbox->pack_start(*m_spinbutton_bpm, false, false );
     m_hlbox->pack_start(*(manage( new Label( "bpm" ))), false, false, 4);
 
-    m_hlbox->pack_start( *m_button_bpm , false, false );
-    m_hlbox->pack_start( *m_entry_bpm , false, false );
+    m_hlbox->pack_start( *m_button_bp_measure , false, false );
+    m_hlbox->pack_start( *m_entry_bp_measure , false, false );
 
     m_hlbox->pack_start( *(manage(new Label( "/" ))), false, false, 4);
 
@@ -462,12 +462,12 @@ mainwnd::mainwnd(perform *a_p):
     this->add (*ovbox);
 
     //m_snap = 4;
-    //m_bpm = 4;
+    //m_bp_measure = 4;
     //m_bw = 4;
 
     set_bw( 4 );
     set_snap( 4 );
-    set_bpm( 4 );
+    set_bp_measure( 4 );
     set_xpose( 0 );
 
     m_perfroll->init_before_show();
@@ -517,8 +517,8 @@ mainwnd::timer_callback(  )
         m_adjust_bpm->set_value( m_mainperf->get_bpm());
     }
 
-    if ( m_bpm != m_mainperf->get_bp_measure()){
-        set_bpm( m_mainperf->get_bp_measure());
+    if ( m_bp_measure != m_mainperf->get_bp_measure()){
+        set_bp_measure( m_mainperf->get_bp_measure());
     }
 
     if ( m_bw != m_mainperf->get_bw()){
@@ -806,7 +806,7 @@ mainwnd::popup_menu(Menu *a_menu)
 void
 mainwnd::set_guides()
 {
-    long measure_ticks = (c_ppqn * 4) * m_bpm / m_bw;
+    long measure_ticks = (c_ppqn * 4) * m_bp_measure / m_bw;
     long snap_ticks =  measure_ticks / m_snap;
     long beat_ticks = (c_ppqn * 4) / m_bw;
     m_perfroll->set_guides( snap_ticks, measure_ticks, beat_ticks );
@@ -825,7 +825,7 @@ mainwnd::set_snap( int a_snap  )
     set_guides();
 }
 
-void mainwnd::set_bpm( int a_beats_per_measure )
+void mainwnd::set_bp_measure( int a_beats_per_measure )
 {
     m_mainperf->set_bp_measure(a_beats_per_measure);
 
@@ -836,9 +836,9 @@ void mainwnd::set_bpm( int a_beats_per_measure )
 
     char b[10];
     snprintf(b, sizeof(b), "%d", a_beats_per_measure );
-    m_entry_bpm->set_text(b);
+    m_entry_bp_measure->set_text(b);
 
-    m_bpm = a_beats_per_measure;
+    m_bp_measure = a_beats_per_measure;
     set_guides();
 }
 

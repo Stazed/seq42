@@ -169,8 +169,8 @@ class sequence
     void set_measures (long a_length_measures);
     long get_measures ();
 
-    void set_bpm (long a_beats_per_measure);
-    long get_bpm ();
+    void set_bp_measure (long a_beats_per_measure);
+    long get_bp_measure ();
 
     void set_bw (long a_beat_width);
     long get_bw ();

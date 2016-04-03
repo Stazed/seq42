@@ -172,7 +172,7 @@ seqedit::seqedit( sequence *a_seq,
     m_menu_snap =   manage( new Menu());
     m_menu_note_length = manage( new Menu());
     m_menu_length = manage( new Menu());
-    m_menu_bpm = manage( new Menu() );
+    m_menu_bp_measure = manage( new Menu() );
     m_menu_bw = manage( new Menu() );
     m_menu_swing_mode = manage( new Menu());
     m_menu_rec_vol = manage( new Menu() );
@@ -318,7 +318,7 @@ seqedit::seqedit( sequence *a_seq,
     set_background_sequence( m_bg_trk, m_bg_seq );
 
 
-    set_bpm( m_seq->get_bpm() );
+    set_bp_measure( m_seq->get_bp_measure() );
     set_bw( m_seq->get_bw() );
     set_measures( get_measures(), false );
 
@@ -527,8 +527,8 @@ seqedit::create_menus()
         m_menu_length->items().push_back(MenuElem(b,
                     sigc::bind(mem_fun(*this, &seqedit::set_measures), i+1, true )));
         /* length */
-        m_menu_bpm->items().push_back(MenuElem(b,
-                    sigc::bind(mem_fun(*this, &seqedit::set_bpm), i+1 )));
+        m_menu_bp_measure->items().push_back(MenuElem(b,
+                    sigc::bind(mem_fun(*this, &seqedit::set_bp_measure), i+1 )));
     }
 
     m_menu_length->items().push_back(MenuElem("32",
@@ -797,18 +797,18 @@ seqedit::fill_top_bar()
     m_hbox->pack_start( *(manage(new VSeparator( ))), false, false, 4);
 
     /* beats per measure */
-    m_button_bpm = manage( new Button());
-    m_button_bpm->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( down_xpm  ))));
-    m_button_bpm->signal_clicked().connect(
+    m_button_bp_measure = manage( new Button());
+    m_button_bp_measure->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( down_xpm  ))));
+    m_button_bp_measure->signal_clicked().connect(
             sigc::bind<Menu *>( mem_fun( *this, &seqedit::popup_menu),
-                m_menu_bpm  ));
-    add_tooltip( m_button_bpm, "Time Signature. Beats per Measure" );
-    m_entry_bpm = manage( new Entry());
-    m_entry_bpm->set_width_chars(2);
-    m_entry_bpm->set_editable( false );
+                m_menu_bp_measure  ));
+    add_tooltip( m_button_bp_measure, "Time Signature. Beats per Measure" );
+    m_entry_bp_measure = manage( new Entry());
+    m_entry_bp_measure->set_width_chars(2);
+    m_entry_bp_measure->set_editable( false );
 
-    m_hbox->pack_start( *m_button_bpm , false, false );
-    m_hbox->pack_start( *m_entry_bpm , false, false );
+    m_hbox->pack_start( *m_button_bp_measure , false, false );
+    m_hbox->pack_start( *m_entry_bp_measure , false, false );
 
     m_hbox->pack_start( *(manage(new Label( "/" ))), false, false, 4);
 
@@ -1304,9 +1304,9 @@ seqedit::set_key( int a_note )
 
 
 void
-seqedit::apply_length( int a_bpm, int a_bw, int a_measures, bool a_adjust_triggers )
+seqedit::apply_length( int a_bp_measure, int a_bw, int a_measures, bool a_adjust_triggers )
 {
-  m_seq->set_length( a_measures * a_bpm * ((c_ppqn * 4) / a_bw), a_adjust_triggers );
+  m_seq->set_length( a_measures * a_bp_measure * ((c_ppqn * 4) / a_bw), a_adjust_triggers );
 
   m_seqroll_wid->reset();
   m_seqtime_wid->reset();
@@ -1319,7 +1319,7 @@ seqedit::apply_length( int a_bpm, int a_bw, int a_measures, bool a_adjust_trigge
 long
 seqedit::get_measures()
 {
-    long units = ((m_seq->get_bpm() * (c_ppqn * 4)) /  m_seq->get_bw() );
+    long units = ((m_seq->get_bp_measure() * (c_ppqn * 4)) /  m_seq->get_bw() );
 
     long measures = (m_seq->get_length() / units);
 
@@ -1339,7 +1339,7 @@ seqedit::set_measures( int a_length_measures, bool a_adjust_triggers  )
     m_entry_length->set_text(b);
 
     m_measures = a_length_measures;
-    apply_length( m_seq->get_bpm(), m_seq->get_bw(), a_length_measures, a_adjust_triggers );
+    apply_length( m_seq->get_bp_measure(), m_seq->get_bw(), a_length_measures, a_adjust_triggers );
 }
 
 int
@@ -1363,17 +1363,17 @@ seqedit::set_swing_mode( int a_mode  )
 
 
 void
-seqedit::set_bpm( int a_beats_per_measure )
+seqedit::set_bp_measure( int a_beats_per_measure )
 {
     char b[4];
 
     snprintf(b, sizeof(b), "%d", a_beats_per_measure);
-    m_entry_bpm->set_text(b);
+    m_entry_bp_measure->set_text(b);
 
-    if ( a_beats_per_measure != m_seq->get_bpm() ){
+    if ( a_beats_per_measure != m_seq->get_bp_measure() ){
 
         long length = get_measures();
-        m_seq->set_bpm( a_beats_per_measure );
+        m_seq->set_bp_measure( a_beats_per_measure );
         apply_length( a_beats_per_measure, m_seq->get_bw(), length, true );
     }
 }
@@ -1391,7 +1391,7 @@ seqedit::set_bw( int a_beat_width  )
 
         long length = get_measures();
         m_seq->set_bw( a_beat_width );
-        apply_length( m_seq->get_bpm(), a_beat_width, length, true );
+        apply_length( m_seq->get_bp_measure(), a_beat_width, length, true );
     }
 }
 

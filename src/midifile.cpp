@@ -322,7 +322,7 @@ bool midifile::parse (perform * a_perf)
 
                                     else if (proprietary == c_timesig)
                                     {
-                                        seq->set_bpm (read_byte ());
+                                        seq->set_bp_measure (read_byte ());
                                         seq->set_bw (read_byte ());
                                         len -= 2;
                                     }

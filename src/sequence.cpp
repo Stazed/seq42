@@ -129,7 +129,7 @@ sequence::set_have_redo()
 }
 
 void
-sequence::set_bpm( long a_beats_per_measure )
+sequence::set_bp_measure( long a_beats_per_measure )
 {
     lock();
     m_time_beats_per_measure = a_beats_per_measure;
@@ -138,7 +138,7 @@ sequence::set_bpm( long a_beats_per_measure )
 }
 
 long
-sequence::get_bpm()
+sequence::get_bp_measure()
 {
     return m_time_beats_per_measure;
 }

@@ -181,7 +181,7 @@ seqevent::draw_background()
                              m_window_y );
 
 
-   /*int measure_length_64ths =  m_seq->get_bpm() * 64 /
+   /*int measure_length_64ths =  m_seq->get_bp_measure() * 64 /
         m_seq->get_bw();*/
 
     //printf ( "measure_length_64ths[%d]\n", measure_length_64ths );
@@ -192,7 +192,7 @@ seqevent::draw_background()
 
     //printf( "measures_per_line[%d]\n", measures_per_line );
 
-    int ticks_per_measure =  m_seq->get_bpm() * (4 * c_ppqn) / m_seq->get_bw();
+    int ticks_per_measure =  m_seq->get_bp_measure() * (4 * c_ppqn) / m_seq->get_bw();
     int ticks_per_beat =  (4 * c_ppqn) / m_seq->get_bw();
     int ticks_per_step = 6 * m_zoom;
     int ticks_per_m_line =  ticks_per_measure * measures_per_line;
