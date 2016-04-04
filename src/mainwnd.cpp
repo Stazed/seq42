@@ -267,7 +267,7 @@ mainwnd::mainwnd(perform *a_p):
             snprintf(num, sizeof(num), "0 [normal]");
         }
         m_menu_xpose->items().push_front( MenuElem( num,
-                    sigc::bind(mem_fun(*this,&mainwnd::set_xpose),
+                    sigc::bind(mem_fun(*this,&mainwnd::xpose_button_callback),
                         i )));
     }
 
@@ -865,6 +865,16 @@ void mainwnd::set_bw( int a_beat_width )
 }
 
 void
+mainwnd::xpose_button_callback( int a_xpose)
+{
+    if(m_mainperf->get_master_midi_bus()->get_transpose() != a_xpose)
+    {
+        set_xpose(a_xpose);
+        global_is_modified = true;
+    }
+}
+
+void
 mainwnd::set_xpose( int a_xpose  )
 {
     char b[11];
@@ -882,7 +892,7 @@ mainwnd::grow()
     m_perftime->increment_size();
 }
 
-void
+void // FIXME what is this for???
 mainwnd::apply_song_transpose()
 {
     m_mainperf->apply_song_transpose();
@@ -902,11 +912,11 @@ mainwnd::open_seqlist()
     }
 }
 
-
 void
 mainwnd::set_song_mute(mute_op op)
 {
     m_mainperf->set_song_mute(op);
+    global_is_modified = true;
 }
 
 void
@@ -919,15 +929,12 @@ mainwnd::options_dialog()
 }
 
 
-
-
 /* callback function */
 void mainwnd::file_new()
 {
     if (is_save())
         new_file();
 }
-
 
 void mainwnd::new_file()
 {
@@ -938,13 +945,11 @@ void mainwnd::new_file()
     global_is_modified = false;
 }
 
-
 /* callback function */
 void mainwnd::file_save()
 {
     save_file();
 }
-
 
 /* callback function */
 void mainwnd::file_save_as(int type)

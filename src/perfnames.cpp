@@ -241,7 +241,7 @@ perfnames::on_button_press_event(GdkEventButton *a_e)
 
             bool muted = m_mainperf->get_track(track)->get_song_mute();
             m_mainperf->get_track(track)->set_song_mute( !muted );
-
+            global_is_modified = true;
             queue_draw();
         }
     }

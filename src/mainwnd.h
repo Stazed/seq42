@@ -142,6 +142,7 @@ class mainwnd : public Gtk::Window
     void adj_callback_bpm( );
     void bw_button_callback(int a_beat_width);
     void bp_measure_button_callback(int a_beats_per_measeure);
+    void xpose_button_callback( int a_xpose);
     void adj_callback_swing_amount8( );
     void adj_callback_swing_amount16( );
     bool timer_callback( );
