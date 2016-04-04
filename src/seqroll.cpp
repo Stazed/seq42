@@ -1657,7 +1657,6 @@ bool FruitySeqRollInput::on_button_release_event(GdkEventButton* a_ev, seqroll& 
         {
             /* convert deltas into screen corridinates */
             ths.convert_xy( delta_x, delta_y, &delta_tick, &delta_note );
-            ths.m_seq->push_undo();
 
             if ( a_ev->state & GDK_SHIFT_MASK )
                 ths.m_seq->stretch_selected( delta_tick );
@@ -1725,7 +1724,6 @@ bool FruitySeqRollInput::on_button_release_event(GdkEventButton* a_ev, seqroll& 
                ( delta_y[0] = note[127], etc.,so we have to adjust */
             delta_note = delta_note - (c_num_keys-1);
 
-            ths.m_seq->push_undo();
             ths.m_seq->move_selected_notes( delta_tick, delta_note );
             needs_update = true;
         }
@@ -2128,7 +2126,6 @@ bool Seq42SeqRollInput::on_button_release_event(GdkEventButton* a_ev, seqroll& t
                ( delta_y[0] = note[127], etc.,so we have to adjust */
             delta_note = delta_note - (c_num_keys-1);
 
-            ths.m_seq->push_undo();
             ths.m_seq->move_selected_notes( delta_tick, delta_note );
             needs_update = true;
         }
@@ -2141,7 +2138,6 @@ bool Seq42SeqRollInput::on_button_release_event(GdkEventButton* a_ev, seqroll& t
 
             /* convert deltas into screen corridinates */
             ths.convert_xy( delta_x, delta_y, &delta_tick, &delta_note );
-            ths.m_seq->push_undo();
 
             if ( a_ev->state & GDK_SHIFT_MASK )
             {

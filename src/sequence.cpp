@@ -792,7 +792,7 @@ sequence::select_even_or_odd_notes(int note_len, bool even)
 
 /* selects events in range..  tick start, note high, tick end
    note low */
-    int
+int
 sequence::select_note_events( long a_tick_s, int a_note_h,
         long a_tick_f, int a_note_l, select_action_e a_action)
 {
@@ -1057,6 +1057,7 @@ sequence::move_selected_notes( long a_delta_tick, int a_delta_note )
         return;
 
     push_undo();
+
     event e;
     bool noteon=false;
     long timestamp=0;
@@ -1117,6 +1118,11 @@ sequence::move_selected_notes( long a_delta_tick, int a_delta_note )
 void
 sequence::stretch_selected( long a_delta_tick )
 {
+    if(!mark_selected())
+        return;
+
+    push_undo();
+
     event *e, new_e;
 
     lock();
