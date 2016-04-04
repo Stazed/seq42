@@ -177,6 +177,7 @@ extern bool global_manual_alsa_ports;
     This should not be reset under any other circumstance!
 */
 extern bool global_is_running;
+extern bool global_is_modified;
 
 extern Glib::ustring global_filename;
 extern Glib::ustring global_jack_session_uuid;

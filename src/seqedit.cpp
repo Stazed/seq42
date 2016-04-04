@@ -525,24 +525,24 @@ seqedit::create_menus()
 
         /* length */
         m_menu_length->items().push_back(MenuElem(b,
-                    sigc::bind(mem_fun(*this, &seqedit::set_measures), i+1, true )));
+                    sigc::bind(mem_fun(*this, &seqedit::measures_button_callback), i+1 )));
         /* length */
         m_menu_bp_measure->items().push_back(MenuElem(b,
                     sigc::bind(mem_fun(*this, &seqedit::set_bp_measure), i+1 )));
     }
 
     m_menu_length->items().push_back(MenuElem("32",
-                sigc::bind(mem_fun(*this, &seqedit::set_measures), 32, true )));
+                sigc::bind(mem_fun(*this, &seqedit::measures_button_callback), 32 )));
     m_menu_length->items().push_back(MenuElem("64",
-                sigc::bind(mem_fun(*this, &seqedit::set_measures), 64, true )));
+                sigc::bind(mem_fun(*this, &seqedit::measures_button_callback), 64 )));
 
 
     m_menu_swing_mode->items().push_back(MenuElem("off",
-                sigc::bind(mem_fun(*this, &seqedit::set_swing_mode), c_no_swing )));
+                sigc::bind(mem_fun(*this, &seqedit::swing_button_callback), c_no_swing )));
     m_menu_swing_mode->items().push_back(MenuElem("1/8",
-                sigc::bind(mem_fun(*this, &seqedit::set_swing_mode), c_swing_eighths )));
+                sigc::bind(mem_fun(*this, &seqedit::swing_button_callback), c_swing_eighths )));
     m_menu_swing_mode->items().push_back(MenuElem("1/16",
-                sigc::bind(mem_fun(*this, &seqedit::set_swing_mode), c_swing_sixteenths )));
+                sigc::bind(mem_fun(*this, &seqedit::swing_button_callback), c_swing_sixteenths )));
 
   //m_menu_tools->items().push_back( SeparatorElem( ));
 }
@@ -1329,6 +1329,15 @@ seqedit::get_measures()
     return measures;
 }
 
+void
+seqedit::measures_button_callback( int a_length_measures )
+{
+    if(m_measures != a_length_measures)
+    {
+        set_measures(a_length_measures,true);
+        global_is_modified = true;
+    }
+}
 
 void
 seqedit::set_measures( int a_length_measures, bool a_adjust_triggers  )
@@ -1340,6 +1349,16 @@ seqedit::set_measures( int a_length_measures, bool a_adjust_triggers  )
 
     m_measures = a_length_measures;
     apply_length( m_seq->get_bp_measure(), m_seq->get_bw(), a_length_measures, a_adjust_triggers );
+}
+
+void
+seqedit::swing_button_callback( int a_mode)
+{
+    if(get_swing_mode() != a_mode)
+    {
+        set_swing_mode(a_mode);
+        global_is_modified = true;
+    }
 }
 
 int
@@ -1375,6 +1394,7 @@ seqedit::set_bp_measure( int a_beats_per_measure )
         long length = get_measures();
         m_seq->set_bp_measure( a_beats_per_measure );
         apply_length( a_beats_per_measure, m_seq->get_bw(), length, true );
+        global_is_modified = true;
     }
 }
 
@@ -1392,6 +1412,7 @@ seqedit::set_bw( int a_beat_width  )
         long length = get_measures();
         m_seq->set_bw( a_beat_width );
         apply_length( m_seq->get_bp_measure(), a_beat_width, length, true );
+        global_is_modified = true;
     }
 }
 
@@ -1400,6 +1421,7 @@ void
 seqedit::name_change_callback()
 {
     m_seq->set_name( m_entry_name->get_text());
+    global_is_modified = true;
     // m_mainwid->update_sequence_on_window( m_pos );
 }
 
@@ -1583,9 +1605,6 @@ seqedit::~seqedit()
 bool
 seqedit::on_delete_event(GdkEventAny *a_event)
 {
-    if(m_seq->m_have_undo)
-        m_mainperf->set_have_modified(true);
-
     //printf( "seqedit::on_delete_event()\n" );
     m_seq->set_recording( false );
     m_mainperf->get_master_midi_bus()->set_sequence_input( false, NULL );

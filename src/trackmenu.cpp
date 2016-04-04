@@ -202,6 +202,7 @@ trackmenu::set_bus_and_midi_channel( int a_bus, int a_ch )
         m_mainperf->get_track( m_current_trk )->set_midi_bus( a_bus );
         m_mainperf->get_track( m_current_trk )->set_midi_channel( a_ch );
         m_mainperf->get_track( m_current_trk )->set_dirty();
+        global_is_modified = true;
     }
 }
 
@@ -431,7 +432,6 @@ trackmenu::trk_edit(){
     if ( m_mainperf->is_active_track( m_current_trk ))
     {
         track *a_track = m_mainperf->get_track( m_current_trk );
-        m_mainperf->set_have_modified(true);
 
         if(a_track->get_editing()) {
             a_track->set_raise(true);

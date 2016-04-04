@@ -210,6 +210,8 @@ class seqedit : public Gtk::Window
 
     void set_background_sequence( int a_trk, int a_seq );
 
+    void measures_button_callback( int a_length_measures );
+    void swing_button_callback( int a_mode);
     void name_change_callback();
     void play_change_callback();
     void record_change_callback();

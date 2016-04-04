@@ -154,13 +154,11 @@ trackedit::timeout()
     return true;
 }
 
-
-
-
 void
 trackedit::name_change_callback ()
 {
     m_track->set_name( m_entry_name->get_text());
+    global_is_modified = true;
 }
 
 void
@@ -174,7 +172,7 @@ trackedit::popup_midibus_menu()
     mastermidibus *masterbus = m_track->get_master_midi_bus();
     for ( int i=0; i< masterbus->get_num_out_buses(); i++ ){
         m_menu_midibus->items().push_back(MenuElem(masterbus->get_midi_out_bus_name(i),
-                                                   sigc::bind(mem_fun(*this,&trackedit::set_midi_bus), i)));
+                                                   sigc::bind(mem_fun(*this,&trackedit::midi_bus_button_callback), i)));
     }
 
     m_menu_midibus->popup(0,0);
@@ -204,11 +202,21 @@ trackedit::popup_midich_menu()
                            string(")") );
         }
         m_menu_midich->items().push_back(MenuElem(name,
-                                                  sigc::bind(mem_fun(*this,&trackedit::set_midi_channel),
+                                                  sigc::bind(mem_fun(*this,&trackedit::midi_channel_button_callback),
                                                        i )));
     }
 
     m_menu_midich->popup(0,0);
+}
+
+void
+trackedit::midi_channel_button_callback( int a_midichannel )
+{
+    if(m_track->get_midi_channel() != a_midichannel)
+    {
+        set_midi_channel(a_midichannel);
+        global_is_modified = true;
+    }
 }
 
 void
@@ -218,6 +226,16 @@ trackedit::set_midi_channel( int a_midichannel  )
     sprintf( b, "%d", a_midichannel+1 );
     m_entry_channel->set_text(b);
     m_track->set_midi_channel( a_midichannel );
+}
+
+void
+trackedit::midi_bus_button_callback( int a_midibus )
+{
+    if(m_track->get_midi_bus() != a_midibus)
+    {
+        set_midi_bus(a_midibus);
+        global_is_modified = true;
+    }
 }
 
 void
@@ -232,4 +250,5 @@ void
 trackedit::transposable_change_callback(CheckButton *a_button)
 {
     m_track->set_transposable(a_button->get_active());
+    global_is_modified = true;
 }

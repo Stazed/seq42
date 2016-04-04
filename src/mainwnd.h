@@ -48,7 +48,6 @@ class mainwnd : public Gtk::Window
  private:
 
     perform  *m_mainperf;
-    bool      m_modified;
     static int m_sigpipe[2];
 
 #if GTK_MINOR_VERSION < 12
@@ -141,6 +140,8 @@ class mainwnd : public Gtk::Window
 
     //void adj_callback_ss( );
     void adj_callback_bpm( );
+    void bw_button_callback(int a_beat_width);
+    void bp_measure_button_callback(int a_beats_per_measeure);
     void adj_callback_swing_amount8( );
     void adj_callback_swing_amount16( );
     bool timer_callback( );
@@ -149,7 +150,6 @@ class mainwnd : public Gtk::Window
     void stop_playing();
     void update_window_title();
     void toLower(basic_string<char>&);
-    bool is_modified();
     void file_new();
     void file_open();
     void file_save();

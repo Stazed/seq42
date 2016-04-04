@@ -49,6 +49,7 @@
 using namespace sigc;
 
 bool global_is_running = false;
+bool global_is_modified = false;
 
 // tooltip helper, for old vs new gtk...
 #if GTK_MINOR_VERSION >= 12
@@ -59,7 +60,6 @@ bool global_is_running = false;
 
 mainwnd::mainwnd(perform *a_p):
     m_mainperf(a_p),
-    m_modified(false),
     m_options(NULL),
     m_snap(c_ppqn / 4)
 {
@@ -319,11 +319,11 @@ mainwnd::mainwnd(perform *a_p):
     m_menu_bw = manage( new Menu() );
 
     /* bw */
-    m_menu_bw->items().push_back(MenuElem("1", sigc::bind(mem_fun(*this,&mainwnd::set_bw), 1  )));
-    m_menu_bw->items().push_back(MenuElem("2", sigc::bind(mem_fun(*this,&mainwnd::set_bw), 2  )));
-    m_menu_bw->items().push_back(MenuElem("4", sigc::bind(mem_fun(*this,&mainwnd::set_bw), 4  )));
-    m_menu_bw->items().push_back(MenuElem("8", sigc::bind(mem_fun(*this,&mainwnd::set_bw), 8  )));
-    m_menu_bw->items().push_back(MenuElem("16", sigc::bind(mem_fun(*this,&mainwnd::set_bw), 16 )));
+    m_menu_bw->items().push_back(MenuElem("1", sigc::bind(mem_fun(*this,&mainwnd::bw_button_callback), 1  )));
+    m_menu_bw->items().push_back(MenuElem("2", sigc::bind(mem_fun(*this,&mainwnd::bw_button_callback), 2  )));
+    m_menu_bw->items().push_back(MenuElem("4", sigc::bind(mem_fun(*this,&mainwnd::bw_button_callback), 4  )));
+    m_menu_bw->items().push_back(MenuElem("8", sigc::bind(mem_fun(*this,&mainwnd::bw_button_callback), 8  )));
+    m_menu_bw->items().push_back(MenuElem("16", sigc::bind(mem_fun(*this,&mainwnd::bw_button_callback), 16 )));
 
     char b[20];
 
@@ -333,8 +333,7 @@ mainwnd::mainwnd(perform *a_p):
 
         /* length */
         m_menu_bp_measure->items().push_back(MenuElem(b,
-                                               sigc::bind(mem_fun(*this,&mainwnd::set_bp_measure),
-                                                    i+1 )));
+                           sigc::bind(mem_fun(*this,&mainwnd::bp_measure_button_callback),i+1 )));
     }
 
     /* bpm spin button */
@@ -461,11 +460,7 @@ mainwnd::mainwnd(perform *a_p):
     /* add box */
     this->add (*ovbox);
 
-    //m_snap = 4;
-    //m_bp_measure = 4;
-    //m_bw = 4;
-
-    set_bw( 4 );
+    set_bw( 4 ); // set this first
     set_snap( 4 );
     set_bp_measure( 4 );
     set_xpose( 0 );
@@ -573,9 +568,6 @@ mainwnd::timer_callback(  )
         m_button_redo->set_sensitive(true);
     else if(!m_mainperf->m_have_redo && m_button_redo->get_sensitive())
         m_button_redo->set_sensitive(false);
-
-    if(m_mainperf->m_have_modified)
-        m_modified = true;
 
     return true;
 }
@@ -825,6 +817,16 @@ mainwnd::set_snap( int a_snap  )
     set_guides();
 }
 
+
+void mainwnd::bp_measure_button_callback(int a_beats_per_measure)
+{
+    if(m_bp_measure != a_beats_per_measure )
+    {
+        set_bp_measure(a_beats_per_measure);
+        global_is_modified = true;
+    }
+}
+
 void mainwnd::set_bp_measure( int a_beats_per_measure )
 {
     m_mainperf->set_bp_measure(a_beats_per_measure);
@@ -842,6 +844,14 @@ void mainwnd::set_bp_measure( int a_beats_per_measure )
     set_guides();
 }
 
+void mainwnd::bw_button_callback(int a_beat_width)
+{
+    if(m_bw != a_beat_width )
+    {
+        set_bw(a_beat_width);
+        global_is_modified = true;
+    }
+}
 
 void mainwnd::set_bw( int a_beat_width )
 {
@@ -890,7 +900,6 @@ mainwnd::open_seqlist()
     {
         new seqlist(m_mainperf);
     }
-    m_modified = true;
 }
 
 
@@ -926,7 +935,7 @@ void mainwnd::new_file()
 
     global_filename = "";
     update_window_title();
-    m_modified = false;
+    global_is_modified = false;
 }
 
 
@@ -1070,7 +1079,7 @@ void mainwnd::open_file(const Glib::ustring& fn)
 
     result = m_mainperf->load(fn);
 
-    m_modified = !result;
+    global_is_modified = !result;
 
     if (!result) {
         Gtk::MessageDialog errdialog(*this,
@@ -1152,8 +1161,7 @@ bool mainwnd::save_file()
                 Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
         errdialog.run();
     }
-    m_modified = !result;
-    m_mainperf->set_have_modified(!result);
+    global_is_modified = !result;
     return result;
 }
 
@@ -1184,7 +1192,7 @@ bool mainwnd::is_save()
 {
     bool result = false;
 
-    if (is_modified()) {
+    if (global_is_modified) {
         int choice = query_save_changes();
         switch (choice) {
             case Gtk::RESPONSE_YES:
@@ -1263,7 +1271,7 @@ mainwnd::file_import_dialog()
                        Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
                 errdialog.run();
            }
-           m_modified = true;
+           global_is_modified = true;
 
            m_adjust_bpm->set_value( m_mainperf->get_bpm() );
 
@@ -1342,22 +1350,25 @@ mainwnd::about_dialog()
 void
 mainwnd::adj_callback_bpm( )
 {
-    m_mainperf->set_bpm( (int) m_adjust_bpm->get_value());
-    m_modified = true;
+    if(m_mainperf->get_bpm() != (int) m_adjust_bpm->get_value())
+    {
+        m_mainperf->set_bpm( (int) m_adjust_bpm->get_value());
+        global_is_modified = true;
+    }
 }
 
 void
 mainwnd::adj_callback_swing_amount8( )
 {
     m_mainperf->set_swing_amount8( (int) m_adjust_swing_amount8->get_value());
-    m_modified = true;
+    global_is_modified = true;
 }
 
 void
 mainwnd::adj_callback_swing_amount16( )
 {
     m_mainperf->set_swing_amount16( (int) m_adjust_swing_amount16->get_value());
-    m_modified = true;
+    global_is_modified = true;
 }
 
 
@@ -1468,13 +1479,7 @@ mainwnd::update_window_title()
 }
 
 
-bool mainwnd::is_modified()
-{
-    return m_modified;
-}
-
 int mainwnd::m_sigpipe[2];
-
 
 /* Handler for system signals (SIGUSR1, SIGINT...)
  * Write a message to the pipe and leave as soon as possible

@@ -156,7 +156,6 @@ class perform
 
     bool m_have_undo;
     bool m_have_redo;
-    bool m_have_modified;
 
     unsigned int m_key_bpm_up;
     unsigned int m_key_bpm_dn;
@@ -237,7 +236,6 @@ class perform
     void check_max_undo_redo();
     void set_have_undo();
     void set_have_redo();
-    void set_have_modified(bool m_modified);
 
     void print();
 

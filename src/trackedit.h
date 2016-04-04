@@ -65,7 +65,9 @@ class trackedit : public Gtk::Window
     CheckButton *m_check_transposable;
 
     void name_change_callback();
+    void midi_channel_button_callback( int a_midichannel );
     void set_midi_channel( int a_midichannel );
+    void midi_bus_button_callback( int a_midibus );
     void set_midi_bus( int a_midibus );
     void popup_midibus_menu();
     void popup_midich_menu();

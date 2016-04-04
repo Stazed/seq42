@@ -90,9 +90,8 @@ perform::perform()
     m_bw = 4;
 
     update_seqlist_on_change = false;
-    m_have_undo = false;
-    m_have_redo = false;
-    m_have_modified = false;
+    m_have_undo = false; // for button sensitive
+    m_have_redo = false; // for button sensitive
     m_undo_track_count = 0;
     m_redo_track_count = 0;
     m_undo_perf_count = 0;
@@ -1075,12 +1074,12 @@ perform::set_have_undo()
     if(undo_vect.size() > 0)
     {
         m_have_undo = true;
-        set_have_modified(true);
         //printf("m_undo_track_count[%d]\n",m_undo_track_count);
     }else
     {
         m_have_undo = false;
     }
+    global_is_modified = true; // once true, always true unless file save
 }
 
 void
@@ -1094,12 +1093,6 @@ perform::set_have_redo()
     {
         m_have_redo = false;
     }
-}
-
-void
-perform::set_have_modified(bool m_modified)
-{
-    m_have_modified = m_modified;
 }
 
 /* copies between L and R -> R */
