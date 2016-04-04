@@ -125,7 +125,6 @@ mainwnd::mainwnd(perform *a_p):
 
     m_menu_edit->items().push_back(SeparatorElem());
 
-    // FIXME: disable if transpose==0
     m_menu_edit->items().push_back(MenuElem("_Apply song transpose",
                 mem_fun(*this, &mainwnd::apply_song_transpose)));
 
@@ -870,7 +869,6 @@ mainwnd::xpose_button_callback( int a_xpose)
     if(m_mainperf->get_master_midi_bus()->get_transpose() != a_xpose)
     {
         set_xpose(a_xpose);
-        global_is_modified = true;
     }
 }
 
@@ -892,11 +890,14 @@ mainwnd::grow()
     m_perftime->increment_size();
 }
 
-void // FIXME what is this for???
+void
 mainwnd::apply_song_transpose()
 {
-    m_mainperf->apply_song_transpose();
-    set_xpose(0);
+    if(m_mainperf->get_master_midi_bus()->get_transpose() != 0)
+    {
+        m_mainperf->apply_song_transpose();
+        set_xpose(0);
+    }
 }
 
 void

@@ -3232,6 +3232,9 @@ sequence::apply_song_transpose()
     if(! transpose) {
         return;
     }
+
+    push_undo();
+
     lock();
     for( list<event>::iterator iter = m_list_event.begin();
          iter != m_list_event.end(); iter++ )
