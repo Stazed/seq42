@@ -887,6 +887,7 @@ seqedit::fill_top_bar()
     /* undo */
     m_button_undo = manage( new Button());
     m_button_undo->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( undo_xpm  ))));
+    m_button_undo->set_can_focus(false);
     m_button_undo->signal_clicked().connect(
             mem_fun( *this, &seqedit::undo_callback));
     add_tooltip( m_button_undo, "Undo." );
@@ -896,6 +897,7 @@ seqedit::fill_top_bar()
     /* redo */
     m_button_redo = manage( new Button());
     m_button_redo->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( redo_xpm  ))));
+    m_button_redo->set_can_focus(false);
     m_button_redo->signal_clicked().connect(
             mem_fun( *this, &seqedit::redo_callback));
     add_tooltip( m_button_redo, "Redo." );
@@ -1576,23 +1578,12 @@ seqedit::timeout()
     if(m_seq->m_have_undo && !m_button_undo->get_sensitive())
         m_button_undo->set_sensitive(true);
     else if(!m_seq->m_have_undo && m_button_undo->get_sensitive())
-    {
-        if(m_button_undo->has_focus())   // must change focus on insensitive button or get_focus() from
-            m_seqroll_wid->grab_focus(); // on_key_press_event() will segfault
-
         m_button_undo->set_sensitive(false);
-    }
 
     if(m_seq->m_have_redo && !m_button_redo->get_sensitive())
         m_button_redo->set_sensitive(true);
     else if(!m_seq->m_have_redo && m_button_redo->get_sensitive())
-    {
-        if(m_button_redo->has_focus())   // must change focus on insensitive button or get_focus() from
-            m_seqroll_wid->grab_focus(); // on_key_press_event() will segfault
-
         m_button_redo->set_sensitive(false);
-    }
-
 
     return true;
 }
@@ -1673,7 +1664,7 @@ seqedit::on_key_press_event( GdkEventKey* a_ev )
     if(get_focus()->get_name() == "Sequence Name")    // if we are on the sequence name
         return Gtk::Window::on_key_press_event(a_ev); // return = don't do anything else
 
-    if(! m_seqroll_wid->on_key_press_event(a_ev))     // seqroll has precedence - no duplicates
+    if(! m_seqroll_wid->on_key_press_event(a_ev))     // seqroll has priority - no duplicates
         return Gtk::Window::on_key_press_event(a_ev);
 
     return false;

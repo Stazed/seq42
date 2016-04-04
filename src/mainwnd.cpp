@@ -527,24 +527,14 @@ mainwnd::timer_callback(  )
         toggle_jack();
 
     if(global_is_running && m_button_jack->get_sensitive())
-    {
-        if( m_button_jack->has_focus()) // needed to avoid segfault on get_focus() from on_key_press_event()
-            m_perfroll->grab_focus();  // when the focus is on non-sensitive m_button_jack
-
         m_button_jack->set_sensitive(false);
-    }
     else if(!global_is_running && !m_button_jack->get_sensitive())
         m_button_jack->set_sensitive(true);
 
 #endif // JACK_SUPPORT
 
     if(global_is_running && m_button_mode->get_sensitive())
-    {
-        if(m_button_mode->has_focus()) // needed to avoid segfault on get_focus() from on_key_press_event()
-            m_perfroll->grab_focus();  // when the focus is on non-sensitive m_button_mode
-
         m_button_mode->set_sensitive(false);
-    }
     else if(!global_is_running && !m_button_mode->get_sensitive())
         m_button_mode->set_sensitive(true);
 
