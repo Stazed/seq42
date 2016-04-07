@@ -47,7 +47,9 @@ perfroll::perfroll( perform *a_perf,
     m_growing(false),
 
     cross_track_paste(false),
-    have_button_press(false)
+    have_button_press(false),
+    transport_follow(true),
+    trans_button_press(false)
 {
     Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
     colormap->alloc_color( m_black );
@@ -607,6 +609,13 @@ perfroll::draw_drawable_row( Glib::RefPtr<Gdk::Drawable> a_dest, Glib::RefPtr<Gd
 bool
 perfroll::on_button_press_event(GdkEventButton* a_ev)
 {
+    if(!trans_button_press) // to avoid double button press on normal seq42 method
+    {
+        transport_follow = m_mainperf->get_follow_transport();
+        m_mainperf->set_follow_transport(false);
+        trans_button_press = true;
+    }
+
     bool result;
 
     switch (global_interactionmethod)
@@ -639,6 +648,10 @@ perfroll::on_button_release_event(GdkEventButton* a_ev)
         default:
             result = false;
     }
+
+    m_mainperf->set_follow_transport(transport_follow);
+    trans_button_press = false;
+
     return result;
 }
 

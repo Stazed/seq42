@@ -82,6 +82,9 @@ seqroll::seqroll(perform *a_perf,
     m_scroll_offset_y(0),
     m_scroll_page(0),
 
+    transport_follow(true),
+    trans_button_press(false),
+
     m_background_track(0),
     m_background_sequence(0),
     m_drawing_background_seq(false),
@@ -938,6 +941,13 @@ seqroll::start_paste( )
 bool
 seqroll::on_button_press_event(GdkEventButton* a_ev)
 {
+    if(!trans_button_press) // to avoid double button press on normal seq42 method
+    {
+        transport_follow = m_perform->get_follow_transport();
+        m_perform->set_follow_transport(false);
+        trans_button_press = true;
+    }
+
     bool result;
 
     switch (global_interactionmethod)
@@ -972,6 +982,10 @@ seqroll::on_button_release_event(GdkEventButton* a_ev)
         default:
             result = false;
     }
+
+    m_perform->set_follow_transport(transport_follow);
+    trans_button_press = false;
+
     return result;
 }
 

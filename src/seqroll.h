@@ -157,6 +157,9 @@ class seqroll : public Gtk::DrawingArea
 
     int m_scroll_page;
 
+    bool transport_follow;
+    bool trans_button_press;
+
     int m_background_track;
     int m_background_sequence;
     bool m_drawing_background_seq;
