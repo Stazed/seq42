@@ -1235,17 +1235,20 @@ seqedit::set_track_info( )
 void
 seqedit::set_zoom( int a_zoom  )
 {
-    char b[10];
+    if ((a_zoom >= c_min_zoom) && (a_zoom <= c_max_zoom))
+    {
+        char b[10];
 
-    snprintf(b, sizeof(b), "1:%d", a_zoom);
-    m_entry_zoom->set_text(b);
+        snprintf(b, sizeof(b), "1:%d", a_zoom);
+        m_entry_zoom->set_text(b);
 
-    m_zoom = a_zoom;
-    m_initial_zoom = a_zoom;
-    m_seqroll_wid->set_zoom( m_zoom );
-    m_seqtime_wid->set_zoom( m_zoom );
-    m_seqdata_wid->set_zoom( m_zoom );
-    m_seqevent_wid->set_zoom( m_zoom );
+        m_zoom = a_zoom;
+        m_initial_zoom = a_zoom;
+        m_seqroll_wid->set_zoom( m_zoom );
+        m_seqtime_wid->set_zoom( m_zoom );
+        m_seqdata_wid->set_zoom( m_zoom );
+        m_seqevent_wid->set_zoom( m_zoom );
+    }
 }
 
 
@@ -1629,7 +1632,8 @@ seqedit::on_scroll_event( GdkEventScroll* a_ev )
         }
         return true;
     }
-    else if ((a_ev->state & modifiers) == GDK_SHIFT_MASK)
+
+    if ((a_ev->state & modifiers) == GDK_SHIFT_MASK)
     {
         double val = m_hadjust->get_value();
         double step = m_hadjust->get_step_increment();
@@ -1665,7 +1669,29 @@ seqedit::on_key_press_event( GdkEventKey* a_ev )
         return Gtk::Window::on_key_press_event(a_ev); // return = don't do anything else
 
     if(! m_seqroll_wid->on_key_press_event(a_ev))     // seqroll has priority - no duplicates
-        return Gtk::Window::on_key_press_event(a_ev);
+    {
+        bool result = false;
+        if (a_ev->keyval == GDK_Z)              /* zoom in              */
+        {
+            set_zoom(m_zoom / 2);
+            result = true;
+        }
+        else if (a_ev->keyval == GDK_0)         /* reset to normal zoom */
+        {
+            set_zoom(c_default_zoom);
+            result = true;
+        }
+        else if (a_ev->keyval == GDK_z)         /* zoom out             */
+        {
+            set_zoom(m_zoom * 2);
+            result = true;
+        }
+        if (! result)
+            result = Gtk::Window::on_key_press_event(a_ev);
+
+        return result;
+    }
+//        return Gtk::Window::on_key_press_event(a_ev);
 
     return false;
 }

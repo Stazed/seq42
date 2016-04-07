@@ -127,10 +127,11 @@ seqtime::idle_progress( )
 void
 seqtime::set_zoom( int a_zoom )
 {
-    m_zoom = a_zoom;
+    if ( m_zoom != a_zoom ){
 
-    reset();
-
+        m_zoom = a_zoom;
+        reset();
+    }
 }
 
 void

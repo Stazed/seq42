@@ -47,6 +47,7 @@ class seqedit : public Gtk::Window
 
  private:
 
+    static const int c_default_zoom = 2;
     static const int c_min_zoom = 1;
     static const int c_max_zoom = 32;
 
