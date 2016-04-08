@@ -1374,16 +1374,22 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
     if (a_ev->keyval == GDK_Z)         /* zoom in              */
     {
         m_perfroll->set_zoom(m_perfroll->m_zoom / 2);
+        m_perftime->set_zoom(m_perfroll->m_zoom);
+        m_perfroll->fill_background_pixmap();
         return true;
     }
     else if (a_ev->keyval == GDK_0)         /* reset to normal zoom */
     {
         m_perfroll->set_zoom(c_perf_scale_x);
+        m_perftime->set_zoom(c_perf_scale_x);
+        m_perfroll->fill_background_pixmap();
         return true;
     }
     else if (a_ev->keyval == GDK_z)         /* zoom out             */
     {
         m_perfroll->set_zoom(m_perfroll->m_zoom * 2);
+        m_perftime->set_zoom(m_perfroll->m_zoom);
+        m_perfroll->fill_background_pixmap();
         return true;
     }
 

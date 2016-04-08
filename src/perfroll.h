@@ -144,7 +144,7 @@ class perfroll : public Gtk::DrawingArea
  public:
 
     int m_zoom;
-    static bool zoom_check (int z)
+    static bool zoom_check (int z) // FIXME
     {
         return z > 1 && z <= (4 * c_perf_scale_x);
     }
