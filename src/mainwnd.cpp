@@ -1371,6 +1371,22 @@ mainwnd::adj_callback_swing_amount16( )
 bool
 mainwnd::on_key_press_event(GdkEventKey* a_ev)
 {
+    if (a_ev->keyval == GDK_Z)         /* zoom in              */
+    {
+        m_perfroll->set_zoom(m_perfroll->m_zoom / 2);
+        return true;
+    }
+    else if (a_ev->keyval == GDK_0)         /* reset to normal zoom */
+    {
+        m_perfroll->set_zoom(c_perf_scale_x);
+        return true;
+    }
+    else if (a_ev->keyval == GDK_z)         /* zoom out             */
+    {
+        m_perfroll->set_zoom(m_perfroll->m_zoom * 2);
+        return true;
+    }
+
     // control and modifier key combinations matching
     if ( a_ev->state & GDK_CONTROL_MASK )
     {
@@ -1457,6 +1473,7 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
 
     return Gtk::Window::on_key_press_event(a_ev);
 }
+
 
 void
 mainwnd::update_window_title()

@@ -33,6 +33,9 @@ perfroll::perfroll( perform *a_perf,
 
     m_mainperf(a_perf),
 
+    m_perf_scale_x(c_perf_scale_x),       // 32 ticks per pixel
+//    m_zoom(c_perf_scale_x),               // 32 ticks per pixel
+
     m_old_progress_ticks(0),
 
     m_4bar_offset(0),
@@ -49,7 +52,8 @@ perfroll::perfroll( perform *a_perf,
     cross_track_paste(false),
     have_button_press(false),
     transport_follow(true),
-    trans_button_press(false)
+    trans_button_press(false),
+    m_zoom(c_perf_scale_x)               // 32 ticks per pixel
 {
     Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
     colormap->alloc_color( m_black );
@@ -144,7 +148,7 @@ void
 perfroll::update_sizes()
 {
     int h_bars         = m_roll_length_ticks / (c_ppqn * 16);
-    int h_bars_visable = (m_window_x * c_perf_scale_x) / (c_ppqn * 16);
+    int h_bars_visable = (m_window_x * m_perf_scale_x) / (c_ppqn * 16);
 
     m_hadjust->set_lower( 0 );
     m_hadjust->set_upper( h_bars );
@@ -239,9 +243,9 @@ perfroll::fill_background_pixmap()
 
  	/* solid line on every beat */
  	m_background->draw_line(m_gc,
- 			       i * m_beat_length / c_perf_scale_x,
+ 			       i * m_beat_length / m_perf_scale_x,
  			       0,
- 			       i * m_beat_length / c_perf_scale_x,
+ 			       i * m_beat_length / m_perf_scale_x,
  			       c_names_y );
 
         // jump 2 if 16th notes
@@ -286,8 +290,8 @@ perfroll::draw_progress()
     long tick = m_mainperf->get_tick();
     long tick_offset = m_4bar_offset * c_ppqn * 16;
 
-    int progress_x =     ( tick - tick_offset ) / c_perf_scale_x ;
-    int old_progress_x = ( m_old_progress_ticks - tick_offset ) / c_perf_scale_x ;
+    int progress_x =     ( tick - tick_offset ) / m_perf_scale_x ;
+    int old_progress_x = ( m_old_progress_ticks - tick_offset ) / m_perf_scale_x ;
 
     /* draw old */
     m_window->draw_drawable(m_gc,
@@ -304,7 +308,7 @@ perfroll::draw_progress()
     m_old_progress_ticks = tick;
 
     if(global_is_running && m_mainperf->get_follow_transport())
-        auto_scroll_horz((double)tick/c_perf_scale_x/c_ppen);
+        auto_scroll_horz((double)tick/m_perf_scale_x/c_ppen);
 }
 
 
@@ -320,7 +324,7 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
     sequence *seq;
 
     long tick_offset = m_4bar_offset * c_ppqn * 16;
-    long x_offset = tick_offset / c_perf_scale_x;
+    long x_offset = tick_offset / m_perf_scale_x;
 
     if ( a_track < c_max_track ){
 
@@ -338,8 +342,8 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
 
             if ( tick_off > 0 ){
 
-		    long x_on  = tick_on  / c_perf_scale_x;
-		    long x_off = tick_off / c_perf_scale_x;
+		    long x_on  = tick_on  / m_perf_scale_x;
+		    long x_off = tick_off / m_perf_scale_x;
 		    int  w     = x_off - x_on + 1;
 
 		    int x = x_on;
@@ -392,7 +396,7 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
             } else {
                 strncpy(label, seq->get_name(), max_label);
 	            long sequence_length = seq->get_length();
-	            int length_w = sequence_length / c_perf_scale_x;
+	            int length_w = sequence_length / m_perf_scale_x;
                 long length_marker_first_tick = ( tick_on - (tick_on % sequence_length) + (offset % sequence_length) - sequence_length);
 
 
@@ -400,7 +404,7 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
 
                 while ( tick_marker < tick_off ){
 
-                    long tick_marker_x = (tick_marker / c_perf_scale_x) - x_offset;
+                    long tick_marker_x = (tick_marker / m_perf_scale_x) - x_offset;
 
                     if ( tick_marker > tick_on ){
 
@@ -509,12 +513,12 @@ void perfroll::draw_background_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_tra
     m_gc->set_foreground(m_black);
     for ( int i = first_measure;
               i < first_measure +
-                  (m_window_x * c_perf_scale_x /
+                  (m_window_x * m_perf_scale_x /
                    (m_measure_length)) + 1;
 
               i++ )
     {
-        int x_pos = ((i * m_measure_length) - tick_offset) / c_perf_scale_x;
+        int x_pos = ((i * m_measure_length) - tick_offset) / m_perf_scale_x;
 
 
            a_draw->draw_drawable(m_gc, m_background,
@@ -669,6 +673,19 @@ perfroll::on_scroll_event( GdkEventScroll* a_ev )
 {
     guint modifiers;    // Used to filter out caps/num lock etc.
     modifiers = gtk_accelerator_get_default_mod_mask ();
+
+    if ((a_ev->state & modifiers) == GDK_CONTROL_MASK)
+    {
+        if (a_ev->direction == GDK_SCROLL_DOWN)
+        {
+            set_zoom(m_zoom*2);
+        }
+        else if (a_ev->direction == GDK_SCROLL_UP)
+        {
+            set_zoom(m_zoom/2);
+        }
+        return true;
+    }
 
     if ((a_ev->state & modifiers) == GDK_SHIFT_MASK)
     {
@@ -833,7 +850,7 @@ perfroll::snap_x( int *a_x )
     // m_scale = number of pulses per pixel
     //	so snap / m_scale  = number pixels to snap to
 
-    int mod = (m_snap / c_perf_scale_x );
+    int mod = (m_snap / m_perf_scale_x );
 
     if ( mod <= 0 )
  	mod = 1;
@@ -847,7 +864,7 @@ perfroll::convert_x( int a_x, long *a_tick )
 {
 
     long tick_offset = m_4bar_offset * c_ppqn * 16;
-    *a_tick = a_x * c_perf_scale_x;
+    *a_tick = a_x * m_perf_scale_x;
     *a_tick += tick_offset;
 }
 
@@ -858,7 +875,7 @@ perfroll::convert_xy( int a_x, int a_y, long *a_tick, int *a_track)
 
     long tick_offset = m_4bar_offset * c_ppqn * 16;
 
-    *a_tick = a_x * c_perf_scale_x;
+    *a_tick = a_x * m_perf_scale_x;
     *a_track = a_y / c_names_y;
 
     *a_tick += tick_offset;
@@ -1078,6 +1095,24 @@ perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
         }
 
         menu_trigger->popup(0,0);
+    }
+}
+
+void
+perfroll::set_zoom (int a_zoom)
+{
+//    if (perfedit::zoom_check(a_zoom))
+    if (zoom_check(a_zoom))
+    {
+        m_zoom = a_zoom;
+
+        //m_perf_scale_x = m_zoom * m_ppqn / SEQ64_DEFAULT_PPQN;
+        m_perf_scale_x = m_zoom;
+
+        if (m_perf_scale_x == 0)
+            m_perf_scale_x = 1;
+//        set_ppqn(m_ppqn);               /* recalculates other "x" values    */
+        update_sizes();
     }
 }
 

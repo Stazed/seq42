@@ -48,7 +48,7 @@ using namespace Gtk;
 
 #include "perfroll_input.h"
 
-const int c_perfroll_background_x = (c_ppqn * 4 * 16) / c_perf_scale_x;
+const int c_perfroll_background_x = (c_ppqn * 4 * 16) / c_perf_scale_x; // FIXME check this for m_perf_scale_x
 const int c_perfroll_size_box_w = 3;
 const int c_perfroll_size_box_click_w = c_perfroll_size_box_w+1 ;
 
@@ -75,6 +75,9 @@ class perfroll : public Gtk::DrawingArea
     int          m_snap;
     int          m_measure_length;
     int          m_beat_length;
+
+    int          m_perf_scale_x; // for zoom - replace c_perf_scale_x
+//    int          m_zoom;
 
     int          m_window_x, m_window_y;
 
@@ -131,6 +134,7 @@ class perfroll : public Gtk::DrawingArea
     void change_vert();
 
     void trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths);
+//    void set_zoom (int a_zoom);
 
     bool cross_track_paste;
     bool have_button_press;
@@ -138,6 +142,14 @@ class perfroll : public Gtk::DrawingArea
     bool trans_button_press;
 
  public:
+
+    int m_zoom;
+    static bool zoom_check (int z)
+    {
+        return z > 1 && z <= (4 * c_perf_scale_x);
+    }
+    void set_zoom (int a_zoom);
+
     void set_guides( int a_snap, int a_measure, int a_beat );
 
     void update_sizes();
