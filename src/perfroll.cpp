@@ -41,6 +41,7 @@ perfroll::perfroll( perform *a_perf,
     m_4bar_offset(0),
     m_track_offset(0),
     m_roll_length_ticks(0),
+    m_scroll_page(0),
     m_drop_track(0),
 
     m_vadjust(a_vadjust),
@@ -147,8 +148,10 @@ perfroll::init_before_show( )
 void
 perfroll::update_sizes()
 {
-    int h_bars         = m_roll_length_ticks / (c_ppqn * 16);
-    int h_bars_visable = (m_window_x * m_perf_scale_x) / (c_ppqn * 16);
+    double h_bars         =(double) m_roll_length_ticks / (c_ppqn * 16);
+//    int h_bars         = m_roll_length_ticks / (c_ppqn * 16);
+    double h_bars_visable = (double) (m_window_x * m_perf_scale_x) / (c_ppqn * 16);
+//    int h_bars_visable = (m_window_x * m_perf_scale_x) / (c_ppqn * 16);
 
     m_hadjust->set_lower( 0 );
     m_hadjust->set_upper( h_bars );
@@ -308,7 +311,8 @@ perfroll::draw_progress()
     m_old_progress_ticks = tick;
 
     if(global_is_running && m_mainperf->get_follow_transport())
-        auto_scroll_horz((double)tick/m_perf_scale_x/c_ppen);
+        auto_scroll_horz();
+        //auto_scroll_horz((double)tick/m_perf_scale_x/c_ppen);
 }
 
 
@@ -659,14 +663,49 @@ perfroll::on_button_release_event(GdkEventButton* a_ev)
     return result;
 }
 
+void
+perfroll::auto_scroll_horz()
+{
+    long progress_tick = m_mainperf->get_tick();
 
+    //int progress_x =     ( tick - tick_offset ) / m_perf_scale_x ;
+
+    if (progress_tick > 0)
+    {
+        int progress_x = progress_tick / m_zoom;
+        //int progress_x = progress_tick / m_zoom + 10;
+        int page = progress_x / m_window_x;
+        //if (page != m_scroll_page)
+        //{
+//(double) (m_window_x * m_perf_scale_x) / (c_ppqn * 16)
+           // tick/m_perf_scale_x/c_ppen
+            double left_tick = page * m_window_x * m_zoom;
+            left_tick = (double)left_tick / (c_ppqn * 16);
+            //left_tick = (double)left_tick / m_perf_scale_x/c_ppen;
+            //m_scroll_page = page;
+
+            //if((left_tick + m_hadjust->get_page_size()) >= m_hadjust->get_upper()) // don't scroll past upper
+            if((left_tick > ( m_hadjust->get_page_size()/2)) || (m_hadjust->get_value() > left_tick) )// don't scroll past upper
+                m_hadjust->set_value(left_tick -( m_hadjust->get_page_size()/2) +1);
+                //m_hadjust->set_value(m_hadjust->get_upper() - m_hadjust->get_page_size());
+
+        printf("get_page_size[%f]: left_tick[%f]\n",m_hadjust->get_page_size(),left_tick);
+        //}
+    printf("progress_tick[%ld]: progress_x[%d]: m_window_x[%d]\n",progress_tick,progress_x,m_window_x);
+    }
+
+
+}
+/*
 void
 perfroll::auto_scroll_horz(double progress)
 {
+    printf("get_page_size [%f]: get_value[%f]\n", m_hadjust->get_page_size(),m_hadjust->get_value());
+
     if((progress > (m_hadjust->get_page_size()/2)) || (m_hadjust->get_value() > progress))
         m_hadjust->set_value(progress - (m_hadjust->get_page_size()/2) + 1);
 }
-
+*/
 
 bool
 perfroll::on_scroll_event( GdkEventScroll* a_ev )

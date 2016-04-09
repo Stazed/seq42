@@ -89,6 +89,7 @@ class perfroll : public Gtk::DrawingArea
     int          m_roll_length_ticks;
 
     int          m_drop_x, m_drop_y;
+    int          m_scroll_page;
 
     long         m_drop_tick;
     long         m_drop_tick_trigger_offset;
@@ -110,7 +111,8 @@ class perfroll : public Gtk::DrawingArea
     bool on_motion_notify_event(GdkEventMotion* a_ev);
     bool on_scroll_event( GdkEventScroll* a_ev ) ;
 
-    void auto_scroll_horz(double progress);
+    void auto_scroll_horz();
+    //void auto_scroll_horz(double progress);
 
     bool on_focus_in_event(GdkEventFocus*);
     bool on_focus_out_event(GdkEventFocus*);
