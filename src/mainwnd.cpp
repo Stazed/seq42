@@ -226,9 +226,10 @@ mainwnd::mainwnd(perform *a_p):
     m_perfnames = manage( new perfnames( m_mainperf, m_vadjust ));
 
     m_perfroll = manage( new perfroll( m_mainperf,
+                       this,
                        m_hadjust,
                        m_vadjust ));
-    m_perftime = manage( new perftime( m_mainperf, m_hadjust ));
+    m_perftime = manage( new perftime( m_mainperf, this, m_hadjust ));
 
     /* init table, viewports and scroll bars */
     m_table     = manage( new Table( 6, 3, false));
@@ -854,6 +855,13 @@ void mainwnd::set_bw( int a_beat_width )
 }
 
 void
+mainwnd::set_zoom (int z)
+{
+    m_perfroll->set_zoom(z);
+    m_perftime->set_zoom(z);
+}
+
+void
 mainwnd::xpose_button_callback( int a_xpose)
 {
     if(m_mainperf->get_master_midi_bus()->get_transpose() != a_xpose)
@@ -1371,28 +1379,6 @@ mainwnd::adj_callback_swing_amount16( )
 bool
 mainwnd::on_key_press_event(GdkEventKey* a_ev)
 {
-    if (a_ev->keyval == GDK_Z)         /* zoom in              */
-    {
-        m_perfroll->set_zoom(m_perfroll->m_zoom / 2);
-        m_perftime->set_zoom(m_perfroll->m_zoom);
-        m_perfroll->fill_background_pixmap();
-        return true;
-    }
-    else if (a_ev->keyval == GDK_0)         /* reset to normal zoom */
-    {
-        m_perfroll->set_zoom(c_perf_scale_x);
-        m_perftime->set_zoom(c_perf_scale_x);
-        m_perfroll->fill_background_pixmap();
-        return true;
-    }
-    else if (a_ev->keyval == GDK_z)         /* zoom out             */
-    {
-        m_perfroll->set_zoom(m_perfroll->m_zoom * 2);
-        m_perftime->set_zoom(m_perfroll->m_zoom);
-        m_perfroll->fill_background_pixmap();
-        return true;
-    }
-
     // control and modifier key combinations matching
     if ( a_ev->state & GDK_CONTROL_MASK )
     {

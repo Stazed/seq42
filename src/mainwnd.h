@@ -42,6 +42,9 @@ using namespace Gtk;
 
 using namespace Menu_Helpers;
 
+class perfroll;
+class perftime;
+
 
 class mainwnd : public Gtk::Window
 {
@@ -217,6 +220,12 @@ class mainwnd : public Gtk::Window
     mainwnd(perform *a_p);
     ~mainwnd();
 
+    static bool zoom_check (int z)
+    {
+        return z > 7 && z <= (4 * c_perf_scale_x);
+    }
+
+    void set_zoom (int z);
     void open_file(const Glib::ustring&);
     bool on_delete_event(GdkEventAny *a_e);
     bool on_key_press_event(GdkEventKey* a_ev);

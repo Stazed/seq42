@@ -21,6 +21,7 @@
 
 #pragma once
 
+#include "mainwnd.h"
 #include "perform.h"
 #include "seqtime.h"
 
@@ -42,6 +43,8 @@
 
 using namespace Gtk;
 
+class mainwnd;
+
 /* piano time*/
 class perftime: public Gtk::DrawingArea
 {
@@ -54,9 +57,8 @@ class perftime: public Gtk::DrawingArea
 
     Glib::RefPtr<Gdk::Pixmap> m_pixmap;
 
-
     perform      * const m_mainperf;
-
+    mainwnd      * const m_mainwnd;
     Adjustment   * const m_hadjust;
 
     int m_window_x, m_window_y;
@@ -84,12 +86,8 @@ class perftime: public Gtk::DrawingArea
 
  public:
 
-    perftime( perform *a_perf, Adjustment *a_hadjust );
+    perftime( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust );
 
-    static bool zoom_check (int z) // FIXME
-    {
-        return z > 7 && z <= (4 * c_perf_scale_x);
-    }
     void set_zoom (int a_zoom);
 
     void reset();

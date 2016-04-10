@@ -42,20 +42,24 @@
 #include "mutex.h"
 #include "track.h"
 #include "trigger.h"
+#include "mainwnd.h"
 
 
 using namespace Gtk;
 
 #include "perfroll_input.h"
 
-const int c_perfroll_background_x = (c_ppqn * 4 * 16) / c_perf_scale_x; // FIXME check this for m_perf_scale_x
+const int c_perfroll_background_x = (c_ppqn * 4 * 16) / c_perf_scale_x;
 const int c_perfroll_size_box_w = 3;
 const int c_perfroll_size_box_click_w = c_perfroll_size_box_w+1 ;
+
+class mainwnd;
 
 /* performance roll */
 class perfroll : public Gtk::DrawingArea
 {
  private:
+
     friend class FruityPerfInput;
     FruityPerfInput m_fruity_interaction;
 
@@ -69,15 +73,15 @@ class perfroll : public Gtk::DrawingArea
     Glib::RefPtr<Gdk::Pixmap> m_pixmap;
     Glib::RefPtr<Gdk::Pixmap> m_background;
 
-
-    perform        *m_mainperf;
+    perform        * const m_mainperf;
+    mainwnd        * const m_mainwnd;
 
     int          m_snap;
     int          m_measure_length;
     int          m_beat_length;
 
     int          m_perf_scale_x; // for zoom - replace c_perf_scale_x
-//    int          m_zoom;
+    int          m_zoom;
 
     int          m_window_x, m_window_y;
 
@@ -143,11 +147,6 @@ class perfroll : public Gtk::DrawingArea
 
  public:
 
-    int m_zoom;
-    static bool zoom_check (int z) // FIXME
-    {
-        return z > 7 && z <= (4 * c_perf_scale_x);
-    }
     void set_zoom (int a_zoom);
 
     void set_guides( int a_snap, int a_measure, int a_beat );
@@ -172,6 +171,7 @@ class perfroll : public Gtk::DrawingArea
     long get_default_trigger_length( perfroll& ths );
 
     perfroll( perform *a_perf,
+             mainwnd *a_main,
 	      Adjustment *a_hadjust,
 	      Adjustment *a_vadjust );
 

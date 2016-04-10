@@ -22,12 +22,13 @@
 #include "font.h"
 
 
-perftime::perftime( perform *a_perf, Adjustment *a_hadjust ) :
+perftime::perftime( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
     m_black(Gdk::Color("black")),
     m_white(Gdk::Color("white")),
     m_grey(Gdk::Color("grey")),
 
     m_mainperf(a_perf),
+    m_mainwnd(a_main),
     m_hadjust(a_hadjust),
 
     m_perf_scale_x(c_perf_scale_x),
@@ -67,7 +68,7 @@ perftime::update_sizes()
 void
 perftime::set_zoom (int a_zoom)
 {
-    if (zoom_check(a_zoom))
+    if (m_mainwnd->zoom_check(a_zoom))
     {
         m_perf_scale_x = a_zoom;
         draw_background();

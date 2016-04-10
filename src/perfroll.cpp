@@ -24,6 +24,7 @@
 
 
 perfroll::perfroll( perform *a_perf,
+                   mainwnd *a_main,
 		    Adjustment * a_hadjust,
 		    Adjustment * a_vadjust  ) :
     m_black(Gdk::Color("black")),
@@ -32,9 +33,10 @@ perfroll::perfroll( perform *a_perf,
     m_lt_grey(Gdk::Color("light grey")),
 
     m_mainperf(a_perf),
+    m_mainwnd(a_main),
 
     m_perf_scale_x(c_perf_scale_x),       // 32 ticks per pixel
-//    m_zoom(c_perf_scale_x),               // 32 ticks per pixel
+    m_zoom(c_perf_scale_x),               // 32 ticks per pixel
 
     m_old_progress_ticks(0),
 
@@ -53,8 +55,7 @@ perfroll::perfroll( perform *a_perf,
     cross_track_paste(false),
     have_button_press(false),
     transport_follow(true),
-    trans_button_press(false),
-    m_zoom(c_perf_scale_x)               // 32 ticks per pixel
+    trans_button_press(false)
 {
     Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
     colormap->alloc_color( m_black );
@@ -147,10 +148,8 @@ perfroll::init_before_show( )
 void
 perfroll::update_sizes()
 {
-    double h_bars         =(double) m_roll_length_ticks / (c_ppqn * 16);
-//    int h_bars         = m_roll_length_ticks / (c_ppqn * 16);
-    double h_bars_visable = (double) (m_window_x * m_perf_scale_x) / (c_ppqn * 16);
-//    int h_bars_visable = (m_window_x * m_perf_scale_x) / (c_ppqn * 16);
+    int h_bars         = m_roll_length_ticks / (c_ppqn * 16);
+    int h_bars_visable = (m_window_x * m_perf_scale_x) / (c_ppqn * 16);
 
     m_hadjust->set_lower( 0 );
     m_hadjust->set_upper( h_bars );
@@ -310,7 +309,6 @@ perfroll::draw_progress()
 
     if(global_is_running && m_mainperf->get_follow_transport())
         auto_scroll_horz();
-        //auto_scroll_horz((double)tick/m_perf_scale_x/c_ppen);
 }
 
 
@@ -533,9 +531,6 @@ void perfroll::draw_background_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_tra
 
 
     }
-
-
-
 }
 
 
@@ -661,15 +656,6 @@ perfroll::on_button_release_event(GdkEventButton* a_ev)
     return result;
 }
 
-/*
-                                                                        Actual page bars     Progress
-          Zoom                                    Page Size     Bars      (rounding)        Adjust at  * page number
-            8                                       1.875  x    4   =        7.5  X  4  =      7
-            16  need 2 bar                          3.75   x    4   =       15.0               12
-            32  - default (uses 4bar offset)        7.5    x    4   =       30.0               14
-            64  could use 8bar                      15.0   x    4   =       60.0               30
-            128 could use 16 bar                    30.0   x    4   =      120.0               60
-*/
 void
 perfroll::auto_scroll_horz()
 {
@@ -688,34 +674,20 @@ perfroll::auto_scroll_horz()
         //printf("m_zoom[%d]: left_tick[%f]\n",m_zoom,left_tick);
         //printf("progress_x[%d]: m_window_x[%d]\n",progress_x,m_window_x);
 
-        if(m_zoom == 8)
+        switch(m_zoom)
         {
-            m_hadjust->set_value(left_tick / 4);
-            return;
-        }
-
-        if(m_zoom == 16)
-        {
-            m_hadjust->set_value(left_tick / 2 );
-            return;
-        }
-
-        if(m_zoom == 32)
-        {
-            m_hadjust->set_value(left_tick );
-            return;
-        }
-
-        if(m_zoom == 64)
-        {
-            m_hadjust->set_value(left_tick * 2 );
-            return;
-        }
-
-        if(m_zoom == 128)
-        {
-            m_hadjust->set_value(left_tick * 4 );
-            return;
+            case 8: m_hadjust->set_value(left_tick / 4);
+            break;
+            case 16: m_hadjust->set_value(left_tick / 2 );
+            break;
+            case 32: m_hadjust->set_value(left_tick );
+            break;
+            case 64: m_hadjust->set_value(left_tick * 2 );
+            break;
+            case 128: m_hadjust->set_value(left_tick * 4 );
+            break;
+            default:
+            break;
         }
     }
 }
@@ -731,11 +703,11 @@ perfroll::on_scroll_event( GdkEventScroll* a_ev )
     {
         if (a_ev->direction == GDK_SCROLL_DOWN)
         {
-            set_zoom(m_zoom*2);
+            m_mainwnd->set_zoom(m_zoom*2);
         }
         else if (a_ev->direction == GDK_SCROLL_UP)
         {
-            set_zoom(m_zoom/2);
+            m_mainwnd->set_zoom(m_zoom/2);
         }
         return true;
     }
@@ -797,6 +769,22 @@ perfroll::on_motion_notify_event(GdkEventMotion* a_ev)
 bool
 perfroll::on_key_press_event(GdkEventKey* a_p0)
 {
+    if (a_p0->keyval == GDK_Z)         /* zoom in              */
+    {
+        m_mainwnd->set_zoom(m_zoom / 2);
+        return true;
+    }
+    else if (a_p0->keyval == GDK_0)         /* reset to normal zoom */
+    {
+        m_mainwnd->set_zoom(c_perf_scale_x);
+        return true;
+    }
+    else if (a_p0->keyval == GDK_z)         /* zoom out             */
+    {
+        m_mainwnd->set_zoom(m_zoom * 2);
+        return true;
+    }
+
     bool ret = false;
 
     if ( m_mainperf->is_active_track( m_drop_track)){
@@ -1152,18 +1140,16 @@ perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
 void
 perfroll::set_zoom (int a_zoom)
 {
-//    if (perfedit::zoom_check(a_zoom))
-    if (zoom_check(a_zoom))
+    if (m_mainwnd->zoom_check(a_zoom))
     {
         m_zoom = a_zoom;
-
-        //m_perf_scale_x = m_zoom * m_ppqn / SEQ64_DEFAULT_PPQN;
         m_perf_scale_x = m_zoom;
 
         if (m_perf_scale_x == 0)
             m_perf_scale_x = 1;
-//        set_ppqn(m_ppqn);               /* recalculates other "x" values    */
+
         update_sizes();
+        fill_background_pixmap();
     }
 }
 
