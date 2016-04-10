@@ -135,7 +135,6 @@ class perfroll : public Gtk::DrawingArea
     void change_vert();
 
     void trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths);
-//    void set_zoom (int a_zoom);
 
     bool cross_track_paste;
     bool have_button_press;

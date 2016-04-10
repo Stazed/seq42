@@ -676,67 +676,48 @@ perfroll::auto_scroll_horz()
     long progress_tick = m_mainperf->get_tick();
     long tick_offset = m_4bar_offset * c_ppqn * 16;
 
-    int progress_x =     ( progress_tick - tick_offset ) / m_perf_scale_x ;
-
-    //double progress_tick = (double)m_mainperf->get_tick()/m_perf_scale_x/c_ppen;
-
-    //int progress_x = progress_tick / m_zoom;
-        //int progress_x = progress_tick / m_zoom + 10;
+    int progress_x =     ( progress_tick - tick_offset ) / m_zoom  + 100;
     int page = progress_x / m_window_x;
 
     if (page != m_scroll_page)
     {
-        //double left_tick = page * m_window_x * m_zoom;
-        //left_tick = (double)left_tick / (c_ppqn * 16);
-            //left_tick = (double)left_tick / m_perf_scale_x/c_ppen;
         double left_tick = (double) progress_tick /m_zoom/c_ppen;
-       // m_hadjust->set_value(left_tick );
-
         m_scroll_page = page;
-    //double page_adjust = m_hadjust->get_page_size()/m_zoom;
-    //double h_value_adjust = m_hadjust->get_value()/m_zoom;
 
-    printf("progress_tick[%ld]:get_page_size [%f]: get_value[%f]\n",progress_tick,m_hadjust->get_page_size(),m_hadjust->get_value());
-    //printf("page_adjust[%f]:h_value_adjust[%f]:m_zoom[%d]\n",page_adjust,h_value_adjust,m_zoom);
-    printf("m_zoom[%d]: left_tick[%f]\n",m_zoom,left_tick);
-    printf("progress_x[%d]: m_window_x[%d]\n",progress_x,m_window_x);
+        //printf("progress_tick[%ld]:get_page_size [%f]: get_value[%f]\n",progress_tick,m_hadjust->get_page_size(),m_hadjust->get_value());
+        //printf("m_zoom[%d]: left_tick[%f]\n",m_zoom,left_tick);
+        //printf("progress_x[%d]: m_window_x[%d]\n",progress_x,m_window_x);
 
         if(m_zoom == 8)
         {
             m_hadjust->set_value(left_tick / 4);
+            return;
         }
 
         if(m_zoom == 16)
         {
             m_hadjust->set_value(left_tick / 2 );
+            return;
         }
 
         if(m_zoom == 32)
         {
             m_hadjust->set_value(left_tick );
-            //if((progress_tick > page_adjust - 2) || (h_value_adjust > progress_tick))
-            //    m_hadjust->set_value(progress_tick - page_adjust -2 ); // default m_zoom == 32
+            return;
         }
 
         if(m_zoom == 64)
         {
             m_hadjust->set_value(left_tick * 2 );
+            return;
         }
 
         if(m_zoom == 128)
         {
             m_hadjust->set_value(left_tick * 4 );
+            return;
         }
     }
-
-//    if((progress > page_adjust - 2) || (h_value_adjust > progress))
-    //m_hadjust->set_value(progress - page_adjust -2 ); // default m_zoom == 32
-//    if(progress > (page_adjust - 4))
-//        m_hadjust->set_value(progress - page_adjust - 4);   // m_zoom == 16
-    //m_hadjust->set_value(progress - page_adjust - (m_zoom / 16) );
-
-    //if((progress > (m_hadjust->get_page_size()/2)) || (m_hadjust->get_value() > progress))
-    //    m_hadjust->set_value(progress - (m_hadjust->get_page_size()/2) + 1);
 }
 
 
