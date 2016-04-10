@@ -88,7 +88,7 @@ class perftime: public Gtk::DrawingArea
 
     static bool zoom_check (int z) // FIXME
     {
-        return z > 1 && z <= (4 * c_perf_scale_x);
+        return z > 7 && z <= (4 * c_perf_scale_x);
     }
     void set_zoom (int a_zoom);
 

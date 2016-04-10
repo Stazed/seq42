@@ -112,7 +112,6 @@ class perfroll : public Gtk::DrawingArea
     bool on_scroll_event( GdkEventScroll* a_ev ) ;
 
     void auto_scroll_horz();
-    //void auto_scroll_horz(double progress);
 
     bool on_focus_in_event(GdkEventFocus*);
     bool on_focus_out_event(GdkEventFocus*);
@@ -148,7 +147,7 @@ class perfroll : public Gtk::DrawingArea
     int m_zoom;
     static bool zoom_check (int z) // FIXME
     {
-        return z > 1 && z <= (4 * c_perf_scale_x);
+        return z > 7 && z <= (4 * c_perf_scale_x);
     }
     void set_zoom (int a_zoom);
 

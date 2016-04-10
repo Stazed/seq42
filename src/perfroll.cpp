@@ -87,7 +87,6 @@ perfroll::~perfroll( )
 
 }
 
-
 void
 perfroll::change_horz( )
 {
@@ -158,7 +157,6 @@ perfroll::update_sizes()
     m_hadjust->set_page_size( h_bars_visable );
     m_hadjust->set_step_increment( 1 );
     m_hadjust->set_page_increment( 1 );
-
     int h_max_value = h_bars - h_bars_visable;
 
     if ( m_hadjust->get_value() > h_max_value ){
@@ -663,49 +661,84 @@ perfroll::on_button_release_event(GdkEventButton* a_ev)
     return result;
 }
 
+/*
+                                                                        Actual page bars     Progress
+          Zoom                                    Page Size     Bars      (rounding)        Adjust at  * page number
+            8                                       1.875  x    4   =        7.5  X  4  =      7
+            16  need 2 bar                          3.75   x    4   =       15.0               12
+            32  - default (uses 4bar offset)        7.5    x    4   =       30.0               14
+            64  could use 8bar                      15.0   x    4   =       60.0               30
+            128 could use 16 bar                    30.0   x    4   =      120.0               60
+*/
 void
 perfroll::auto_scroll_horz()
 {
     long progress_tick = m_mainperf->get_tick();
+    long tick_offset = m_4bar_offset * c_ppqn * 16;
 
-    //int progress_x =     ( tick - tick_offset ) / m_perf_scale_x ;
+    int progress_x =     ( progress_tick - tick_offset ) / m_perf_scale_x ;
 
-    if (progress_tick > 0)
-    {
-        int progress_x = progress_tick / m_zoom;
+    //double progress_tick = (double)m_mainperf->get_tick()/m_perf_scale_x/c_ppen;
+
+    //int progress_x = progress_tick / m_zoom;
         //int progress_x = progress_tick / m_zoom + 10;
-        int page = progress_x / m_window_x;
-        //if (page != m_scroll_page)
-        //{
-//(double) (m_window_x * m_perf_scale_x) / (c_ppqn * 16)
-           // tick/m_perf_scale_x/c_ppen
-            double left_tick = page * m_window_x * m_zoom;
-            left_tick = (double)left_tick / (c_ppqn * 16);
+    int page = progress_x / m_window_x;
+
+    if (page != m_scroll_page)
+    {
+        //double left_tick = page * m_window_x * m_zoom;
+        //left_tick = (double)left_tick / (c_ppqn * 16);
             //left_tick = (double)left_tick / m_perf_scale_x/c_ppen;
-            //m_scroll_page = page;
+        double left_tick = (double) progress_tick /m_zoom/c_ppen;
+       // m_hadjust->set_value(left_tick );
 
-            //if((left_tick + m_hadjust->get_page_size()) >= m_hadjust->get_upper()) // don't scroll past upper
-            if((left_tick > ( m_hadjust->get_page_size()/2)) || (m_hadjust->get_value() > left_tick) )// don't scroll past upper
-                m_hadjust->set_value(left_tick -( m_hadjust->get_page_size()/2) +1);
-                //m_hadjust->set_value(m_hadjust->get_upper() - m_hadjust->get_page_size());
+        m_scroll_page = page;
+    //double page_adjust = m_hadjust->get_page_size()/m_zoom;
+    //double h_value_adjust = m_hadjust->get_value()/m_zoom;
 
-        printf("get_page_size[%f]: left_tick[%f]\n",m_hadjust->get_page_size(),left_tick);
-        //}
-    printf("progress_tick[%ld]: progress_x[%d]: m_window_x[%d]\n",progress_tick,progress_x,m_window_x);
+    printf("progress_tick[%ld]:get_page_size [%f]: get_value[%f]\n",progress_tick,m_hadjust->get_page_size(),m_hadjust->get_value());
+    //printf("page_adjust[%f]:h_value_adjust[%f]:m_zoom[%d]\n",page_adjust,h_value_adjust,m_zoom);
+    printf("m_zoom[%d]: left_tick[%f]\n",m_zoom,left_tick);
+    printf("progress_x[%d]: m_window_x[%d]\n",progress_x,m_window_x);
+
+        if(m_zoom == 8)
+        {
+            m_hadjust->set_value(left_tick / 4);
+        }
+
+        if(m_zoom == 16)
+        {
+            m_hadjust->set_value(left_tick / 2 );
+        }
+
+        if(m_zoom == 32)
+        {
+            m_hadjust->set_value(left_tick );
+            //if((progress_tick > page_adjust - 2) || (h_value_adjust > progress_tick))
+            //    m_hadjust->set_value(progress_tick - page_adjust -2 ); // default m_zoom == 32
+        }
+
+        if(m_zoom == 64)
+        {
+            m_hadjust->set_value(left_tick * 2 );
+        }
+
+        if(m_zoom == 128)
+        {
+            m_hadjust->set_value(left_tick * 4 );
+        }
     }
 
+//    if((progress > page_adjust - 2) || (h_value_adjust > progress))
+    //m_hadjust->set_value(progress - page_adjust -2 ); // default m_zoom == 32
+//    if(progress > (page_adjust - 4))
+//        m_hadjust->set_value(progress - page_adjust - 4);   // m_zoom == 16
+    //m_hadjust->set_value(progress - page_adjust - (m_zoom / 16) );
 
+    //if((progress > (m_hadjust->get_page_size()/2)) || (m_hadjust->get_value() > progress))
+    //    m_hadjust->set_value(progress - (m_hadjust->get_page_size()/2) + 1);
 }
-/*
-void
-perfroll::auto_scroll_horz(double progress)
-{
-    printf("get_page_size [%f]: get_value[%f]\n", m_hadjust->get_page_size(),m_hadjust->get_value());
 
-    if((progress > (m_hadjust->get_page_size()/2)) || (m_hadjust->get_value() > progress))
-        m_hadjust->set_value(progress - (m_hadjust->get_page_size()/2) + 1);
-}
-*/
 
 bool
 perfroll::on_scroll_event( GdkEventScroll* a_ev )
@@ -901,7 +934,6 @@ perfroll::snap_x( int *a_x )
 void
 perfroll::convert_x( int a_x, long *a_tick )
 {
-
     long tick_offset = m_4bar_offset * c_ppqn * 16;
     *a_tick = a_x * m_perf_scale_x;
     *a_tick += tick_offset;
@@ -911,7 +943,6 @@ perfroll::convert_x( int a_x, long *a_tick )
 void
 perfroll::convert_xy( int a_x, int a_y, long *a_tick, int *a_track)
 {
-
     long tick_offset = m_4bar_offset * c_ppqn * 16;
 
     *a_tick = a_x * m_perf_scale_x;
