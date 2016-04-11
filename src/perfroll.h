@@ -93,7 +93,6 @@ class perfroll : public Gtk::DrawingArea
     int          m_roll_length_ticks;
 
     int          m_drop_x, m_drop_y;
-    int          m_scroll_page;
 
     long         m_drop_tick;
     long         m_drop_tick_trigger_offset;

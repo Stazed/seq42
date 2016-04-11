@@ -94,10 +94,10 @@ perftime::on_realize()
 void
 perftime::change_horz( )
 {
-    if ( m_4bar_offset != (int) m_hadjust->get_value() ){
-
-	m_4bar_offset = (int) m_hadjust->get_value();
-	queue_draw();
+    if ( m_4bar_offset != (int) m_hadjust->get_value() )
+    {
+        m_4bar_offset = (int) m_hadjust->get_value();
+        queue_draw();
     }
 }
 

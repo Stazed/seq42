@@ -43,7 +43,6 @@ perfroll::perfroll( perform *a_perf,
     m_4bar_offset(0),
     m_track_offset(0),
     m_roll_length_ticks(0),
-    m_scroll_page(0),
     m_drop_track(0),
 
     m_vadjust(a_vadjust),
@@ -91,10 +90,10 @@ perfroll::~perfroll( )
 void
 perfroll::change_horz( )
 {
-    if ( m_4bar_offset != (int) m_hadjust->get_value() ){
-
-	m_4bar_offset = (int) m_hadjust->get_value();
-	queue_draw();
+    if ( m_4bar_offset != (int) m_hadjust->get_value() )
+    {
+        m_4bar_offset = (int) m_hadjust->get_value();
+        queue_draw();
     }
 }
 
@@ -665,14 +664,9 @@ perfroll::auto_scroll_horz()
     int progress_x =     ( progress_tick - tick_offset ) / m_zoom  + 100;
     int page = progress_x / m_window_x;
 
-    if (page != m_scroll_page)
+    if (page != 0 || progress_x < 0)
     {
         double left_tick = (double) progress_tick /m_zoom/c_ppen;
-        m_scroll_page = page;
-
-        //printf("progress_tick[%ld]:get_page_size [%f]: get_value[%f]\n",progress_tick,m_hadjust->get_page_size(),m_hadjust->get_value());
-        //printf("m_zoom[%d]: left_tick[%f]\n",m_zoom,left_tick);
-        //printf("progress_x[%d]: m_window_x[%d]\n",progress_x,m_window_x);
 
         switch(m_zoom)
         {
