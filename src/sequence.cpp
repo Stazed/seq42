@@ -2941,6 +2941,14 @@ sequence::fill_list( list<char> *a_list, int a_pos )
     addLongList( a_list, c_midich );
     a_list->push_front( get_midi_channel() );
 
+    /* transposable */
+    addListVar( a_list, 0 );
+    a_list->push_front( 0xFF );
+    a_list->push_front( 0x7F );
+    a_list->push_front( 0x05 );
+    addLongList( a_list, c_transpose );
+    a_list->push_front( (char) get_track()->get_transposable() );
+
     delta_time = m_length - prev_timestamp;
 
     /* meta track end */

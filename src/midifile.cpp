@@ -190,6 +190,9 @@ bool midifile::parse (perform * a_perf)
             /* we know we have a good track, so we can create
                a new seq42 track to dump it */
 
+            // FIXME could read in the beat and time signature here on first track = 0 for traditional midi files
+
+
             a_track = new track();
 
             if (a_track == NULL) {
@@ -327,6 +330,12 @@ bool midifile::parse (perform * a_perf)
                                         len -= 2;
                                     }
 
+                                    else if (proprietary == c_transpose)
+                                    {
+                                        a_track->set_transposable (read_byte ());
+                                        len--;
+                                    }
+
                                     else if (proprietary == c_triggers)
                                     {
                                         int num_triggers = len / 4;
@@ -359,6 +368,7 @@ bool midifile::parse (perform * a_perf)
                                             a_track->add_trigger (on, length, offset, false);
                                         }
                                     }
+
                                     /* eat the rest */
                                     m_pos += len;
                                     break;
@@ -612,6 +622,8 @@ bool midifile::write_sequences (perform * a_perf)
     write_short (numtracks);
     write_short (c_ppqn);
 
+   // FIXME could write in the beat and time signature here for traditional midi files
+
     /* We should be good to load now   */
     /* for each Track Sequence in the midi file */
 
@@ -734,6 +746,7 @@ bool midifile::write_song (perform * a_perf)
     write_short (c_ppqn);
 
     //First, the track chunk for the time signature/tempo track.
+//FIXME could add this to first actual track so we don't have extra
     /* magic number 'MTrk' */
     write_long (0x4D54726B);
     write_long (0x00000013); // s/b [00 00 00 13] = chunk length 19 bytes
@@ -755,6 +768,8 @@ bool midifile::write_song (perform * a_perf)
     write_short(0xFF51);
     write_byte(0x03); // length of bytes - must be 3
     write_mid(60000000/a_perf->get_bpm());
+
+// FIXME end first track add
 
     /* track end */
     write_long(0x00FF2F00);
