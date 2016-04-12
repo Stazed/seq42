@@ -28,6 +28,7 @@ class perform;
 #include "midifile.h"
 #include "sequence.h"
 #include "track.h"
+#include "mutex.h"
 #ifndef __WIN32__
 #   include <unistd.h>
 #endif
@@ -120,7 +121,7 @@ class perform
     void set_playback_mode( bool a_playback_mode );
 
     condition_var m_condition_var;
-
+    mutex m_mutex;
 
 #ifdef JACK_SUPPORT
 

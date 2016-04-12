@@ -794,6 +794,7 @@ void perform::pop_trigger_redo( int a_track )
 // tracks - merge sequence, cross track trigger, track cut, track paste
 void perform::push_track_undo( int a_track )
 {
+    m_mutex.lock();
     if ( is_active_track(a_track) == true ) // merge, cross track, track cut
     {
         assert( m_tracks[a_track] );
@@ -814,10 +815,12 @@ void perform::push_track_undo( int a_track )
     redo_vect.clear();
     set_have_undo();
     set_have_redo();
+    m_mutex.unlock();
 }
 
 void perform::pop_track_undo( int a_track )
 {
+    m_mutex.lock();
     if ( is_active_track(a_track) == true ) // cross track, merge seq, paste track
     {
         if(is_track_in_edit(a_track)) // don't allow since track will be changed
@@ -874,10 +877,12 @@ void perform::pop_track_undo( int a_track )
     redo_vect.push_back(a_undo);
     update_seqlist_on_change = true; // in case the seqlist is open
     set_have_redo();
+    m_mutex.unlock();
 }
 
 void perform::pop_track_redo( int a_track )
 {
+    m_mutex.lock();
     if ( is_active_track(a_track) == true ) // cross track, merge seq, cut track
     {
         if(is_track_in_edit(a_track)) // don't allow since track will be changed
@@ -934,12 +939,14 @@ void perform::pop_track_redo( int a_track )
     undo_vect.push_back(a_undo);
     update_seqlist_on_change = true; // in case the seqlist is open
     set_have_undo();
+    m_mutex.unlock();
 }
 
 
 void
 perform::push_perf_undo()
 {
+    m_mutex.lock();
     for(int i = 0; i < c_max_track; i++)
     {
         if ( is_active_track(i) == true )
@@ -961,11 +968,13 @@ perform::push_perf_undo()
     redo_vect.clear();
     set_have_undo();
     set_have_redo();
+    m_mutex.unlock();
 }
 
 void
 perform::pop_perf_undo()
 {
+    m_mutex.lock();
     for(int i = 0; i < c_max_track; i++)//now delete and replace
     {
         if ( is_active_track(i) == true )
@@ -1003,12 +1012,14 @@ perform::pop_perf_undo()
     redo_vect.push_back(a_undo);
     update_seqlist_on_change = true; // in case the seqlist is open
     set_have_redo();
+    m_mutex.unlock();
 }
 
 void
 perform::pop_perf_redo()
 {
-   for(int i = 0; i < c_max_track; i++)//now delete and replace
+    m_mutex.lock();
+    for(int i = 0; i < c_max_track; i++)//now delete and replace
     {
         if ( is_active_track(i) == true )
         {
@@ -1045,6 +1056,7 @@ perform::pop_perf_redo()
     undo_vect.push_back(a_undo);
     update_seqlist_on_change = true;
     set_have_undo();
+    m_mutex.unlock();
 }
 
 void
