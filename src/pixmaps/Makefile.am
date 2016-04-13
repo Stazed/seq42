@@ -37,5 +37,6 @@ EXTRA_DIST = \
 	thru.xpm \
 	tools.xpm \
 	transportFollow.xpm \
+	transpose.xpm\
 	undo.xpm \
 	zoom.xpm

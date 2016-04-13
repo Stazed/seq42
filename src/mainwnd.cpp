@@ -45,6 +45,7 @@
 #include "pixmaps/down.xpm"
 #include "pixmaps/jack.xpm"
 #include "pixmaps/transportFollow.xpm"
+#include "pixmaps/transpose.xpm"
 
 using namespace sigc;
 
@@ -271,8 +272,8 @@ mainwnd::mainwnd(perform *a_p):
                         i )));
     }
 
-    m_button_xpose = manage( new Button("transpose"));
-    //m_button_xpose->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( xpose_xpm ))));
+    m_button_xpose = manage( new Button());
+    m_button_xpose->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( transpose_xpm ))));
     m_button_xpose->signal_clicked().connect(  sigc::bind<Menu *>( mem_fun( *this, &mainwnd::popup_menu), m_menu_xpose  ));
     add_tooltip( m_button_xpose, "Song transpose" );
     m_entry_xpose = manage( new Entry());
