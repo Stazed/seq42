@@ -2937,6 +2937,43 @@ addLongList( list<char> *a_list, long a_x )
     a_list->push_front(  (a_x & 0x000000FF)       );
 }
 
+void
+sequence::fill_proprietary_list(list < char >*a_list)
+{
+    /* FIXME: move bus and channel stuff into track */
+    /* bus */
+    addListVar( a_list, 0 );
+    a_list->push_front( 0xFF );
+    a_list->push_front( 0x7F );
+    a_list->push_front( 0x05 );
+    addLongList( a_list, c_midibus );
+    a_list->push_front( get_midi_bus()  );
+
+    /* timesig */
+    addListVar( a_list, 0 );
+    a_list->push_front( 0xFF );
+    a_list->push_front( 0x7F );
+    a_list->push_front( 0x06 );
+    addLongList( a_list, c_timesig );
+    a_list->push_front( m_time_beats_per_measure  );
+    a_list->push_front( m_time_beat_width  );
+
+    /* channel */
+    addListVar( a_list, 0 );
+    a_list->push_front( 0xFF );
+    a_list->push_front( 0x7F );
+    a_list->push_front( 0x05 );
+    addLongList( a_list, c_midich );
+    a_list->push_front( get_midi_channel() );
+
+    /* transposable */
+    addListVar( a_list, 0 );
+    a_list->push_front( 0xFF );
+    a_list->push_front( 0x7F );
+    a_list->push_front( 0x05 );
+    addLongList( a_list, c_transpose );
+    a_list->push_front( (char) get_track()->get_transposable() );
+}
 
 void
 sequence::fill_list( list<char> *a_list, int a_pos )
@@ -3066,40 +3103,7 @@ sequence::fill_list( list<char> *a_list, int a_pos )
         t++;
     }
 
-
-    /* FIXME: move bus and channel stuff into track */
-    /* bus */
-    addListVar( a_list, 0 );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x7F );
-    a_list->push_front( 0x05 );
-    addLongList( a_list, c_midibus );
-    a_list->push_front( get_midi_bus()  );
-
-    /* timesig */
-    addListVar( a_list, 0 );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x7F );
-    a_list->push_front( 0x06 );
-    addLongList( a_list, c_timesig );
-    a_list->push_front( m_time_beats_per_measure  );
-    a_list->push_front( m_time_beat_width  );
-
-    /* channel */
-    addListVar( a_list, 0 );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x7F );
-    a_list->push_front( 0x05 );
-    addLongList( a_list, c_midich );
-    a_list->push_front( get_midi_channel() );
-
-    /* transposable */
-    addListVar( a_list, 0 );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x7F );
-    a_list->push_front( 0x05 );
-    addLongList( a_list, c_transpose );
-    a_list->push_front( (char) get_track()->get_transposable() );
+    fill_proprietary_list( a_list );
 
     delta_time = m_length - prev_timestamp;
 
@@ -3302,30 +3306,7 @@ sequence::song_fill_list_seq_trigger( list<char> *a_list, trigger *a_trig, long 
     addLongList( a_list, (a_trig)->m_tick_end );
     addLongList( a_list, 0 ); // offset - done in event
 
-    /* bus */
-    addListVar( a_list, 0 );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x7F );
-    a_list->push_front( 0x05 );
-    addLongList( a_list, c_midibus );
-    a_list->push_front( get_midi_bus()  );
-
-    /* timesig */
-    addListVar( a_list, 0 );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x7F );
-    a_list->push_front( 0x06 );
-    addLongList( a_list, c_timesig );
-    a_list->push_front( m_time_beats_per_measure  );
-    a_list->push_front( m_time_beat_width  );
-
-    /* channel */
-    addListVar( a_list, 0 );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x7F );
-    a_list->push_front( 0x05 );
-    addLongList( a_list, c_midich );
-    a_list->push_front( get_midi_channel() );
+    fill_proprietary_list( a_list );
 
     long delta_time = a_length - prev_timestamp;
 

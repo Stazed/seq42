@@ -49,6 +49,8 @@ class midifile
     void write_short( unsigned short );
     void write_byte( unsigned char );
 
+    void write_header( int numtracks);
+
  public:
 
     midifile(const Glib::ustring&);

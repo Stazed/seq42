@@ -596,11 +596,23 @@ midifile::write_short (unsigned short a_x)
     write_byte ((a_x & 0x00FF));
 }
 
-
 void
 midifile::write_byte (unsigned char a_x)
 {
     m_l.push_back (a_x);
+}
+
+void
+midifile::write_header( int numtracks)
+{
+    /* 'MThd' and length of 6 */
+    write_long (0x4D546864);
+    write_long (0x00000006);
+
+    /* format 1, number of tracks, ppqn */
+    write_short (0x0001);
+    write_short (numtracks);
+    write_short (c_ppqn);
 }
 
 bool midifile::write_sequences (perform * a_perf)
@@ -615,20 +627,9 @@ bool midifile::write_sequences (perform * a_perf)
             numtracks += a_perf->get_track(i)->get_number_of_sequences();
         }
     }
-
     //printf ("numtracks[%d]\n", numtracks );
 
-    /* write header */
-    /* 'MThd' and length of 6 */
-    write_long (0x4D546864);
-    write_long (0x00000006);
-
-    /* format 1, number of tracks, ppqn */
-    write_short (0x0001);
-    write_short (numtracks);
-    write_short (c_ppqn);
-
-    // FIXME could write in the beat and time signature here for traditional midi files
+    write_header(numtracks);
 
     /* We should be good to load now   */
     /* for each Track Sequence in the midi file */
@@ -718,9 +719,7 @@ bool midifile::write_sequences (perform * a_perf)
     m_l.clear ();
 
     return true;
-
 }
-
 
 bool midifile::write_song (perform * a_perf)
 {
@@ -736,55 +735,14 @@ bool midifile::write_song (perform * a_perf)
                 numtracks ++;
         }
     }
-
-    numtracks ++; // + 1 for signature/tempo track
-
     //printf ("numtracks[%d]\n", numtracks );
 
-    /* write header */
-    /* 'MThd' and length of 6 */
-    write_long (0x4D546864);
-    write_long (0x00000006);
-
-    /* format 1, number of tracks, ppqn */
-    write_short (0x0001);
-    write_short (numtracks);
-    write_short (c_ppqn);
-
-    //First, the track chunk for the time signature/tempo track.
-//FIXME could add this to first actual track so we don't have extra
-    /* magic number 'MTrk' */
-    write_long (0x4D54726B);
-    write_long (0x00000013); // s/b [00 00 00 13] = chunk length 19 bytes
-
-    // 00 FF 58 04 04 02 18 08      time signature - 4/4
-    // 00 FF 51 03 07 A1 20         tempo - last three bytes are the bpm - 140 here in hex
-    // 00 FF 2F 00                  end of track
-
-    /* time signature */
-    write_byte(0x00); // delta time
-    write_short(0xFF58);
-    write_byte(0x04); // length of remaining bytes
-    write_byte(a_perf->get_bp_measure());           // nn
-    write_byte(log(a_perf->get_bw())/log(2.0));     // dd
-    write_short(0x1808);
-
-    /* Tempo */
-    write_byte(0x00); // delta time
-    write_short(0xFF51);
-    write_byte(0x03); // length of bytes - must be 3
-    write_mid(60000000/a_perf->get_bpm());
-
-    // FIXME add above to beginning of first track and eliminate the end here
-    // so no need for additional track?
-
-    /* track end */
-    write_long(0x00FF2F00);
-
-    numtracks = 1; // 0 is signature/tempo track
+    write_header(numtracks);
 
     /* We should be good to load now   */
     /* for each Track Sequence in the midi file */
+
+    numtracks = 0; // reset for seq->fill_list position
 
     for (int curTrack = 0; curTrack < c_max_track; curTrack++)
     {
@@ -849,11 +807,49 @@ bool midifile::write_song (perform * a_perf)
             total_seq_length = trig_vect[vect_size-1].m_tick_end;
 
             //printf("total_seq_length = [%ld]\n",total_seq_length);
+            /*
+               The sequence trigger is NOT part of the standard midi format and is proprietary to seq24.
+                It is added here because the trigger combining has an alternative benefit for editing.
+                The user can split, slice and rearrange triggers to form a new sequence. Then mute all
+                other tracks and export to a temporary midi file. Now they can import the combined
+                sequence as a new item. This makes editing of long improvised sequences into smaller or
+                modified sequences as well as combining several sequence parts painless. Also,
+                if the user has a variety of common items such as drum beats, control codes, etc that
+                can be used in other projects, this method is very convenient. The common items can
+                be kept in one file and exported all, individually, or in part by creating triggers and muting.
+            */
             seq->song_fill_list_seq_trigger(&l,a_trig,total_seq_length,prev_timestamp); // the big sequence trigger
 
             /* magic number 'MTrk' */
             write_long (0x4D54726B);
-            write_long (l.size ());
+
+            int size_tempo_time_sig = 0;
+            if(curTrack == 0)
+                size_tempo_time_sig = 15; // size, (s/b 19(total) - 4(trk end) = 15 bytes)
+
+            write_long (l.size () + size_tempo_time_sig);
+
+            /*
+                Add the bpm and timesignature stuff here to the first track (0).
+                So we don't have an extra one...
+            */
+
+            if(curTrack == 0)
+            {
+                /* time signature */
+                write_byte(0x00); // delta time
+                write_short(0xFF58);
+                write_byte(0x04); // length of remaining bytes
+                write_byte(a_perf->get_bp_measure());           // nn
+                write_byte(log(a_perf->get_bw())/log(2.0));     // dd
+                write_short(0x1808);
+
+                /* Tempo */
+                write_byte(0x00); // delta time
+                write_short(0xFF51);
+                write_byte(0x03); // length of bytes - must be 3
+                write_mid(60000000/a_perf->get_bpm());
+            }
 
             //printf("MTrk len[%d]\n", l.size());
 

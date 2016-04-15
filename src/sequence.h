@@ -382,6 +382,7 @@ class sequence
 
     sequence & operator= (const sequence & a_rhs);
 
+    void fill_proprietary_list(list < char >*a_list);
     void fill_list (list < char >*a_list, int a_pos);
 
     void song_fill_list_track_name( list<char> *a_list, int a_pos );
