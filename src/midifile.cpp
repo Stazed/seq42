@@ -96,7 +96,8 @@ bool midifile::parse (perform * a_perf)
     /* open binary file */
     ifstream file(m_name.c_str(), ios::in | ios::binary | ios::ate);
 
-    if (!file.is_open ()) {
+    if (!file.is_open ())
+    {
         fprintf(stderr, "Error opening MIDI file\n");
         return false;
     }
@@ -108,11 +109,11 @@ bool midifile::parse (perform * a_perf)
 
     /* alloc data */
     try
-	{
-	    m_d.resize(file_size);
-	}
-	catch(std::bad_alloc& ex)
-	{
+    {
+        m_d.resize(file_size);
+    }
+    catch(std::bad_alloc& ex)
+    {
         fprintf(stderr, "Memory allocation failed\n");
         return false;
     }
@@ -156,13 +157,15 @@ bool midifile::parse (perform * a_perf)
     //      ID, TrackLength, Format, NumTracks, ppqn );
 
     /* magic number 'MThd' */
-    if (ID != 0x4D546864) {
+    if (ID != 0x4D546864)
+    {
         fprintf(stderr, "Invalid MIDI header detected: %8lX\n", ID);
         return false;
     }
 
     /* we are only supporting format 1 for now */
-    if (Format != 1) {
+    if (Format != 1)
+    {
         fprintf(stderr, "Unsupported MIDI format detected: %d\n", Format);
         return false;
     }
@@ -190,12 +193,10 @@ bool midifile::parse (perform * a_perf)
             /* we know we have a good track, so we can create
                a new seq42 track to dump it */
 
-            // FIXME could read in the beat and time signature here on first track = 0 for traditional midi files
-
-
             a_track = new track();
 
-            if (a_track == NULL) {
+            if (a_track == NULL)
+            {
                 fprintf(stderr, "Memory allocation failed\n");
                 return false;
             }
@@ -246,199 +247,204 @@ bool midifile::parse (perform * a_perf)
                 /* switch on the channelless status */
                 switch (status & 0xF0)
                 {
-                    /* case for those with 2 data bytes */
-                    case EVENT_NOTE_OFF:
-                    case EVENT_NOTE_ON:
-                    case EVENT_AFTERTOUCH:
-                    case EVENT_CONTROL_CHANGE:
-                    case EVENT_PITCH_WHEEL:
+                /* case for those with 2 data bytes */
+                case EVENT_NOTE_OFF:
+                case EVENT_NOTE_ON:
+                case EVENT_AFTERTOUCH:
+                case EVENT_CONTROL_CHANGE:
+                case EVENT_PITCH_WHEEL:
 
-                        data[0] = read_byte ();
-                        data[1] = read_byte ();
+                    data[0] = read_byte ();
+                    data[1] = read_byte ();
 
-                        // some files have vel=0 as note off
-                        if ((status & 0xF0) == EVENT_NOTE_ON && data[1] == 0)
+                    // some files have vel=0 as note off
+                    if ((status & 0xF0) == EVENT_NOTE_ON && data[1] == 0)
+                    {
+                        e.set_status (EVENT_NOTE_OFF);
+                    }
+
+                    //printf( "%02X %02X\n", data[0], data[1] );
+
+                    /* set data and add */
+                    e.set_data (data[0], data[1]);
+                    seq->add_event (&e);
+
+                    /* set midi channel */
+                    a_track->set_midi_channel (status & 0x0F);
+                    break;
+
+                /* one data item */
+                case EVENT_PROGRAM_CHANGE:
+                case EVENT_CHANNEL_PRESSURE:
+
+                    data[0] = read_byte ();
+                    //printf( "%02X\n", data[0] );
+
+                    /* set data and add */
+                    e.set_data (data[0]);
+                    seq->add_event (&e);
+
+                    /* set midi channel */
+                    a_track->set_midi_channel (status & 0x0F);
+                    break;
+
+                /* meta midi events ---  this should be FF !!!!!  */
+
+                case 0xF0:
+
+                    if (status == 0xFF)
+                    {
+                        // get meta type
+                        type = read_byte ();
+                        len = read_var ();
+
+                        //printf( "%02X %08X ", type, (int) len );
+
+                        switch (type)
                         {
-                            e.set_status (EVENT_NOTE_OFF);
-                        }
+                        // proprietary
+                        case 0x7f:
 
-                        //printf( "%02X %02X\n", data[0], data[1] );
-
-                        /* set data and add */
-                        e.set_data (data[0], data[1]);
-                        seq->add_event (&e);
-
-                        /* set midi channel */
-                        a_track->set_midi_channel (status & 0x0F);
-                        break;
-
-                        /* one data item */
-                    case EVENT_PROGRAM_CHANGE:
-                    case EVENT_CHANNEL_PRESSURE:
-
-                        data[0] = read_byte ();
-                        //printf( "%02X\n", data[0] );
-
-                        /* set data and add */
-                        e.set_data (data[0]);
-                        seq->add_event (&e);
-
-                        /* set midi channel */
-                        a_track->set_midi_channel (status & 0x0F);
-                        break;
-
-                        /* meta midi events ---  this should be FF !!!!!  */
-
-                    case 0xF0:
-
-                        if (status == 0xFF)
-                        {
-                            // get meta type
-                            type = read_byte ();
-                            len = read_var ();
-
-                            //printf( "%02X %08X ", type, (int) len );
-
-                            switch (type)
+                            // FF 7F len data
+                            if (len > 4)
                             {
-                                // proprietary
-                                case 0x7f:
-
-                                    // FF 7F len data
-                                    if (len > 4)
-                                    {
-                                        proprietary = read_long ();
-                                        len -= 4;
-                                    }
-
-                                    if (proprietary == c_midibus)
-                                    {
-                                        a_track->set_midi_bus (read_byte ());
-                                        len--;
-                                    }
-
-                                    else if (proprietary == c_midich)
-                                    {
-                                        a_track->set_midi_channel (read_byte ());
-                                        len--;
-                                    }
-
-                                    else if (proprietary == c_timesig)
-                                    {
-                                        seq->set_bp_measure (read_byte ());
-                                        seq->set_bw (read_byte ());
-                                        len -= 2;
-                                    }
-
-                                    else if (proprietary == c_transpose)
-                                    {
-                                        a_track->set_transposable (read_byte ());
-                                        len--;
-                                    }
-
-                                    else if (proprietary == c_triggers)
-                                    {
-                                        int num_triggers = len / 4;
-
-                                        for (int i = 0; i < num_triggers; i += 2)
-                                        {
-                                            unsigned long on = read_long ();
-                                            unsigned long length = (read_long () - on);
-                                            len -= 8;
-                                            a_track->add_trigger(on, length, 0, false);
-                                        }
-                                    }
-
-                                    else if (proprietary == c_triggers_new)
-                                    {
-                                        int num_triggers = len / 12;
-
-                                        //printf( "num_triggers[%d]\n", num_triggers );
-                                        for (int i = 0; i < num_triggers; i++)
-                                        {
-                                            unsigned long on = read_long ();
-                                            unsigned long off = read_long ();
-                                            unsigned long length = off - on + 1;
-                                            unsigned long offset = read_long ();
-
-                                            //printf( "< start[%d] end[%d] offset[%d]\n",
-                                            //        on, off, offset );
-
-                                            len -= 12;
-                                            a_track->add_trigger (on, length, offset, false);
-                                        }
-                                    }
-
-                                    /* eat the rest */
-                                    m_pos += len;
-                                    break;
-
-                                    /* Trk Done */
-                                case 0x2f:
-
-                                    // If delta is 0, then another event happened at the same time
-                                    // as the track end.  the sequence class will discard the last
-                                    // note.  This is a fix for that.   Native Seq42 file will always
-                                    // have a Delta >= 1
-                                    if ( Delta == 0 ){
-                                        CurrentTime += 1;
-                                    }
-
-                                    seq->set_length (CurrentTime, false);
-                                    seq->zero_markers ();
-                                    done = true;
-                                    break;
-
-                                    /* Track name */
-                                case 0x03:
-                                    for (i = 0; i < len; i++)
-                                    {
-                                        TrackName[i] = read_byte ();
-                                    }
-
-                                    TrackName[i] = '\0';
-
-                                    //printf("Import track: [%s]\n", TrackName );
-                                    seq->set_name (TrackName);
-                                    break;
-
-                                    /* sequence number */
-                                case 0x00:
-                                    if(len != 0x00)
-                                        read_short();
-                                    break;
-
-                                default:
-                                    for (i = 0; i < len; i++)
-                                    {
-                                        read_byte();
-                                    }
-                                    //printf("\n");
-                                    break;
+                                proprietary = read_long ();
+                                len -= 4;
                             }
-                        }
-                        else if(status == 0xF0)
-                        {
-                            /* sysex */
-                            len = read_var ();
 
-                            /* skip it */
+                            if (proprietary == c_midibus)
+                            {
+                                a_track->set_midi_bus (read_byte ());
+                                len--;
+                            }
+
+                            else if (proprietary == c_midich)
+                            {
+                                a_track->set_midi_channel (read_byte ());
+                                len--;
+                            }
+
+                            else if (proprietary == c_timesig)
+                            {
+                                seq->set_bp_measure (read_byte ());
+                                seq->set_bw (read_byte ());
+                                len -= 2;
+                            }
+
+                            else if (proprietary == c_transpose)
+                            {
+                                a_track->set_transposable (read_byte ());
+                                len--;
+                            }
+
+                            else if (proprietary == c_triggers)
+                            {
+                                int num_triggers = len / 4;
+
+                                for (int i = 0; i < num_triggers; i += 2)
+                                {
+                                    unsigned long on = read_long ();
+                                    unsigned long length = (read_long () - on);
+                                    len -= 8;
+                                    a_track->add_trigger(on, length, 0, false);
+                                }
+                            }
+
+                            else if (proprietary == c_triggers_new)
+                            {
+                                int num_triggers = len / 12;
+
+                                //printf( "num_triggers[%d]\n", num_triggers );
+                                for (int i = 0; i < num_triggers; i++)
+                                {
+                                    unsigned long on = read_long ();
+                                    unsigned long off = read_long ();
+                                    unsigned long length = off - on + 1;
+                                    unsigned long offset = read_long ();
+
+                                    //printf( "< start[%d] end[%d] offset[%d]\n",
+                                    //        on, off, offset );
+
+                                    len -= 12;
+                                    a_track->add_trigger (on, length, offset, false);
+                                }
+                            }
+
+                            /* eat the rest */
                             m_pos += len;
+                            break;
 
-                            fprintf(stderr, "Warning, no support for SYSEX messages, discarding.\n");
+                        // FIXME could handle the conventional
+                        //case 0x58:                      /* Time Signature  bp_measure / bw */
+                        //case 0x51:                      /* Set Tempo  = bpm      */
+
+                        /* Trk Done */
+                        case 0x2f:
+
+                            // If delta is 0, then another event happened at the same time
+                            // as the track end.  the sequence class will discard the last
+                            // note.  This is a fix for that.   Native Seq42 file will always
+                            // have a Delta >= 1
+                            if ( Delta == 0 )
+                            {
+                                CurrentTime += 1;
+                            }
+
+                            seq->set_length (CurrentTime, false);
+                            seq->zero_markers ();
+                            done = true;
+                            break;
+
+                        /* Track name */
+                        case 0x03:
+                            for (i = 0; i < len; i++)
+                            {
+                                TrackName[i] = read_byte ();
+                            }
+
+                            TrackName[i] = '\0';
+
+                            //printf("Import track: [%s]\n", TrackName );
+                            seq->set_name (TrackName);
+                            break;
+
+                        /* sequence number */
+                        case 0x00:
+                            if(len != 0x00)
+                                read_short();
+                            break;
+
+                        default:
+                            for (i = 0; i < len; i++)
+                            {
+                                read_byte();
+                            }
+                            //printf("\n");
+                            break;
                         }
-                        else
-                        {
-                            fprintf(stderr, "Unexpected system event : 0x%.2X", status);
-                            return false;
-                        }
+                    }
+                    else if(status == 0xF0)
+                    {
+                        /* sysex */
+                        len = read_var ();
 
-                        break;
+                        /* skip it */
+                        m_pos += len;
 
-                    default:
-                        fprintf(stderr, "Unsupported MIDI event: %hhu\n", status);
+                        fprintf(stderr, "Warning, no support for SYSEX messages, discarding.\n");
+                    }
+                    else
+                    {
+                        fprintf(stderr, "Unexpected system event : 0x%.2X", status);
                         return false;
-                        break;
+                    }
+
+                    break;
+
+                default:
+                    fprintf(stderr, "Unsupported MIDI event: %hhu\n", status);
+                    return false;
+                    break;
                 }
 
             }			/* while ( !done loading Trk chunk */
@@ -622,7 +628,7 @@ bool midifile::write_sequences (perform * a_perf)
     write_short (numtracks);
     write_short (c_ppqn);
 
-   // FIXME could write in the beat and time signature here for traditional midi files
+    // FIXME could write in the beat and time signature here for traditional midi files
 
     /* We should be good to load now   */
     /* for each Track Sequence in the midi file */
@@ -705,8 +711,8 @@ bool midifile::write_sequences (perform * a_perf)
     for (list < unsigned char >::iterator i = m_l.begin ();
             i != m_l.end (); i++)
     {
-      char c = *i;
-      file.write(&c, 1);
+        char c = *i;
+        file.write(&c, 1);
     }
 
     m_l.clear ();
@@ -724,7 +730,7 @@ bool midifile::write_song (perform * a_perf)
     for (int i = 0; i < c_max_track; i++)
     {
         if (a_perf->is_active_track(i) && a_perf->get_track(i)->get_track_trigger_count() > 0 &&
-            !a_perf->get_track(i)->get_song_mute()) // don't count tracks with NO triggers or muted
+                !a_perf->get_track(i)->get_song_mute()) // don't count tracks with NO triggers or muted
         {
             if(a_perf->get_track(i)->get_number_of_sequences() > 0) // don't count tracks with NO sequences(even if they have a trigger)
                 numtracks ++;
@@ -761,7 +767,7 @@ bool midifile::write_song (perform * a_perf)
     write_byte(0x04); // length of remaining bytes
     write_byte(a_perf->get_bp_measure());           // nn
     write_byte(log(a_perf->get_bw())/log(2.0));     // dd
-    write_short(0x1808);            // FIXME ???
+    write_short(0x1808);
 
     /* Tempo */
     write_byte(0x00); // delta time
@@ -769,7 +775,8 @@ bool midifile::write_song (perform * a_perf)
     write_byte(0x03); // length of bytes - must be 3
     write_mid(60000000/a_perf->get_bpm());
 
-// FIXME end first track add
+    // FIXME add above to beginning of first track and eliminate the end here
+    // so no need for additional track?
 
     /* track end */
     write_long(0x00FF2F00);
@@ -873,8 +880,8 @@ bool midifile::write_song (perform * a_perf)
     for (list < unsigned char >::iterator i = m_l.begin ();
             i != m_l.end (); i++)
     {
-      char c = *i;
-      file.write(&c, 1);
+        char c = *i;
+        file.write(&c, 1);
     }
 
     m_l.clear ();
