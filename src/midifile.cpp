@@ -374,9 +374,53 @@ bool midifile::parse (perform * a_perf)
                             m_pos += len;
                             break;
 
-                        // FIXME could handle the conventional
-                        //case 0x58:                      /* Time Signature  bp_measure / bw */
-                        //case 0x51:                      /* Set Tempo  = bpm      */
+                        case 0x58:    /* Time Signature  bp_measure / bw */
+                            /*
+                                If the midi file contains both proprietary (c_timesig)
+                                and Midi type 0x58 then it came from seq42 or seq24 (Stazed versions).
+                                In this case the Midi type is parsed first (because it is listed first)
+                                then it gets overwritten by the proprietary, above.
+                            */
+                            if (len == 4)
+                            {
+                                int bp_measure = int(read_byte());  // nn
+                                int logbase2 = int(read_byte());    // dd
+                                long bw = long(pow2(logbase2));
+
+                                a_perf->set_bp_measure(bp_measure); // set main perform
+                                a_perf->set_bw(bw);
+
+                                read_byte();                        // cc eat
+                                read_byte();                        // bb eat
+
+                                seq->set_bp_measure(bp_measure);    // also sets the sequence
+                                seq->set_bw(bw);
+
+                                printf
+                                (
+                                   "Time Signature set to %d/%d\n",
+                                    int(seq->get_bp_measure()),
+                                    int(seq->get_bw())
+                                );
+                            }
+                            else
+                                m_pos += len;           /* eat it           */
+                            break;
+
+                        case 0x51:                      /* Set Tempo  = bpm      */
+                            if (len == 3)
+                            {
+                                unsigned tempo = unsigned(read_byte());
+                                tempo = (tempo * 256) + unsigned(read_byte());
+                                tempo = (tempo * 256) + unsigned(read_byte());
+                                int bpm = (double) 60000000.0 / tempo;
+
+                                a_perf->set_bpm(bpm);
+                                printf("BPM set to %d\n", bpm);
+                            }
+                            else
+                                m_pos += len;           /* eat it           */
+                            break;
 
                         /* Trk Done */
                         case 0x2f:
@@ -883,5 +927,34 @@ bool midifile::write_song (perform * a_perf)
     m_l.clear ();
 
     return true;
+}
+
+/**
+ *  From Sequencer64 project
+ *  Internal function for simple calculation of a power of 2 without a lot of
+ *  math.  Use for calculating the denominator of a time signature.
+ *
+ * \param logbase2
+ *      Provides the power to which 2 is to be raised.  This integer is
+ *      probably only rarely greater than 4 (which represents a denominator of
+ *      16).
+ *
+ * \return
+ *      Returns 2 raised to the logbase2 power.
+ */
+
+int
+midifile::pow2 (int logbase2)
+{
+    int result;
+    if (logbase2 == 0)
+        result = 1;
+    else
+    {
+        result = 2;
+        for (int c = 1; c < logbase2; c++)
+            result *= 2;
+    }
+    return result;
 }
 

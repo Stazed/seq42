@@ -50,6 +50,7 @@ class midifile
     void write_byte( unsigned char );
 
     void write_header( int numtracks);
+    int pow2 (int logbase2);
 
  public:
 
