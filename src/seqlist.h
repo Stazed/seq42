@@ -31,22 +31,29 @@ using namespace Gtk;
 class seqlist : public Gtk::Window
 {
 
- private:
+private:
 
     perform *m_perf;
 
     class ModelColumns : public Gtk::TreeModel::ColumnRecord
     {
-        public:
-            ModelColumns()
-            { add(m_trk_num); add(m_trk_name); add(m_seq_num); add(m_seq_name); add(m_playing); add(m_triggers); }
+    public:
+        ModelColumns()
+        {
+            add(m_trk_num);
+            add(m_trk_name);
+            add(m_seq_num);
+            add(m_seq_name);
+            add(m_playing);
+            add(m_triggers);
+        }
 
-            Gtk::TreeModelColumn<int> m_trk_num;
-            Gtk::TreeModelColumn<Glib::ustring> m_trk_name;
-            Gtk::TreeModelColumn<int> m_seq_num;
-            Gtk::TreeModelColumn<Glib::ustring> m_seq_name;
-            Gtk::TreeModelColumn<bool> m_playing;
-            Gtk::TreeModelColumn<int> m_triggers;
+        Gtk::TreeModelColumn<int> m_trk_num;
+        Gtk::TreeModelColumn<Glib::ustring> m_trk_name;
+        Gtk::TreeModelColumn<int> m_seq_num;
+        Gtk::TreeModelColumn<Glib::ustring> m_seq_name;
+        Gtk::TreeModelColumn<bool> m_playing;
+        Gtk::TreeModelColumn<int> m_triggers;
     };
     ModelColumns m_Columns;
 
@@ -79,10 +86,8 @@ class seqlist : public Gtk::Window
     sequence * get_selected_sequence();
     bool get_selected_playing_state();
 
-
 public:
 
     seqlist( perform *a_perf );
     ~seqlist();
-
 };

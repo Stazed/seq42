@@ -39,7 +39,7 @@ perftime::perftime( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
     m_measure_length(c_ppqn * 4)
 {
     add_events( Gdk::BUTTON_PRESS_MASK |
-		Gdk::BUTTON_RELEASE_MASK );
+                Gdk::BUTTON_RELEASE_MASK );
 
     // in the construor you can only allocate colors,
     // get_window() returns 0 because we have not be realized
@@ -86,10 +86,8 @@ perftime::on_realize()
     m_gc = Gdk::GC::create( m_window );
     m_window->clear();
 
-
     set_size_request( 10, c_timearea_y );
 }
-
 
 void
 perftime::change_horz( )
@@ -115,16 +113,11 @@ perftime::idle_progress( )
     return true;
 }
 
-
-
 void
 perftime::update_pixmap()
 {
 
 }
-
-
-
 
 void
 perftime::draw_pixmap_on_window()
@@ -146,17 +139,17 @@ perftime::draw_background()
     /* clear background */
     m_gc->set_foreground(m_white);
     m_window->draw_rectangle(m_gc,true,
-			    0,
-			    0,
-			    m_window_x,
-			    m_window_y );
+                             0,
+                             0,
+                             m_window_x,
+                             m_window_y );
 
     m_gc->set_foreground(m_black);
     m_window->draw_line(m_gc,
-		       0,
-		       m_window_y - 1,
-		       m_window_x,
-		       m_window_y - 1 );
+                        0,
+                        m_window_y - 1,
+                        m_window_x,
+                        m_window_y - 1 );
 
 
     /* draw vert lines */
@@ -175,26 +168,26 @@ perftime::draw_background()
 #endif
 
     for ( int i=first_measure;
-              i<first_measure+(m_window_x * m_perf_scale_x / (m_measure_length)) + 1; i++ )
+            i<first_measure+(m_window_x * m_perf_scale_x / (m_measure_length)) + 1; i++ )
     {
         int x_pos = ((i * m_measure_length) - tick_offset) / m_perf_scale_x;
 
-	/* beat */
-	m_window->draw_line(m_gc,
-			   x_pos,
-			   0,
-			   x_pos,
-			   m_window_y );
+        /* beat */
+        m_window->draw_line(m_gc,
+                            x_pos,
+                            0,
+                            x_pos,
+                            m_window_y );
 
-	char bar[5];
-	snprintf( bar, sizeof(bar), "%d", i + 1 );
+        char bar[5];
+        snprintf( bar, sizeof(bar), "%d", i + 1 );
 
-	m_gc->set_foreground(m_black);
+        m_gc->set_foreground(m_black);
 
         p_font_renderer->render_string_on_drawable(m_gc,
-                                                   x_pos + 2,
-                                                   0,
-                                                   m_window, bar, font::BLACK );
+                x_pos + 2,
+                0,
+                m_window, bar, font::BLACK );
     }
 
     long left = m_mainperf->get_left_tick( );
@@ -205,35 +198,34 @@ perftime::draw_background()
     right -= (m_4bar_offset * 16 * c_ppqn);
     right /= m_perf_scale_x;
 
-    if ( left >=0 && left <= m_window_x ){
+    if ( left >=0 && left <= m_window_x )
+    {
+        m_gc->set_foreground(m_black);
+        m_window->draw_rectangle(m_gc,true,
+                                 left, m_window_y - 9,
+                                 7,
+                                 10 );
 
-	m_gc->set_foreground(m_black);
-	m_window->draw_rectangle(m_gc,true,
-				    left, m_window_y - 9,
-				    7,
-				    10 );
-
-	m_gc->set_foreground(m_white);
-    p_font_renderer->render_string_on_drawable(m_gc,
-                                               left + 1,
-                                               9,
-                                               m_window, "L", font::WHITE );
+        m_gc->set_foreground(m_white);
+        p_font_renderer->render_string_on_drawable(m_gc,
+                left + 1,
+                9,
+                m_window, "L", font::WHITE );
     }
 
-    if ( right >=0 && right <= m_window_x ){
+    if ( right >=0 && right <= m_window_x )
+    {
+        m_gc->set_foreground(m_black);
+        m_window->draw_rectangle(m_gc,true,
+                                 right - 6, m_window_y - 9,
+                                 7,
+                                 10 );
 
-	m_gc->set_foreground(m_black);
-	m_window->draw_rectangle(m_gc,true,
-				    right - 6, m_window_y - 9,
-				    7,
-				    10 );
-
-	m_gc->set_foreground(m_white);
-    p_font_renderer->render_string_on_drawable(m_gc,
-                                               right - 6 + 1,
-                                               9,
-                                               m_window, "R", font::WHITE );
-
+        m_gc->set_foreground(m_white);
+        p_font_renderer->render_string_on_drawable(m_gc,
+                right - 6 + 1,
+                9,
+                m_window, "R", font::WHITE );
     }
 }
 
@@ -251,15 +243,15 @@ perftime::on_button_press_event(GdkEventButton* p0)
     //m_mainperf->set_start_tick( tick );
     if ( p0->button == 1 )
     {
-	m_mainperf->set_left_tick( tick );
+        m_mainperf->set_left_tick( tick );
     }
+
     if ( p0->button == 3 )
     {
-	m_mainperf->set_right_tick( tick + m_snap );
+        m_mainperf->set_right_tick( tick + m_snap );
     }
 
     queue_draw();
-
 
     return true;
 }
@@ -269,8 +261,6 @@ perftime::on_button_release_event(GdkEventButton* p0)
 {
     return false;
 }
-
-
 
 void
 perftime::on_size_allocate(Gtk::Allocation &a_r )

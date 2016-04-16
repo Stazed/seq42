@@ -15,6 +15,7 @@ seq42_SOURCES = \
 	globals.h \
 	keybindentry.cpp keybindentry.h \
 	lash.cpp lash.h \
+	lfownd.cpp lfownd.h \
 	maintime.cpp maintime.h \
 	mainwnd.cpp mainwnd.h \
 	midibus.cpp midibus.h \
@@ -40,8 +41,7 @@ seq42_SOURCES = \
 	track.cpp track.h \
 	trackedit.cpp trackedit.h \
 	trackmenu.cpp trackmenu.h \
-	userfile.cpp userfile.h \
-	lfownd.cpp lfownd.h
+	userfile.cpp userfile.h
 
 EXTRA_DIST = configwin32.h
 

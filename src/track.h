@@ -31,7 +31,7 @@ class track;
 class track
 {
 
-  private:
+private:
 
     /* holds the sequences */
 
@@ -84,11 +84,10 @@ class track
 
     void split_trigger( trigger &trig, long a_split_tick);
 
+public:
 
-  public:
-
-      track ();
-     ~track ();
+    track ();
+    ~track ();
     track& operator=(const track& other);
     void free ();
 
@@ -106,7 +105,6 @@ class track
 
     // How many sequences does this track have?
     unsigned int get_number_of_sequences();
-
 
     //
     //  Gets and Sets
@@ -187,7 +185,6 @@ class track
     void copy_triggers (long a_start_tick, long a_distance);
     void clear_triggers ();
 
-
     void reset_draw_trigger_marker ();
 
     // FIXME: Change API to just return a pointer to the next trigger (or a NULL pointer if no more triggers)?
@@ -200,7 +197,6 @@ class track
     {
         m_editing = a_edit;
     };
-
     bool get_editing()
     {
         return m_editing;
@@ -210,7 +206,6 @@ class track
     {
         m_raise = a_raise;
     };
-
     bool get_raise()
     {
         return m_raise;
@@ -229,5 +224,4 @@ class track
     bool load( ifstream *file, int version );
 
     void apply_song_transpose ();
-
 };

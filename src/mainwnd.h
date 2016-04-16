@@ -45,10 +45,9 @@ using namespace Menu_Helpers;
 class perfroll;
 class perftime;
 
-
 class mainwnd : public Gtk::Window
 {
- private:
+private:
 
     perform  *m_mainperf;
     static int m_sigpipe[2];
@@ -89,7 +88,6 @@ class mainwnd : public Gtk::Window
 
     Adjustment *m_vadjust;
     Adjustment *m_hadjust;
-
 
     perfnames *m_perfnames;
     perfroll *m_perfroll;
@@ -215,7 +213,7 @@ class mainwnd : public Gtk::Window
 
     void set_xpose (int a_xpose);
 
- public:
+public:
 
     mainwnd(perform *a_p);
     ~mainwnd();
@@ -229,5 +227,4 @@ class mainwnd : public Gtk::Window
     void open_file(const Glib::ustring&);
     bool on_delete_event(GdkEventAny *a_e);
     bool on_key_press_event(GdkEventKey* a_ev);
-
 };

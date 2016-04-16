@@ -44,7 +44,6 @@
 #include "trigger.h"
 #include "mainwnd.h"
 
-
 using namespace Gtk;
 
 #include "perfroll_input.h"
@@ -58,7 +57,7 @@ class mainwnd;
 /* performance roll */
 class perfroll : public Gtk::DrawingArea
 {
- private:
+private:
 
     friend class FruityPerfInput;
     FruityPerfInput m_fruity_interaction;
@@ -133,7 +132,6 @@ class perfroll : public Gtk::DrawingArea
 
     void draw_drawable_row( Glib::RefPtr<Gdk::Drawable> a_dest, Glib::RefPtr<Gdk::Drawable> a_src,  long a_y );
 
-
     void change_horz();
     void change_vert();
 
@@ -144,7 +142,7 @@ class perfroll : public Gtk::DrawingArea
     bool transport_follow;
     bool trans_button_press;
 
- public:
+public:
 
     void set_zoom (int a_zoom);
 
@@ -170,9 +168,9 @@ class perfroll : public Gtk::DrawingArea
     long get_default_trigger_length( perfroll& ths );
 
     perfroll( perform *a_perf,
-             mainwnd *a_main,
-	      Adjustment *a_hadjust,
-	      Adjustment *a_vadjust );
+              mainwnd *a_main,
+              Adjustment *a_hadjust,
+              Adjustment *a_vadjust );
 
     ~perfroll( );
 };

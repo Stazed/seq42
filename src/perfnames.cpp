@@ -32,8 +32,8 @@ perfnames::perfnames( perform *a_perf, Adjustment *a_vadjust ):
 {
 
     add_events( Gdk::BUTTON_PRESS_MASK |
-		Gdk::BUTTON_RELEASE_MASK |
-		Gdk::SCROLL_MASK );
+                Gdk::BUTTON_RELEASE_MASK |
+                Gdk::SCROLL_MASK );
 
     /* set default size */
     set_size_request( c_names_x, 100 );
@@ -70,11 +70,11 @@ perfnames::on_realize()
                                    -1);
 }
 
-
 void
 perfnames::change_vert( )
 {
-    if ( m_track_offset != (int) m_vadjust->get_value() ){
+    if ( m_track_offset != (int) m_vadjust->get_value() )
+    {
 
         m_track_offset = (int) m_vadjust->get_value();
         queue_draw();
@@ -88,10 +88,10 @@ perfnames::update_pixmap()
 }
 
 void
-perfnames::draw_area(){
+perfnames::draw_area()
+{
 
 }
-
 
 void
 perfnames::redraw( int track )
@@ -105,14 +105,15 @@ perfnames::draw_track( int track )
 
     int i = track - m_track_offset;
 
-    if ( track < c_max_track ){
+    if ( track < c_max_track )
+    {
 
 
 
         m_gc->set_foreground(m_black);
         m_window->draw_rectangle(m_gc,true,
                                  0,
-                                 (c_names_y * i) ,
+                                 (c_names_y * i),
                                  c_names_x,
                                  c_names_y + 1 );
 
@@ -128,7 +129,8 @@ perfnames::draw_track( int track )
                                  c_names_x-1,
                                  c_names_y - 1  );
 
-        if ( m_mainperf->is_active_track( track )){
+        if ( m_mainperf->is_active_track( track ))
+        {
 
             m_track_active[track]=true;
 
@@ -140,18 +142,18 @@ perfnames::draw_track( int track )
                      m_mainperf->get_track(track)->get_midi_channel()+1 );
 
             p_font_renderer->render_string_on_drawable(m_gc,
-                                                       5,
-                                                       c_names_y * i + 2,
-                                                       m_window, str, font::BLACK );
+                    5,
+                    c_names_y * i + 2,
+                    m_window, str, font::BLACK );
 
             char name[20];
             snprintf(name, sizeof(name), "%-16.16s",
                      m_mainperf->get_track(track)->get_name());
 
             p_font_renderer->render_string_on_drawable(m_gc,
-                                                       5,
-                                                       c_names_y * i + 12,
-                                                       m_window, name, font::BLACK );
+                    5,
+                    c_names_y * i + 12,
+                    m_window, name, font::BLACK );
 
             bool muted = m_mainperf->get_track(track)->get_song_mute();
 
@@ -162,27 +164,31 @@ perfnames::draw_track( int track )
                                      10,
                                      c_names_y  );
 
-            if ( muted ){
+            if ( muted )
+            {
 
                 p_font_renderer->render_string_on_drawable(m_gc,
-                                                           107,
-                                                           c_names_y * i + 2,
-                                                           m_window, "M", font::WHITE );
-            } else {
+                        107,
+                        c_names_y * i + 2,
+                        m_window, "M", font::WHITE );
+            }
+            else
+            {
 
                 p_font_renderer->render_string_on_drawable(m_gc,
-                                                           107,
-                                                           c_names_y * i + 2,
-                                                           m_window, "M", font::BLACK );
+                        107,
+                        c_names_y * i + 2,
+                        m_window, "M", font::BLACK );
             }
         }
     }
-    else {
+    else
+    {
 
         m_gc->set_foreground(m_grey);
         m_window->draw_rectangle(m_gc,true,
                                  0,
-                                 (c_names_y * i) + 1 ,
+                                 (c_names_y * i) + 1,
                                  c_names_x,
                                  c_names_y );
 
@@ -190,23 +196,21 @@ perfnames::draw_track( int track )
 
 }
 
-
-
 bool
 perfnames::on_expose_event(GdkEventExpose* a_e)
 {
     int trks = (m_window_y / c_names_y) + 1;
 
-    for ( int i=0; i< trks; i++ ){
+    for ( int i=0; i< trks; i++ )
+    {
 
-	int track = i + m_track_offset;
+        int track = i + m_track_offset;
 
         draw_track(track);
 
     }
     return true;
 }
-
 
 void
 perfnames::convert_y( int a_y, int *a_trk)
@@ -215,12 +219,11 @@ perfnames::convert_y( int a_y, int *a_trk)
     *a_trk  += m_track_offset;
 
     if ( *a_trk >= c_max_track )
-	*a_trk = c_max_track - 1;
+        *a_trk = c_max_track - 1;
 
     if ( *a_trk < 0 )
-	*a_trk = 0;
+        *a_trk = 0;
 }
-
 
 bool
 perfnames::on_button_press_event(GdkEventButton *a_e)
@@ -235,9 +238,11 @@ perfnames::on_button_press_event(GdkEventButton *a_e)
     m_current_trk = track;
 
     /*      left mouse button     */
-    if ( a_e->button == 1 ){
+    if ( a_e->button == 1 )
+    {
 
-        if ( m_mainperf->is_active_track( track )){
+        if ( m_mainperf->is_active_track( track ))
+        {
 
             bool muted = m_mainperf->get_track(track)->get_song_mute();
             m_mainperf->get_track(track)->set_song_mute( !muted );
@@ -249,12 +254,12 @@ perfnames::on_button_press_event(GdkEventButton *a_e)
     return true;
 }
 
-
 bool
 perfnames::on_button_release_event(GdkEventButton* p0)
 {
     /*     right mouse button      */
-    if ( p0->button == 3 ){
+    if ( p0->button == 3 )
+    {
         popup_menu();
     }
 
@@ -264,19 +269,20 @@ perfnames::on_button_release_event(GdkEventButton* p0)
 bool
 perfnames::on_scroll_event( GdkEventScroll* a_ev )
 {
-	double val = m_vadjust->get_value();
+    double val = m_vadjust->get_value();
 
-    if (  a_ev->direction == GDK_SCROLL_UP ){
-		val -= m_vadjust->get_step_increment();
+    if (  a_ev->direction == GDK_SCROLL_UP )
+    {
+        val -= m_vadjust->get_step_increment();
     }
-    if (  a_ev->direction == GDK_SCROLL_DOWN ){
-		val += m_vadjust->get_step_increment();
+    if (  a_ev->direction == GDK_SCROLL_DOWN )
+    {
+        val += m_vadjust->get_step_increment();
     }
 
-	m_vadjust->clamp_page( val, val + m_vadjust->get_page_size());
+    m_vadjust->clamp_page( val, val + m_vadjust->get_page_size());
     return true;
 }
-
 
 void
 perfnames::on_size_allocate(Gtk::Allocation &a_r )
@@ -287,26 +293,26 @@ perfnames::on_size_allocate(Gtk::Allocation &a_r )
     m_window_y = a_r.get_height();
 }
 
-
-
 void
 perfnames::redraw_dirty_tracks()
 {
     int y_s = 0;
     int y_f = m_window_y / c_names_y;
 
-    for ( int y=y_s; y<=y_f; y++ ){
+    for ( int y=y_s; y<=y_f; y++ )
+    {
 
         int trk = y + m_track_offset; // 4am
 
-        if ( trk < c_max_track){
+        if ( trk < c_max_track)
+        {
 
-                bool dirty = (m_mainperf->is_dirty_names( trk ));
+            bool dirty = (m_mainperf->is_dirty_names( trk ));
 
-                if (dirty)
-                {
-                    draw_track( trk );
-                }
+            if (dirty)
+            {
+                draw_track( trk );
+            }
         }
     }
 }

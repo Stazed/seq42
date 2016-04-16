@@ -96,16 +96,16 @@ CONFIG_CLEAN_VPATH_FILES =
 am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_seq42_OBJECTS = configfile.$(OBJEXT) event.$(OBJEXT) font.$(OBJEXT) \
-	keybindentry.$(OBJEXT) lash.$(OBJEXT) maintime.$(OBJEXT) \
-	mainwnd.$(OBJEXT) midibus.$(OBJEXT) midibus_portmidi.$(OBJEXT) \
-	midifile.$(OBJEXT) mutex.$(OBJEXT) options.$(OBJEXT) \
-	optionsfile.$(OBJEXT) perfnames.$(OBJEXT) perform.$(OBJEXT) \
-	perfroll.$(OBJEXT) perfroll_input.$(OBJEXT) perftime.$(OBJEXT) \
-	seq42.$(OBJEXT) seqdata.$(OBJEXT) seqedit.$(OBJEXT) \
-	seqevent.$(OBJEXT) seqkeys.$(OBJEXT) seqlist.$(OBJEXT) \
-	seqroll.$(OBJEXT) seqtime.$(OBJEXT) sequence.$(OBJEXT) \
-	track.$(OBJEXT) trackedit.$(OBJEXT) trackmenu.$(OBJEXT) \
-	userfile.$(OBJEXT) lfownd.$(OBJEXT)
+	keybindentry.$(OBJEXT) lash.$(OBJEXT) lfownd.$(OBJEXT) \
+	maintime.$(OBJEXT) mainwnd.$(OBJEXT) midibus.$(OBJEXT) \
+	midibus_portmidi.$(OBJEXT) midifile.$(OBJEXT) mutex.$(OBJEXT) \
+	options.$(OBJEXT) optionsfile.$(OBJEXT) perfnames.$(OBJEXT) \
+	perform.$(OBJEXT) perfroll.$(OBJEXT) perfroll_input.$(OBJEXT) \
+	perftime.$(OBJEXT) seq42.$(OBJEXT) seqdata.$(OBJEXT) \
+	seqedit.$(OBJEXT) seqevent.$(OBJEXT) seqkeys.$(OBJEXT) \
+	seqlist.$(OBJEXT) seqroll.$(OBJEXT) seqtime.$(OBJEXT) \
+	sequence.$(OBJEXT) track.$(OBJEXT) trackedit.$(OBJEXT) \
+	trackmenu.$(OBJEXT) userfile.$(OBJEXT)
 seq42_OBJECTS = $(am_seq42_OBJECTS)
 am__DEPENDENCIES_1 =
 seq42_DEPENDENCIES = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
@@ -336,6 +336,7 @@ seq42_SOURCES = \
 	globals.h \
 	keybindentry.cpp keybindentry.h \
 	lash.cpp lash.h \
+	lfownd.cpp lfownd.h \
 	maintime.cpp maintime.h \
 	mainwnd.cpp mainwnd.h \
 	midibus.cpp midibus.h \
@@ -361,8 +362,7 @@ seq42_SOURCES = \
 	track.cpp track.h \
 	trackedit.cpp trackedit.h \
 	trackmenu.cpp trackmenu.h \
-	userfile.cpp userfile.h \
-	lfownd.cpp lfownd.h
+	userfile.cpp userfile.h
 
 EXTRA_DIST = configwin32.h
 MOSTLYCLEANFILES = *~

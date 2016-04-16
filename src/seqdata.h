@@ -44,7 +44,7 @@
 class seqdata : public Gtk::DrawingArea
 {
 
- private:
+private:
 
     Glib::RefPtr<Gdk::GC>     m_gc;
     Glib::RefPtr<Gdk::Window> m_window;
@@ -52,7 +52,6 @@ class seqdata : public Gtk::DrawingArea
 
     Glib::RefPtr<Gdk::Pixmap>   m_pixmap;
     Glib::RefPtr<Gdk::Pixmap>   m_numbers[c_dataarea_y];
-
 
     sequence     * const m_seq;
 
@@ -63,7 +62,6 @@ class seqdata : public Gtk::DrawingArea
 
     int m_drop_x, m_drop_y;
     int m_current_x, m_current_y;
-
 
     Gtk::Adjustment   * const m_hadjust;
 
@@ -99,9 +97,9 @@ class seqdata : public Gtk::DrawingArea
     void convert_x( int a_x, long *a_tick );
 
     void xy_to_rect( int a_x1,  int a_y1,
-		     int a_x2,  int a_y2,
-		     int *a_x,  int *a_y,
-		     int *a_w,  int *a_h );
+                     int a_x2,  int a_y2,
+                     int *a_x,  int *a_y,
+                     int *a_w,  int *a_h );
 
     void draw_events_on( Glib::RefPtr<Gdk::Drawable> a_draw );
 
@@ -110,7 +108,7 @@ class seqdata : public Gtk::DrawingArea
 
     void force_draw();
 
- public:
+public:
 
     seqdata( sequence *a_seq, int a_zoom,  Gtk::Adjustment   *a_hadjust );
 
@@ -124,6 +122,5 @@ class seqdata : public Gtk::DrawingArea
     friend class seqroll;
     friend class seqevent;
     friend class lfownd;
-
 };
 

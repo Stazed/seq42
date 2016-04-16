@@ -53,7 +53,7 @@ trackedit::trackedit (track *a_track)
     m_vbox->pack_start (*m_hbox, false, false);
 
     m_label_name =  manage (new Label( "Name: " ));
-    m_hbox->pack_start( *m_label_name , false, false );
+    m_hbox->pack_start( *m_label_name, false, false );
     m_entry_name = manage( new Entry(  ));
     m_entry_name->set_max_length(c_max_track_name);
     m_entry_name->set_width_chars(c_max_track_name);
@@ -61,7 +61,7 @@ trackedit::trackedit (track *a_track)
     m_entry_name->select_region(0,0);
     m_entry_name->set_position(0);
     m_entry_name->signal_changed().connect(
-    mem_fun( *this, &trackedit::name_change_callback));
+        mem_fun( *this, &trackedit::name_change_callback));
     m_hbox->pack_start( *m_entry_name, true, true );
 
     m_hbox2 = manage (new HBox ());
@@ -79,8 +79,8 @@ trackedit::trackedit (track *a_track)
     m_entry_bus->set_width_chars(60);
     m_entry_bus->set_editable( false );
 
-    m_hbox2->pack_start( *m_button_bus , false, false );
-    m_hbox2->pack_start( *m_entry_bus , true, true );
+    m_hbox2->pack_start( *m_button_bus, false, false );
+    m_hbox2->pack_start( *m_entry_bus, true, true );
 
     /* midi channel */
     m_button_channel = manage( new Button());
@@ -91,9 +91,8 @@ trackedit::trackedit (track *a_track)
     m_entry_channel->set_width_chars(2);
     m_entry_channel->set_editable( false );
 
-    m_hbox2->pack_start( *m_button_channel , false, false );
-    m_hbox2->pack_start( *m_entry_channel , false, false );
-
+    m_hbox2->pack_start( *m_button_channel, false, false );
+    m_hbox2->pack_start( *m_entry_channel, false, false );
 
     m_hbox3 = manage (new HBox ());
     m_hbox3->set_border_width (6);
@@ -102,9 +101,9 @@ trackedit::trackedit (track *a_track)
     m_check_transposable = manage( new CheckButton( "Transposable" ));
     m_check_transposable->set_active(m_track->get_transposable());
     m_check_transposable->signal_toggled ().
-        connect (bind
-                (mem_fun (*this, &trackedit::transposable_change_callback),
-                 m_check_transposable));
+    connect (bind
+             (mem_fun (*this, &trackedit::transposable_change_callback),
+              m_check_transposable));
     m_hbox3->pack_start( *m_check_transposable, false, false );
 
     this->add( *m_vbox );
@@ -112,14 +111,12 @@ trackedit::trackedit (track *a_track)
 
     set_midi_channel( m_track->get_midi_channel() );
     set_midi_bus( m_track->get_midi_bus() );
-
 }
 
 trackedit::~trackedit()
 {
     //m_track->set_editing( false );
 }
-
 
 bool
 trackedit::on_delete_event(GdkEventAny *a_event)
@@ -137,14 +134,12 @@ trackedit::on_realize()
     // we need to do the default realize
     Gtk::Window::on_realize();
     Glib::signal_timeout().connect(mem_fun(*this, &trackedit::timeout),
-            c_redraw_ms);
+                                   c_redraw_ms);
 }
-
 
 bool
 trackedit::timeout()
 {
-
     if (m_track->get_raise())
     {
         m_track->set_raise(false);
@@ -170,9 +165,10 @@ trackedit::popup_midibus_menu()
 
     /* midi buses */
     mastermidibus *masterbus = m_track->get_master_midi_bus();
-    for ( int i=0; i< masterbus->get_num_out_buses(); i++ ){
+    for ( int i=0; i< masterbus->get_num_out_buses(); i++ )
+    {
         m_menu_midibus->items().push_back(MenuElem(masterbus->get_midi_out_bus_name(i),
-                                                   sigc::bind(mem_fun(*this,&trackedit::midi_bus_button_callback), i)));
+                                          sigc::bind(mem_fun(*this,&trackedit::midi_bus_button_callback), i)));
     }
 
     m_menu_midibus->popup(0,0);
@@ -190,8 +186,8 @@ trackedit::popup_midich_menu()
     char b[16];
 
     /* midi channel menu */
-    for( int i=0; i<16; i++ ){
-
+    for( int i=0; i<16; i++ )
+    {
         sprintf( b, "%d", i+1 );
         std::string name = string(b);
         int instrument = global_user_midi_bus_definitions[midi_bus].instrument[i];
@@ -202,8 +198,8 @@ trackedit::popup_midich_menu()
                            string(")") );
         }
         m_menu_midich->items().push_back(MenuElem(name,
-                                                  sigc::bind(mem_fun(*this,&trackedit::midi_channel_button_callback),
-                                                       i )));
+                                         sigc::bind(mem_fun(*this,&trackedit::midi_channel_button_callback),
+                                                 i )));
     }
 
     m_menu_midich->popup(0,0);

@@ -27,10 +27,8 @@
 
 #include <gtkmm/entry.h>
 
-
 /*forward declaration*/
 class perform;
-
 
 class KeyBindEntry : public Gtk::Entry
 {

@@ -72,7 +72,8 @@ seqlist::seqlist (perform *a_perf)
 
     // Allow sorting by clicking on columns
     Gtk::TreeView::Column* pColumn;
-    for(guint i = 0; i < 6; i++) {
+    for(guint i = 0; i < 6; i++)
+    {
         pColumn = m_TreeView.get_column(i);
         pColumn->set_sort_column(i);
     }
@@ -87,7 +88,6 @@ seqlist::seqlist (perform *a_perf)
 seqlist::~seqlist()
 {
 }
-
 
 bool
 seqlist::on_delete_event(GdkEventAny *a_event)
@@ -131,10 +131,12 @@ seqlist::on_button_release_event(GdkEventButton* a_e)
     sequence *a_seq = get_selected_sequence();
     if(a_seq != NULL)
     {
-        if ( a_e->button == 1 ){
+        if ( a_e->button == 1 )
+        {
             a_seq->set_playing(get_selected_playing_state(), false);
         }
-        else if ( a_e->button == 3 ){
+        else if ( a_e->button == 3 )
+        {
             using namespace Menu_Helpers;
             track *a_track = a_seq->get_track();
             Menu *menu = manage( new Menu());
@@ -152,18 +154,21 @@ seqlist::update_model()
 {
     m_refTreeModel->clear();
     Gtk::TreeModel::Row row;
-    for(int i=0; i< c_max_track; i++ ){
-        if ( m_perf->is_active_track(i) ) {
+    for(int i=0; i< c_max_track; i++ )
+    {
+        if ( m_perf->is_active_track(i) )
+        {
             track *a_track =  m_perf->get_track( i );
-            for(unsigned s=0; s< a_track->get_number_of_sequences(); s++ ){
-                 sequence *a_seq =  a_track->get_sequence( s );
-                 row = *(m_refTreeModel->append());
-                 row[m_Columns.m_trk_num] = i+1;
-                 row[m_Columns.m_trk_name] = a_track->get_name();
-                 row[m_Columns.m_seq_num] = s+1;
-                 row[m_Columns.m_seq_name] = a_seq->get_name();
-                 row[m_Columns.m_playing] = a_seq->get_playing();
-                 row[m_Columns.m_triggers] = a_track->get_trigger_count_for_seqidx(s);
+            for(unsigned s=0; s< a_track->get_number_of_sequences(); s++ )
+            {
+                sequence *a_seq =  a_track->get_sequence( s );
+                row = *(m_refTreeModel->append());
+                row[m_Columns.m_trk_num] = i+1;
+                row[m_Columns.m_trk_name] = a_track->get_name();
+                row[m_Columns.m_seq_num] = s+1;
+                row[m_Columns.m_seq_name] = a_seq->get_name();
+                row[m_Columns.m_playing] = a_seq->get_playing();
+                row[m_Columns.m_triggers] = a_track->get_trigger_count_for_seqidx(s);
             }
         }
     }
@@ -175,7 +180,7 @@ seqlist::on_realize()
     // we need to do the default realize
     Gtk::Window::on_realize();
     Glib::signal_timeout().connect(mem_fun(*this, &seqlist::timeout),
-            c_redraw_ms);
+                                   c_redraw_ms);
 }
 
 
@@ -192,8 +197,10 @@ seqlist::timeout()
 
     // FIXME: instead of polling for dirt... move to a model where the mainwnd
     // sends us notification events.
-    for(int i=0; i< c_max_track; i++ ){
-        if ( m_perf->is_active_track(i) ) {
+    for(int i=0; i< c_max_track; i++ )
+    {
+        if ( m_perf->is_active_track(i) )
+        {
             track *a_track =  m_perf->get_track( i );
             if(a_track->is_dirty_seqlist())
             {
@@ -202,21 +209,23 @@ seqlist::timeout()
         }
     }
 
-
-    if(need_update || m_perf->update_seqlist_on_change) {
+    if(need_update || m_perf->update_seqlist_on_change)
+    {
         update_model();
     }
     m_perf->update_seqlist_on_change = false;
     return true;
 }
 
-
 void
 seqlist::edit_seq( sequence *a_seq )
 {
-    if(a_seq->get_editing()) {
+    if(a_seq->get_editing())
+    {
         a_seq->set_raise(true);
-    } else {
+    }
+    else
+    {
         new seqedit( a_seq, m_perf );
     }
 }
@@ -240,7 +249,7 @@ seqlist::del_seq( track *a_track, int a_seq )
 {
     if( a_track->get_trigger_count_for_seqidx(a_seq))
     {
-    // FIXME: if sequence is triggered, ask for confirmation
+        // FIXME: if sequence is triggered, ask for confirmation
     }
     m_perf->push_track_undo(m_perf->get_track_index(a_track));
     a_track->delete_sequence( a_seq );
@@ -255,7 +264,7 @@ seqlist::start_playing()
 void
 seqlist::stop_playing()
 {
-   m_perf->stop_playing();
+    m_perf->stop_playing();
 }
 
 void
@@ -270,11 +279,13 @@ seqlist::on_key_press_event(GdkEventKey* a_p0)
     // the start/end key may be the same key (i.e. SPACEBAR)
     // allow toggling when the same key is mapped to both triggers (i.e. SPACEBAR)
     bool dont_toggle = m_perf->m_key_start != m_perf->m_key_stop;
-    if ( a_p0->keyval ==  m_perf->m_key_start && (dont_toggle || !global_is_running) ){
+    if ( a_p0->keyval ==  m_perf->m_key_start && (dont_toggle || !global_is_running) )
+    {
         start_playing();
         return true;
     }
-    else if ( a_p0->keyval ==  m_perf->m_key_stop && (dont_toggle || global_is_running) ){
+    else if ( a_p0->keyval ==  m_perf->m_key_stop && (dont_toggle || global_is_running) )
+    {
         stop_playing();
         return true;
     }

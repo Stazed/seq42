@@ -34,7 +34,6 @@ class perform;
 #endif
 #include <pthread.h>
 
-
 /* if we have jack, include the jack headers */
 #ifdef JACK_SUPPORT
 #include <jack/jack.h>
@@ -64,7 +63,7 @@ struct undo_redo_perf_tracks
 
 class perform
 {
- private:
+private:
     /* vector of tracks */
     track *m_tracks[c_max_track];
     track m_clipboard;
@@ -133,10 +132,10 @@ class perform
     jack_transport_state_t m_jack_transport_state_last;
     double m_jack_tick;
 #ifdef JACK_SESSION
- public:
+public:
     jack_session_event_t *m_jsession_ev;
     bool jack_session_event();
- private:
+private:
 #endif
 #endif
 
@@ -147,7 +146,7 @@ class perform
     void inner_start( bool a_state );
     void inner_stop();
 
- public:
+public:
 
     /* used for undo/redo vector */
     vector<undo_type> undo_vect;
@@ -204,7 +203,10 @@ class perform
 
     void clear_track_triggers( int a_num  );
 
-    long get_tick( ) { return m_tick; };
+    long get_tick( )
+    {
+        return m_tick;
+    };
 
     void set_left_tick( long a_tick );
     long get_left_tick();
@@ -217,15 +219,15 @@ class perform
 
     void move_triggers( bool a_direction );
     void copy_triggers(  );
-     // collapse and expand - all tracks
+    // collapse and expand - all tracks
     void push_trigger_undo();
     void pop_trigger_undo();
     void pop_trigger_redo();
-     // single track items
+    // single track items
     void push_trigger_undo( int a_track );
     void pop_trigger_undo( int a_track );
     void pop_trigger_redo( int a_track );
-     // tracks - merge sequence, cross track trigger, track cut, track paste, sequence adds & deletes
+    // tracks - merge sequence, cross track trigger, track cut, track paste, sequence adds & deletes
     void push_track_undo(int a_track );
     void pop_track_undo(int a_track );
     void pop_track_redo(int a_track );
@@ -282,7 +284,10 @@ class perform
     void set_swing_amount16(int a_swing_amount);
     int  get_swing_amount16( );
 
-    void set_looping( bool a_looping ){ m_looping = a_looping; };
+    void set_looping( bool a_looping )
+    {
+        m_looping = a_looping;
+    };
 
     void set_song_mute( mute_op op );
 
@@ -327,7 +332,7 @@ class perform
 #ifdef JACK_SUPPORT
 
     friend int jack_sync_callback(jack_transport_state_t state,
-                              jack_position_t *pos, void *arg);
+                                  jack_position_t *pos, void *arg);
     friend void jack_shutdown(void *arg);
     friend void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
                                        jack_position_t *pos, int new_pos, void *arg);
@@ -338,12 +343,10 @@ class perform
 extern void *output_thread_func(void *a_p);
 extern void *input_thread_func(void *a_p);
 
-
-
 #ifdef JACK_SUPPORT
 
 int jack_sync_callback(jack_transport_state_t state,
-					   jack_position_t *pos, void *arg);
+                       jack_position_t *pos, void *arg);
 void print_jack_pos( jack_position_t* jack_pos );
 void jack_shutdown(void *arg);
 void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,

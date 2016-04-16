@@ -23,7 +23,6 @@
 #include <iostream>
 #include <math.h>
 
-
 midifile::midifile(const Glib::ustring& a_name) :
     m_pos(0),
     m_name(a_name)
@@ -33,7 +32,6 @@ midifile::midifile(const Glib::ustring& a_name) :
 midifile::~midifile ()
 {
 }
-
 
 unsigned long
 midifile::read_long ()
@@ -87,7 +85,6 @@ midifile::read_var ()
 
     return ret;
 }
-
 
 bool midifile::parse (perform * a_perf)
 {
@@ -253,7 +250,6 @@ bool midifile::parse (perform * a_perf)
                 case EVENT_AFTERTOUCH:
                 case EVENT_CONTROL_CHANGE:
                 case EVENT_PITCH_WHEEL:
-
                     data[0] = read_byte ();
                     data[1] = read_byte ();
 
@@ -272,11 +268,9 @@ bool midifile::parse (perform * a_perf)
                     /* set midi channel */
                     a_track->set_midi_channel (status & 0x0F);
                     break;
-
                 /* one data item */
                 case EVENT_PROGRAM_CHANGE:
                 case EVENT_CHANNEL_PRESSURE:
-
                     data[0] = read_byte ();
                     //printf( "%02X\n", data[0] );
 
@@ -287,11 +281,8 @@ bool midifile::parse (perform * a_perf)
                     /* set midi channel */
                     a_track->set_midi_channel (status & 0x0F);
                     break;
-
                 /* meta midi events ---  this should be FF !!!!!  */
-
                 case 0xF0:
-
                     if (status == 0xFF)
                     {
                         // get meta type
@@ -317,26 +308,22 @@ bool midifile::parse (perform * a_perf)
                                 a_track->set_midi_bus (read_byte ());
                                 len--;
                             }
-
                             else if (proprietary == c_midich)
                             {
                                 a_track->set_midi_channel (read_byte ());
                                 len--;
                             }
-
                             else if (proprietary == c_timesig)
                             {
                                 seq->set_bp_measure (read_byte ());
                                 seq->set_bw (read_byte ());
                                 len -= 2;
                             }
-
                             else if (proprietary == c_transpose)
                             {
                                 a_track->set_transposable (read_byte ());
                                 len--;
                             }
-
                             else if (proprietary == c_triggers)
                             {
                                 int num_triggers = len / 4;
@@ -349,7 +336,6 @@ bool midifile::parse (perform * a_perf)
                                     a_track->add_trigger(on, length, 0, false);
                                 }
                             }
-
                             else if (proprietary == c_triggers_new)
                             {
                                 int num_triggers = len / 12;
@@ -400,12 +386,12 @@ bool midifile::parse (perform * a_perf)
                                 seq->set_bp_measure(bp_measure);    // also sets the sequence
                                 seq->set_bw(bw);
 
-                                printf
+                                /*printf
                                 (
                                    "Time Signature set to %d/%d\n",
                                     int(seq->get_bp_measure()),
                                     int(seq->get_bw())
-                                );
+                                );*/
                             }
                             else
                                 m_pos += len;           /* eat it           */
@@ -424,7 +410,7 @@ bool midifile::parse (perform * a_perf)
                                 int bpm = (double) 60000000.0 / tempo;
 
                                 a_perf->set_bpm(bpm);
-                                printf("BPM set to %d\n", bpm);
+                                //printf("BPM set to %d\n", bpm);
                             }
                             else
                                 m_pos += len;           /* eat it           */
@@ -498,7 +484,6 @@ bool midifile::parse (perform * a_perf)
                     return false;
                     break;
                 }
-
             }			/* while ( !done loading Trk chunk */
 
             /* the sequence has been filled, add it  */
@@ -514,7 +499,6 @@ bool midifile::parse (perform * a_perf)
             m_pos += TrackLength;
             done = true;
         }
-
     }				/* for(eachtrack) */
 
     //printf ( "file_size[%d] m_pos[%d]\n", file_size, m_pos );
@@ -557,7 +541,6 @@ bool midifile::parse (perform * a_perf)
             }
         }
     }
-
 
     if ((file_size - m_pos) > (int) sizeof (unsigned int))
     {
@@ -622,7 +605,6 @@ bool midifile::parse (perform * a_perf)
     // *** ADD NEW TAGS AT END **************/
     return true;
 }
-
 
 void
 midifile::write_long (unsigned long a_x)
@@ -721,7 +703,6 @@ bool midifile::write_sequences (perform * a_perf)
             }
         }
     }
-
 
     /* midi control */
     write_long (c_midictrl);
@@ -913,7 +894,6 @@ bool midifile::write_song (perform * a_perf)
             numtracks++;
         }
     }
-
 
     /* open binary file */
     ofstream file (m_name.c_str (), ios::out | ios::binary | ios::trunc);

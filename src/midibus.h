@@ -55,11 +55,10 @@ enum clock_e
 
 };
 
-
 class midibus
 {
 
- private:
+private:
 
     int m_id;
 
@@ -96,26 +95,24 @@ class midibus
     void lock();
     void unlock();
 
-
-
- public:
+public:
 
 #if HAVE_LIBASOUND
     /* constructor, client#, port#, sequencer,
        name of client, name of port */
     midibus( int a_localclient,
-	     int a_destclient,
-	     int a_destport,
-	     snd_seq_t  *a_seq,
-	     const char *a_client_name,
-	     const char *a_port_name,
-	     int a_id,
-         int a_queue );
+             int a_destclient,
+             int a_destport,
+             snd_seq_t  *a_seq,
+             const char *a_client_name,
+             const char *a_port_name,
+             int a_id,
+             int a_queue );
 
     midibus( int a_localclient,
-	     snd_seq_t  *a_seq,
-	     int a_id,
-         int a_queue );
+             snd_seq_t  *a_seq,
+             int a_id,
+             int a_queue );
 #endif
 
 #ifdef __WIN32__
@@ -139,7 +136,6 @@ class midibus
     void play( event *a_e24, unsigned char a_channel );
     void sysex( event *a_e24 );
 
-
     /* clock */
     void start();
     void stop();
@@ -158,20 +154,25 @@ class midibus
     /* master midi bus sets up the bus */
     friend class mastermidibus;
 
-	/* address of client */
+    /* address of client */
 #if HAVE_LIBASOUND
-    int get_client(void) {  return m_dest_addr_client; };
-    int get_port(void) { return m_dest_addr_port; };
+    int get_client(void)
+    {
+        return m_dest_addr_client;
+    };
+    int get_port(void)
+    {
+        return m_dest_addr_port;
+    };
 #endif
 
     static void set_clock_mod( int a_clock_mod );
     static int get_clock_mod();
-
 };
 
 class mastermidibus
 {
- private:
+private:
 
     /* sequencer client handle */
 #if HAVE_LIBASOUND
@@ -220,18 +221,20 @@ class mastermidibus
     void lock();
     void unlock();
 
- public:
+public:
 
     mastermidibus();
     ~mastermidibus();
     //midibus *get_default_bus();
     //midibus *get_bus( int a_bus );
 
-
     void init();
 
 #if HAVE_LIBASOUND
-    snd_seq_t* get_alsa_seq( ) { return m_alsa_seq; };
+    snd_seq_t* get_alsa_seq( )
+    {
+        return m_alsa_seq;
+    };
 #endif
 
     int get_num_out_buses();
@@ -239,14 +242,26 @@ class mastermidibus
 
     void set_bpm(int a_bpm);
     void set_ppqn(int a_ppqn);
-    int get_bpm(){ return m_bpm;}
-    int get_ppqn(){ return m_ppqn;}
+    int get_bpm()
+    {
+        return m_bpm;
+    }
+    int get_ppqn()
+    {
+        return m_ppqn;
+    }
 
     string get_midi_out_bus_name( int a_bus );
     string get_midi_in_bus_name( int a_bus );
 
-    void set_transpose( int a_transpose ) { m_transpose = a_transpose; }
-    int get_transpose() { return m_transpose; }
+    void set_transpose( int a_transpose )
+    {
+        m_transpose = a_transpose;
+    }
+    int get_transpose()
+    {
+        return m_transpose;
+    }
 
     void set_swing_amount8(int a_swing_amount)
     {
@@ -254,8 +269,6 @@ class mastermidibus
         if ( a_swing_amount > c_max_swing_amount ) a_swing_amount = c_max_swing_amount;
         m_swing_amount8 = a_swing_amount;
     }
-
-
     int get_swing_amount8( )
     {
         return  m_swing_amount8;
@@ -267,8 +280,6 @@ class mastermidibus
         if ( a_swing_amount > c_max_swing_amount ) a_swing_amount = c_max_swing_amount;
         m_swing_amount16 = a_swing_amount;
     }
-
-
     int get_swing_amount16( )
     {
         return  m_swing_amount16;
@@ -289,8 +300,15 @@ class mastermidibus
     bool get_midi_event( event *a_in );
     void set_sequence_input( bool a_state, sequence *a_seq );
 
-    bool is_dumping( ) { return m_dumping_input; }
-    sequence* get_sequence( ) { return m_seq; }
+    bool is_dumping( )
+    {
+        return m_dumping_input;
+    }
+
+    sequence* get_sequence( )
+    {
+        return m_seq;
+    }
     void sysex( event *a_event );
 
     void port_start( int a_client, int a_port );
@@ -301,10 +319,8 @@ class mastermidibus
     void set_clock( unsigned char a_bus, clock_e a_clock_type );
     clock_e get_clock( unsigned char a_bus );
 
-
     void set_input( unsigned char a_bus, bool a_inputing );
     bool get_input( unsigned char a_bus );
-
 };
 
 #endif

@@ -41,15 +41,12 @@ class trackmenu;
 #include <gtkmm/widget.h>
 #include <gtkmm/style.h>
 
-
-
 using namespace Gtk;
-
 
 class trackmenu : public virtual Glib::ObjectBase
 {
 
- private:
+private:
 
     Menu        *m_menu;
     perform     *m_mainperf;
@@ -77,13 +74,13 @@ class trackmenu : public virtual Glib::ObjectBase
 
     virtual void redraw( int a_track ) = 0;
 
- protected:
+protected:
 
     int m_current_trk;
     void popup_menu();
 
- public:
+public:
 
     trackmenu( perform *a_p );
-    virtual ~trackmenu( ){ };
+    virtual ~trackmenu( ) { };
 };

@@ -36,7 +36,7 @@ configfile::next_data_line( ifstream *a_file)
 {
     a_file->getline( m_line, sizeof(m_line) );
     while (( m_line[0] == '#' || m_line[0] == ' ' || m_line[0] == 0 ) &&
-           !a_file->eof() )
+            !a_file->eof() )
     {
         a_file->getline( m_line, sizeof(m_line) );
     }

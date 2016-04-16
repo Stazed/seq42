@@ -40,15 +40,13 @@ font::init( Glib::RefPtr<Gdk::Window> a_window )
     m_white_pixmap = Gdk::Pixmap::create_from_xpm(a_window->get_colormap(), m_clip_mask,  font_w_xpm );
 }
 
-
-
 void
 font::render_string_on_drawable(
-        Glib::RefPtr<Gdk::GC> a_gc,
-        int x, int y,
-        Glib::RefPtr<Gdk::Drawable> a_draw,
-        const char *str,
-        font::Color col )
+    Glib::RefPtr<Gdk::GC> a_gc,
+    int x, int y,
+    Glib::RefPtr<Gdk::Drawable> a_draw,
+    const char *str,
+    font::Color col )
 {
     int length = 0;
 
@@ -58,8 +56,8 @@ font::render_string_on_drawable(
     int font_w = 6;
     int font_h = 10;
 
-    for( int i=0; i<length; ++i ){
-
+    for( int i=0; i<length; ++i )
+    {
         unsigned char c = (unsigned char) str[i];
 
         // solid

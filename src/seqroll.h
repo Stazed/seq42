@@ -43,12 +43,11 @@
 #include "seqevent.h"
 #include "perform.h"
 
-
 using namespace Gtk;
 
 class rect
 {
- public:
+public:
     int x, y, height, width;
 };
 
@@ -77,18 +76,16 @@ struct Seq42SeqRollInput
     bool m_adding;
 };
 
-
 /* piano roll */
 class seqroll : public Gtk::DrawingArea
 {
 
- private:
+private:
     friend struct FruitySeqRollInput;
     FruitySeqRollInput m_fruity_interaction;
 
     friend struct Seq42SeqRollInput;
     Seq42SeqRollInput m_seq42_interaction;
-
 
     Glib::RefPtr<Gdk::GC> m_gc;
     Glib::RefPtr<Gdk::Window>   m_window;
@@ -119,7 +116,7 @@ class seqroll : public Gtk::DrawingArea
 
     int m_window_x, m_window_y;
 
-	/* what is the data window currently editing ? */
+    /* what is the data window currently editing ? */
     unsigned char m_status;
     unsigned char m_cc;
 
@@ -178,7 +175,6 @@ class seqroll : public Gtk::DrawingArea
     bool on_leave_notify_event	(GdkEventCrossing* a_p0);
     bool on_enter_notify_event	(GdkEventCrossing* a_p0);
 
-
     void convert_xy( int a_x, int a_y, long *a_ticks, int *a_note);
     void convert_tn( long a_ticks, int a_note, int *a_x, int *a_y);
 
@@ -186,17 +182,16 @@ class seqroll : public Gtk::DrawingArea
     void snap_x( int *a_x );
 
     void xy_to_rect( int a_x1,  int a_y1,
-		     int a_x2,  int a_y2,
-		     int *a_x,  int *a_y,
-		     int *a_w,  int *a_h );
+                     int a_x2,  int a_y2,
+                     int *a_x,  int *a_y,
+                     int *a_w,  int *a_h );
 
     void convert_tn_box_to_rect( long a_tick_s, long a_tick_f,
-				 int a_note_h, int a_note_l,
-				 int *a_x, int *a_y,
-				 int *a_w, int *a_h );
+                                 int a_note_h, int a_note_l,
+                                 int *a_x, int *a_y,
+                                 int *a_w, int *a_h );
 
     void draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw );
-
 
     int idle_progress();
 
@@ -207,8 +202,7 @@ class seqroll : public Gtk::DrawingArea
 
     void force_draw();
 
-
- public:
+public:
 
     bool on_key_press_event(GdkEventKey* a_p0); // called from seqedit
     void reset();
@@ -216,7 +210,7 @@ class seqroll : public Gtk::DrawingArea
     void redraw_events();
     void set_zoom( int a_zoom );
     void set_snap( int a_snap );
-	void set_note_length( int a_note_length );
+    void set_note_length( int a_note_length );
     void set_ignore_redraw(bool a_ignore);
 
     void set_scale( int a_scale );
@@ -249,6 +243,5 @@ class seqroll : public Gtk::DrawingArea
     void set_data_type( unsigned char a_status, unsigned char a_control  );
 
     ~seqroll();
-
 };
 

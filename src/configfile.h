@@ -28,7 +28,7 @@
 class configfile
 {
 
- protected:
+protected:
 
     int m_pos;
     Glib::ustring m_name;
@@ -45,7 +45,7 @@ class configfile
     void next_data_line( ifstream *a_file);
     void line_after( ifstream *a_file, string a_tag);
 
- public:
+public:
 
     configfile(const Glib::ustring& a_name);
     virtual ~configfile();

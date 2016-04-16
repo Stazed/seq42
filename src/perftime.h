@@ -49,7 +49,7 @@ class mainwnd;
 class perftime: public Gtk::DrawingArea
 {
 
- private:
+private:
 
     Glib::RefPtr<Gdk::GC> m_gc;
     Glib::RefPtr<Gdk::Window>   m_window;
@@ -84,7 +84,7 @@ class perftime: public Gtk::DrawingArea
 
     void change_horz();
 
- public:
+public:
 
     perftime( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust );
 

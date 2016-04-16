@@ -35,7 +35,8 @@ public:
     long m_offset;
     int m_sequence;
 
-    trigger (){
+    trigger ()
+    {
         m_tick_start = 0;
         m_tick_end = 0;
         m_offset = 0;
@@ -43,8 +44,8 @@ public:
         m_sequence = -1;
     };
 
-    bool operator< (trigger rhs){
-
+    bool operator< (trigger rhs)
+    {
         if (m_tick_start < rhs.m_tick_start)
             return true;
 

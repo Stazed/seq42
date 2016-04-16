@@ -46,7 +46,7 @@ const unsigned char  EVENT_SYSEX_END        = 0xF7;
 class event
 {
 
- private:
+private:
 
     /* timestamp in ticks */
     unsigned long m_timestamp;
@@ -80,7 +80,7 @@ class event
     /* used in sorting */
     int get_rank( ) const;
 
- public:
+public:
 
     event();
 
@@ -93,10 +93,10 @@ class event
     void set_data( const char D1 );
     void set_data( const char D1, const char D2 );
     void get_data( unsigned char *D0, unsigned char *D1 );
-	void increment_data1();
-	void decrement_data1();
-	void increment_data2();
-	void decrement_data2();
+    void increment_data1();
+    void decrement_data1();
+    void increment_data2();
+    void decrement_data2();
 
     void start_sysex();
     bool append_sysex( unsigned char *a_data, long size );
@@ -126,7 +126,6 @@ class event
 
     /* set status to midi clock */
     void make_clock( );
-
 
     /* gets the note assuming its note on/off */
     unsigned char get_note();

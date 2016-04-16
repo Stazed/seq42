@@ -24,9 +24,9 @@
 
 
 perfroll::perfroll( perform *a_perf,
-                   mainwnd *a_main,
-		    Adjustment * a_hadjust,
-		    Adjustment * a_vadjust  ) :
+                    mainwnd *a_main,
+                    Adjustment * a_hadjust,
+                    Adjustment * a_vadjust  ) :
     m_black(Gdk::Color("black")),
     m_white(Gdk::Color("white")),
     m_grey(Gdk::Color("grey")),
@@ -65,12 +65,12 @@ perfroll::perfroll( perform *a_perf,
     //m_text_font_6_12 = Gdk_Font( c_font_6_12 );
 
     add_events( Gdk::BUTTON_PRESS_MASK |
-		Gdk::BUTTON_RELEASE_MASK |
-		Gdk::POINTER_MOTION_MASK |
-		Gdk::KEY_PRESS_MASK |
-		Gdk::KEY_RELEASE_MASK |
-		Gdk::FOCUS_CHANGE_MASK |
-		Gdk::SCROLL_MASK );
+                Gdk::BUTTON_RELEASE_MASK |
+                Gdk::POINTER_MOTION_MASK |
+                Gdk::KEY_PRESS_MASK |
+                Gdk::KEY_RELEASE_MASK |
+                Gdk::FOCUS_CHANGE_MASK |
+                Gdk::SCROLL_MASK );
 
 
     set_size_request( 10, 10 );
@@ -100,10 +100,11 @@ perfroll::change_horz( )
 void
 perfroll::change_vert( )
 {
-    if ( m_track_offset != (int) m_vadjust->get_value() ){
+    if ( m_track_offset != (int) m_vadjust->get_value() )
+    {
 
-	m_track_offset = (int) m_vadjust->get_value();
-	queue_draw();
+        m_track_offset = (int) m_vadjust->get_value();
+        queue_draw();
     }
 }
 
@@ -131,16 +132,14 @@ perfroll::on_realize()
 
     /* and fill the background ( dotted lines n' such ) */
     fill_background_pixmap();
-
 }
 
 void
 perfroll::init_before_show( )
 {
-
     m_roll_length_ticks = m_mainperf->get_max_trigger();
     m_roll_length_ticks = m_roll_length_ticks -
-	( m_roll_length_ticks % ( c_ppqn * 16 ));
+                          ( m_roll_length_ticks % ( c_ppqn * 16 ));
     m_roll_length_ticks +=  c_ppqn * 4096;
 }
 
@@ -157,10 +156,10 @@ perfroll::update_sizes()
     m_hadjust->set_page_increment( 1 );
     int h_max_value = h_bars - h_bars_visable;
 
-    if ( m_hadjust->get_value() > h_max_value ){
-       m_hadjust->set_value( h_max_value );
+    if ( m_hadjust->get_value() > h_max_value )
+    {
+        m_hadjust->set_value( h_max_value );
     }
-
 
     m_vadjust->set_lower( 0 );
     m_vadjust->set_upper( c_max_track );
@@ -170,12 +169,14 @@ perfroll::update_sizes()
 
     int v_max_value = c_max_track - (m_window_y / c_names_y);
 
-    if ( m_vadjust->get_value() > v_max_value ){
+    if ( m_vadjust->get_value() > v_max_value )
+    {
         m_vadjust->set_value(v_max_value);
     }
 
-    if ( is_realized() ){
-	m_pixmap = Gdk::Pixmap::create( m_window,
+    if ( is_realized() )
+    {
+        m_pixmap = Gdk::Pixmap::create( m_window,
                                         m_window_x,
                                         m_window_y, -1 );
     }
@@ -197,10 +198,10 @@ perfroll::fill_background_pixmap()
     /* clear background */
     m_gc->set_foreground(m_white);
     m_background->draw_rectangle(m_gc,true,
- 				0,
- 				0,
- 				c_perfroll_background_x,
- 				c_names_y );
+                                 0,
+                                 0,
+                                 c_perfroll_background_x,
+                                 c_names_y );
 
     /* draw horz grey lines */
     m_gc->set_foreground(m_grey);
@@ -214,17 +215,19 @@ perfroll::fill_background_pixmap()
                                Gdk::JOIN_MITER );
 
     m_background->draw_line(m_gc,
-			   0,
-			   0,
-			   c_perfroll_background_x,
-			   0 );
+                            0,
+                            0,
+                            c_perfroll_background_x,
+                            0 );
 
     int beats = m_measure_length / m_beat_length;
 
     /* draw vert lines */
-    for ( int i=0; i< beats ; ){
+    for ( int i=0; i< beats ; )
+    {
 
- 	if ( i == 0 ){
+        if ( i == 0 )
+        {
             m_gc->set_line_attributes( 1,
                                        Gdk::LINE_SOLID,
                                        Gdk::CAP_NOT_LAST,
@@ -240,12 +243,12 @@ perfroll::fill_background_pixmap()
 
         m_gc->set_foreground(m_grey);
 
- 	/* solid line on every beat */
- 	m_background->draw_line(m_gc,
- 			       i * m_beat_length / m_perf_scale_x,
- 			       0,
- 			       i * m_beat_length / m_perf_scale_x,
- 			       c_names_y );
+        /* solid line on every beat */
+        m_background->draw_line(m_gc,
+                                i * m_beat_length / m_perf_scale_x,
+                                0,
+                                i * m_beat_length / m_perf_scale_x,
+                                c_names_y );
 
         // jump 2 if 16th notes
         if ( m_beat_length < c_ppqn/2 )
@@ -256,7 +259,6 @@ perfroll::fill_background_pixmap()
         {
             ++i;
         }
-
     }
 
     /* reset line style */
@@ -276,7 +278,8 @@ perfroll::set_guides( int a_snap, int a_measure, int a_beat )
     m_measure_length = a_measure;
     m_beat_length = a_beat;
 
-    if ( is_realized() ){
+    if ( is_realized() )
+    {
         fill_background_pixmap();
     }
 
@@ -294,15 +297,15 @@ perfroll::draw_progress()
 
     /* draw old */
     m_window->draw_drawable(m_gc,
-			 m_pixmap,
-			 old_progress_x, 0,
-			 old_progress_x, 0,
-			 1, m_window_y );
+                            m_pixmap,
+                            old_progress_x, 0,
+                            old_progress_x, 0,
+                            1, m_window_y );
 
     m_gc->set_foreground(m_black);
     m_window->draw_line(m_gc,
-		       progress_x, 0,
-		       progress_x, m_window_y);
+                        progress_x, 0,
+                        progress_x, m_window_y);
 
     m_old_progress_ticks = tick;
 
@@ -314,7 +317,6 @@ perfroll::draw_progress()
 
 void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
 {
-
     long tick_on;
     long tick_off;
     long offset;
@@ -325,166 +327,170 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
     long tick_offset = m_4bar_offset * c_ppqn * 16;
     long x_offset = tick_offset / m_perf_scale_x;
 
-    if ( a_track < c_max_track ){
-
-	if ( m_mainperf->is_active_track( a_track )){
-
+    if ( a_track < c_max_track )
+    {
+        if ( m_mainperf->is_active_track( a_track ))
+        {
             m_track_active[a_track] = true;
 
-	    track *trk =  m_mainperf->get_track( a_track );
+            track *trk =  m_mainperf->get_track( a_track );
+            trk->reset_draw_trigger_marker();
+            a_track -= m_track_offset;
 
-	    trk->reset_draw_trigger_marker();
+            while ( trk->get_next_trigger( &tick_on, &tick_off, &selected, &offset, &seq_idx ))
+            {
+                if ( tick_off > 0 )
+                {
+                    long x_on  = tick_on  / m_perf_scale_x;
+                    long x_off = tick_off / m_perf_scale_x;
+                    int  w     = x_off - x_on + 1;
 
-	    a_track -= m_track_offset;
-
-	    while ( trk->get_next_trigger( &tick_on, &tick_off, &selected, &offset, &seq_idx )){
-
-            if ( tick_off > 0 ){
-
-		    long x_on  = tick_on  / m_perf_scale_x;
-		    long x_off = tick_off / m_perf_scale_x;
-		    int  w     = x_off - x_on + 1;
-
-		    int x = x_on;
-		    int y = c_names_y * a_track + 1;  // + 2
-		    int h = c_names_y - 2; // - 4
+                    int x = x_on;
+                    int y = c_names_y * a_track + 1;  // + 2
+                    int h = c_names_y - 2; // - 4
 
                     // adjust to screen corrids
-		    x = x - x_offset;
+                    x = x - x_offset;
 
                     if ( selected )
                         m_gc->set_foreground(m_grey);
                     else
                         m_gc->set_foreground(m_white);
 
-		    a_draw->draw_rectangle(m_gc,true,
-					   x,
-					   y,
-					   w,
-					   h );
-
-		    m_gc->set_foreground(m_black);
-		    a_draw->draw_rectangle(m_gc,false,
-					   x,
-					   y,
-					   w,
-					   h );
+                    a_draw->draw_rectangle(m_gc,true,
+                                           x,
+                                           y,
+                                           w,
+                                           h );
 
                     m_gc->set_foreground(m_black);
                     a_draw->draw_rectangle(m_gc,false,
-					   x,
-					   y,
-					   c_perfroll_size_box_w,
-					   c_perfroll_size_box_w );
-
-                    a_draw->draw_rectangle(m_gc,false,
-					   x+w-c_perfroll_size_box_w,
-					   y+h-c_perfroll_size_box_w,
-					   c_perfroll_size_box_w,
-					   c_perfroll_size_box_w );
-
-		    m_gc->set_foreground(m_black);
-
-            char label[40];
-            int max_label = (w / 6)-1;
-            if(max_label < 0) max_label = 0;
-            if(max_label > 39) max_label = 39;
-            seq = trk->get_sequence(seq_idx);
-            if(seq == NULL) {
-                strncpy(label, "Empty", max_label);
-            } else {
-                strncpy(label, seq->get_name(), max_label);
-	            long sequence_length = seq->get_length();
-	            int length_w = sequence_length / m_perf_scale_x;
-                long length_marker_first_tick = ( tick_on - (tick_on % sequence_length) + (offset % sequence_length) - sequence_length);
-
-
-                long tick_marker = length_marker_first_tick;
-
-                while ( tick_marker < tick_off ){
-
-                    long tick_marker_x = (tick_marker / m_perf_scale_x) - x_offset;
-
-                    if ( tick_marker > tick_on ){
-
-                        m_gc->set_foreground(m_lt_grey);
-                        a_draw->draw_rectangle(m_gc,true,
-                                               tick_marker_x,
-                                               y+4,
-                                               1,
-                                               h-8 );
-                    }
-
-                    int lowest_note = seq->get_lowest_note_event( );
-                    int highest_note = seq->get_highest_note_event( );
-
-                    int height = highest_note - lowest_note;
-                    height += 2;
-
-                    int length = seq->get_length( );
-
-                    long tick_s;
-                    long tick_f;
-                    int note;
-
-                    bool selected;
-
-                    int velocity;
-                    draw_type dt;
-
-                    seq->reset_draw_marker();
+                                           x,
+                                           y,
+                                           w,
+                                           h );
 
                     m_gc->set_foreground(m_black);
-                    while ( (dt = seq->get_next_note_event( &tick_s, &tick_f, &note,
-                                                            &selected, &velocity )) != DRAW_FIN ){
+                    a_draw->draw_rectangle(m_gc,false,
+                                           x,
+                                           y,
+                                           c_perfroll_size_box_w,
+                                           c_perfroll_size_box_w );
 
-                        int note_y = ((c_names_y-6) -
-                            ((c_names_y-6)  * (note - lowest_note)) / height) + 1;
+                    a_draw->draw_rectangle(m_gc,false,
+                                           x+w-c_perfroll_size_box_w,
+                                           y+h-c_perfroll_size_box_w,
+                                           c_perfroll_size_box_w,
+                                           c_perfroll_size_box_w );
 
-                        int tick_s_x = ((tick_s * length_w)  / length) + tick_marker_x;
-                        int tick_f_x = ((tick_f * length_w)  / length) + tick_marker_x;
+                    m_gc->set_foreground(m_black);
 
-                        if ( dt == DRAW_NOTE_ON || dt == DRAW_NOTE_OFF )
-                            tick_f_x = tick_s_x + 1;
-                        if ( tick_f_x <= tick_s_x )
-                            tick_f_x = tick_s_x + 1;
-
-                        if ( tick_s_x < x ){
-                            tick_s_x = x;
-                        }
-
-                        if ( tick_f_x > x + w ){
-                            tick_f_x = x + w;
-                        }
-
-                        /*
-                                [           ]
-                         -----------
-                                         ---------
-                               ----------------
-                     ------                      ------
-                        */
-
-                        if ( tick_f_x >= x && tick_s_x <= x+w )
-                            m_pixmap->draw_line(m_gc, tick_s_x,
-                                                y + note_y,
-                                                tick_f_x,
-                                                y + note_y );
+                    char label[40];
+                    int max_label = (w / 6)-1;
+                    if(max_label < 0) max_label = 0;
+                    if(max_label > 39) max_label = 39;
+                    seq = trk->get_sequence(seq_idx);
+                    if(seq == NULL)
+                    {
+                        strncpy(label, "Empty", max_label);
                     }
+                    else
+                    {
+                        strncpy(label, seq->get_name(), max_label);
+                        long sequence_length = seq->get_length();
+                        int length_w = sequence_length / m_perf_scale_x;
+                        long length_marker_first_tick = ( tick_on - (tick_on % sequence_length) + (offset % sequence_length) - sequence_length);
+
+
+                        long tick_marker = length_marker_first_tick;
+
+                        while ( tick_marker < tick_off )
+                        {
+
+                            long tick_marker_x = (tick_marker / m_perf_scale_x) - x_offset;
+
+                            if ( tick_marker > tick_on )
+                            {
+                                m_gc->set_foreground(m_lt_grey);
+                                a_draw->draw_rectangle(m_gc,true,
+                                                       tick_marker_x,
+                                                       y+4,
+                                                       1,
+                                                       h-8 );
+                            }
+
+                            int lowest_note = seq->get_lowest_note_event( );
+                            int highest_note = seq->get_highest_note_event( );
+
+                            int height = highest_note - lowest_note;
+                            height += 2;
+
+                            int length = seq->get_length( );
+
+                            long tick_s;
+                            long tick_f;
+                            int note;
+
+                            bool selected;
+
+                            int velocity;
+                            draw_type dt;
+
+                            seq->reset_draw_marker();
+
+                            m_gc->set_foreground(m_black);
+                            while ( (dt = seq->get_next_note_event( &tick_s, &tick_f, &note,
+                                                                    &selected, &velocity )) != DRAW_FIN )
+                            {
+                                int note_y = ((c_names_y-6) -
+                                              ((c_names_y-6)  * (note - lowest_note)) / height) + 1;
+
+                                int tick_s_x = ((tick_s * length_w)  / length) + tick_marker_x;
+                                int tick_f_x = ((tick_f * length_w)  / length) + tick_marker_x;
+
+                                if ( dt == DRAW_NOTE_ON || dt == DRAW_NOTE_OFF )
+                                    tick_f_x = tick_s_x + 1;
+                                if ( tick_f_x <= tick_s_x )
+                                    tick_f_x = tick_s_x + 1;
+
+                                if ( tick_s_x < x )
+                                {
+                                    tick_s_x = x;
+                                }
+
+                                if ( tick_f_x > x + w )
+                                {
+                                    tick_f_x = x + w;
+                                }
+
+                                /*
+                                        [           ]
+                                 -----------
+                                                 ---------
+                                       ----------------
+                                ------                      ------
+                                */
+
+                                if ( tick_f_x >= x && tick_s_x <= x+w )
+                                    m_pixmap->draw_line(m_gc, tick_s_x,
+                                                        y + note_y,
+                                                        tick_f_x,
+                                                        y + note_y );
+                            }
 
 
 
-                    tick_marker += sequence_length;
-		    }
-		    }
-            label[max_label] = '\0';
-            p_font_renderer->render_string_on_drawable(m_gc,
-                                                       x+5,
-                                                       y+2,
-                                                       a_draw, label, font::BLACK );
-		}
-	    }
-	}
+                            tick_marker += sequence_length;
+                        }
+                    }
+                    label[max_label] = '\0';
+                    p_font_renderer->render_string_on_drawable(m_gc,
+                            x+5,
+                            y+2,
+                            a_draw, label, font::BLACK );
+                }
+            }
+        }
     }
 }
 
@@ -501,32 +507,31 @@ void perfroll::draw_background_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_tra
     int y = c_names_y * a_track;
     int h = c_names_y;
 
-
     m_gc->set_foreground(m_white);
     a_draw->draw_rectangle(m_gc,true,
-                         0,
-                         y,
-                         m_window_x,
-                         h );
+                           0,
+                           y,
+                           m_window_x,
+                           h );
 
     m_gc->set_foreground(m_black);
     for ( int i = first_measure;
-              i < first_measure +
-                  (m_window_x * m_perf_scale_x /
-                   (m_measure_length)) + 1;
+            i < first_measure +
+            (m_window_x * m_perf_scale_x /
+             (m_measure_length)) + 1;
 
-              i++ )
+            i++ )
     {
         int x_pos = ((i * m_measure_length) - tick_offset) / m_perf_scale_x;
 
 
-           a_draw->draw_drawable(m_gc, m_background,
-                                 0,
-                                 0,
-                                 x_pos,
-                                 y,
-                                 c_perfroll_background_x,
-                                 c_names_y );
+        a_draw->draw_drawable(m_gc, m_background,
+                              0,
+                              0,
+                              x_pos,
+                              y,
+                              c_perfroll_background_x,
+                              c_names_y );
 
 
     }
@@ -537,22 +542,22 @@ void perfroll::draw_background_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_tra
 bool
 perfroll::on_expose_event(GdkEventExpose* e)
 {
-
     int y_s = e->area.y / c_names_y;
     int y_f = (e->area.y  + e->area.height) / c_names_y;
 
-    for ( int y=y_s; y<=y_f; y++ ){
+    for ( int y=y_s; y<=y_f; y++ )
+    {
         draw_background_on(m_pixmap, y + m_track_offset );
-	    draw_track_on(m_pixmap, y + m_track_offset );
+        draw_track_on(m_pixmap, y + m_track_offset );
     }
 
     m_window->draw_drawable( m_gc, m_pixmap,
-			  e->area.x,
-			  e->area.y,
-			  e->area.x,
-			  e->area.y,
-			  e->area.width,
-			  e->area.height );
+                             e->area.x,
+                             e->area.y,
+                             e->area.x,
+                             e->area.y,
+                             e->area.width,
+                             e->area.height );
     return true;
 }
 
@@ -565,19 +570,19 @@ perfroll::redraw_dirty_tracks()
     int y_s = 0;
     int y_f = m_window_y / c_names_y;
 
-    for ( int y=y_s; y<=y_f; y++ ){
-
+    for ( int y=y_s; y<=y_f; y++ )
+    {
         int track = y + m_track_offset; // 4am
 
 
-            bool dirty = (m_mainperf->is_dirty_perf(track ));
+        bool dirty = (m_mainperf->is_dirty_perf(track ));
 
-            if (dirty)
-            {
-                draw_background_on(m_pixmap,track );
-                draw_track_on(m_pixmap,track);
-                draw = true;
-            }
+        if (dirty)
+        {
+            draw_background_on(m_pixmap,track );
+            draw_track_on(m_pixmap,track);
+            draw = true;
+        }
     }
 
     if ( draw )
@@ -620,14 +625,14 @@ perfroll::on_button_press_event(GdkEventButton* a_ev)
 
     switch (global_interactionmethod)
     {
-        case e_fruity_interaction:
-            result = m_fruity_interaction.on_button_press_event(a_ev, *this);
-            break;
-        case e_seq42_interaction:
-            result = m_seq42_interaction.on_button_press_event(a_ev, *this);
-            break;
-        default:
-            result = false;
+    case e_fruity_interaction:
+        result = m_fruity_interaction.on_button_press_event(a_ev, *this);
+        break;
+    case e_seq42_interaction:
+        result = m_seq42_interaction.on_button_press_event(a_ev, *this);
+        break;
+    default:
+        result = false;
     }
     return result;
 }
@@ -639,14 +644,14 @@ perfroll::on_button_release_event(GdkEventButton* a_ev)
 
     switch (global_interactionmethod)
     {
-        case e_fruity_interaction:
-            result = m_fruity_interaction.on_button_release_event(a_ev, *this);
-            break;
-        case e_seq42_interaction:
-            result = m_seq42_interaction.on_button_release_event(a_ev, *this);
-            break;
-        default:
-            result = false;
+    case e_fruity_interaction:
+        result = m_fruity_interaction.on_button_release_event(a_ev, *this);
+        break;
+    case e_seq42_interaction:
+        result = m_seq42_interaction.on_button_release_event(a_ev, *this);
+        break;
+    default:
+        result = false;
     }
 
     m_mainperf->set_follow_transport(transport_follow);
@@ -670,17 +675,22 @@ perfroll::auto_scroll_horz()
 
         switch(m_zoom)
         {
-            case 8: m_hadjust->set_value(left_tick / 4);
+        case 8:
+            m_hadjust->set_value(left_tick / 4);
             break;
-            case 16: m_hadjust->set_value(left_tick / 2 );
+        case 16:
+            m_hadjust->set_value(left_tick / 2 );
             break;
-            case 32: m_hadjust->set_value(left_tick );
+        case 32:
+            m_hadjust->set_value(left_tick );
             break;
-            case 64: m_hadjust->set_value(left_tick * 2 );
+        case 64:
+            m_hadjust->set_value(left_tick * 2 );
             break;
-            case 128: m_hadjust->set_value(left_tick * 4 );
+        case 128:
+            m_hadjust->set_value(left_tick * 4 );
             break;
-            default:
+        default:
             break;
         }
     }
@@ -710,10 +720,12 @@ perfroll::on_scroll_event( GdkEventScroll* a_ev )
     {
         double val = m_hadjust->get_value();
 
-        if ( a_ev->direction == GDK_SCROLL_UP ){
+        if ( a_ev->direction == GDK_SCROLL_UP )
+        {
             val -= m_hadjust->get_step_increment();
         }
-        else if ( a_ev->direction == GDK_SCROLL_DOWN ){
+        else if ( a_ev->direction == GDK_SCROLL_DOWN )
+        {
             val += m_hadjust->get_step_increment();
         }
 
@@ -723,10 +735,12 @@ perfroll::on_scroll_event( GdkEventScroll* a_ev )
     {
         double val = m_vadjust->get_value();
 
-        if ( a_ev->direction == GDK_SCROLL_UP ){
+        if ( a_ev->direction == GDK_SCROLL_UP )
+        {
             val -= m_vadjust->get_step_increment();
         }
-        else if ( a_ev->direction == GDK_SCROLL_DOWN ){
+        else if ( a_ev->direction == GDK_SCROLL_DOWN )
+        {
             val += m_vadjust->get_step_increment();
         }
 
@@ -742,19 +756,19 @@ perfroll::on_motion_notify_event(GdkEventMotion* a_ev)
 
     switch (global_interactionmethod)
     {
-        case e_fruity_interaction:
-             result = m_fruity_interaction.on_motion_notify_event(a_ev, *this);
-             break;
-        case e_seq42_interaction:
-             result = m_seq42_interaction.on_motion_notify_event(a_ev, *this);
-             if(global_interaction_method_change)
-             {
-                get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
-                global_interaction_method_change = false;
-             }
-             break;
-        default:
-             result = false;
+    case e_fruity_interaction:
+        result = m_fruity_interaction.on_motion_notify_event(a_ev, *this);
+        break;
+    case e_seq42_interaction:
+        result = m_seq42_interaction.on_motion_notify_event(a_ev, *this);
+        if(global_interaction_method_change)
+        {
+            get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
+            global_interaction_method_change = false;
+        }
+        break;
+    default:
+        result = false;
     }
     return result;
 }
@@ -781,11 +795,12 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
 
     bool ret = false;
 
-    if ( m_mainperf->is_active_track( m_drop_track)){
-
-        if ( a_p0->type == GDK_KEY_PRESS ){
-
-            if ( a_p0->keyval ==  GDK_Delete || a_p0->keyval == GDK_BackSpace ){
+    if ( m_mainperf->is_active_track( m_drop_track))
+    {
+        if ( a_p0->type == GDK_KEY_PRESS )
+        {
+            if ( a_p0->keyval ==  GDK_Delete || a_p0->keyval == GDK_BackSpace )
+            {
 
                 m_mainperf->push_trigger_undo(m_drop_track);
                 m_mainperf->get_track( m_drop_track )->del_selected_trigger();
@@ -793,11 +808,11 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                 ret = true;
             }
 
-            if ( a_p0->state & GDK_CONTROL_MASK ){
-
+            if ( a_p0->state & GDK_CONTROL_MASK )
+            {
                 /* cut */
-                if ( a_p0->keyval == GDK_x || a_p0->keyval == GDK_X ){
-
+                if ( a_p0->keyval == GDK_x || a_p0->keyval == GDK_X )
+                {
                     m_mainperf->push_trigger_undo(m_drop_track);
                     m_mainperf->get_track( m_drop_track )->cut_selected_trigger();
                     ret = true;
@@ -822,8 +837,8 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                 }
 
                 /* paste */
-                if ( a_p0->keyval == GDK_v || a_p0->keyval == GDK_V ){
-
+                if ( a_p0->keyval == GDK_v || a_p0->keyval == GDK_V )
+                {
                     bool cross_track = false;
                     for ( int t=0; t<c_max_track; ++t )
                     {
@@ -833,21 +848,20 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                         }
 
                         if(m_mainperf->get_track(t)->get_trigger_copied() &&    // do we have a copy to clipboard
-                            m_mainperf->get_track( m_drop_track)->get_trigger_paste_tick() >= 0 &&  // do we have a paste
-                           !cross_track_paste) // has cross track paste NOT been done for this copy
+                                m_mainperf->get_track( m_drop_track)->get_trigger_paste_tick() >= 0 &&  // do we have a paste
+                                !cross_track_paste) // has cross track paste NOT been done for this copy
                         {
                             if(t != m_drop_track) // If clipboard and paste are on diff tracks - then cross track paste
                             {
                                 paste_trigger_sequence( m_mainperf->get_track( m_drop_track ),
                                                         m_mainperf->get_track(t)->get_sequence(m_mainperf->get_track(t)
-                                                                               ->get_trigger_clipboard()->m_sequence ));
+                                                                ->get_trigger_clipboard()->m_sequence ));
                                 ret = true;
                                 cross_track_paste = true;
                                 cross_track = true;
                                 break;
                             }
                         }
-
                     }
                     if(!cross_track)
                     {
@@ -858,24 +872,21 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                             cross_track = false;
                             ret = true;
                         }
-
                     }
                 }
             }
         }
     }
 
-    if ( ret == true ){
-
+    if ( ret == true )
+    {
         fill_background_pixmap();
         queue_draw();
         return true;
     }
     else
-	return false;
+        return false;
 }
-
-
 
 /* performs a 'snap' on x */
 void
@@ -888,11 +899,10 @@ perfroll::snap_x( int *a_x )
     int mod = (m_snap / m_perf_scale_x );
 
     if ( mod <= 0 )
- 	mod = 1;
+        mod = 1;
 
     *a_x = *a_x - (*a_x % mod );
 }
-
 
 void
 perfroll::convert_x( int a_x, long *a_tick )
@@ -901,7 +911,6 @@ perfroll::convert_x( int a_x, long *a_tick )
     *a_tick = a_x * m_perf_scale_x;
     *a_tick += tick_offset;
 }
-
 
 void
 perfroll::convert_xy( int a_x, int a_y, long *a_tick, int *a_track)
@@ -915,12 +924,11 @@ perfroll::convert_xy( int a_x, int a_y, long *a_tick, int *a_track)
     *a_track  += m_track_offset;
 
     if ( *a_track >= c_max_track )
-	*a_track = c_max_track - 1;
+        *a_track = c_max_track - 1;
 
     if ( *a_track < 0 )
-	*a_track = 0;
+        *a_track = 0;
 }
-
 
 bool
 perfroll::on_focus_in_event(GdkEventFocus*)
@@ -929,14 +937,12 @@ perfroll::on_focus_in_event(GdkEventFocus*)
     return false;
 }
 
-
 bool
 perfroll::on_focus_out_event(GdkEventFocus*)
 {
     unset_flags(Gtk::HAS_FOCUS);
     return false;
 }
-
 
 void
 perfroll::on_size_allocate(Gtk::Allocation& a_r )
@@ -953,7 +959,6 @@ void
 perfroll::on_size_request(GtkRequisition* a_r )
 {
 }
-
 
 void
 perfroll::new_sequence( track *a_track, trigger *a_trigger )
@@ -974,7 +979,8 @@ perfroll::copy_sequence( track *a_track, trigger *a_trigger, sequence *a_seq )
     sequence *a_sequence = a_track->get_sequence(seq_idx);
     *a_sequence = *a_seq;
     a_sequence->set_track(a_track);
-    if(same_track) {
+    if(same_track)
+    {
         char new_name[c_max_seq_name+1];
         snprintf(new_name, sizeof(new_name), "%s copy", a_sequence->get_name());
         a_sequence->set_name( new_name );
@@ -987,9 +993,12 @@ void
 perfroll::edit_sequence( track *a_track, trigger *a_trigger )
 {
     sequence *a_seq = a_track->get_trigger_sequence(a_trigger);
-    if(a_seq->get_editing()) {
+    if(a_seq->get_editing())
+    {
         a_seq->set_raise(true);
-    } else {
+    }
+    else
+    {
         new seqedit( a_seq, m_mainperf );
     }
 }
@@ -999,7 +1008,6 @@ void perfroll::set_trigger_sequence( track *a_track, trigger *a_trigger, int a_s
     m_mainperf->push_trigger_undo(m_mainperf->get_track_index(a_track));
     a_track->set_trigger_sequence(a_trigger, a_sequence);
 }
-
 
 void
 perfroll::del_trigger( track *a_track, long a_tick )
@@ -1012,54 +1020,54 @@ perfroll::del_trigger( track *a_track, long a_tick )
 void
 perfroll::paste_trigger_sequence( track *p_track, sequence *a_sequence )
 {
-     // empty trigger = segfault via get_length - don't allow w/o sequence
+    // empty trigger = segfault via get_length - don't allow w/o sequence
     if (a_sequence == NULL)
         return;
 
-    if ( a_sequence->get_track()->get_trigger_copied() ){
+    if ( a_sequence->get_track()->get_trigger_copied() )
+    {
+        if(a_sequence->get_track() != p_track)  // then we have to copy the sequence
+        {
+            m_mainperf->push_track_undo(m_mainperf->get_track_index(p_track));
+            // Add the sequence
+            int seq_idx = p_track->new_sequence();
+            sequence *seq = p_track->get_sequence(seq_idx);
+            *seq = *a_sequence;
+            seq->set_track(p_track);
+            trigger *a_trigger = NULL;
+            a_trigger = a_sequence->get_track()->get_trigger_clipboard();
 
-            if(a_sequence->get_track() != p_track)  // then we have to copy the sequence
-            {
-                m_mainperf->push_track_undo(m_mainperf->get_track_index(p_track));
-                // Add the sequence
-                int seq_idx = p_track->new_sequence();
-                sequence *seq = p_track->get_sequence(seq_idx);
-                *seq = *a_sequence;
-                seq->set_track(p_track);
-                trigger *a_trigger = NULL;
-                a_trigger = a_sequence->get_track()->get_trigger_clipboard();
+            //printf("a_trigger-m_offset[%ld]\na_trigger-m_tick_start[%ld]\nm_tick_end[%ld]\n",a_trigger->m_offset,
+            //       a_trigger->m_tick_start,a_trigger->m_tick_end);
+            //put trigger into current track clipboard
+            p_track->get_trigger_clipboard()->m_offset = a_trigger->m_offset;
+            p_track->get_trigger_clipboard()->m_selected = a_trigger->m_selected;
+            p_track->get_trigger_clipboard()->m_sequence = seq_idx;
+            p_track->get_trigger_clipboard()->m_tick_start = a_trigger->m_tick_start;
+            p_track->get_trigger_clipboard()->m_tick_end = a_trigger->m_tick_end;
 
-                //printf("a_trigger-m_offset[%ld]\na_trigger-m_tick_start[%ld]\nm_tick_end[%ld]\n",a_trigger->m_offset,
-                //       a_trigger->m_tick_start,a_trigger->m_tick_end);
-                //put trigger into current track clipboard
-                p_track->get_trigger_clipboard()->m_offset = a_trigger->m_offset;
-                p_track->get_trigger_clipboard()->m_selected = a_trigger->m_selected;
-                p_track->get_trigger_clipboard()->m_sequence = seq_idx;
-                p_track->get_trigger_clipboard()->m_tick_start = a_trigger->m_tick_start;
-                p_track->get_trigger_clipboard()->m_tick_end = a_trigger->m_tick_end;
+            long length =  p_track->get_trigger_clipboard()->m_tick_end - p_track->get_trigger_clipboard()->m_tick_start + 1;
 
-                long length =  p_track->get_trigger_clipboard()->m_tick_end - p_track->get_trigger_clipboard()->m_tick_start + 1;
+            long offset_adjust = p_track->get_trigger_paste_tick() - p_track->get_trigger_clipboard()->m_tick_start;
+            p_track->add_trigger(p_track->get_trigger_paste_tick(),
+                                 length,
+                                 p_track->get_trigger_clipboard()->m_offset + offset_adjust,
+                                 p_track->get_trigger_clipboard()->m_sequence); // +/- distance to paste tick from start
 
-                long offset_adjust = p_track->get_trigger_paste_tick() - p_track->get_trigger_clipboard()->m_tick_start;
-                p_track->add_trigger(p_track->get_trigger_paste_tick(),
-                         length,
-                         p_track->get_trigger_clipboard()->m_offset + offset_adjust,
-                         p_track->get_trigger_clipboard()->m_sequence); // +/- distance to paste tick from start
+            p_track->get_trigger_clipboard()->m_tick_start = p_track->get_trigger_paste_tick();
+            p_track->get_trigger_clipboard()->m_tick_end = p_track->get_trigger_clipboard()->m_tick_start + length - 1;
+            p_track->get_trigger_clipboard()->m_offset += offset_adjust;
 
-                p_track->get_trigger_clipboard()->m_tick_start = p_track->get_trigger_paste_tick();
-                p_track->get_trigger_clipboard()->m_tick_end = p_track->get_trigger_clipboard()->m_tick_start + length - 1;
-                p_track->get_trigger_clipboard()->m_offset += offset_adjust;
+            long a_length = p_track->get_sequence(p_track->get_trigger_clipboard()->m_sequence)->get_length();
+            p_track->get_trigger_clipboard()->m_offset = p_track->adjust_offset(p_track->get_trigger_clipboard()->m_offset,a_length);
 
-                long a_length = p_track->get_sequence(p_track->get_trigger_clipboard()->m_sequence)->get_length();
-                p_track->get_trigger_clipboard()->m_offset = p_track->adjust_offset(p_track->get_trigger_clipboard()->m_offset,a_length);
+            //printf("p-m_offset[%ld]\np-m_tick_start[%ld]\np-m_tick_end[%ld]\n",p_track->get_trigger_clipboard()->m_offset,
+            //       p_track->get_trigger_clipboard()->m_tick_start,p_track->get_trigger_clipboard()->m_tick_end);
 
-                //printf("p-m_offset[%ld]\np-m_tick_start[%ld]\np-m_tick_end[%ld]\n",p_track->get_trigger_clipboard()->m_offset,
-                //       p_track->get_trigger_clipboard()->m_tick_start,p_track->get_trigger_clipboard()->m_tick_end);
-
-                p_track->set_trigger_paste_tick(-1); // reset to default
-                p_track->set_trigger_copied();  // change to paste track
-                a_sequence->get_track()->unset_trigger_copied(); // undo original
-            }
+            p_track->set_trigger_paste_tick(-1); // reset to default
+            p_track->set_trigger_copied();  // change to paste track
+            a_sequence->get_track()->unset_trigger_copied(); // undo original
+        }
     }
 }
 
@@ -1069,25 +1077,31 @@ perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
     using namespace Menu_Helpers;
     track *a_track = NULL;
     trigger *a_trigger = NULL;
-    if ( ths.m_mainperf->is_active_track( ths.m_drop_track )){
+    if ( ths.m_mainperf->is_active_track( ths.m_drop_track ))
+    {
         a_track = ths.m_mainperf->get_track( ths.m_drop_track );
         a_trigger = a_track->get_trigger( ths.m_drop_tick );
     }
-    if(a_trigger != NULL) {
+    if(a_trigger != NULL)
+    {
         Menu *menu_trigger =   manage( new Menu());
         //menu_trigger->items().push_back(SeparatorElem());
-        if(a_trigger->m_sequence > -1) {
+        if(a_trigger->m_sequence > -1)
+        {
             menu_trigger->items().push_back(MenuElem("Edit sequence", sigc::bind(mem_fun(ths,&perfroll::edit_sequence), a_track, a_trigger )));
         }
+
         menu_trigger->items().push_back(MenuElem("New sequence", sigc::bind(mem_fun(ths,&perfroll::new_sequence), a_track, a_trigger )));
-        if(a_track->get_number_of_sequences()) {
+        if(a_track->get_number_of_sequences())
+        {
             char name[40];
             Menu *set_seq_menu = manage( new Menu());
-            for (unsigned s=0; s< a_track->get_number_of_sequences(); s++ ){
+            for (unsigned s=0; s< a_track->get_number_of_sequences(); s++ )
+            {
                 sequence *a_seq = a_track->get_sequence( s );
                 snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
                 set_seq_menu->items().push_back(MenuElem(name,
-                    sigc::bind(mem_fun(ths, &perfroll::set_trigger_sequence), a_track, a_trigger, s)));
+                                                sigc::bind(mem_fun(ths, &perfroll::set_trigger_sequence), a_track, a_trigger, s)));
 
             }
             menu_trigger->items().push_back(MenuElem("Set sequence", *set_seq_menu));
@@ -1097,17 +1111,22 @@ perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
 
         Menu *copy_seq_menu = NULL;
         char name[40];
-        for ( int t=0; t<c_max_track; ++t ){
-                if (! ths.m_mainperf->is_active_track( t )){
-                    continue;
-                }
+        for ( int t=0; t<c_max_track; ++t )
+        {
+            if (! ths.m_mainperf->is_active_track( t ))
+            {
+                continue;
+            }
             track *some_track = ths.m_mainperf->get_track(t);
 
             Menu *menu_t = NULL;
             bool inserted = false;
-            for (unsigned s=0; s< some_track->get_number_of_sequences(); s++ ){
-                if ( !inserted ){
-                    if(copy_seq_menu == NULL) {
+            for (unsigned s=0; s< some_track->get_number_of_sequences(); s++ )
+            {
+                if ( !inserted )
+                {
+                    if(copy_seq_menu == NULL)
+                    {
                         copy_seq_menu = manage( new Menu());
                     }
                     inserted = true;
@@ -1119,11 +1138,12 @@ perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
                 sequence *a_seq = some_track->get_sequence( s );
                 snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
                 menu_t->items().push_back(MenuElem(name,
-                    sigc::bind(mem_fun(ths, &perfroll::copy_sequence), a_track, a_trigger, a_seq)));
+                                                   sigc::bind(mem_fun(ths, &perfroll::copy_sequence), a_track, a_trigger, a_seq)));
 
             }
         }
-        if(copy_seq_menu != NULL) {
+        if(copy_seq_menu != NULL)
+        {
             menu_trigger->items().push_back(MenuElem("Copy sequence", *copy_seq_menu));
         }
 

@@ -49,8 +49,8 @@ class seqevent;
 struct FruitySeqEventInput
 {
     FruitySeqEventInput() : m_justselected_one(false),
-                            m_is_drag_pasting_start(false),
-                            m_is_drag_pasting(false)
+        m_is_drag_pasting_start(false),
+        m_is_drag_pasting(false)
     {}
     bool m_justselected_one;
     bool m_is_drag_pasting_start;
@@ -70,12 +70,11 @@ struct Seq42SeqEventInput
     bool m_adding;
 };
 
-
 /* piano event */
 class seqevent : public Gtk::DrawingArea
 {
 
- private:
+private:
     friend struct FruitySeqEventInput;
     FruitySeqEventInput m_fruity_interaction;
 
@@ -95,8 +94,6 @@ class seqevent : public Gtk::DrawingArea
 
     int m_scroll_offset_ticks;
     int m_scroll_offset_x;
-
-
 
     sequence     *m_seq;
     seqdata      *m_seqdata_wid;
@@ -144,7 +141,7 @@ class seqevent : public Gtk::DrawingArea
     void snap_x( int *a_x );
 
     void x_to_w( int a_x1, int a_x2,
-		 int *a_x, int *a_w  );
+                 int *a_x, int *a_w  );
 
     void drop_event( long a_tick );
     void draw_events_on ( Glib::RefPtr<Gdk::Drawable> a_draw );
@@ -156,7 +153,7 @@ class seqevent : public Gtk::DrawingArea
 
     void force_draw();
 
- public:
+public:
 
     seqevent( sequence *a_seq,
               int a_zoom,
@@ -179,9 +176,5 @@ class seqevent : public Gtk::DrawingArea
     void update_pixmap();
 
     int idle_redraw();
-
-
-
-
 };
 

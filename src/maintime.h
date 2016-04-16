@@ -31,7 +31,7 @@ const int c_pill_width = 8;
 class maintime: public Gtk::DrawingArea
 {
 
- private:
+private:
 
     Glib::RefPtr<Gdk::GC>       m_gc;
     Glib::RefPtr<Gdk::Window>   m_window;
@@ -42,9 +42,8 @@ class maintime: public Gtk::DrawingArea
 
     long m_tick;
 
- public:
+public:
 
     int idle_progress( long a_ticks );
     maintime(  );
-
 };

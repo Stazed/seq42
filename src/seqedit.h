@@ -40,12 +40,11 @@
 
 using namespace Gtk;
 
-
 /* has a seqroll and paino roll */
 class seqedit : public Gtk::Window
 {
 
- private:
+private:
 
     static const int c_default_zoom = 2;
     static const int c_min_zoom = 1;
@@ -222,7 +221,7 @@ class seqedit : public Gtk::Window
     void redo_callback();
 
     void set_data_type( unsigned char a_status,
-			unsigned char a_control = 0 );
+                        unsigned char a_control = 0 );
 
     void fill_top_bar();
     void create_menus();
@@ -252,15 +251,14 @@ class seqedit : public Gtk::Window
 
     void trk_edit();
 
- public:
+public:
 
     seqedit(sequence *a_seq,
-	    perform *a_perf);
+            perform *a_perf);
 
     ~seqedit();
 
     bool on_delete_event(GdkEventAny *a_event);
     bool on_scroll_event(GdkEventScroll* a_ev);
     bool on_key_press_event(GdkEventKey* a_ev);
-
 };

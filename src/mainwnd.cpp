@@ -90,25 +90,25 @@ mainwnd::mainwnd(perform *a_p):
 
     /* file menu items */
     m_menu_file->items().push_back(MenuElem("_New",
-                Gtk::AccelKey("<control>N"),
-                mem_fun(*this, &mainwnd::file_new)));
+                                            Gtk::AccelKey("<control>N"),
+                                            mem_fun(*this, &mainwnd::file_new)));
     m_menu_file->items().push_back(MenuElem("_Open...",
-                Gtk::AccelKey("<control>O"),
-                mem_fun(*this, &mainwnd::file_open)));
+                                            Gtk::AccelKey("<control>O"),
+                                            mem_fun(*this, &mainwnd::file_open)));
     m_menu_file->items().push_back(MenuElem("_Save",
-                Gtk::AccelKey("<control>S"),
-                mem_fun(*this, &mainwnd::file_save)));
+                                            Gtk::AccelKey("<control>S"),
+                                            mem_fun(*this, &mainwnd::file_save)));
     m_menu_file->items().push_back(MenuElem("Save _as...",
-                sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 0)));
+                                            sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 0)));
     m_menu_file->items().push_back(SeparatorElem());
     m_menu_file->items().push_back(MenuElem("_Import midi...",
-                mem_fun(*this, &mainwnd::file_import_dialog)));
+                                            mem_fun(*this, &mainwnd::file_import_dialog)));
     m_menu_file->items().push_back(MenuElem("O_ptions...",
-                mem_fun(*this,&mainwnd::options_dialog)));
+                                            mem_fun(*this,&mainwnd::options_dialog)));
     m_menu_file->items().push_back(SeparatorElem());
     m_menu_file->items().push_back(MenuElem("E_xit",
-                Gtk::AccelKey("<control>Q"),
-                mem_fun(*this, &mainwnd::file_exit)));
+                                            Gtk::AccelKey("<control>Q"),
+                                            mem_fun(*this, &mainwnd::file_exit)));
 
 
     /* edit menu items */
@@ -116,36 +116,33 @@ mainwnd::mainwnd(perform *a_p):
 //                mem_fun(*this, &mainwnd::open_seqlist)));
 
     m_menu_edit->items().push_back(MenuElem("_Mute all tracks",
-                sigc::bind(mem_fun(*this, &mainwnd::set_song_mute), MUTE_ON)));
+                                            sigc::bind(mem_fun(*this, &mainwnd::set_song_mute), MUTE_ON)));
 
     m_menu_edit->items().push_back(MenuElem("_Unmute all tracks",
-                sigc::bind(mem_fun(*this, &mainwnd::set_song_mute), MUTE_OFF)));
+                                            sigc::bind(mem_fun(*this, &mainwnd::set_song_mute), MUTE_OFF)));
 
     m_menu_edit->items().push_back(MenuElem("_Toggle mute for all tracks",
-                sigc::bind(mem_fun(*this, &mainwnd::set_song_mute), MUTE_TOGGLE)));
+                                            sigc::bind(mem_fun(*this, &mainwnd::set_song_mute), MUTE_TOGGLE)));
 
     m_menu_edit->items().push_back(SeparatorElem());
 
     m_menu_edit->items().push_back(MenuElem("_Apply song transpose",
-                mem_fun(*this, &mainwnd::apply_song_transpose)));
+                                            mem_fun(*this, &mainwnd::apply_song_transpose)));
 
     m_menu_edit->items().push_back(MenuElem("_Increase grid size",
-                mem_fun(*this, &mainwnd::grow)));
+                                            mem_fun(*this, &mainwnd::grow)));
 
     m_menu_edit->items().push_back(SeparatorElem());
 
     m_menu_edit->items().push_back(MenuElem("Midi e_xport (Seq 24)",
-            sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 1)));
+                                            sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 1)));
 
     m_menu_edit->items().push_back(MenuElem("Midi export _song",
-           sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 2)));
+                                            sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 2)));
 
     /* help menu items */
     m_menu_help->items().push_back(MenuElem("_About...",
-                mem_fun(*this, &mainwnd::about_dialog)));
-
-
-
+                                            mem_fun(*this, &mainwnd::about_dialog)));
 
     /* top line items */
     HBox *hbox1 = manage( new HBox( false, 2 ) );
@@ -155,7 +152,6 @@ mainwnd::mainwnd(perform *a_p):
     m_button_loop->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( loop_xpm ))));
     m_button_loop->signal_toggled().connect(  mem_fun( *this, &mainwnd::set_looped ));
     add_tooltip( m_button_loop, "Play looped between L and R." );
-
 
     m_button_stop = manage( new Button() );
     m_button_stop->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( stop_xpm ))));
@@ -170,7 +166,8 @@ mainwnd::mainwnd(perform *a_p):
     m_button_mode = manage( new ToggleButton( "song mode" ) );
     m_button_mode->signal_toggled().connect(  mem_fun( *this, &mainwnd::set_song_mode ));
     add_tooltip( m_button_mode, "Toggle song mode (or live/sequence mode)." );
-    if(global_song_start_mode) {
+    if(global_song_start_mode)
+    {
         m_button_mode->set_active( true );
     }
 
@@ -179,7 +176,8 @@ mainwnd::mainwnd(perform *a_p):
     m_button_jack->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( jack_xpm ))));
     m_button_jack->signal_toggled().connect(  mem_fun( *this, &mainwnd::set_jack_mode ));
     add_tooltip( m_button_jack, "Toggle Jack sync connection" );
-    if(global_with_jack_transport) {
+    if(global_with_jack_transport)
+    {
         m_button_jack->set_active( true );
     }
 #endif
@@ -195,16 +193,15 @@ mainwnd::mainwnd(perform *a_p):
     add_tooltip( m_button_follow, "Follow transport" );
     m_button_follow->set_active(true);
 
-    hbox1->pack_start( *m_button_stop , false, false );
-    hbox1->pack_start( *m_button_play , false, false );
-    hbox1->pack_start( *m_button_loop , false, false );
-    hbox1->pack_start( *m_button_mode , false, false );
+    hbox1->pack_start( *m_button_stop, false, false );
+    hbox1->pack_start( *m_button_play, false, false );
+    hbox1->pack_start( *m_button_loop, false, false );
+    hbox1->pack_start( *m_button_mode, false, false );
 #ifdef JACK_SUPPORT
     hbox1->pack_start(*m_button_jack, false, false );
 #endif
-    hbox1->pack_start( *m_button_seq , false, false );
+    hbox1->pack_start( *m_button_seq, false, false );
     hbox1->pack_start( *m_button_follow, false, false );
-
 
     // adjust placement...
     VBox *vbox_b = manage( new VBox() );
@@ -216,7 +213,6 @@ mainwnd::mainwnd(perform *a_p):
     /* timeline */
     hbox2->pack_start( *m_main_time, false, false );
 
-
     /* perfedit widgets */
     m_vadjust = manage( new Adjustment(0,0,1,1,1,1 ));
     m_hadjust = manage( new Adjustment(0,0,1,1,1,1 ));
@@ -227,9 +223,9 @@ mainwnd::mainwnd(perform *a_p):
     m_perfnames = manage( new perfnames( m_mainperf, m_vadjust ));
 
     m_perfroll = manage( new perfroll( m_mainperf,
-                       this,
-                       m_hadjust,
-                       m_vadjust ));
+                                       this,
+                                       m_hadjust,
+                                       m_vadjust ));
     m_perftime = manage( new perftime( m_mainperf, this, m_hadjust ));
 
     /* init table, viewports and scroll bars */
@@ -242,16 +238,14 @@ mainwnd::mainwnd(perform *a_p):
     m_hlbox->set_border_width( 2 );
 
     /* fill table */
-
     m_table->attach( *m_hlbox,  0, 3, 0, 1,  Gtk::FILL, Gtk::SHRINK, 2, 0 ); // shrink was 0
-
 
     m_table->attach( *m_perfnames,    0, 1, 2, 3, Gtk::SHRINK, Gtk::FILL );
 
     m_table->attach( *m_perftime, 1, 2, 1, 2, Gtk::FILL, Gtk::SHRINK );
     m_table->attach( *m_perfroll, 1, 2, 2, 3,
-             Gtk::FILL | Gtk::SHRINK,
-             Gtk::FILL | Gtk::SHRINK );
+                     Gtk::FILL | Gtk::SHRINK,
+                     Gtk::FILL | Gtk::SHRINK );
 
     m_table->attach( *m_vscroll, 2, 3, 2, 3, Gtk::SHRINK, Gtk::FILL | Gtk::EXPAND  );
 
@@ -260,16 +254,19 @@ mainwnd::mainwnd(perform *a_p):
 
     m_menu_xpose =   manage( new Menu());
     char num[11];
-    for ( int i=-12; i<=12; ++i) {
-
-        if (i){
+    for ( int i=-12; i<=12; ++i)
+    {
+        if (i)
+        {
             snprintf(num, sizeof(num), "%+d [%s]", i, c_interval_text[abs(i)]);
-        } else {
+        }
+        else
+        {
             snprintf(num, sizeof(num), "0 [normal]");
         }
         m_menu_xpose->items().push_front( MenuElem( num,
-                    sigc::bind(mem_fun(*this,&mainwnd::xpose_button_callback),
-                        i )));
+                                          sigc::bind(mem_fun(*this,&mainwnd::xpose_button_callback),
+                                                  i )));
     }
 
     m_button_xpose = manage( new Button());
@@ -279,7 +276,6 @@ mainwnd::mainwnd(perform *a_p):
     m_entry_xpose = manage( new Entry());
     m_entry_xpose->set_size_request( 40, -1 );
     m_entry_xpose->set_editable( false );
-
 
     m_menu_snap =   manage( new Menu());
     m_menu_snap->items().push_back(MenuElem("1/1",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 1  )));
@@ -306,7 +302,6 @@ mainwnd::mainwnd(perform *a_p):
     m_menu_snap->items().push_back(MenuElem("1/14",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 14  )));
     m_menu_snap->items().push_back(MenuElem("1/15",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 15  )));
 
-
     /* snap */
     m_button_snap = manage( new Button());
     m_button_snap->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( snap_xpm ))));
@@ -328,13 +323,13 @@ mainwnd::mainwnd(perform *a_p):
 
     char b[20];
 
-    for( int i=0; i<16; i++ ){
-
+    for( int i=0; i<16; i++ )
+    {
         snprintf( b, sizeof(b), "%d", i+1 );
 
         /* length */
         m_menu_bp_measure->items().push_back(MenuElem(b,
-                           sigc::bind(mem_fun(*this,&mainwnd::bp_measure_button_callback),i+1 )));
+                                             sigc::bind(mem_fun(*this,&mainwnd::bp_measure_button_callback),i+1 )));
     }
 
     /* bpm spin button */
@@ -342,7 +337,7 @@ mainwnd::mainwnd(perform *a_p):
     m_spinbutton_bpm = manage( new SpinButton( *m_adjust_bpm ));
     m_spinbutton_bpm->set_editable( false );
     m_adjust_bpm->signal_value_changed().connect(
-            mem_fun(*this, &mainwnd::adj_callback_bpm ));
+        mem_fun(*this, &mainwnd::adj_callback_bpm ));
     add_tooltip( m_spinbutton_bpm, "Adjust beats per minute (BPM) value" );
 
     /* beats per measure */
@@ -353,7 +348,6 @@ mainwnd::mainwnd(perform *a_p):
     m_entry_bp_measure = manage( new Entry());
     m_entry_bp_measure->set_width_chars(2);
     m_entry_bp_measure->set_editable( false );
-
 
     /* beat width */
     m_button_bw = manage( new Button());
@@ -369,16 +363,15 @@ mainwnd::mainwnd(perform *a_p):
     m_spinbutton_swing_amount8 = manage( new SpinButton( *m_adjust_swing_amount8 ));
     m_spinbutton_swing_amount8->set_editable( false );
     m_adjust_swing_amount8->signal_value_changed().connect(
-            mem_fun(*this, &mainwnd::adj_callback_swing_amount8 ));
+        mem_fun(*this, &mainwnd::adj_callback_swing_amount8 ));
     add_tooltip( m_spinbutton_swing_amount8, "Adjust 1/8 swing amount" );
 
     m_adjust_swing_amount16 = manage(new Adjustment(m_mainperf->get_swing_amount16(), 0, c_max_swing_amount, 1));
     m_spinbutton_swing_amount16 = manage( new SpinButton( *m_adjust_swing_amount16 ));
     m_spinbutton_swing_amount16->set_editable( false );
     m_adjust_swing_amount16->signal_value_changed().connect(
-            mem_fun(*this, &mainwnd::adj_callback_swing_amount16 ));
+        mem_fun(*this, &mainwnd::adj_callback_swing_amount16 ));
     add_tooltip( m_spinbutton_swing_amount16, "Adjust 1/16 swing amount" );
-
 
     /* undo */
     m_button_undo = manage( new Button());
@@ -391,7 +384,6 @@ mainwnd::mainwnd(perform *a_p):
     m_button_redo->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( redo_xpm  ))));
     m_button_redo->signal_clicked().connect(  mem_fun( *this, &mainwnd::redo_type));
     add_tooltip( m_button_redo, "Redo." );
-
 
     /* expand */
     m_button_expand = manage( new Button());
@@ -411,33 +403,30 @@ mainwnd::mainwnd(perform *a_p):
     m_button_copy->signal_clicked().connect(  mem_fun( *this, &mainwnd::copy ));
     add_tooltip( m_button_copy, "Expand and copy between L and R markers." );
 
-
-    m_hlbox->pack_end( *m_button_copy , false, false );
-    m_hlbox->pack_end( *m_button_expand , false, false );
-    m_hlbox->pack_end( *m_button_collapse , false, false );
-    m_hlbox->pack_end( *m_button_redo , false, false );
-    m_hlbox->pack_end( *m_button_undo , false, false );
-
+    m_hlbox->pack_end( *m_button_copy, false, false );
+    m_hlbox->pack_end( *m_button_expand, false, false );
+    m_hlbox->pack_end( *m_button_collapse, false, false );
+    m_hlbox->pack_end( *m_button_redo, false, false );
+    m_hlbox->pack_end( *m_button_undo, false, false );
 
     m_hlbox->pack_start(*m_spinbutton_bpm, false, false );
     m_hlbox->pack_start(*(manage( new Label( "bpm" ))), false, false, 4);
 
-    m_hlbox->pack_start( *m_button_bp_measure , false, false );
-    m_hlbox->pack_start( *m_entry_bp_measure , false, false );
+    m_hlbox->pack_start( *m_button_bp_measure, false, false );
+    m_hlbox->pack_start( *m_entry_bp_measure, false, false );
 
     m_hlbox->pack_start( *(manage(new Label( "/" ))), false, false, 4);
 
-
-    m_hlbox->pack_start( *m_button_bw , false, false );
-    m_hlbox->pack_start( *m_entry_bw , false, false );
+    m_hlbox->pack_start( *m_button_bw, false, false );
+    m_hlbox->pack_start( *m_entry_bw, false, false );
 
     m_hlbox->pack_start( *(manage(new Label( "x" ))), false, false, 4);
 
-    m_hlbox->pack_start( *m_button_snap , false, false );
-    m_hlbox->pack_start( *m_entry_snap , false, false );
+    m_hlbox->pack_start( *m_button_snap, false, false );
+    m_hlbox->pack_start( *m_entry_snap, false, false );
 
-    m_hlbox->pack_start( *m_button_xpose , false, false );
-    m_hlbox->pack_start( *m_entry_xpose , false, false );
+    m_hlbox->pack_start( *m_button_xpose, false, false );
+    m_hlbox->pack_start( *m_entry_xpose, false, false );
 
     m_hlbox->pack_start( *(manage(new Label( "swing" ))), false, false, 4);
     m_hlbox->pack_start(*m_spinbutton_swing_amount8, false, false );
@@ -475,14 +464,12 @@ mainwnd::mainwnd(perform *a_p):
     add_events( Gdk::KEY_PRESS_MASK | Gdk::KEY_RELEASE_MASK );
 
     m_timeout_connect = Glib::signal_timeout().connect(
-            mem_fun(*this, &mainwnd::timer_callback), 25);
-
+                            mem_fun(*this, &mainwnd::timer_callback), 25);
 
     m_sigpipe[0] = -1;
     m_sigpipe[1] = -1;
     install_signal_handlers();
 }
-
 
 mainwnd::~mainwnd()
 {
@@ -494,7 +481,6 @@ mainwnd::~mainwnd()
     if (m_sigpipe[1] != -1)
         close(m_sigpipe[1]);
 }
-
 
 // This is the GTK timer callback, used to draw our current time and bpm
 // ondd_events( the main window
@@ -509,15 +495,18 @@ mainwnd::timer_callback(  )
 
     m_main_time->idle_progress( ticks );
 
-    if ( m_adjust_bpm->get_value() != m_mainperf->get_bpm()){
+    if ( m_adjust_bpm->get_value() != m_mainperf->get_bpm())
+    {
         m_adjust_bpm->set_value( m_mainperf->get_bpm());
     }
 
-    if ( m_bp_measure != m_mainperf->get_bp_measure()){
+    if ( m_bp_measure != m_mainperf->get_bp_measure())
+    {
         set_bp_measure( m_mainperf->get_bp_measure());
     }
 
-    if ( m_bw != m_mainperf->get_bw()){
+    if ( m_bw != m_mainperf->get_bw())
+    {
         set_bw( m_mainperf->get_bw());
     }
 
@@ -543,10 +532,12 @@ mainwnd::timer_callback(  )
     if (m_button_follow->get_active() != m_mainperf->get_follow_transport())
         m_button_follow->set_active(m_mainperf->get_follow_transport());
 
-    if ( m_adjust_swing_amount8->get_value() != m_mainperf->get_swing_amount8()){
+    if ( m_adjust_swing_amount8->get_value() != m_mainperf->get_swing_amount8())
+    {
         m_adjust_swing_amount8->set_value( m_mainperf->get_swing_amount8());
     }
-    if ( m_adjust_swing_amount16->get_value() != m_mainperf->get_swing_amount16()){
+    if ( m_adjust_swing_amount16->get_value() != m_mainperf->get_swing_amount16())
+    {
         m_adjust_swing_amount16->set_value( m_mainperf->get_swing_amount16());
     }
 
@@ -676,7 +667,6 @@ mainwnd::redo_perf()
     m_perfroll->queue_draw();
 }
 
-
 void
 mainwnd::start_playing()
 {
@@ -777,7 +767,7 @@ mainwnd::set_follow_transport()
 void
 mainwnd::toggle_follow_transport()
 {
-   // Note that this will trigger the button signal callback.
+    // Note that this will trigger the button signal callback.
     m_button_follow->set_active( ! m_button_follow->get_active() );
 }
 
@@ -786,6 +776,7 @@ mainwnd::popup_menu(Menu *a_menu)
 {
     a_menu->popup(0,0);
 }
+
 void
 mainwnd::set_guides()
 {
@@ -795,7 +786,6 @@ mainwnd::set_guides()
     m_perfroll->set_guides( snap_ticks, measure_ticks, beat_ticks );
     m_perftime->set_guides( snap_ticks, measure_ticks );
 }
-
 
 void
 mainwnd::set_snap( int a_snap  )
@@ -807,7 +797,6 @@ mainwnd::set_snap( int a_snap  )
     m_snap = a_snap;
     set_guides();
 }
-
 
 void mainwnd::bp_measure_button_callback(int a_beats_per_measure)
 {
@@ -928,7 +917,6 @@ mainwnd::options_dialog()
     m_options->show_all();
 }
 
-
 /* callback function */
 void mainwnd::file_new()
 {
@@ -959,7 +947,7 @@ void mainwnd::file_save_as(int type)
     //         type 2 = .mid .midi etc for midi song export
 
     Gtk::FileChooserDialog dialog("Save file as",
-                      Gtk::FILE_CHOOSER_ACTION_SAVE);
+                                  Gtk::FILE_CHOOSER_ACTION_SAVE);
     dialog.set_transient_for(*this);
 
     dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
@@ -996,58 +984,63 @@ void mainwnd::file_save_as(int type)
 
     int result = dialog.run();
 
-    switch (result) {
-        case Gtk::RESPONSE_OK:
+    switch (result)
+    {
+    case Gtk::RESPONSE_OK:
+    {
+        std::string fname = dialog.get_filename();
+        Gtk::FileFilter* current_filter = dialog.get_filter();
+
+        if ((current_filter != NULL) &&
+                (current_filter->get_name() == "Seq42 files"))
         {
-            std::string fname = dialog.get_filename();
-            Gtk::FileFilter* current_filter = dialog.get_filter();
 
-            if ((current_filter != NULL) &&
-                    (current_filter->get_name() == "Seq42 files")) {
-
-                // check for Seq42 file extension; if missing, add .s42
-                std::string suffix = fname.substr(
-                        fname.find_last_of(".") + 1, std::string::npos);
-                toLower(suffix);
-                if (suffix != "s42") fname = fname + ".s42";
-            }
-
-            if ((current_filter != NULL) &&
-                    (current_filter->get_name() == "MIDI files")) {
-
-                // check for MIDI file extension; if missing, add .midi
-                std::string suffix = fname.substr(
-                        fname.find_last_of(".") + 1, std::string::npos);
-                toLower(suffix);
-                if ((suffix != "midi") && (suffix != "mid"))
-                    fname = fname + ".midi";
-            }
-
-            if (Glib::file_test(fname, Glib::FILE_TEST_EXISTS)) {
-                Gtk::MessageDialog warning(*this,
-                        "File already exists!\n"
-                        "Do you want to overwrite it?",
-                        false,
-                        Gtk::MESSAGE_WARNING, Gtk::BUTTONS_YES_NO, true);
-                auto result = warning.run();
-
-                if (result == Gtk::RESPONSE_NO)
-                    return;
-            }
-
-            if(type == 0)
-            {
-                global_filename = fname;
-                update_window_title();
-                save_file();
-            }else
-                export_midi(fname, type);
-
-            break;
+            // check for Seq42 file extension; if missing, add .s42
+            std::string suffix = fname.substr(
+                                     fname.find_last_of(".") + 1, std::string::npos);
+            toLower(suffix);
+            if (suffix != "s42") fname = fname + ".s42";
         }
 
-        default:
-            break;
+        if ((current_filter != NULL) &&
+                (current_filter->get_name() == "MIDI files"))
+        {
+
+            // check for MIDI file extension; if missing, add .midi
+            std::string suffix = fname.substr(
+                                     fname.find_last_of(".") + 1, std::string::npos);
+            toLower(suffix);
+            if ((suffix != "midi") && (suffix != "mid"))
+                fname = fname + ".midi";
+        }
+
+        if (Glib::file_test(fname, Glib::FILE_TEST_EXISTS))
+        {
+            Gtk::MessageDialog warning(*this,
+                                       "File already exists!\n"
+                                       "Do you want to overwrite it?",
+                                       false,
+                                       Gtk::MESSAGE_WARNING, Gtk::BUTTONS_YES_NO, true);
+            auto result = warning.run();
+
+            if (result == Gtk::RESPONSE_NO)
+                return;
+        }
+
+        if(type == 0)
+        {
+            global_filename = fname;
+            update_window_title();
+            save_file();
+        }
+        else
+            export_midi(fname, type);
+
+        break;
+    }
+
+    default:
+        break;
     }
 }
 
@@ -1062,10 +1055,11 @@ void mainwnd::export_midi(const Glib::ustring& fn, int type)
     else
         result = f.write_song(m_mainperf);
 
-    if (!result) {
+    if (!result)
+    {
         Gtk::MessageDialog errdialog(*this,
-                "Error writing file.", false,
-                Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
+                                     "Error writing file.", false,
+                                     Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
         errdialog.run();
     }
 
@@ -1086,10 +1080,11 @@ void mainwnd::open_file(const Glib::ustring& fn)
 
     global_is_modified = !result;
 
-    if (!result) {
+    if (!result)
+    {
         Gtk::MessageDialog errdialog(*this,
-                "Error reading file: " + fn, false,
-                Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
+                                     "Error reading file: " + fn, false,
+                                     Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
         errdialog.run();
         return;
     }
@@ -1104,7 +1099,6 @@ void mainwnd::open_file(const Glib::ustring& fn)
     m_adjust_swing_amount16->set_value( m_mainperf->get_swing_amount16());
 }
 
-
 /*callback function*/
 void mainwnd::file_open()
 {
@@ -1112,11 +1106,10 @@ void mainwnd::file_open()
         choose_file();
 }
 
-
 void mainwnd::choose_file()
 {
     Gtk::FileChooserDialog dialog("Open Seq42 file",
-                      Gtk::FILE_CHOOSER_ACTION_OPEN);
+                                  Gtk::FILE_CHOOSER_ACTION_OPEN);
     dialog.set_transient_for(*this);
 
     dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
@@ -1136,21 +1129,22 @@ void mainwnd::choose_file()
 
     int result = dialog.run();
 
-    switch(result) {
-        case(Gtk::RESPONSE_OK):
-            open_file(dialog.get_filename());
+    switch(result)
+    {
+    case(Gtk::RESPONSE_OK):
+        open_file(dialog.get_filename());
 
-        default:
-            break;
+    default:
+        break;
     }
 }
-
 
 bool mainwnd::save_file()
 {
     bool result = false;
 
-    if (global_filename == "") {
+    if (global_filename == "")
+    {
         file_save_as(0);
         return true;
     }
@@ -1160,16 +1154,16 @@ bool mainwnd::save_file()
 
     result = m_mainperf->save(global_filename);
 
-    if (!result) {
+    if (!result)
+    {
         Gtk::MessageDialog errdialog(*this,
-                "Error writing file.", false,
-                Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
+                                     "Error writing file.", false,
+                                     Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
         errdialog.run();
     }
     global_is_modified = !result;
     return result;
 }
-
 
 int mainwnd::query_save_changes()
 {
@@ -1179,11 +1173,11 @@ int mainwnd::query_save_changes()
         query_str = "Unnamed file was changed.\nSave changes?";
     else
         query_str = "File '" + global_filename + "' was changed.\n"
-                "Save changes?";
+                    "Save changes?";
 
     Gtk::MessageDialog dialog(*this, query_str, false,
-            Gtk::MESSAGE_QUESTION,
-            Gtk::BUTTONS_NONE, true);
+                              Gtk::MESSAGE_QUESTION,
+                              Gtk::BUTTONS_NONE, true);
 
     dialog.add_button(Gtk::Stock::YES, Gtk::RESPONSE_YES);
     dialog.add_button(Gtk::Stock::NO, Gtk::RESPONSE_NO);
@@ -1192,24 +1186,25 @@ int mainwnd::query_save_changes()
     return dialog.run();
 }
 
-
 bool mainwnd::is_save()
 {
     bool result = false;
 
-    if (global_is_modified) {
+    if (global_is_modified)
+    {
         int choice = query_save_changes();
-        switch (choice) {
-            case Gtk::RESPONSE_YES:
-                if (save_file())
-                    result = true;
-                break;
-            case Gtk::RESPONSE_NO:
+        switch (choice)
+        {
+        case Gtk::RESPONSE_YES:
+            if (save_file())
                 result = true;
-                break;
-            case Gtk::RESPONSE_CANCEL:
-            default:
-                break;
+            break;
+        case Gtk::RESPONSE_NO:
+            result = true;
+            break;
+        case Gtk::RESPONSE_CANCEL:
+        default:
+            break;
         }
     }
     else
@@ -1218,12 +1213,13 @@ bool mainwnd::is_save()
     return result;
 }
 
-
 /* convert string to lower case letters */
 void
-mainwnd::toLower(basic_string<char>& s) {
+mainwnd::toLower(basic_string<char>& s)
+{
     for (basic_string<char>::iterator p = s.begin();
-            p != s.end(); p++) {
+            p != s.end(); p++)
+    {
         *p = tolower(*p);
     }
 }
@@ -1232,7 +1228,7 @@ void
 mainwnd::file_import_dialog()
 {
     Gtk::FileChooserDialog dialog("Import MIDI file",
-            Gtk::FILE_CHOOSER_ACTION_OPEN);
+                                  Gtk::FILE_CHOOSER_ACTION_OPEN);
     dialog.set_transient_for(*this);
 
     Gtk::FileFilter filter_midi;
@@ -1263,45 +1259,46 @@ mainwnd::file_import_dialog()
     //Handle the response:
     switch(result)
     {
-       case(Gtk::RESPONSE_OK):
-       {
-           try{
-               midifile f( dialog.get_filename() );
-               f.parse( m_mainperf );
-               last_midi_dir = dialog.get_filename().substr(0, dialog.get_filename().rfind("/") + 1);
-           }
-           catch(...){
-               Gtk::MessageDialog errdialog(*this,
-                       "Error reading file.", false,
-                       Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
-                errdialog.run();
-           }
-           global_is_modified = true;
+    case(Gtk::RESPONSE_OK):
+    {
+        try
+        {
+            midifile f( dialog.get_filename() );
+            f.parse( m_mainperf );
+            last_midi_dir = dialog.get_filename().substr(0, dialog.get_filename().rfind("/") + 1);
+        }
+        catch(...)
+        {
+            Gtk::MessageDialog errdialog(*this,
+                                         "Error reading file.", false,
+                                         Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
+            errdialog.run();
+        }
+        global_is_modified = true;
 
-           m_adjust_bpm->set_value( m_mainperf->get_bpm() );
+        m_adjust_bpm->set_value( m_mainperf->get_bpm() );
 
-           break;
-       }
+        break;
+    }
 
-       case(Gtk::RESPONSE_CANCEL):
-           break;
+    case(Gtk::RESPONSE_CANCEL):
+        break;
 
-       default:
-           break;
-
-   }
+    default:
+        break;
+    }
 }
 
 /*callback function*/
 void mainwnd::file_exit()
 {
-    if (is_save()) {
+    if (is_save())
+    {
         if (global_is_running)
             stop_playing();
         hide();
     }
 }
-
 
 bool
 mainwnd::on_delete_event(GdkEventAny *a_e)
@@ -1313,7 +1310,6 @@ mainwnd::on_delete_event(GdkEventAny *a_e)
     return !result;
 }
 
-
 void
 mainwnd::about_dialog()
 {
@@ -1324,10 +1320,10 @@ mainwnd::about_dialog()
     dialog.set_comments("Interactive MIDI Sequencer\n");
 
     dialog.set_copyright(
-            "(C) 2015 -      Stazed\n"
-            "(C) 2010 - 2013 Sam Brauer\n"
-            "(C) 2008 - 2009 Seq24team\n"
-            "(C) 2002 - 2006 Rob C. Buse");
+        "(C) 2015 -      Stazed\n"
+        "(C) 2010 - 2013 Sam Brauer\n"
+        "(C) 2008 - 2009 Seq24team\n"
+        "(C) 2002 - 2006 Rob C. Buse");
     dialog.set_website("https://github.com/Stazed/seq42");
 
     std::list<Glib::ustring> list_authors;
@@ -1350,7 +1346,6 @@ mainwnd::about_dialog()
     dialog.show_all_children();
     dialog.run();
 }
-
 
 void
 mainwnd::adj_callback_bpm( )
@@ -1376,7 +1371,6 @@ mainwnd::adj_callback_swing_amount16( )
     global_is_modified = true;
 }
 
-
 bool
 mainwnd::on_key_press_event(GdkEventKey* a_ev)
 {
@@ -1397,46 +1391,54 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
         }
     }
 
-    if ( a_ev->type == GDK_KEY_PRESS ){
-
-        if ( global_print_keys ){
+    if ( a_ev->type == GDK_KEY_PRESS )
+    {
+        if ( global_print_keys )
+        {
             printf( "key_press[%d]\n", a_ev->keyval );
             fflush( stdout );
         }
 
-        if ( a_ev->keyval == m_mainperf->m_key_bpm_dn ){
+        if ( a_ev->keyval == m_mainperf->m_key_bpm_dn )
+        {
             m_mainperf->set_bpm( m_mainperf->get_bpm() - 1 );
             m_adjust_bpm->set_value(  m_mainperf->get_bpm() );
             return true;
         }
 
-        if ( a_ev->keyval ==  m_mainperf->m_key_bpm_up ){
+        if ( a_ev->keyval ==  m_mainperf->m_key_bpm_up )
+        {
             m_mainperf->set_bpm( m_mainperf->get_bpm() + 1 );
             m_adjust_bpm->set_value(  m_mainperf->get_bpm() );
             return true;
         }
 
-        if ( a_ev->keyval ==  m_mainperf->m_key_seqlist ){
+        if ( a_ev->keyval ==  m_mainperf->m_key_seqlist )
+        {
             open_seqlist();
             return true;
         }
 
-        if ( a_ev->keyval ==  m_mainperf->m_key_loop ){
+        if ( a_ev->keyval ==  m_mainperf->m_key_loop )
+        {
             toggle_looped();
             return true;
         }
 
-        if ( a_ev->keyval ==  m_mainperf->m_key_song ){
+        if ( a_ev->keyval ==  m_mainperf->m_key_song )
+        {
             toggle_song_mode();
             return true;
         }
 
-        if ( a_ev->keyval ==  m_mainperf->m_key_follow_trans ){
+        if ( a_ev->keyval ==  m_mainperf->m_key_follow_trans )
+        {
             toggle_follow_transport();
             return true;
         }
 #ifdef JACK_SUPPORT
-        if ( a_ev->keyval ==  m_mainperf->m_key_jack ){
+        if ( a_ev->keyval ==  m_mainperf->m_key_jack )
+        {
             toggle_jack();
             return true;
         }
@@ -1484,7 +1486,6 @@ mainwnd::update_window_title()
     set_title ( title.c_str());
 }
 
-
 int mainwnd::m_sigpipe[2];
 
 /* Handler for system signals (SIGUSR1, SIGINT...)
@@ -1499,7 +1500,6 @@ mainwnd::handle_signal(int sig)
     }
 }
 
-
 bool
 mainwnd::install_signal_handlers()
 {
@@ -1512,7 +1512,7 @@ mainwnd::install_signal_handlers()
 
     /*install notifier to handle pipe messages*/
     Glib::signal_io().connect(sigc::mem_fun(*this, &mainwnd::signal_action),
-            m_sigpipe[0], Glib::IO_IN);
+                              m_sigpipe[0], Glib::IO_IN);
 
     /*install signal handlers*/
     struct sigaction action;
@@ -1534,7 +1534,6 @@ mainwnd::install_signal_handlers()
     return true;
 }
 
-
 bool
 mainwnd::signal_action(Glib::IOCondition condition)
 {
@@ -1555,17 +1554,15 @@ mainwnd::signal_action(Glib::IOCondition condition)
 
     switch (message)
     {
-        case SIGUSR1:
-            save_file();
-            break;
-
-        case SIGINT:
-            file_exit();
-            break;
-
-        default:
-            printf("Unexpected signal received: %d\n", message);
-            break;
+    case SIGUSR1:
+        save_file();
+        break;
+    case SIGINT:
+        file_exit();
+        break;
+    default:
+        printf("Unexpected signal received: %d\n", message);
+        break;
     }
     return true;
 }

@@ -20,8 +20,8 @@
 
 #pragma once
 
-string c_controller_names[128] = {
-
+string c_controller_names[128] =
+{
     "0 Bank Select",
     "1 Modulation Wheel ",
     "2 Breath controller ",
@@ -150,5 +150,4 @@ string c_controller_names[128] = {
     "125 Omni Mode On",
     "126 Mono Operation",
     "127 Poly Operation"
-
 };

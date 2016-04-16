@@ -82,7 +82,6 @@ const int c_mainwid_spacing = 2;
 
 const int c_control_height = 0;
 
-
 /* data entry area (velocity, aftertouch, etc ) */
 const int c_dataarea_y = 128;
 /* width of 'bar' */
@@ -95,7 +94,6 @@ const int c_num_keys = 128;
 const int c_keyarea_y = c_key_y * c_num_keys + 1;
 const int c_keyarea_x = 36;
 const int c_keyoffset_x = c_keyarea_x - c_key_x;
-
 
 /* paino roll */
 const int c_rollarea_y = c_keyarea_y;
@@ -115,7 +113,6 @@ const std::string c_dummy( "Untitled" );
 /* maximum size of sequence, default size */
 const int c_maxbeats     = 0xFFFF;   /* max number of beats in a sequence */
 
-
 /* midifile tags */
 const unsigned long c_midibus =    0x24240001;
 const unsigned long c_midich =     0x24240002;
@@ -131,11 +128,9 @@ const unsigned long c_bp_measure = 0x24240011;
 const unsigned long c_beat_width = 0x24240012;
 const unsigned long c_transpose =  0x24240013;
 
-
 const char c_font_6_12[] = "-*-fixed-medium-r-*--12-*-*-*-*-*-*";
 const char c_font_8_13[] = "-*-fixed-medium-r-*--13-*-*-*-*-*-*";
 const char c_font_5_7[]  = "-*-fixed-medium-r-*--7-*-*-*-*-*-*";
-
 
 /* used in menu to tell setState what to do */
 const int c_adding = 0;
@@ -217,7 +212,6 @@ enum c_music_scales
     c_scale_size            // a "maximum" or "size of set" value.
 };
 
-
 const bool c_scales_policy[c_scale_size][12] =
 {
     {                                                       /* off = chromatic */
@@ -256,9 +250,6 @@ const int c_scales_transpose_up[c_scale_size][12] =
     { 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0},              /* C whole tone    */
 };
 
-
-
-
 const int c_scales_transpose_dn[c_scale_size][12] =
 {
     { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},  /* off = chromatic */
@@ -279,12 +270,10 @@ const int c_scales_symbol[c_scale_size][12] =
 
     /* minor */
     { 32,32,32,32,32,32,32,32,129,128,129,128},
-
 };
 
 // up 128
 // down 129
-
 
 const char c_scales_text[c_scale_size][32] =
 {
@@ -374,4 +363,3 @@ const char* const c_interaction_method_descs[] =
 
 extern interaction_method_e global_interactionmethod;
 extern bool global_interaction_method_change;
-

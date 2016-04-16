@@ -31,12 +31,9 @@ userfile::~userfile( )
 
 }
 
-
-
 bool
 userfile::parse( perform *a_perf )
 {
-
     /* open binary file */
     ifstream file ( m_name.c_str(), ios::in | ios::ate );
 
@@ -104,7 +101,6 @@ userfile::parse( perform *a_perf )
 
     return true;
 }
-
 
 bool
 userfile::write( perform *a_perf  )

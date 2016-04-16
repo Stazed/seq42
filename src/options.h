@@ -51,12 +51,10 @@
 
 using namespace Gtk;
 
-
-
 class options : public Gtk::Dialog
 {
 
- private:
+private:
 
 #if GTK_MINOR_VERSION < 12
     Tooltips *m_tooltips;
@@ -68,12 +66,12 @@ class options : public Gtk::Dialog
     Label* interaction_method_label;
     Label* interaction_method_desc_label;
 
-
     Table   *m_table;
 
     Notebook *m_notebook;
 
-    enum button {
+    enum button
+    {
         e_jack_transport,
         e_jack_master,
         e_jack_master_cond

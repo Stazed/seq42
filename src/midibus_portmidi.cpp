@@ -33,8 +33,8 @@ midibus::midibus( char a_id, char a_pm_num, const char *a_client_name )
     /* copy names */
     char tmp[60];
     snprintf( tmp, 59, "[%d] %s",
-	      m_id,
-	      a_client_name );
+              m_id,
+              a_client_name );
 
     m_name = tmp;
     m_pms = NULL;
@@ -51,6 +51,7 @@ midibus::poll_for_midi( )
         {
             return 0;
         }
+
         if ( err == TRUE )
         {
             return 1;
@@ -60,7 +61,6 @@ midibus::poll_for_midi( )
     }
 
     return 0;
-
 }
 
 int midibus::m_clock_mod = 16 * 4;
@@ -68,16 +68,14 @@ int midibus::m_clock_mod = 16 * 4;
 void
 midibus::lock( )
 {
-   m_mutex.lock();
+    m_mutex.lock();
 }
-
 
 void
 midibus::unlock( )
 {
     m_mutex.unlock();
 }
-
 
 bool midibus::init_out( )
 {
@@ -91,8 +89,6 @@ bool midibus::init_out( )
 
     return true;
 }
-
-
 
 bool midibus::init_in( )
 {
@@ -113,11 +109,10 @@ midibus::get_id( )
     return m_id;
 }
 
-
 void
 midibus::print()
 {
-    printf( "%s" , m_name.c_str() );
+    printf( "%s", m_name.c_str() );
 }
 
 string
@@ -133,7 +128,6 @@ midibus::~midibus()
     m_pms = NULL;
 }
 
-
 /* takes an native event, encodes to alsa event,
    puts it in the queue */
 void
@@ -145,12 +139,12 @@ midibus::play( event *a_e24, unsigned char a_channel )
     event.timestamp = 0;
 
     /* temp for midi data */
-	unsigned char buffer[3];
+    unsigned char buffer[3];
 
-	/* fill buffer and set midi channel */
-	buffer[0] = a_e24->get_status();
-	buffer[0] += (a_channel & 0x0F);
-	a_e24->get_data( &buffer[1], &buffer[2] );
+    /* fill buffer and set midi channel */
+    buffer[0] = a_e24->get_status();
+    buffer[0] += (a_channel & 0x0F);
+    a_e24->get_data( &buffer[1], &buffer[2] );
 
     event.message = Pm_Message(buffer[0], buffer[1], buffer[2]);
 
@@ -159,14 +153,12 @@ midibus::play( event *a_e24, unsigned char a_channel )
     unlock();
 }
 
-
 inline long
-min ( long a, long b ){
-
-  if ( a < b )
-    return a;
-  return b;
-
+min ( long a, long b )
+{
+    if ( a < b )
+        return a;
+    return b;
 }
 
 /* takes an native event, encodes to alsa event,
@@ -179,7 +171,6 @@ midibus::sysex( event *a_e24 )
     unlock();
 }
 
-
 // flushes our local queue events out into ALSA
 void
 midibus::flush()
@@ -187,17 +178,14 @@ midibus::flush()
 
 }
 
-
 void
 midibus::init_clock( long a_tick )
 {
-
     if ( m_clock_type == e_clock_pos && a_tick != 0)
     {
         continue_from( a_tick );
     }
-    else
-    if ( m_clock_type == e_clock_mod || a_tick == 0)
+    else if ( m_clock_type == e_clock_mod || a_tick == 0)
     {
         start();
 
@@ -213,14 +201,12 @@ midibus::init_clock( long a_tick )
         //printf ( "continue_from leftover[%ld] starting_tick[%ld]\n", leftover, starting_tick );
 
         m_lasttick = starting_tick - 1;
-
     }
 }
 
 void
 midibus::continue_from( long a_tick )
 {
-
     /* tell the device that we are going to start at a certain position */
     long pp16th = (c_ppqn / 4);
 
@@ -240,7 +226,6 @@ midibus::continue_from( long a_tick )
 
     if ( m_clock_type != e_clock_off )
     {
-
         PmEvent event;
         event.timestamp = 0;
         event.message = Pm_Message( EVENT_MIDI_CONTINUE, 0,0 );
@@ -248,27 +233,22 @@ midibus::continue_from( long a_tick )
         event.message = Pm_Message( EVENT_MIDI_SONG_POS, (beats & 0x3F80 >> 7), (beats & 0x7F) );
         Pm_Write( m_pms, &event, 1 );
     }
-
 }
-
 
 /* gets it a runnin */
 void
 midibus::start()
 {
-
     m_lasttick = -1;
 
-    if ( m_clock_type != e_clock_off ){
-
-	    PmEvent event;
+    if ( m_clock_type != e_clock_off )
+    {
+        PmEvent event;
         event.timestamp = 0;
         event.message = Pm_Message( EVENT_MIDI_START, 0,0 );
         Pm_Write( m_pms, &event, 1 );
-
     }
 }
-
 
 void
 midibus::set_clock( clock_e a_clock_type )
@@ -276,15 +256,11 @@ midibus::set_clock( clock_e a_clock_type )
     m_clock_type = a_clock_type;
 }
 
-
 clock_e
 midibus::get_clock( )
 {
     return m_clock_type;
 }
-
-
-
 
 void
 midibus::set_input( bool a_inputing )
@@ -295,90 +271,77 @@ midibus::set_input( bool a_inputing )
     }
 }
 
-
 bool
 midibus::get_input( )
 {
     return m_inputing;
 }
 
-
-
 void
 midibus::stop()
 {
-
     m_lasttick = -1;
 
     if ( m_clock_type != e_clock_off )
     {
-	    PmEvent event;
+        PmEvent event;
         event.timestamp = 0;
         event.message = Pm_Message( EVENT_MIDI_STOP, 0,0 );
         Pm_Write( m_pms, &event, 1 );
-
     }
-
 }
-
 
 // generates midi clock
 void
 midibus::clock( long a_tick )
 {
-
     lock();
 
-    if ( m_clock_type != e_clock_off ){
+    if ( m_clock_type != e_clock_off )
+    {
+        bool done = false;
 
-    	bool done = false;
+        long uptotick = a_tick;
 
-    	long uptotick = a_tick;
+        if ( m_lasttick >= uptotick )
+            done = true;
 
-    	if ( m_lasttick >= uptotick )
-    	    done = true;
+        while ( !done )
+        {
+            m_lasttick++;
 
-    	while ( !done ){
+            if ( m_lasttick >= uptotick )
+                done = true;
 
-    	    m_lasttick++;
-
-    	    if ( m_lasttick >= uptotick )
-    		done = true;
-
-    	    /* tick time? */
-    	    if ( m_lasttick % ( c_ppqn / 24 ) == 0 )
+            /* tick time? */
+            if ( m_lasttick % ( c_ppqn / 24 ) == 0 )
             {
-
-    	    PmEvent event;
-            event.timestamp = 0;
-            event.message = Pm_Message( EVENT_MIDI_CLOCK, 0,0 );
-            Pm_Write( m_pms, &event, 1 );
+                PmEvent event;
+                event.timestamp = 0;
+                event.message = Pm_Message( EVENT_MIDI_CLOCK, 0,0 );
+                Pm_Write( m_pms, &event, 1 );
 
 
             }
-    	}
+        }
     }
 
     unlock();
 }
 
-
 void
 mastermidibus::lock( )
 {
-   // printf( "mastermidibus::lock()\n" );
-   m_mutex.lock();
+    // printf( "mastermidibus::lock()\n" );
+    m_mutex.lock();
 }
-
 
 void
 mastermidibus::unlock( )
 {
-   // printf( "mastermidibus::unlock()\n" );
-   m_mutex.unlock();
+    // printf( "mastermidibus::unlock()\n" );
+    m_mutex.unlock();
 }
-
-
 
 /* gets it a runnin */
 void
@@ -388,14 +351,13 @@ mastermidibus::start()
 
 
     for ( int i=0; i < m_num_out_buses; i++ )
-	    m_buses_out[i]->start();
+        m_buses_out[i]->start();
 
-     unlock();
+    unlock();
 }
 
-
 /* gets it a runnin */
-    void
+void
 mastermidibus::continue_from( long a_tick)
 {
     lock();
@@ -428,7 +390,6 @@ mastermidibus::stop()
     unlock();
 }
 
-
 // generates midi clock
 void
 mastermidibus::clock( long a_tick )
@@ -436,7 +397,7 @@ mastermidibus::clock( long a_tick )
     lock();
 
     for ( int i=0; i < m_num_out_buses; i++ )
-	    m_buses_out[i]->clock( a_tick );
+        m_buses_out[i]->clock( a_tick );
 
     unlock();
 }
@@ -450,7 +411,6 @@ mastermidibus::set_ppqn( int a_ppqn )
 
     unlock();
 }
-
 
 void
 mastermidibus::set_bpm( int a_bpm )
@@ -469,7 +429,6 @@ mastermidibus::flush()
 
 }
 
-
 /* fills the array with our buses */
 mastermidibus::mastermidibus()
 {
@@ -480,7 +439,8 @@ mastermidibus::mastermidibus()
     m_num_out_buses = 0;
     m_num_in_buses = 0;
 
-    for( int i=0; i<c_maxBuses; ++i ){
+    for( int i=0; i<c_maxBuses; ++i )
+    {
         m_buses_in_active[i] = false;
         m_buses_out_active[i] = false;
         m_buses_in_init[i] = false;
@@ -491,13 +451,11 @@ mastermidibus::mastermidibus()
     }
 
     Pm_Initialize();
-
 }
 
 void
 mastermidibus::init( )
 {
-
     int num_devices = Pm_CountDevices( );
 
     const PmDeviceInfo* dev_info = NULL;
@@ -507,8 +465,8 @@ mastermidibus::init( )
         dev_info = Pm_GetDeviceInfo( i );
 
         printf( "[0x%x] [%s] [%s] input[%d] output[%d]\n",
-            i, dev_info->interf, dev_info->name,
-            dev_info->input, dev_info->output );
+                i, dev_info->interf, dev_info->name,
+                dev_info->input, dev_info->output );
 
         if ( dev_info->output )
         {
@@ -548,7 +506,6 @@ mastermidibus::init( )
         }
     }
 
-
     set_bpm( c_bpm );
     set_ppqn( c_ppqn );
 
@@ -573,44 +530,41 @@ mastermidibus::~mastermidibus()
         delete m_buses_in[i];
 
     Pm_Terminate();
-
 }
-
-
 
 void
 mastermidibus::sysex( event *a_ev )
 {
-	lock();
+    lock();
 
     for ( int i=0; i<m_num_out_buses; i++ )
-      m_buses_out[i]->sysex( a_ev );
+        m_buses_out[i]->sysex( a_ev );
 
     flush();
-
-	unlock();
+    unlock();
 }
-
 
 void
 mastermidibus::play( unsigned char a_bus, event *a_e24, unsigned char a_channel )
 {
-	lock();
-	if ( m_buses_out_active[a_bus] && a_bus < m_num_out_buses ){
-		m_buses_out[a_bus]->play( a_e24, a_channel );
-	}
-	unlock();
+    lock();
+    if ( m_buses_out_active[a_bus] && a_bus < m_num_out_buses )
+    {
+        m_buses_out[a_bus]->play( a_e24, a_channel );
+    }
+    unlock();
 }
-
 
 void
 mastermidibus::set_clock( unsigned char a_bus, clock_e a_clock_type )
 {
     lock();
-    if ( a_bus < c_maxBuses ){
+    if ( a_bus < c_maxBuses )
+    {
         m_init_clock[a_bus] = a_clock_type;
     }
-    if ( m_buses_out_active[a_bus] && a_bus < m_num_out_buses ){
+    if ( m_buses_out_active[a_bus] && a_bus < m_num_out_buses )
+    {
         m_buses_out[a_bus]->set_clock( a_clock_type );
     }
     unlock();
@@ -619,10 +573,11 @@ mastermidibus::set_clock( unsigned char a_bus, clock_e a_clock_type )
 clock_e
 mastermidibus::get_clock( unsigned char a_bus )
 {
-	if ( m_buses_out_active[a_bus] && a_bus < m_num_out_buses ){
-		return m_buses_out[a_bus]->get_clock();
-	}
-	return e_clock_off;
+    if ( m_buses_out_active[a_bus] && a_bus < m_num_out_buses )
+    {
+        return m_buses_out[a_bus]->get_clock();
+    }
+    return e_clock_off;
 }
 
 void
@@ -638,16 +593,17 @@ midibus::get_clock_mod()
     return m_clock_mod;
 }
 
-
 void
 mastermidibus::set_input( unsigned char a_bus, bool a_inputing )
 {
     lock();
-    if ( a_bus < c_maxBuses ){
+    if ( a_bus < c_maxBuses )
+    {
         m_init_input[a_bus] = a_inputing;
     }
 
-    if ( m_buses_in_active[a_bus] && a_bus < m_num_in_buses ){
+    if ( m_buses_in_active[a_bus] && a_bus < m_num_in_buses )
+    {
         m_buses_in[a_bus]->set_input( a_inputing );
     }
     unlock();
@@ -656,49 +612,48 @@ mastermidibus::set_input( unsigned char a_bus, bool a_inputing )
 bool
 mastermidibus::get_input( unsigned char a_bus )
 {
-	if ( m_buses_in_active[a_bus] && a_bus < m_num_in_buses ){
-		return m_buses_in[a_bus]->get_input();
-	}
-	return false;
+    if ( m_buses_in_active[a_bus] && a_bus < m_num_in_buses )
+    {
+        return m_buses_in[a_bus]->get_input();
+    }
+    return false;
 }
-
 
 string
 mastermidibus::get_midi_out_bus_name( int a_bus )
 {
-	if ( m_buses_out_active[a_bus] && a_bus < m_num_out_buses ){
-		return m_buses_out[a_bus]->get_name();
-	}
-	return "error...";
+    if ( m_buses_out_active[a_bus] && a_bus < m_num_out_buses )
+    {
+        return m_buses_out[a_bus]->get_name();
+    }
+    return "error...";
 }
-
 
 string
 mastermidibus::get_midi_in_bus_name( int a_bus )
 {
-	if ( m_buses_in_active[a_bus] && a_bus < m_num_in_buses ){
-		return m_buses_in[a_bus]->get_name();
-	}
-	return "error...";
+    if ( m_buses_in_active[a_bus] && a_bus < m_num_in_buses )
+    {
+        return m_buses_in[a_bus]->get_name();
+    }
+    return "error...";
 }
-
 
 void
 mastermidibus::print()
 {
     printf( "Available Buses\n");
-    for ( int i=0; i<m_num_out_buses; i++ ){
-	printf( "%s\n", m_buses_out[i]->m_name.c_str() );
+    for ( int i=0; i<m_num_out_buses; i++ )
+    {
+        printf( "%s\n", m_buses_out[i]->m_name.c_str() );
     }
 }
-
 
 int
 mastermidibus::get_num_out_buses()
 {
     return m_num_out_buses;
 }
-
 
 int
 mastermidibus::get_num_in_buses()
@@ -728,8 +683,8 @@ mastermidibus::poll_for_midi( )
 }
 
 bool
-mastermidibus::is_more_input( ){
-
+mastermidibus::is_more_input( )
+{
     lock();
 
     int size=0;
@@ -746,7 +701,6 @@ mastermidibus::is_more_input( ){
 
     return ( size > 0 );
 }
-
 
 bool
 mastermidibus::get_midi_event( event *a_in )
@@ -772,11 +726,11 @@ mastermidibus::get_midi_event( event *a_in )
         }
     }
 
-    if( !ret ){
+    if( !ret )
+    {
         unlock();
         return false;
     }
-
 
     a_in->set_status( Pm_MessageStatus(event.message));
     a_in->set_size( 3 );
@@ -784,8 +738,9 @@ mastermidibus::get_midi_event( event *a_in )
 
     // some keyboards send on's with vel 0 for off
     if ( a_in->get_status() == EVENT_NOTE_ON &&
-         a_in->get_note_velocity() == 0x00 ){
-         a_in->set_status( EVENT_NOTE_OFF );
+            a_in->get_note_velocity() == 0x00 )
+    {
+        a_in->set_status( EVENT_NOTE_OFF );
     }
 
     unlock();

@@ -36,11 +36,11 @@ seqkeys::seqkeys(sequence *a_seq,
     m_key(0)
 {
     add_events( Gdk::BUTTON_PRESS_MASK |
-		Gdk::BUTTON_RELEASE_MASK |
-		Gdk::ENTER_NOTIFY_MASK |
-		Gdk::LEAVE_NOTIFY_MASK |
-		Gdk::POINTER_MOTION_MASK |
-		Gdk::SCROLL_MASK);
+                Gdk::BUTTON_RELEASE_MASK |
+                Gdk::ENTER_NOTIFY_MASK |
+                Gdk::LEAVE_NOTIFY_MASK |
+                Gdk::POINTER_MOTION_MASK |
+                Gdk::SCROLL_MASK);
 
     /* set default size */
     set_size_request( c_keyarea_x +1, 10 );
@@ -86,23 +86,23 @@ seqkeys::on_realize()
 void
 seqkeys::set_scale( int a_scale )
 {
-  if ( m_scale != a_scale ){
-    m_scale = a_scale;
-    reset();
-  }
-
+    if ( m_scale != a_scale )
+    {
+        m_scale = a_scale;
+        reset();
+    }
 }
 
 /* sets the key */
 void
 seqkeys::set_key( int a_key )
 {
-  if ( m_key != a_key ){
-    m_key = a_key;
-    reset();
-  }
+    if ( m_key != a_key )
+    {
+        m_key = a_key;
+        reset();
+    }
 }
-
 
 void
 seqkeys::reset()
@@ -110,8 +110,6 @@ seqkeys::reset()
     update_pixmap();
     queue_draw();
 }
-
-
 
 void
 seqkeys::update_pixmap()
@@ -144,11 +142,11 @@ seqkeys::update_pixmap()
         int key = (c_num_keys - i - 1) % 12;
 
         if ( key == 1 ||
-             key == 3 ||
-             key == 6 ||
-             key == 8 ||
-             key == 10 ){
-
+                key == 3 ||
+                key == 6 ||
+                key == 8 ||
+                key == 10 )
+        {
             m_gc->set_foreground(m_black);
             m_pixmap->draw_rectangle(m_gc,true,
                                      c_keyoffset_x + 1,
@@ -159,10 +157,8 @@ seqkeys::update_pixmap()
 
         char notes[20];
 
-        if ( key == m_key  ){
-
-
-
+        if ( key == m_key  )
+        {
             /* notes */
             int octave = ((c_num_keys - i - 1) / 12) - 1;
             if ( octave < 0 )
@@ -171,9 +167,9 @@ seqkeys::update_pixmap()
             snprintf(notes, sizeof(notes), "%2s%1d", c_key_text[key], octave);
 
             p_font_renderer->render_string_on_drawable(m_gc,
-                                                       2,
-                                                       c_key_y * i - 1,
-                                                       m_pixmap, notes, font::BLACK );
+                    2,
+                    c_key_y * i - 1,
+                    m_pixmap, notes, font::BLACK );
         }
 
         //snprintf(notes, sizeof(notes), "%c %d", c_scales_symbol[m_scale][key], m_scale );
@@ -188,17 +184,16 @@ seqkeys::update_pixmap()
 void
 seqkeys::draw_area()
 {
-      update_pixmap();
-      m_window->draw_drawable(m_gc,
-                              m_pixmap,
-                              0,
-                              m_scroll_offset_y,
-                              0,
-                              0,
-                              c_keyarea_x,
-                              c_keyarea_y );
+    update_pixmap();
+    m_window->draw_drawable(m_gc,
+                            m_pixmap,
+                            0,
+                            m_scroll_offset_y,
+                            0,
+                            0,
+                            c_keyarea_x,
+                            c_keyarea_y );
 }
-
 
 bool
 seqkeys::on_expose_event(GdkEventExpose* a_e)
@@ -214,7 +209,6 @@ seqkeys::on_expose_event(GdkEventExpose* a_e)
     return true;
 }
 
-
 void
 seqkeys::force_draw()
 {
@@ -226,7 +220,6 @@ seqkeys::force_draw()
                             m_window_y );
 }
 
-
 /* takes screen corrdinates, give us notes and ticks */
 void
 seqkeys::convert_y( int a_y, int *a_note)
@@ -234,49 +227,45 @@ seqkeys::convert_y( int a_y, int *a_note)
     *a_note = (c_rollarea_y - a_y - 2) / c_key_y;
 }
 
-
 bool
 seqkeys::on_button_press_event(GdkEventButton *a_e)
 {
     int y,note;
 
-    if ( a_e->type == GDK_BUTTON_PRESS ){
+    if ( a_e->type == GDK_BUTTON_PRESS )
+    {
+        y = (int) a_e->y + m_scroll_offset_y;
 
-	y = (int) a_e->y + m_scroll_offset_y;
+        if ( a_e->button == 1 )
+        {
+            m_keying = true;
 
-	if ( a_e->button == 1 ){
+            convert_y( y,&note );
+            m_seq->play_note_on(  note );
 
-	    m_keying = true;
-
-	    convert_y( y,&note );
-	    m_seq->play_note_on(  note );
-
-	    m_keying_note = note;
-	}
+            m_keying_note = note;
+        }
     }
     return true;
 }
-
 
 bool
 seqkeys::on_button_release_event(GdkEventButton* a_e)
 {
-    if ( a_e->type == GDK_BUTTON_RELEASE ){
-
-	if ( a_e->button == 1 && m_keying ){
-
-	    m_keying = false;
-	    m_seq->play_note_off( m_keying_note );
-	}
+    if ( a_e->type == GDK_BUTTON_RELEASE )
+    {
+        if ( a_e->button == 1 && m_keying )
+        {
+            m_keying = false;
+            m_seq->play_note_off( m_keying_note );
+        }
     }
     return true;
 }
 
-
 bool
 seqkeys::on_motion_notify_event(GdkEventMotion* a_p0)
 {
-
     int y, note;
 
     y = (int) a_p0->y + m_scroll_offset_y;
@@ -284,39 +273,33 @@ seqkeys::on_motion_notify_event(GdkEventMotion* a_p0)
 
     set_hint_key( note );
 
-    if ( m_keying ){
-
-        if ( note != m_keying_note ){
-
-	    m_seq->play_note_off( m_keying_note );
-	    m_seq->play_note_on(  note );
-	    m_keying_note = note;
-
-	}
+    if ( m_keying )
+    {
+        if ( note != m_keying_note )
+        {
+            m_seq->play_note_off( m_keying_note );
+            m_seq->play_note_on(  note );
+            m_keying_note = note;
+        }
     }
 
     return false;
 }
 
-
-
 bool
 seqkeys::on_enter_notify_event(GdkEventCrossing* a_p0)
 {
-  set_hint_state( true );
-  return false;
+    set_hint_state( true );
+    return false;
 }
-
-
 
 bool
 seqkeys::on_leave_notify_event(GdkEventCrossing* p0)
 {
-    if ( m_keying ){
-
-	m_keying = false;
-	m_seq->play_note_off( m_keying_note );
-
+    if ( m_keying )
+    {
+        m_keying = false;
+        m_seq->play_note_off( m_keying_note );
     }
     set_hint_state( false );
 
@@ -349,57 +332,49 @@ seqkeys::set_hint_state( bool a_state )
 void
 seqkeys::draw_key( int a_key, bool a_state )
 {
+    /* the the key in the octave */
+    int key = a_key % 12;
 
-  /* the the key in the octave */
-  int key = a_key % 12;
+    a_key = c_num_keys - a_key - 1;
 
-  a_key = c_num_keys - a_key - 1;
-
-  if ( key == 1 ||
-       key == 3 ||
-       key == 6 ||
-       key == 8 ||
-       key == 10 ){
-
-    m_gc->set_foreground(m_black);
-  }
-  else
-    m_gc->set_foreground(m_white);
-
-
-  m_window->draw_rectangle(m_gc,true,
-			  c_keyoffset_x + 1,
-			  (c_key_y * a_key) + 2 -  m_scroll_offset_y,
-			  c_key_x - 3,
-			  c_key_y - 3 );
-
-  if ( a_state ){
-
-    m_gc->set_foreground(m_grey);
+    if ( key == 1 ||
+            key == 3 ||
+            key == 6 ||
+            key == 8 ||
+            key == 10 )
+    {
+        m_gc->set_foreground(m_black);
+    }
+    else
+        m_gc->set_foreground(m_white);
 
     m_window->draw_rectangle(m_gc,true,
-			    c_keyoffset_x + 1,
-			    (c_key_y * a_key) + 2 - m_scroll_offset_y,
-			    c_key_x - 3,
-			    c_key_y - 3 );
+                             c_keyoffset_x + 1,
+                             (c_key_y * a_key) + 2 -  m_scroll_offset_y,
+                             c_key_x - 3,
+                             c_key_y - 3 );
 
-  }
+    if ( a_state )
+    {
+        m_gc->set_foreground(m_grey);
+
+        m_window->draw_rectangle(m_gc,true,
+                                 c_keyoffset_x + 1,
+                                 (c_key_y * a_key) + 2 - m_scroll_offset_y,
+                                 c_key_x - 3,
+                                 c_key_y - 3 );
+
+    }
 }
-
-
 
 void
 seqkeys::change_vert( )
 {
-
     m_scroll_offset_key = (int) m_vadjust->get_value();
     m_scroll_offset_y = m_scroll_offset_key * c_key_y,
 
     force_draw();
-
 }
-
-
 
 void
 seqkeys::on_size_allocate(Gtk::Allocation& a_r )
@@ -409,27 +384,28 @@ seqkeys::on_size_allocate(Gtk::Allocation& a_r )
     m_window_x = a_r.get_width();
     m_window_y = a_r.get_height();
 
-
-
     queue_draw();
-
 }
-
 
 bool
 seqkeys::on_scroll_event( GdkEventScroll* a_ev )
 {
-	double val = m_vadjust->get_value();
+    double val = m_vadjust->get_value();
 
-	if ( a_ev->direction == GDK_SCROLL_UP ){
-		val -= m_vadjust->get_step_increment()/6;
-	} else if (  a_ev->direction == GDK_SCROLL_DOWN ){
-		val += m_vadjust->get_step_increment()/6;
-	} else {
-		return true;
-	}
+    if ( a_ev->direction == GDK_SCROLL_UP )
+    {
+        val -= m_vadjust->get_step_increment()/6;
+    }
+    else if (  a_ev->direction == GDK_SCROLL_DOWN )
+    {
+        val += m_vadjust->get_step_increment()/6;
+    }
+    else
+    {
+        return true;
+    }
 
-	m_vadjust->clamp_page( val, val + m_vadjust->get_page_size() );
+    m_vadjust->clamp_page( val, val + m_vadjust->get_page_size() );
     return true;
 
 }

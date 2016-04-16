@@ -32,7 +32,6 @@ optionsfile::optionsfile(const Glib::ustring& a_name) :
 {
 }
 
-
 bool
 optionsfile::parse( perform *a_perf )
 {
@@ -50,7 +49,8 @@ optionsfile::parse( perform *a_perf )
     sscanf( m_line, "%ld", &buses );
     next_data_line( &file );
 
-    for ( int i=0; i<buses; ++i ){
+    for ( int i=0; i<buses; ++i )
+    {
 
         long bus_on, bus;
         sscanf( m_line, "%ld %ld", &bus, &bus_on );
@@ -109,7 +109,8 @@ optionsfile::parse( perform *a_perf )
     sscanf( m_line, "%ld", &buses );
     next_data_line( &file );
 
-    for ( int i=0; i<buses; ++i ){
+    for ( int i=0; i<buses; ++i )
+    {
 
         long bus_on, bus;
         sscanf( m_line, "%ld %ld", &bus, &bus_on );
@@ -152,7 +153,6 @@ optionsfile::parse( perform *a_perf )
     return true;
 }
 
-
 bool
 optionsfile::write( perform *a_perf  )
 {
@@ -178,12 +178,13 @@ optionsfile::write( perform *a_perf  )
     file << "\n\n\n[midi-clock]\n";
     file << buses << "\n";
 
-    for (int i=0; i< buses; i++ ){
+    for (int i=0; i< buses; i++ )
+    {
 
 
         file << "# " << a_perf->get_master_midi_bus( )->get_midi_out_bus_name(i) << "\n";
         snprintf(outs, sizeof(outs), "%d %d", i,
-                (char) a_perf->get_master_midi_bus( )->get_clock(i));
+                 (char) a_perf->get_master_midi_bus( )->get_clock(i));
         file << outs << "\n";
     }
 
@@ -197,12 +198,13 @@ optionsfile::write( perform *a_perf  )
     file << "\n\n\n[midi-input]\n";
     file << buses << "\n";
 
-    for (int i=0; i< buses; i++ ){
+    for (int i=0; i< buses; i++ )
+    {
 
 
         file << "# " << a_perf->get_master_midi_bus( )->get_midi_in_bus_name(i) << "\n";
         snprintf(outs, sizeof(outs), "%d %d", i,
-                (char) a_perf->get_master_midi_bus( )->get_input(i));
+                 (char) a_perf->get_master_midi_bus( )->get_input(i));
         file << outs << "\n";
     }
 
@@ -219,11 +221,10 @@ optionsfile::write( perform *a_perf  )
     while (c_interaction_method_names[x] && c_interaction_method_descs[x])
     {
         file << "# " << x << " - '" << c_interaction_method_names[x]
-                     << "' (" << c_interaction_method_descs[x] << ")\n";
+             << "' (" << c_interaction_method_descs[x] << ")\n";
         ++x;
     }
     file << global_interactionmethod << "\n";
-
 
 
     file << "\n\n\n[keyboard-control]\n";
@@ -254,7 +255,7 @@ optionsfile::write( perform *a_perf  )
          << gdk_keyval_name( a_perf->m_key_seqlist )
          << " sequence list\n";
 
-     file << a_perf->m_key_follow_trans << "        # "
+    file << a_perf->m_key_follow_trans << "        # "
          << gdk_keyval_name( a_perf->m_key_follow_trans )
          << " follow transport\n";
 
@@ -265,7 +266,6 @@ optionsfile::write( perform *a_perf  )
 #endif // JACK_SUPPORT
 
     file << "\n\n\n[jack-transport]\n\n"
-
 
          << "# jack_transport - Enable sync with JACK Transport.\n"
          << global_with_jack_transport << "\n\n"
@@ -283,7 +283,6 @@ optionsfile::write( perform *a_perf  )
     file << "\n\n\n[last-midi-dir]\n\n"
          << "# Last midi directory.\n"
          << last_midi_dir << "\n\n";
-
 
     file.close();
     return true;

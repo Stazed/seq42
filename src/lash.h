@@ -52,11 +52,9 @@ private:
 public:
     lash(int *argc, char ***argv);
 
-	void set_alsa_client_id(int id);
+    void set_alsa_client_id(int id);
     void start(perform* perform);
 };
 
-
 /* global lash driver, defined in seq42.cpp */
 extern lash *lash_driver;
-

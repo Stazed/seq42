@@ -30,11 +30,14 @@ lash::lash(int *argc, char ***argv)
     m_perform = NULL;
 
     m_client = lash_init(lash_extract_args(argc, argv), PACKAGE_NAME,
-        LASH_Config_File, LASH_PROTOCOL(2, 0));
+                         LASH_Config_File, LASH_PROTOCOL(2, 0));
 
-    if (m_client == NULL) {
+    if (m_client == NULL)
+    {
         fprintf(stderr, "Failed to connect to LASH.  Session management will not occur.\n");
-    } else {
+    }
+    else
+    {
         lash_event_t* event = lash_event_new_with_type(LASH_Client_Name);
         lash_event_set_string(event, "Seq42");
         lash_send_event(m_client, event);
@@ -43,27 +46,24 @@ lash::lash(int *argc, char ***argv)
 #endif // LASH_SUPPORT
 }
 
-
 void
 lash::set_alsa_client_id(int id)
 {
 #ifdef LASH_SUPPORT
-	lash_alsa_client_id(m_client, id);
+    lash_alsa_client_id(m_client, id);
 #endif
 }
-
 
 void
 lash::start(perform* perform)
 {
 #ifdef LASH_SUPPORT
-	m_perform = perform;
+    m_perform = perform;
 
     /* Process any LASH events every 250 msec (arbitrarily chosen interval) */
     Glib::signal_timeout().connect(sigc::mem_fun(*this, &lash::process_events), 250);
 #endif // LASH_SUPPORT
 }
-
 
 #ifdef LASH_SUPPORT
 
@@ -73,14 +73,14 @@ lash::process_events()
     lash_event_t  *ev = NULL;
 
     // Process events
-    while ((ev = lash_get_event(m_client)) != NULL) {
+    while ((ev = lash_get_event(m_client)) != NULL)
+    {
         handle_event(ev);
         lash_event_destroy(ev);
     }
 
     return true;
 }
-
 
 void
 lash::handle_event(lash_event_t* ev)
@@ -89,20 +89,26 @@ lash::handle_event(lash_event_t* ev)
     const char      *c_str = lash_event_get_string(ev);
     std::string     str    = (c_str == NULL) ? "" : c_str;
 
-    if (type == LASH_Save_File) {
+    if (type == LASH_Save_File)
+    {
         m_perform->save(str + "/song.s42");
         lash_send_event(m_client, lash_event_new_with_type(LASH_Save_File));
-    } else if (type == LASH_Restore_File) {
+    }
+    else if (type == LASH_Restore_File)
+    {
         m_perform->load(str + "/song.s42");
         lash_send_event(m_client, lash_event_new_with_type(LASH_Restore_File));
-    } else if (type == LASH_Quit) {
+    }
+    else if (type == LASH_Quit)
+    {
         m_client = NULL;
         Gtk::Main::quit();
-    } else {
-		fprintf(stderr, "Warning:  Unhandled LASH event.\n");
-	}
+    }
+    else
+    {
+        fprintf(stderr, "Warning:  Unhandled LASH event.\n");
+    }
 }
-
 
 void
 lash::handle_config(lash_config_t* conf)
@@ -115,6 +121,5 @@ lash::handle_config(lash_config_t* conf)
     val      = lash_config_get_value(conf);
     val_size = lash_config_get_value_size(conf);
 }
-
 
 #endif // LASH_SUPPORT

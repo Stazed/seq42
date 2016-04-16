@@ -59,7 +59,6 @@ options::options (Gtk::Window & parent, perform * a_p):
     add_jack_sync_page();
 }
 
-
 /*MIDI Clock page*/
 void
 options::add_midi_clock_page()
@@ -77,7 +76,7 @@ options::add_midi_clock_page()
     {
         HBox *hbox2 = manage (new HBox ());
         Label *label = manage( new Label(m_perf->get_master_midi_bus ()->
-                                            get_midi_out_bus_name (i), 0));
+                                         get_midi_out_bus_name (i), 0));
 
         hbox2->pack_start (*label, false, false);
 
@@ -87,7 +86,7 @@ options::add_midi_clock_page()
 
         Gtk::RadioButton * rb_on = manage (new RadioButton ("On (Pos)"));
         add_tooltip( rb_on,
-                "Midi Clock will be sent. Midi Song Position and Midi Continue will be sent if starting greater than tick 0 in song mode, otherwise Midi Start is sent.");
+                     "Midi Clock will be sent. Midi Song Position and Midi Continue will be sent if starting greater than tick 0 in song mode, otherwise Midi Start is sent.");
 
         Gtk::RadioButton * rb_mod = manage (new RadioButton ("On (Mod)"));
         add_tooltip( rb_mod, "Midi Clock will be sent.  Midi Start will be sent and clocking will begin once the song position has reached the modulo of the specified Size. (Used for gear that doesn't respond to Song Position)");
@@ -97,11 +96,11 @@ options::add_midi_clock_page()
         rb_mod->set_group (group);
 
         rb_off->signal_toggled().connect (sigc::bind(mem_fun (*this,
-                        &options::clock_callback_off), i, rb_off ));
+                                          &options::clock_callback_off), i, rb_off ));
         rb_on->signal_toggled ().connect (sigc::bind(mem_fun (*this,
-                        &options::clock_callback_on),  i, rb_on  ));
+                                          &options::clock_callback_on),  i, rb_on  ));
         rb_mod->signal_toggled().connect (sigc::bind(mem_fun (*this,
-                        &options::clock_callback_mod), i, rb_mod ));
+                                          &options::clock_callback_mod), i, rb_mod ));
 
         hbox2->pack_end (*rb_mod, false, false );
         hbox2->pack_end (*rb_on, false, false);
@@ -111,9 +110,15 @@ options::add_midi_clock_page()
 
         switch ( m_perf->get_master_midi_bus ()->get_clock (i))
         {
-            case e_clock_off: rb_off->set_active(1); break;
-            case e_clock_pos: rb_on->set_active(1); break;
-            case e_clock_mod: rb_mod->set_active(1); break;
+        case e_clock_off:
+            rb_off->set_active(1);
+            break;
+        case e_clock_pos:
+            rb_on->set_active(1);
+            break;
+        case e_clock_mod:
+            rb_mod->set_active(1);
+            break;
         }
     }
 
@@ -125,15 +130,14 @@ options::add_midi_clock_page()
 
     //m_spinbutton_bpm->set_editable( false );
     hbox2->pack_start(*(manage(new Label(
-                        "Clock Start Modulo (1/16 Notes)"))), false, false, 4);
+                                   "Clock Start Modulo (1/16 Notes)"))), false, false, 4);
     hbox2->pack_start(*clock_mod_spin, false, false );
 
     vbox->pack_start( *hbox2, false, false );
 
     clock_mod_adj->signal_value_changed().connect(sigc::bind(mem_fun(*this,
-                    &options::clock_mod_callback), clock_mod_adj));
+            &options::clock_mod_callback), clock_mod_adj));
 }
-
 
 /*MIDI Input page*/
 void
@@ -149,15 +153,14 @@ options::add_midi_input_page()
     for (int i = 0; i < buses; i++)
     {
         CheckButton *check = manage(new CheckButton(
-                    m_perf->get_master_midi_bus()->get_midi_in_bus_name(i), 0));
+                                        m_perf->get_master_midi_bus()->get_midi_in_bus_name(i), 0));
         check->signal_toggled().connect(bind(mem_fun(*this,
-                        &options::input_callback), i, check));
+                                             &options::input_callback), i, check));
         check->set_active(m_perf->get_master_midi_bus()->get_input(i));
 
         vbox->pack_start(*check, false, false);
     }
 }
-
 
 /*Keyboard page*/
 /*Keybinding setup (editor for .seq24rc keybindings).*/
@@ -246,11 +249,11 @@ options::add_mouse_page()
     interactionframe->add(*interactionbox);
 
     Gtk::RadioButton *rb_seq42 = manage(new RadioButton(
-                "se_q42 (original style)", true));
+                                            "se_q42 (original style)", true));
     interactionbox->pack_start(*rb_seq42, Gtk::PACK_SHRINK);
 
     Gtk::RadioButton * rb_fruity = manage(new RadioButton(
-                "_fruity (similar to a certain well known sequencer)", true));
+            "_fruity (similar to a certain well known sequencer)", true));
     interactionbox->pack_start(*rb_fruity, Gtk::PACK_SHRINK);
 
     Gtk::RadioButton::Group group = rb_seq42->get_group();
@@ -258,23 +261,22 @@ options::add_mouse_page()
 
     switch(global_interactionmethod)
     {
-        case e_fruity_interaction:
-            rb_fruity->set_active();
-            break;
+    case e_fruity_interaction:
+        rb_fruity->set_active();
+        break;
 
-        case e_seq42_interaction:
-        default:
-            rb_seq42->set_active();
-            break;
+    case e_seq42_interaction:
+    default:
+        rb_seq42->set_active();
+        break;
     }
 
     rb_seq42->signal_toggled().connect(sigc::bind(mem_fun(*this,
-                    &options::mouse_seq42_callback), rb_seq42));
+                                       &options::mouse_seq42_callback), rb_seq42));
 
     rb_fruity->signal_toggled().connect(sigc::bind(mem_fun(*this,
-                    &options::mouse_fruity_callback), rb_fruity));
+                                        &options::mouse_fruity_callback), rb_fruity));
 }
-
 
 /*Jack Sync page */
 void
@@ -298,7 +300,7 @@ options::add_jack_sync_page()
     check->set_active (global_with_jack_transport);
     add_tooltip( check, "Enable sync with JACK Transport.");
     check->signal_toggled().connect(bind(mem_fun(*this,
-                    &options::transport_callback), e_jack_transport, check));
+                                         &options::transport_callback), e_jack_transport, check));
 
     if(global_is_running)
         check->set_sensitive(false);
@@ -309,7 +311,7 @@ options::add_jack_sync_page()
     check->set_active (global_with_jack_master);
     add_tooltip( check, "Seq24 will attempt to serve as JACK Master.");
     check->signal_toggled().connect(bind(mem_fun(*this,
-                    &options::transport_callback), e_jack_master, check));
+                                         &options::transport_callback), e_jack_master, check));
 
     if(global_is_running)
         check->set_sensitive(false);
@@ -319,9 +321,9 @@ options::add_jack_sync_page()
     check = manage (new CheckButton ("Master C_onditional", true));
     check->set_active (global_with_jack_master_cond);
     add_tooltip( check,
-            "Seq24 will fail to be master if there is already a master set.");
+                 "Seq24 will fail to be master if there is already a master set.");
     check->signal_toggled().connect(bind(mem_fun(*this,
-                    &options::transport_callback), e_jack_master_cond, check));
+                                         &options::transport_callback), e_jack_master_cond, check));
 
     if(global_is_running)
         check->set_sensitive(false);
@@ -330,7 +332,6 @@ options::add_jack_sync_page()
 
 #endif
 }
-
 
 void
 options::clock_callback_off (int a_bus, RadioButton *a_button)
@@ -393,25 +394,25 @@ options::transport_callback (button a_type, Button * a_check)
     switch (a_type)
     {
 
-        case e_jack_transport:
-            {
-                global_with_jack_transport = check->get_active ();
-            }
-            break;
+    case e_jack_transport:
+    {
+        global_with_jack_transport = check->get_active ();
+    }
+    break;
 
-        case e_jack_master:
-            {
-                global_with_jack_master = check->get_active ();
-            }
-            break;
+    case e_jack_master:
+    {
+        global_with_jack_master = check->get_active ();
+    }
+    break;
 
-        case e_jack_master_cond:
-            {
-                global_with_jack_master_cond = check->get_active ();
-            }
-            break;
+    case e_jack_master_cond:
+    {
+        global_with_jack_master_cond = check->get_active ();
+    }
+    break;
 
-        default:
-            break;
+    default:
+        break;
     }
 }

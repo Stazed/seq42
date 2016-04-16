@@ -46,7 +46,7 @@ using namespace Gtk;
 /* holds the left side piano */
 class perfnames : public virtual Gtk::DrawingArea, public virtual trackmenu
 {
- private:
+private:
 
     Glib::RefPtr<Gdk::GC>       m_gc;
     Glib::RefPtr<Gdk::Window>   m_window;
@@ -82,13 +82,11 @@ class perfnames : public virtual Gtk::DrawingArea, public virtual trackmenu
 
     void redraw( int a_track );
 
- public:
+public:
 
     void redraw_dirty_tracks();
 
     perfnames( perform *a_perf,
-	       Adjustment *a_vadjust   );
-
-
+               Adjustment *a_vadjust   );
 };
 

@@ -20,7 +20,6 @@
 #include "event.h"
 #include "seqevent.h"
 
-
 seqevent::seqevent(sequence *a_seq,
                    int a_zoom,
                    int a_snap,
@@ -57,11 +56,11 @@ seqevent::seqevent(sequence *a_seq,
     colormap->alloc_color( m_red );
 
     add_events( Gdk::BUTTON_PRESS_MASK |
-		Gdk::BUTTON_RELEASE_MASK |
-		Gdk::POINTER_MOTION_MASK |
-		Gdk::KEY_PRESS_MASK |
-		Gdk::KEY_RELEASE_MASK |
-		Gdk::FOCUS_CHANGE_MASK );
+                Gdk::BUTTON_RELEASE_MASK |
+                Gdk::POINTER_MOTION_MASK |
+                Gdk::KEY_PRESS_MASK |
+                Gdk::KEY_RELEASE_MASK |
+                Gdk::FOCUS_CHANGE_MASK );
 
     set_size_request( 10, c_eventarea_y );
     set_double_buffered( false );
@@ -87,8 +86,6 @@ seqevent::on_realize()
     update_sizes();
 }
 
-
-
 void
 seqevent::change_horz( )
 {
@@ -99,7 +96,6 @@ seqevent::change_horz( )
     force_draw();
 }
 
-
 void
 seqevent::on_size_allocate(Gtk::Allocation& a_r )
 {
@@ -109,10 +105,7 @@ seqevent::on_size_allocate(Gtk::Allocation& a_r )
     m_window_y = a_r.get_height();
 
     update_sizes();
-
 }
-
-
 
 int
 seqevent::idle_redraw()
@@ -125,8 +118,8 @@ seqevent::idle_redraw()
 void
 seqevent::update_sizes()
 {
-
-    if( is_realized() ) {
+    if( is_realized() )
+    {
         /* create pixmaps with window dimentions */
 
         //printf( "update_sizes() m_window_x[%d] m_window_y[%d]\n",
@@ -154,7 +147,6 @@ seqevent::reset()
     draw_pixmap_on_window();
 }
 
-
 void
 seqevent::redraw()
 {
@@ -164,7 +156,6 @@ seqevent::redraw()
     update_pixmap();
     draw_pixmap_on_window();
 }
-
 
 /* updates background */
 void
@@ -181,14 +172,14 @@ seqevent::draw_background()
                              m_window_y );
 
 
-   /*int measure_length_64ths =  m_seq->get_bp_measure() * 64 /
-        m_seq->get_bw();*/
+    /*int measure_length_64ths =  m_seq->get_bp_measure() * 64 /
+         m_seq->get_bw();*/
 
     //printf ( "measure_length_64ths[%d]\n", measure_length_64ths );
 
     //int measures_per_line = (256 / measure_length_64ths) / (32 / m_zoom);
     //if ( measures_per_line <= 0
-   int measures_per_line = 1;
+    int measures_per_line = 1;
 
     //printf( "measures_per_line[%d]\n", measures_per_line );
 
@@ -208,28 +199,25 @@ seqevent::draw_background()
     {
         int base_line = i / m_zoom;
 
-        if ( i % ticks_per_m_line == 0 ){
-
+        if ( i % ticks_per_m_line == 0 )
+        {
             /* solid line on every beat */
             m_gc->set_foreground(m_black);
             m_gc->set_line_attributes( 1,
                                        Gdk::LINE_SOLID,
                                        Gdk::CAP_NOT_LAST,
                                        Gdk::JOIN_MITER );
-
-        } else if (i % ticks_per_beat == 0 ){
-
+        }
+        else if (i % ticks_per_beat == 0 )
+        {
             m_gc->set_foreground(m_grey);
             m_gc->set_line_attributes( 1,
                                        Gdk::LINE_SOLID,
                                        Gdk::CAP_NOT_LAST,
                                        Gdk::JOIN_MITER );
-
         }
-
-
-        else {
-
+        else
+        {
             m_gc->set_foreground(m_grey);
             m_gc->set_line_attributes( 1,
                                        Gdk::LINE_ON_OFF_DASH,
@@ -246,7 +234,6 @@ seqevent::draw_background()
                             m_window_y);
     }
 
-
     /* reset line style */
     m_gc->set_line_attributes( 1,
                                Gdk::LINE_SOLID,
@@ -259,15 +246,14 @@ seqevent::draw_background()
                              0,
                              m_window_x + 1,
                              m_window_y - 1 );
-
 }
 
 /* sets zoom, resets */
 void
 seqevent::set_zoom( int a_zoom )
 {
-    if ( m_zoom != a_zoom ){
-
+    if ( m_zoom != a_zoom )
+    {
         m_zoom = a_zoom;
         reset();
     }
@@ -280,7 +266,6 @@ seqevent::set_snap( int a_snap )
     m_snap = a_snap;
 }
 
-
 void
 seqevent::set_data_type( unsigned char a_status, unsigned char a_control = 0 )
 {
@@ -290,35 +275,25 @@ seqevent::set_data_type( unsigned char a_status, unsigned char a_control = 0 )
     this->redraw();
 }
 
-
-
-
 /* draws background pixmap on main pixmap,
    then puts the events on */
 void
 seqevent::update_pixmap()
 {
-
     draw_background();
     draw_events_on_pixmap();
 
     m_seqdata_wid->update_pixmap();
     m_seqdata_wid->draw_pixmap_on_window();
-
 }
-
 
 void
 seqevent::draw_events_on( Glib::RefPtr<Gdk::Drawable> a_draw )
 {
     long tick;
-
     int x;
-
     unsigned char d0,d1;
-
     bool selected;
-
 
     /* draw boxes from sequence */
     m_gc->set_foreground( m_black );
@@ -330,10 +305,10 @@ seqevent::draw_events_on( Glib::RefPtr<Gdk::Drawable> a_draw )
     while ( m_seq->get_next_event( m_status,
                                    m_cc,
                                    &tick, &d0, &d1,
-                                   &selected ) == true ){
-        if ( (tick >= start_tick && tick <= end_tick )){
-
-
+                                   &selected ) == true )
+    {
+        if ( (tick >= start_tick && tick <= end_tick ))
+        {
             /* turn into screen corrids */
             x = tick / m_zoom;
 
@@ -344,8 +319,6 @@ seqevent::draw_events_on( Glib::RefPtr<Gdk::Drawable> a_draw )
                                    (c_eventarea_y - c_eventevent_y)/2,
                                    c_eventevent_x,
                                    c_eventevent_y );
-
-
 
             if ( selected )
                 m_gc->set_foreground(m_red);
@@ -359,7 +332,6 @@ seqevent::draw_events_on( Glib::RefPtr<Gdk::Drawable> a_draw )
                                    c_eventevent_y - 3 );
         }
     }
-
 }
 
 /* fills main pixmap with events */
@@ -388,14 +360,17 @@ seqevent::draw_pixmap_on_window()
    and width and height */
 void
 seqevent::x_to_w( int a_x1, int a_x2,
-		int *a_x, int *a_w  )
+                  int *a_x, int *a_w  )
 {
-    if ( a_x1 < a_x2 ){
-	*a_x = a_x1;
-	*a_w = a_x2 - a_x1;
-    } else {
-	*a_x = a_x2;
-	*a_w = a_x1 - a_x2;
+    if ( a_x1 < a_x2 )
+    {
+        *a_x = a_x1;
+        *a_w = a_x2 - a_x1;
+    }
+    else
+    {
+        *a_x = a_x2;
+        *a_w = a_x1 - a_x2;
     }
 }
 
@@ -422,38 +397,38 @@ seqevent::draw_selection_on_window()
                             m_old.width + 1,
                             h + 1 );
 
-    if ( m_selecting ){
+    if ( m_selecting )
+    {
+        x_to_w( m_drop_x, m_current_x, &x,&w );
 
-	x_to_w( m_drop_x, m_current_x, &x,&w );
+        x -= m_scroll_offset_x;
 
-    x -= m_scroll_offset_x;
+        m_old.x = x;
+        m_old.width = w;
 
-	m_old.x = x;
-	m_old.width = w;
-
-	m_gc->set_foreground(m_black);
-	m_window->draw_rectangle(m_gc,false,
+        m_gc->set_foreground(m_black);
+        m_window->draw_rectangle(m_gc,false,
                                  x,
                                  y,
                                  w,
                                  h );
     }
 
-    if ( m_moving || m_paste ){
+    if ( m_moving || m_paste )
+    {
+        int delta_x = m_current_x - m_drop_x;
 
-	int delta_x = m_current_x - m_drop_x;
+        x = m_selected.x + delta_x;
+        x -= m_scroll_offset_x;
 
-	x = m_selected.x + delta_x;
-    x -= m_scroll_offset_x;
-
-	m_gc->set_foreground(m_black);
-	m_window->draw_rectangle(m_gc,false,
+        m_gc->set_foreground(m_black);
+        m_window->draw_rectangle(m_gc,false,
                                  x,
                                  y,
                                  m_selected.width,
                                  h );
-	m_old.x = x;
-	m_old.width = m_selected.width;
+        m_old.x = x;
+        m_old.width = m_selected.width;
     }
 }
 
@@ -488,50 +463,45 @@ seqevent::force_draw()
     draw_selection_on_window();
 }
 
-
 void
 seqevent::start_paste( )
 {
-     long tick_s;
-     long tick_f;
-     int note_h;
-     int note_l;
-     int x, w;
+    long tick_s;
+    long tick_f;
+    int note_h;
+    int note_l;
+    int x, w;
 
-     /* get the box that selected elements are in */
-     if(!m_seq->get_clipboard_box( &tick_s, &note_h,&tick_f, &note_l ))
+    /* get the box that selected elements are in */
+    if(!m_seq->get_clipboard_box( &tick_s, &note_h,&tick_f, &note_l ))
         return; // if nothing selected
 
-     snap_x( &m_current_x );
-     snap_y( &m_current_x );
+    snap_x( &m_current_x );
+    snap_y( &m_current_x );
 
-     m_drop_x = m_current_x;
-     m_drop_y = m_current_y;
+    m_drop_x = m_current_x;
+    m_drop_y = m_current_y;
 
-     m_paste = true;
+    m_paste = true;
 
-     /* convert box to X,Y values */
-     convert_t( tick_s, &x );
-     convert_t( tick_f, &w );
+    /* convert box to X,Y values */
+    convert_t( tick_s, &x );
+    convert_t( tick_f, &w );
 
-     /* w is actually corrids now, so we have to change */
-     w = w-x;
+    /* w is actually corrids now, so we have to change */
+    w = w-x;
 
-     /* set the m_selected rectangle to hold the
-	x,y,w,h of our selected events */
+    /* set the m_selected rectangle to hold the
+    x,y,w,h of our selected events */
 
-     m_selected.x = x;
-     m_selected.width=w;
-     m_selected.y = (c_eventarea_y - c_eventevent_y)/2;
-     m_selected.height = c_eventevent_y;
+    m_selected.x = x;
+    m_selected.width=w;
+    m_selected.y = (c_eventarea_y - c_eventevent_y)/2;
+    m_selected.height = c_eventevent_y;
 
-     /* adjust for clipboard being shifted to tick 0 */
-     m_selected.x  += m_drop_x;
+    /* adjust for clipboard being shifted to tick 0 */
+    m_selected.x  += m_drop_x;
 }
-
-
-
-
 
 /* takes screen corrdinates, give us notes and ticks */
 void
@@ -540,17 +510,12 @@ seqevent::convert_x( int a_x, long *a_tick )
     *a_tick = a_x * m_zoom;
 }
 
-
 /* notes and ticks to screen corridinates */
 void
 seqevent::convert_t( long a_ticks, int *a_x )
 {
     *a_x = a_ticks /  m_zoom;
 }
-
-
-
-
 
 bool
 seqevent::on_button_press_event(GdkEventButton* a_ev)
@@ -559,12 +524,12 @@ seqevent::on_button_press_event(GdkEventButton* a_ev)
 
     switch (global_interactionmethod)
     {
-        case e_fruity_interaction:
-             result = m_fruity_interaction.on_button_press_event(a_ev, *this);
-        case e_seq42_interaction:
-             result = m_seq42_interaction.on_button_press_event(a_ev, *this);
-        default:
-             result = false;
+    case e_fruity_interaction:
+        result = m_fruity_interaction.on_button_press_event(a_ev, *this);
+    case e_seq42_interaction:
+        result = m_seq42_interaction.on_button_press_event(a_ev, *this);
+    default:
+        result = false;
     }
     return result;
 }
@@ -572,7 +537,6 @@ seqevent::on_button_press_event(GdkEventButton* a_ev)
 void
 seqevent::drop_event( long a_tick )
 {
-
     unsigned char status = m_status;
     unsigned char d0 = m_cc;
     unsigned char d1 = 0x40;
@@ -590,11 +554,10 @@ seqevent::drop_event( long a_tick )
         d0 = 0;
 
     m_seq->add_event( a_tick,
-            status,
-            d0,
-            d1, true );
+                      status,
+                      d0,
+                      d1, true );
 }
-
 
 bool
 seqevent::on_button_release_event(GdkEventButton* a_ev)
@@ -603,17 +566,15 @@ seqevent::on_button_release_event(GdkEventButton* a_ev)
 
     switch (global_interactionmethod)
     {
-        case e_fruity_interaction:
-             result = m_fruity_interaction.on_button_release_event(a_ev, *this);
-        case e_seq42_interaction:
-             result = m_seq42_interaction.on_button_release_event(a_ev, *this);
-        default:
-             result = false;
+    case e_fruity_interaction:
+        result = m_fruity_interaction.on_button_release_event(a_ev, *this);
+    case e_seq42_interaction:
+        result = m_seq42_interaction.on_button_release_event(a_ev, *this);
+    default:
+        result = false;
     }
     return result;
 }
-
-
 
 bool
 seqevent::on_motion_notify_event(GdkEventMotion* a_ev)
@@ -622,12 +583,12 @@ seqevent::on_motion_notify_event(GdkEventMotion* a_ev)
 
     switch (global_interactionmethod)
     {
-        case e_fruity_interaction:
-             result = m_fruity_interaction.on_motion_notify_event(a_ev, *this);
-        case e_seq42_interaction:
-             result = m_seq42_interaction.on_motion_notify_event(a_ev, *this);
-        default:
-             result = false;
+    case e_fruity_interaction:
+        result = m_fruity_interaction.on_motion_notify_event(a_ev, *this);
+    case e_seq42_interaction:
+        result = m_seq42_interaction.on_motion_notify_event(a_ev, *this);
+    default:
+        result = false;
     }
     return result;
 }
@@ -653,9 +614,7 @@ seqevent::snap_x( int *a_x )
         mod = 1;
 
     *a_x = *a_x - (*a_x % mod );
-
 }
-
 
 bool
 seqevent::on_focus_in_event(GdkEventFocus*)
@@ -676,10 +635,10 @@ seqevent::on_key_press_event(GdkEventKey* a_p0)
 {
     bool ret = false;
 
-    if ( a_p0->type == GDK_KEY_PRESS ){
-
-        if ( a_p0->keyval ==  GDK_Delete || a_p0->keyval == GDK_BackSpace ){
-
+    if ( a_p0->type == GDK_KEY_PRESS )
+    {
+        if ( a_p0->keyval ==  GDK_Delete || a_p0->keyval == GDK_BackSpace )
+        {
             if(m_seq->mark_selected())
             {
                 m_seq->push_undo();
@@ -688,11 +647,11 @@ seqevent::on_key_press_event(GdkEventKey* a_p0)
             }
         }
 
-        if ( a_p0->state & GDK_CONTROL_MASK ){
-
+        if ( a_p0->state & GDK_CONTROL_MASK )
+        {
             /* cut */
-            if ( a_p0->keyval == GDK_x || a_p0->keyval == GDK_X ){
-
+            if ( a_p0->keyval == GDK_x || a_p0->keyval == GDK_X )
+            {
                 if(m_seq->mark_selected())
                 {
                     m_seq->push_undo();
@@ -700,60 +659,53 @@ seqevent::on_key_press_event(GdkEventKey* a_p0)
                     m_seq->remove_marked();
                     ret = true;
                 }
-
             }
             /* copy */
-            if ( a_p0->keyval == GDK_c || a_p0->keyval == GDK_C ){
-
+            if ( a_p0->keyval == GDK_c || a_p0->keyval == GDK_C )
+            {
                 m_seq->copy_selected();
                 ret = true;
             }
             /* paste */
-            if ( a_p0->keyval == GDK_v || a_p0->keyval == GDK_V ){
-
+            if ( a_p0->keyval == GDK_v || a_p0->keyval == GDK_V )
+            {
                 start_paste();
                 ret = true;
             }
             /* Undo */
-            if ( a_p0->keyval == GDK_z || a_p0->keyval == GDK_Z ){
-
+            if ( a_p0->keyval == GDK_z || a_p0->keyval == GDK_Z )
+            {
                 m_seq->pop_undo();
                 ret = true;
             }
             /* Redo */
-            if ( a_p0->keyval == GDK_r || a_p0->keyval == GDK_R ){
-
+            if ( a_p0->keyval == GDK_r || a_p0->keyval == GDK_R )
+            {
                 m_seq->pop_redo();
                 ret = true;
             }
             /* select all events */
-            if ( a_p0->keyval == GDK_a || a_p0->keyval == GDK_A ){
-
+            if ( a_p0->keyval == GDK_a || a_p0->keyval == GDK_A )
+            {
                 m_seq->select_all();
                 ret = true;
             }
-         }
+        }
     }
 
-    if ( ret == true ){
-
+    if ( ret == true )
+    {
         redraw();
         m_seq->set_dirty();
         return true;
     }
     else
-
         return false;
 }
-
-
-
-
 
 //////////////////////////
 // interaction methods
 //////////////////////////
-
 
 void FruitySeqEventInput::updateMousePtr(seqevent& ths)
 {
@@ -783,7 +735,7 @@ void FruitySeqEventInput::updateMousePtr(seqevent& ths)
 
 bool FruitySeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& ths)
 {
-     int x,w,numsel;
+    int x,w,numsel;
 
     long tick_s;
     long tick_f;
@@ -802,16 +754,16 @@ bool FruitySeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& 
     ths.m_old.width = 0;
     ths.m_old.height = 0;
 
-    if ( ths.m_paste ){
-
+    if ( ths.m_paste )
+    {
         ths.snap_x( &ths.m_current_x );
         ths.convert_x( ths.m_current_x, &tick_s );
         ths.m_paste = false;
         ths.m_seq->push_undo();
         ths.m_seq->paste_selected( tick_s, 0 );
-
-    } else {
-
+    }
+    else
+    {
         /*      left mouse button     */
         if ( a_ev->button == 1 )
         {
@@ -826,8 +778,8 @@ bool FruitySeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& 
                 tick_s = 0;
 
             if ( ! ths.m_seq->select_events( tick_s, tick_f,
-                            ths.m_status, ths.m_cc, sequence::e_would_select ) &&
-                 !(a_ev->state & GDK_CONTROL_MASK) )
+                                             ths.m_status, ths.m_cc, sequence::e_would_select ) &&
+                    !(a_ev->state & GDK_CONTROL_MASK) )
             {
                 ths.m_painting = true;
 
@@ -837,7 +789,7 @@ bool FruitySeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& 
 
                 /* add note, length = little less than snap */
                 if ( ! ths.m_seq->select_events( tick_s, tick_f,
-                            ths.m_status, ths.m_cc, sequence::e_would_select ))
+                                                 ths.m_status, ths.m_cc, sequence::e_would_select ))
                 {
                     ths.m_seq->push_undo();
                     ths.drop_event( tick_s );
@@ -847,32 +799,32 @@ bool FruitySeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& 
             else /* selecting */
             {
                 if ( ! ths.m_seq->select_events( tick_s, tick_f,
-                            ths.m_status, ths.m_cc, sequence::e_is_selected ))
+                                                 ths.m_status, ths.m_cc, sequence::e_is_selected ))
                 {
                     // if clicking event...
                     if (ths.m_seq->select_events( tick_s, tick_f,
-                            ths.m_status, ths.m_cc, sequence::e_would_select ) )
+                                                  ths.m_status, ths.m_cc, sequence::e_would_select ) )
                     {
                         if ( ! (a_ev->state & GDK_CONTROL_MASK) )
-                           ths.m_seq->unselect();
+                            ths.m_seq->unselect();
                     }
                     // if clicking empty space ...
                     else
                     {
                         // ... unselect all if ctrl-shift not held
                         if (! ((a_ev->state & GDK_CONTROL_MASK) &&
-                               (a_ev->state & GDK_SHIFT_MASK)) )
-                           ths.m_seq->unselect();
+                                (a_ev->state & GDK_SHIFT_MASK)) )
+                            ths.m_seq->unselect();
                     }
 
                     /* on direct click select only one event */
                     numsel = ths.m_seq->select_events( tick_s, tick_f,
-                            ths.m_status,
-                            ths.m_cc, sequence::e_select_one );
+                                                       ths.m_status,
+                                                       ths.m_cc, sequence::e_select_one );
 
                     // prevent deselect in button_release()
                     if (numsel)
-                       m_justselected_one = true;
+                        m_justselected_one = true;
 
                     // if nothing selected, start the selection box
                     if (numsel == 0 && (a_ev->state & GDK_CONTROL_MASK))
@@ -881,9 +833,8 @@ bool FruitySeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& 
 
                 // if event under cursor is selected
                 if ( ths.m_seq->select_events( tick_s, tick_f,
-                            ths.m_status, ths.m_cc, sequence::e_is_selected ))
+                                               ths.m_status, ths.m_cc, sequence::e_is_selected ))
                 {
-
                     // grab/move the note
                     if ( !(a_ev->state & GDK_CONTROL_MASK) )
                     {
@@ -892,7 +843,7 @@ bool FruitySeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& 
 
                         /* get the box that selected elements are in */
                         ths.m_seq->get_selected_box( &tick_s, &note,
-                                &tick_f, &note );
+                                                     &tick_f, &note );
 
                         tick_f += tick_w;
 
@@ -926,14 +877,13 @@ bool FruitySeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& 
                     // ctrl left click when stuff is already selected
                     else if ((a_ev->state & GDK_CONTROL_MASK) &&
                              ths.m_seq->select_events( tick_s, tick_f,
-                                                  ths. m_status, ths.m_cc, sequence::e_is_selected ))
+                                                       ths. m_status, ths.m_cc, sequence::e_is_selected ))
                     {
                         m_is_drag_pasting_start = true;
                     }
 
                 }
             }
-
         } /* end if button == 1 */
 
         if ( a_ev->button == 3 )
@@ -950,13 +900,13 @@ bool FruitySeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& 
 
             //erase event under cursor if there is one
             if (ths.m_seq->select_events( tick_s, tick_f,
-                            ths.m_status, ths.m_cc, sequence::e_would_select ))
+                                          ths.m_status, ths.m_cc, sequence::e_would_select ))
             {
                 /* remove only the note under the cursor,
                    leave the selection intact */
                 ths.m_seq->push_undo();
                 ths.m_seq->select_events( tick_s, tick_f,
-                            ths.m_status, ths.m_cc, sequence::e_remove_one );
+                                          ths.m_status, ths.m_cc, sequence::e_remove_one );
                 ths.redraw();
                 ths.m_seq->set_dirty();
             }
@@ -998,8 +948,8 @@ bool FruitySeqEventInput::on_button_release_event(GdkEventButton* a_ev, seqevent
 
     long delta_tick;
 
-    if ( a_ev->button == 1 ){
-
+    if ( a_ev->button == 1 )
+    {
         int current_x = ths.m_current_x;
         long t_s, t_f;
         ths.snap_x( &current_x );
@@ -1021,7 +971,6 @@ bool FruitySeqEventInput::on_button_release_event(GdkEventButton* a_ev, seqevent
             ths.m_paste = false;
             ths.m_seq->push_undo();
             ths.m_seq->paste_selected( t_s, 0 );
-
             //m_seq->unselect();
         }
         // ctrl-left click but without movement - select a note
@@ -1033,21 +982,21 @@ bool FruitySeqEventInput::on_button_release_event(GdkEventButton* a_ev, seqevent
             // if note under cursor is selected, and ctrl is held
             // and buttondown didn't just select one
             if (!m_justselected_one &&
-                ths.m_seq->select_events( t_s, t_f,
-                                          ths.m_status, ths.m_cc,
-                                          sequence::e_is_selected ) &&
-                (a_ev->state & GDK_CONTROL_MASK))
+                    ths.m_seq->select_events( t_s, t_f,
+                                              ths.m_status, ths.m_cc,
+                                              sequence::e_is_selected ) &&
+                    (a_ev->state & GDK_CONTROL_MASK))
             {
                 // deselect the event
                 ths.m_seq->select_events( t_s, t_f,
                                           ths.m_status, ths.m_cc,
                                           sequence::e_deselect );
-    }
+            }
         }
         m_justselected_one = false; // clear flag on left button up
 
-        if ( ths.m_moving ){
-
+        if ( ths.m_moving )
+        {
             /* adjust for snap */
             delta_x -= ths.m_move_snap_offset_x;
 
@@ -1060,18 +1009,18 @@ bool FruitySeqEventInput::on_button_release_event(GdkEventButton* a_ev, seqevent
         }
     }
 
-    if ( a_ev->button == 3 || a_ev->button == 1 ){
-
-       if ( ths.m_selecting ){
-
+    if ( a_ev->button == 3 || a_ev->button == 1 )
+    {
+        if ( ths.m_selecting )
+        {
             ths.x_to_w( ths.m_drop_x, ths.m_current_x, &x, &w );
 
             ths.convert_x( x,   &tick_s );
             ths.convert_x( x+w, &tick_f );
 
             ths.m_seq->select_events( tick_s, tick_f,
-                                    ths.m_status,
-                                    ths.m_cc, sequence::e_toggle_selection );
+                                      ths.m_status,
+                                      ths.m_cc, sequence::e_toggle_selection );
         }
     }
 
@@ -1119,14 +1068,13 @@ bool FruitySeqEventInput::on_motion_notify_event(GdkEventMotion* a_ev, seqevent&
         m_is_drag_pasting = true;
     }
 
-    if ( ths.m_selecting || ths.m_moving || ths.m_paste  ){
-
+    if ( ths.m_selecting || ths.m_moving || ths.m_paste  )
+    {
         if ( ths.m_moving || ths.m_paste )
             ths.snap_x( &ths.m_current_x );
 
         ths.draw_selection_on_window();
     }
-
 
     if ( ths.m_painting )
     {
@@ -1145,13 +1093,13 @@ Seq42SeqEventInput::set_adding( bool a_adding, seqevent& ths )
 {
     if ( a_adding )
     {
-    	ths.get_window()->set_cursor(  Gdk::Cursor( Gdk::PENCIL ) );
-    	m_adding = true;
+        ths.get_window()->set_cursor(  Gdk::Cursor( Gdk::PENCIL ) );
+        m_adding = true;
     }
     else
     {
-    	ths.get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ) );
-    	m_adding = false;
+        ths.get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ) );
+        m_adding = false;
     }
 }
 
@@ -1177,19 +1125,20 @@ bool Seq42SeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& t
     ths.m_old.width = 0;
     ths.m_old.height = 0;
 
-    if ( ths.m_paste ){
-
+    if ( ths.m_paste )
+    {
         ths.snap_x( &ths.m_current_x );
         ths.convert_x( ths.m_current_x, &tick_s );
         ths.m_paste = false;
         ths.m_seq->push_undo();
         ths.m_seq->paste_selected( tick_s, 0 );
 
-    } else {
-
+    }
+    else
+    {
         /*      left mouse button     */
-        if ( a_ev->button == 1 ){
-
+        if ( a_ev->button == 1 )
+        {
             /* turn x,y in to tick/note */
             ths.convert_x( ths.m_drop_x, &tick_s );
 
@@ -1210,7 +1159,7 @@ bool Seq42SeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& t
                 /* add note, length = little less than snap */
 
                 if ( ! ths.m_seq->select_events( tick_s, tick_f,
-                            ths.m_status, ths.m_cc, sequence::e_would_select ))
+                                                 ths.m_status, ths.m_cc, sequence::e_would_select ))
                 {
                     ths.m_seq->push_undo();
                     ths.drop_event( tick_s );
@@ -1220,7 +1169,7 @@ bool Seq42SeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& t
             else /* selecting */
             {
                 if ( ! ths.m_seq->select_events( tick_s, tick_f,
-                            ths.m_status, ths.m_cc, sequence::e_is_selected ))
+                                                 ths.m_status, ths.m_cc, sequence::e_is_selected ))
                 {
                     if ( ! (a_ev->state & GDK_CONTROL_MASK) )
                     {
@@ -1228,8 +1177,8 @@ bool Seq42SeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& t
                     }
 
                     numsel = ths.m_seq->select_events( tick_s, tick_f,
-                            ths.m_status,
-                            ths.m_cc, sequence::e_select_one );
+                                                       ths.m_status,
+                                                       ths.m_cc, sequence::e_select_one );
 
                     /* if we didnt select anyhing (user clicked empty space)
                        unselect all notes, and start selecting */
@@ -1246,15 +1195,14 @@ bool Seq42SeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& t
                 }
 
                 if ( ths.m_seq->select_events( tick_s, tick_f,
-                            ths.m_status, ths.m_cc, sequence::e_is_selected ))
+                                               ths.m_status, ths.m_cc, sequence::e_is_selected ))
                 {
-
                     ths.m_moving_init = true;
                     int note;
 
                     /* get the box that selected elements are in */
                     ths.m_seq->get_selected_box( &tick_s, &note,
-                            &tick_f, &note );
+                                                 &tick_f, &note );
 
                     tick_f += tick_w;
 
@@ -1284,14 +1232,12 @@ bool Seq42SeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& t
                     ths.snap_x( &ths.m_selected.x );
                     ths.snap_x( &ths.m_current_x );
                     ths.snap_x( &ths.m_drop_x );
-
                 }
             }
-
         } /* end if button == 1 */
 
-        if ( a_ev->button == 3 ){
-
+        if ( a_ev->button == 3 )
+        {
             set_adding( true, ths );
         }
     }
@@ -1321,22 +1267,22 @@ bool Seq42SeqEventInput::on_button_release_event(GdkEventButton* a_ev, seqevent&
 
     long delta_tick;
 
-    if ( a_ev->button == 1 ){
-
-        if ( ths.m_selecting ){
-
+    if ( a_ev->button == 1 )
+    {
+        if ( ths.m_selecting )
+        {
             ths.x_to_w( ths.m_drop_x, ths.m_current_x, &x, &w );
 
             ths.convert_x( x,   &tick_s );
             ths.convert_x( x+w, &tick_f );
 
             ths.m_seq->select_events( tick_s, tick_f,
-                    ths.m_status,
-                    ths.m_cc, sequence::e_select );
+                                      ths.m_status,
+                                      ths.m_cc, sequence::e_select );
         }
 
-        if ( ths.m_moving ){
-
+        if ( ths.m_moving )
+        {
             /* adjust for snap */
             delta_x -= ths.m_move_snap_offset_x;
 
@@ -1351,10 +1297,9 @@ bool Seq42SeqEventInput::on_button_release_event(GdkEventButton* a_ev, seqevent&
         set_adding( m_adding, ths );
     }
 
-    if ( a_ev->button == 3 ){
-
+    if ( a_ev->button == 3 )
+    {
         set_adding( false, ths );
-
     }
 
     /* turn off */
@@ -1377,13 +1322,14 @@ bool Seq42SeqEventInput::on_motion_notify_event(GdkEventMotion* a_ev, seqevent& 
 {
     long tick = 0;
 
-    if ( ths.m_moving_init ){
+    if ( ths.m_moving_init )
+    {
         ths.m_moving_init = false;
         ths.m_moving = true;
     }
 
-    if ( ths.m_selecting || ths.m_moving || ths.m_paste  ){
-
+    if ( ths.m_selecting || ths.m_moving || ths.m_paste  )
+    {
         ths.m_current_x = (int) a_ev->x  + ths.m_scroll_offset_x;;
 
         if ( ths.m_moving || ths.m_paste )

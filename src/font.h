@@ -24,7 +24,6 @@
 #include <gtkmm/widget.h>
 #include <gtkmm/drawingarea.h>
 
-
 #include <string>
 
 using namespace Gtk;
@@ -41,7 +40,8 @@ private:
 
 public:
 
-    enum Color {
+    enum Color
+    {
         BLACK = 0,
         WHITE = 1
     };
@@ -61,4 +61,3 @@ public:
 };
 
 extern font *p_font_renderer;
-

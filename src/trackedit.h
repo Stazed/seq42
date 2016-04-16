@@ -40,12 +40,10 @@
 
 using namespace Gtk;
 
-
-
 class trackedit : public Gtk::Window
 {
 
- private:
+private:
 
     track *m_track;
 
@@ -83,5 +81,4 @@ public:
     ~trackedit();
 
     bool on_delete_event(GdkEventAny *a_event);
-
 };
