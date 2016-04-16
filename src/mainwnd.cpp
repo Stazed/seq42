@@ -927,6 +927,14 @@ void mainwnd::file_new()
 void mainwnd::new_file()
 {
     m_mainperf->clear_all();
+    set_bp_measure(4);
+    set_bw(4);
+    set_xpose(0);
+    m_mainperf->set_bpm(120);
+    m_mainperf->undo_vect.clear();
+    m_mainperf->redo_vect.clear();
+    m_mainperf->set_have_undo();
+    m_mainperf->set_have_redo();
 
     global_filename = "";
     update_window_title();
@@ -1057,9 +1065,14 @@ void mainwnd::export_midi(const Glib::ustring& fn, int type)
 
     if (!result)
     {
-        Gtk::MessageDialog errdialog(*this,
-                                     "Error writing file.", false,
-                                     Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
+        Gtk::MessageDialog errdialog
+        (
+            *this,
+            "Error writing file.",
+            false,
+            Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK,
+            true
+        );
         errdialog.run();
     }
 
@@ -1073,8 +1086,11 @@ void mainwnd::open_file(const Glib::ustring& fn)
 
     m_mainperf->clear_all();
 
-    //midifile f(fn);
-    //result = f.parse(m_mainperf);
+    set_xpose(0);
+    m_mainperf->undo_vect.clear();
+    m_mainperf->redo_vect.clear();
+    m_mainperf->set_have_undo();
+    m_mainperf->set_have_redo();
 
     result = m_mainperf->load(fn);
 
@@ -1082,9 +1098,14 @@ void mainwnd::open_file(const Glib::ustring& fn)
 
     if (!result)
     {
-        Gtk::MessageDialog errdialog(*this,
-                                     "Error reading file: " + fn, false,
-                                     Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
+        Gtk::MessageDialog errdialog
+        (
+            *this,
+            "Error reading file: " + fn,
+            false,
+            Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK,
+            true
+        );
         errdialog.run();
         return;
     }
@@ -1149,16 +1170,18 @@ bool mainwnd::save_file()
         return true;
     }
 
-    //midifile f(global_filename);
-    //result = f.write(m_mainperf);
-
     result = m_mainperf->save(global_filename);
 
     if (!result)
     {
-        Gtk::MessageDialog errdialog(*this,
-                                     "Error writing file.", false,
-                                     Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
+        Gtk::MessageDialog errdialog
+        (
+            *this,
+            "Error writing file.",
+            false,
+            Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK,
+            true
+        );
         errdialog.run();
     }
     global_is_modified = !result;
@@ -1175,9 +1198,15 @@ int mainwnd::query_save_changes()
         query_str = "File '" + global_filename + "' was changed.\n"
                     "Save changes?";
 
-    Gtk::MessageDialog dialog(*this, query_str, false,
-                              Gtk::MESSAGE_QUESTION,
-                              Gtk::BUTTONS_NONE, true);
+    Gtk::MessageDialog dialog
+    (
+        *this,
+        query_str,
+        false,
+        Gtk::MESSAGE_QUESTION,
+        Gtk::BUTTONS_NONE,
+        true
+    );
 
     dialog.add_button(Gtk::Stock::YES, Gtk::RESPONSE_YES);
     dialog.add_button(Gtk::Stock::NO, Gtk::RESPONSE_NO);
