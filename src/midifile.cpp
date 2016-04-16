@@ -385,13 +385,17 @@ bool midifile::parse (perform * a_perf)
                             {
                                 int bp_measure = int(read_byte());  // nn
                                 int logbase2 = int(read_byte());    // dd
-                                long bw = long(pow2(logbase2));
+
+                                read_byte();                        // cc eat it
+                                read_byte();                        // bb eat it
+
+                                long bw = long(pow2(logbase2));     // convert dd to bw
+
+                                if(bp_measure == 0 || bw == 0)      // spec assumes 4 x 4 as we do
+                                    break;
 
                                 a_perf->set_bp_measure(bp_measure); // set main perform
                                 a_perf->set_bw(bw);
-
-                                read_byte();                        // cc eat
-                                read_byte();                        // bb eat
 
                                 seq->set_bp_measure(bp_measure);    // also sets the sequence
                                 seq->set_bw(bw);
@@ -413,6 +417,10 @@ bool midifile::parse (perform * a_perf)
                                 unsigned tempo = unsigned(read_byte());
                                 tempo = (tempo * 256) + unsigned(read_byte());
                                 tempo = (tempo * 256) + unsigned(read_byte());
+
+                                if(tempo == 0)          /* Midi spec assumes 120 bpm as we do */
+                                    break;
+
                                 int bpm = (double) 60000000.0 / tempo;
 
                                 a_perf->set_bpm(bpm);
@@ -852,12 +860,12 @@ bool midifile::write_song (perform * a_perf)
 
             //printf("total_seq_length = [%ld]\n",total_seq_length);
             /*
-               The sequence trigger is NOT part of the standard midi format and is proprietary to seq24.
+                The sequence trigger is NOT part of the standard midi format and is proprietary to seq24.
                 It is added here because the trigger combining has an alternative benefit for editing.
                 The user can split, slice and rearrange triggers to form a new sequence. Then mute all
                 other tracks and export to a temporary midi file. Now they can import the combined
-                sequence as a new item. This makes editing of long improvised sequences into smaller or
-                modified sequences as well as combining several sequence parts painless. Also,
+                triggers/sequence as a new item. This makes editing of long improvised sequences into
+                smaller or modified sequences as well as combining several sequence parts painless. Also,
                 if the user has a variety of common items such as drum beats, control codes, etc that
                 can be used in other projects, this method is very convenient. The common items can
                 be kept in one file and exported all, individually, or in part by creating triggers and muting.
