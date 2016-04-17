@@ -93,7 +93,7 @@ bool midifile::parse (perform * a_perf)
 
     if (!file.is_open ())
     {
-        fprintf(stderr, "Error opening MIDI file\n");
+        error_message_gtk("Error opening MIDI file");
         return false;
     }
 
@@ -109,7 +109,7 @@ bool midifile::parse (perform * a_perf)
     }
     catch(std::bad_alloc& ex)
     {
-        fprintf(stderr, "Memory allocation failed\n");
+        error_message_gtk("Memory allocation failed");
         return false;
     }
     file.read ((char *) &m_d[0], file_size);
@@ -154,42 +154,28 @@ bool midifile::parse (perform * a_perf)
     /* magic number 'MThd' */
     if (ID != 0x4D546864)
     {
-        std::string message = "Invalid MIDI header detected: ";
-        message += UlongToStringHex(ID);
-        Gtk::MessageDialog errdialog
-        (
-            message,
-            false,
-            Gtk::MESSAGE_ERROR,
-            Gtk::BUTTONS_OK,
-            true
-        );
-        errdialog.run();
+        Glib::ustring message = "Invalid MIDI header detected: ";
+        message += Ulong_To_String_Hex(ID);
+        error_message_gtk(message);
         return false;
     }
 
     /* we are only supporting format 1 for now */
     if (Format != 1)
     {
-        std::string message = "Unsupported MIDI format detected: ";
+        Glib::ustring message = "Unsupported MIDI format detected: ";
         message += NumberToString(Format);
-        Gtk::MessageDialog errdialog
-        (
-            message,
-            false,
-            Gtk::MESSAGE_ERROR,
-            Gtk::BUTTONS_OK,
-            true
-        );
-        errdialog.run();
+        error_message_gtk(message);
         return false;
     }
 
     /* We should be good to load now   */
-    a_perf->push_perf_undo();
     /* for each Track in the midi file */
     for (int curTrack = 0; curTrack < NumTracks; curTrack++)
     {
+        if(curTrack == 0)
+            a_perf->push_perf_undo();
+
         /* done for each track */
         bool done = false;
 
@@ -213,7 +199,7 @@ bool midifile::parse (perform * a_perf)
 
             if (a_track == NULL)
             {
-                fprintf(stderr, "Memory allocation failed\n");
+                error_message_gtk("Memory allocation failed");
                 return false;
             }
             a_perf->add_track(a_track,curTrack);
@@ -492,14 +478,20 @@ bool midifile::parse (perform * a_perf)
                     }
                     else
                     {
-                        fprintf(stderr, "Unexpected system event : 0x%.2X", status);
+                        //fprintf(stderr, "Unexpected system event : 0x%.2X", status);
+                        Glib::ustring message = "Unexpected system event : ";
+                        message += Ulong_To_String_Hex((unsigned long)status);
+                        error_message_gtk(message);
                         return false;
                     }
 
                     break;
 
                 default:
-                    fprintf(stderr, "Unsupported MIDI event: %hhu\n", status);
+                    //fprintf(stderr, "Unsupported MIDI event: %hhu\n", status);
+                    Glib::ustring message = "Unsupported MIDI event:  ";
+                    message += Ulong_To_String_Hex((unsigned long)status);
+                    error_message_gtk(message);
                     return false;
                     break;
                 }
@@ -965,13 +957,26 @@ midifile::pow2 (int logbase2)
     return result;
 }
 
-string
-midifile::UlongToStringHex ( unsigned long Number )
+Glib::ustring
+midifile::Ulong_To_String_Hex ( unsigned long Number )
 {
     char bus_num[12];
     snprintf(bus_num, sizeof(bus_num), "%8lX", Number);
 
-    string str(bus_num);
+    Glib::ustring str(bus_num);
     return str;
 }
 
+void
+midifile::error_message_gtk( Glib::ustring message)
+{
+    Gtk::MessageDialog errdialog
+    (
+        message,
+        false,
+        Gtk::MESSAGE_ERROR,
+        Gtk::BUTTONS_OK,
+        true
+    );
+    errdialog.run();
+}

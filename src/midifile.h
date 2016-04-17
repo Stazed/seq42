@@ -51,7 +51,8 @@ private:
 
     void write_header( int numtracks);
     int pow2 (int logbase2);
-    string UlongToStringHex( unsigned long Number );
+    Glib::ustring Ulong_To_String_Hex( unsigned long Number );
+    void error_message_gtk( Glib::ustring message);
 
 public:
 
