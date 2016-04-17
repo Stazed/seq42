@@ -97,7 +97,16 @@ bool midifile::parse (perform * a_perf)
         return false;
     }
 
-    int file_size = file.tellg ();
+    unsigned int file_size = file.tellg ();
+
+    if(file_size < sizeof(unsigned long))
+    {
+        Glib::ustring message = "Error - Invalid file size: ";
+        message += NumberToString(file_size);
+        error_message_gtk(message);
+        file.close ();
+        return false;
+    }
 
     /* run to start */
     file.seekg (0, ios::beg);
@@ -170,12 +179,11 @@ bool midifile::parse (perform * a_perf)
     }
 
     /* We should be good to load now   */
+    a_perf->push_perf_undo();
+
     /* for each Track in the midi file */
     for (int curTrack = 0; curTrack < NumTracks; curTrack++)
     {
-        if(curTrack == 0)
-            a_perf->push_perf_undo();
-
         /* done for each track */
         bool done = false;
 
