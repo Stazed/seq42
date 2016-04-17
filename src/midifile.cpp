@@ -88,8 +88,6 @@ midifile::read_var ()
 
 bool midifile::parse (perform * a_perf)
 {
-    a_perf->push_perf_undo();
-
     /* open binary file */
     ifstream file(m_name.c_str(), ios::in | ios::binary | ios::ate);
 
@@ -156,18 +154,39 @@ bool midifile::parse (perform * a_perf)
     /* magic number 'MThd' */
     if (ID != 0x4D546864)
     {
-        fprintf(stderr, "Invalid MIDI header detected: %8lX\n", ID);
+        std::string message = "Invalid MIDI header detected: ";
+        message += NumberToString(ID);
+        Gtk::MessageDialog errdialog
+        (
+            message,
+            false,
+            Gtk::MESSAGE_ERROR,
+            Gtk::BUTTONS_OK,
+            true
+        );
+        errdialog.run();
         return false;
     }
 
     /* we are only supporting format 1 for now */
     if (Format != 1)
     {
-        fprintf(stderr, "Unsupported MIDI format detected: %d\n", Format);
+        std::string message = "Unsupported MIDI format detected: ";
+        message += NumberToString(Format);
+        Gtk::MessageDialog errdialog
+        (
+            message,
+            false,
+            Gtk::MESSAGE_ERROR,
+            Gtk::BUTTONS_OK,
+            true
+        );
+        errdialog.run();
         return false;
     }
 
     /* We should be good to load now   */
+    a_perf->push_perf_undo();
     /* for each Track in the midi file */
     for (int curTrack = 0; curTrack < NumTracks; curTrack++)
     {

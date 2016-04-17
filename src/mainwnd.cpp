@@ -1293,8 +1293,11 @@ mainwnd::file_import_dialog()
         try
         {
             midifile f( dialog.get_filename() );
-            f.parse( m_mainperf );
-            last_midi_dir = dialog.get_filename().substr(0, dialog.get_filename().rfind("/") + 1);
+
+            //f.parse( m_mainperf );
+            if(f.parse( m_mainperf ))
+                last_midi_dir = dialog.get_filename().substr(0, dialog.get_filename().rfind("/") + 1);
+            else return;
         }
         catch(...)
         {
