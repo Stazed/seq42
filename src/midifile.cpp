@@ -155,7 +155,7 @@ bool midifile::parse (perform * a_perf)
     if (ID != 0x4D546864)
     {
         std::string message = "Invalid MIDI header detected: ";
-        message += NumberToString(ID);
+        message += UlongToStringHex(ID);
         Gtk::MessageDialog errdialog
         (
             message,
@@ -963,5 +963,15 @@ midifile::pow2 (int logbase2)
             result *= 2;
     }
     return result;
+}
+
+string
+midifile::UlongToStringHex ( unsigned long Number )
+{
+    char bus_num[12];
+    snprintf(bus_num, sizeof(bus_num), "%8lX", Number);
+
+    string str(bus_num);
+    return str;
 }
 

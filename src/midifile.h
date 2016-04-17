@@ -51,6 +51,7 @@ private:
 
     void write_header( int numtracks);
     int pow2 (int logbase2);
+    string UlongToStringHex( unsigned long Number );
 
 public:
 
