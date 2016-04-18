@@ -407,7 +407,6 @@ seqkeys::on_scroll_event( GdkEventScroll* a_ev )
 
     m_vadjust->clamp_page( val, val + m_vadjust->get_page_size() );
     return true;
-
 }
 
 void

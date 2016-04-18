@@ -222,10 +222,13 @@ mainwnd::mainwnd(perform *a_p):
 
     m_perfnames = manage( new perfnames( m_mainperf, m_vadjust ));
 
-    m_perfroll = manage( new perfroll( m_mainperf,
-                                       this,
-                                       m_hadjust,
-                                       m_vadjust ));
+    m_perfroll = manage( new perfroll
+                         (
+                             m_mainperf,
+                             this,
+                             m_hadjust,
+                             m_vadjust
+                         ));
     m_perftime = manage( new perftime( m_mainperf, this, m_hadjust ));
 
     /* init table, viewports and scroll bars */
@@ -511,45 +514,67 @@ mainwnd::timer_callback(  )
     }
 
     if (m_button_mode->get_active() != global_song_start_mode)        // for seqroll keybinding
+    {
         m_button_mode->set_active(global_song_start_mode);
+    }
 
 #ifdef JACK_SUPPORT
     if (m_button_jack->get_active() != m_mainperf->get_toggle_jack()) // for seqroll keybinding
+    {
         toggle_jack();
+    }
 
     if(global_is_running && m_button_jack->get_sensitive())
+    {
         m_button_jack->set_sensitive(false);
+    }
     else if(!global_is_running && !m_button_jack->get_sensitive())
+    {
         m_button_jack->set_sensitive(true);
-
+    }
 #endif // JACK_SUPPORT
 
     if(global_is_running && m_button_mode->get_sensitive())
+    {
         m_button_mode->set_sensitive(false);
+    }
     else if(!global_is_running && !m_button_mode->get_sensitive())
+    {
         m_button_mode->set_sensitive(true);
+    }
 
     if (m_button_follow->get_active() != m_mainperf->get_follow_transport())
+    {
         m_button_follow->set_active(m_mainperf->get_follow_transport());
+    }
 
     if ( m_adjust_swing_amount8->get_value() != m_mainperf->get_swing_amount8())
     {
         m_adjust_swing_amount8->set_value( m_mainperf->get_swing_amount8());
     }
+
     if ( m_adjust_swing_amount16->get_value() != m_mainperf->get_swing_amount16())
     {
         m_adjust_swing_amount16->set_value( m_mainperf->get_swing_amount16());
     }
 
     if(m_mainperf->m_have_undo && !m_button_undo->get_sensitive())
+    {
         m_button_undo->set_sensitive(true);
+    }
     else if(!m_mainperf->m_have_undo && m_button_undo->get_sensitive())
+    {
         m_button_undo->set_sensitive(false);
+    }
 
     if(m_mainperf->m_have_redo && !m_button_redo->get_sensitive())
+    {
         m_button_redo->set_sensitive(true);
+    }
     else if(!m_mainperf->m_have_redo && m_button_redo->get_sensitive())
+    {
         m_button_redo->set_sensitive(false);
+    }
 
     return true;
 }
@@ -989,7 +1014,6 @@ void mainwnd::file_save_as(int type)
     if(type == 1 || type == 2) // .midi
         dialog.set_current_folder(last_midi_dir);
 
-
     int result = dialog.run();
 
     switch (result)
@@ -1002,7 +1026,6 @@ void mainwnd::file_save_as(int type)
         if ((current_filter != NULL) &&
                 (current_filter->get_name() == "Seq42 files"))
         {
-
             // check for Seq42 file extension; if missing, add .s42
             std::string suffix = fname.substr(
                                      fname.find_last_of(".") + 1, std::string::npos);
@@ -1013,7 +1036,6 @@ void mainwnd::file_save_as(int type)
         if ((current_filter != NULL) &&
                 (current_filter->get_name() == "MIDI files"))
         {
-
             // check for MIDI file extension; if missing, add .midi
             std::string suffix = fname.substr(
                                      fname.find_last_of(".") + 1, std::string::npos);
@@ -1042,7 +1064,9 @@ void mainwnd::file_save_as(int type)
             save_file();
         }
         else
+        {
             export_midi(fname, type);
+        }
 
         break;
     }
@@ -1294,16 +1318,21 @@ mainwnd::file_import_dialog()
         {
             midifile f( dialog.get_filename() );
 
-            //f.parse( m_mainperf );
             if(f.parse( m_mainperf ))
                 last_midi_dir = dialog.get_filename().substr(0, dialog.get_filename().rfind("/") + 1);
             else return;
         }
         catch(...)
         {
-            Gtk::MessageDialog errdialog(*this,
-                                         "Error reading file.", false,
-                                         Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK, true);
+            Gtk::MessageDialog errdialog
+            (
+                *this,
+                "Error reading file.",
+                false,
+                Gtk::MESSAGE_ERROR,
+                Gtk::BUTTONS_OK,
+                true
+            );
             errdialog.run();
         }
         global_is_modified = true;
@@ -1576,7 +1605,6 @@ mainwnd::signal_action(Glib::IOCondition condition)
         printf("Error: unexpected IO condition\n");
         return false;
     }
-
 
     if (read(m_sigpipe[0], &message, sizeof(message)) == -1)
     {

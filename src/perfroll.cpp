@@ -72,7 +72,6 @@ perfroll::perfroll( perform *a_perf,
                 Gdk::FOCUS_CHANGE_MASK |
                 Gdk::SCROLL_MASK );
 
-
     set_size_request( 10, 10 );
 
     set_double_buffered( false );
@@ -80,7 +79,6 @@ perfroll::perfroll( perform *a_perf,
     for( int i=0; i<c_max_track; ++i )
         m_track_active[i]=false;
 }
-
 
 perfroll::~perfroll( )
 {
@@ -102,7 +100,6 @@ perfroll::change_vert( )
 {
     if ( m_track_offset != (int) m_vadjust->get_value() )
     {
-
         m_track_offset = (int) m_vadjust->get_value();
         queue_draw();
     }
@@ -197,11 +194,14 @@ perfroll::fill_background_pixmap()
 {
     /* clear background */
     m_gc->set_foreground(m_white);
-    m_background->draw_rectangle(m_gc,true,
-                                 0,
-                                 0,
-                                 c_perfroll_background_x,
-                                 c_names_y );
+    m_background->draw_rectangle
+    (
+        m_gc,true,
+        0,
+        0,
+        c_perfroll_background_x,
+        c_names_y
+    );
 
     /* draw horz grey lines */
     m_gc->set_foreground(m_grey);
@@ -214,18 +214,20 @@ perfroll::fill_background_pixmap()
                                Gdk::CAP_NOT_LAST,
                                Gdk::JOIN_MITER );
 
-    m_background->draw_line(m_gc,
-                            0,
-                            0,
-                            c_perfroll_background_x,
-                            0 );
+    m_background->draw_line
+    (
+        m_gc,
+        0,
+        0,
+        c_perfroll_background_x,
+        0
+    );
 
     int beats = m_measure_length / m_beat_length;
 
     /* draw vert lines */
     for ( int i=0; i< beats ; )
     {
-
         if ( i == 0 )
         {
             m_gc->set_line_attributes( 1,
@@ -244,11 +246,14 @@ perfroll::fill_background_pixmap()
         m_gc->set_foreground(m_grey);
 
         /* solid line on every beat */
-        m_background->draw_line(m_gc,
-                                i * m_beat_length / m_perf_scale_x,
-                                0,
-                                i * m_beat_length / m_perf_scale_x,
-                                c_names_y );
+        m_background->draw_line
+        (
+            m_gc,
+            i * m_beat_length / m_perf_scale_x,
+            0,
+            i * m_beat_length / m_perf_scale_x,
+            c_names_y
+        );
 
         // jump 2 if 16th notes
         if ( m_beat_length < c_ppqn/2 )
@@ -296,16 +301,22 @@ perfroll::draw_progress()
     int old_progress_x = ( m_old_progress_ticks - tick_offset ) / m_perf_scale_x ;
 
     /* draw old */
-    m_window->draw_drawable(m_gc,
-                            m_pixmap,
-                            old_progress_x, 0,
-                            old_progress_x, 0,
-                            1, m_window_y );
+    m_window->draw_drawable
+    (
+        m_gc,
+        m_pixmap,
+        old_progress_x, 0,
+        old_progress_x, 0,
+        1, m_window_y
+    );
 
     m_gc->set_foreground(m_black);
-    m_window->draw_line(m_gc,
-                        progress_x, 0,
-                        progress_x, m_window_y);
+    m_window->draw_line
+    (
+        m_gc,
+        progress_x, 0,
+        progress_x, m_window_y
+    );
 
     m_old_progress_ticks = tick;
 
@@ -401,12 +412,10 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
                         int length_w = sequence_length / m_perf_scale_x;
                         long length_marker_first_tick = ( tick_on - (tick_on % sequence_length) + (offset % sequence_length) - sequence_length);
 
-
                         long tick_marker = length_marker_first_tick;
 
                         while ( tick_marker < tick_off )
                         {
-
                             long tick_marker_x = (tick_marker / m_perf_scale_x) - x_offset;
 
                             if ( tick_marker > tick_on )
@@ -478,8 +487,6 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
                                                         y + note_y );
                             }
 
-
-
                             tick_marker += sequence_length;
                         }
                     }
@@ -493,9 +500,6 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
         }
     }
 }
-
-
-
 
 void perfroll::draw_background_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
 {
@@ -524,7 +528,6 @@ void perfroll::draw_background_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_tra
     {
         int x_pos = ((i * m_measure_length) - tick_offset) / m_perf_scale_x;
 
-
         a_draw->draw_drawable(m_gc, m_background,
                               0,
                               0,
@@ -532,12 +535,8 @@ void perfroll::draw_background_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_tra
                               y,
                               c_perfroll_background_x,
                               c_names_y );
-
-
     }
 }
-
-
 
 bool
 perfroll::on_expose_event(GdkEventExpose* e)
@@ -574,7 +573,6 @@ perfroll::redraw_dirty_tracks()
     {
         int track = y + m_track_offset; // 4am
 
-
         bool dirty = (m_mainperf->is_dirty_perf(track ));
 
         if (dirty)
@@ -586,29 +584,34 @@ perfroll::redraw_dirty_tracks()
     }
 
     if ( draw )
-        m_window->draw_drawable( m_gc, m_pixmap,
-                                 0,
-                                 0,
-                                 0,
-                                 0,
-                                 m_window_x,
-                                 m_window_y );
+        m_window->draw_drawable
+        (
+            m_gc,
+            m_pixmap,
+            0,
+            0,
+            0,
+            0,
+            m_window_x,
+            m_window_y
+        );
 }
-
-
-
 
 void
 perfroll::draw_drawable_row( Glib::RefPtr<Gdk::Drawable> a_dest, Glib::RefPtr<Gdk::Drawable> a_src,  long a_y )
 {
     int s = a_y / c_names_y;
-    a_dest->draw_drawable(m_gc, a_src,
-                          0,
-                          c_names_y * s,
-                          0,
-                          c_names_y * s,
-                          m_window_x,
-                          c_names_y );
+    a_dest->draw_drawable
+    (
+        m_gc,
+        a_src,
+        0,
+        c_names_y * s,
+        0,
+        c_names_y * s,
+        m_window_x,
+        c_names_y
+    );
 }
 
 bool
@@ -773,7 +776,6 @@ perfroll::on_motion_notify_event(GdkEventMotion* a_ev)
     return result;
 }
 
-
 bool
 perfroll::on_key_press_event(GdkEventKey* a_p0)
 {
@@ -801,7 +803,6 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
         {
             if ( a_p0->keyval ==  GDK_Delete || a_p0->keyval == GDK_BackSpace )
             {
-
                 m_mainperf->push_trigger_undo(m_drop_track);
                 m_mainperf->get_track( m_drop_track )->del_selected_trigger();
 
@@ -853,9 +854,12 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                         {
                             if(t != m_drop_track) // If clipboard and paste are on diff tracks - then cross track paste
                             {
-                                paste_trigger_sequence( m_mainperf->get_track( m_drop_track ),
-                                                        m_mainperf->get_track(t)->get_sequence(m_mainperf->get_track(t)
-                                                                ->get_trigger_clipboard()->m_sequence ));
+                                paste_trigger_sequence
+                                (
+                                    m_mainperf->get_track( m_drop_track ),
+                                    m_mainperf->get_track(t)->get_sequence(m_mainperf->get_track(t)
+                                            ->get_trigger_clipboard()->m_sequence )
+                                );
                                 ret = true;
                                 cross_track_paste = true;
                                 cross_track = true;
@@ -863,6 +867,7 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                             }
                         }
                     }
+
                     if(!cross_track)
                     {
                         if (m_mainperf->get_track(m_drop_track)->get_trigger_clipboard()->m_sequence >= 0)
@@ -1139,7 +1144,6 @@ perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
                 snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
                 menu_t->items().push_back(MenuElem(name,
                                                    sigc::bind(mem_fun(ths, &perfroll::copy_sequence), a_track, a_trigger, a_seq)));
-
             }
         }
         if(copy_seq_menu != NULL)

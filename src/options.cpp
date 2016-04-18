@@ -80,7 +80,6 @@ options::add_midi_clock_page()
 
         hbox2->pack_start (*label, false, false);
 
-
         Gtk::RadioButton * rb_off = manage (new RadioButton ("Off"));
         add_tooltip( rb_off, "Midi Clock will be disabled.");
 
@@ -128,7 +127,6 @@ options::add_midi_clock_page()
 
     HBox *hbox2 = manage (new HBox ());
 
-    //m_spinbutton_bpm->set_editable( false );
     hbox2->pack_start(*(manage(new Label(
                                    "Clock Start Modulo (1/16 Notes)"))), false, false, 4);
     hbox2->pack_start(*clock_mod_spin, false, false );
@@ -229,7 +227,6 @@ options::add_keyboard_page()
     entry = manage(new KeyBindEntry(&m_perf->m_key_bpm_up));
     controltable->attach(*label, 2, 3, 3, 4);
     controltable->attach(*entry, 3, 4, 3, 4);
-
 }
 
 /*Mouse page*/
@@ -376,7 +373,6 @@ options::mouse_seq42_callback(Gtk::RadioButton *btn)
         global_interactionmethod = e_seq42_interaction;
         global_interaction_method_change = true;
     }
-
 }
 
 void
@@ -393,25 +389,21 @@ options::transport_callback (button a_type, Button * a_check)
 
     switch (a_type)
     {
-
     case e_jack_transport:
     {
         global_with_jack_transport = check->get_active ();
     }
     break;
-
     case e_jack_master:
     {
         global_with_jack_master = check->get_active ();
     }
     break;
-
     case e_jack_master_cond:
     {
         global_with_jack_master_cond = check->get_active ();
     }
     break;
-
     default:
         break;
     }

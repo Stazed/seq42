@@ -30,7 +30,6 @@ perfnames::perfnames( perform *a_perf, Adjustment *a_vadjust ):
     m_vadjust(a_vadjust),
     m_track_offset(0)
 {
-
     add_events( Gdk::BUTTON_PRESS_MASK |
                 Gdk::BUTTON_RELEASE_MASK |
                 Gdk::SCROLL_MASK );
@@ -64,10 +63,13 @@ perfnames::on_realize()
     m_gc = Gdk::GC::create( m_window );
     m_window->clear();
 
-    m_pixmap = Gdk::Pixmap::create(m_window,
-                                   c_names_x,
-                                   c_names_y  * c_max_track + 1,
-                                   -1);
+    m_pixmap = Gdk::Pixmap::create
+    (
+        m_window,
+        c_names_x,
+        c_names_y  * c_max_track + 1,
+        -1
+    );
 }
 
 void
@@ -75,7 +77,6 @@ perfnames::change_vert( )
 {
     if ( m_track_offset != (int) m_vadjust->get_value() )
     {
-
         m_track_offset = (int) m_vadjust->get_value();
         queue_draw();
     }
@@ -102,44 +103,47 @@ perfnames::redraw( int track )
 void
 perfnames::draw_track( int track )
 {
-
     int i = track - m_track_offset;
 
     if ( track < c_max_track )
     {
-
-
-
         m_gc->set_foreground(m_black);
-        m_window->draw_rectangle(m_gc,true,
-                                 0,
-                                 (c_names_y * i),
-                                 c_names_x,
-                                 c_names_y + 1 );
-
+        m_window->draw_rectangle
+        (
+            m_gc,true,
+            0,
+            (c_names_y * i),
+            c_names_x,
+            c_names_y + 1
+        );
 
         if ( m_mainperf->is_active_track( track ))
             m_gc->set_foreground(m_white);
         else
             m_gc->set_foreground(m_grey);
 
-        m_window->draw_rectangle(m_gc,true,
-                                 1,
-                                 (c_names_y * i) + 1,
-                                 c_names_x-1,
-                                 c_names_y - 1  );
+        m_window->draw_rectangle
+        (
+            m_gc,true,
+            1,
+            (c_names_y * i) + 1,
+            c_names_x-1,
+            c_names_y - 1
+        );
 
         if ( m_mainperf->is_active_track( track ))
         {
-
             m_track_active[track]=true;
 
             char str[20];
-            snprintf(str, sizeof(str),
-                     "[%d] Bus %d Ch %d",
-                     track + 1,
-                     m_mainperf->get_track(track)->get_midi_bus()+1,
-                     m_mainperf->get_track(track)->get_midi_channel()+1 );
+            snprintf
+            (
+                str, sizeof(str),
+                "[%d] Bus %d Ch %d",
+                track + 1,
+                m_mainperf->get_track(track)->get_midi_bus()+1,
+                m_mainperf->get_track(track)->get_midi_channel()+1
+            );
 
             p_font_renderer->render_string_on_drawable(m_gc,
                     5,
@@ -158,42 +162,49 @@ perfnames::draw_track( int track )
             bool muted = m_mainperf->get_track(track)->get_song_mute();
 
             m_gc->set_foreground(m_black);
-            m_window->draw_rectangle(m_gc,muted,
-                                     104,
-                                     (c_names_y * i),
-                                     10,
-                                     c_names_y  );
+            m_window->draw_rectangle
+            (
+                m_gc,muted,
+                104,
+                (c_names_y * i),
+                10,
+                c_names_y
+            );
 
             if ( muted )
             {
-
-                p_font_renderer->render_string_on_drawable(m_gc,
-                        107,
-                        c_names_y * i + 2,
-                        m_window, "M", font::WHITE );
+                p_font_renderer->render_string_on_drawable
+                (
+                    m_gc,
+                    107,
+                    c_names_y * i + 2,
+                    m_window, "M", font::WHITE
+                );
             }
             else
             {
-
-                p_font_renderer->render_string_on_drawable(m_gc,
-                        107,
-                        c_names_y * i + 2,
-                        m_window, "M", font::BLACK );
+                p_font_renderer->render_string_on_drawable
+                (
+                    m_gc,
+                    107,
+                    c_names_y * i + 2,
+                    m_window, "M", font::BLACK
+                );
             }
         }
     }
     else
     {
-
         m_gc->set_foreground(m_grey);
-        m_window->draw_rectangle(m_gc,true,
-                                 0,
-                                 (c_names_y * i) + 1,
-                                 c_names_x,
-                                 c_names_y );
-
+        m_window->draw_rectangle
+        (
+            m_gc,true,
+            0,
+            (c_names_y * i) + 1,
+            c_names_x,
+            c_names_y
+        );
     }
-
 }
 
 bool
@@ -203,11 +214,8 @@ perfnames::on_expose_event(GdkEventExpose* a_e)
 
     for ( int i=0; i< trks; i++ )
     {
-
         int track = i + m_track_offset;
-
         draw_track(track);
-
     }
     return true;
 }
@@ -240,10 +248,8 @@ perfnames::on_button_press_event(GdkEventButton *a_e)
     /*      left mouse button     */
     if ( a_e->button == 1 )
     {
-
         if ( m_mainperf->is_active_track( track ))
         {
-
             bool muted = m_mainperf->get_track(track)->get_song_mute();
             m_mainperf->get_track(track)->set_song_mute( !muted );
             global_is_modified = true;
@@ -301,12 +307,10 @@ perfnames::redraw_dirty_tracks()
 
     for ( int y=y_s; y<=y_f; y++ )
     {
-
         int trk = y + m_track_offset; // 4am
 
         if ( trk < c_max_track)
         {
-
             bool dirty = (m_mainperf->is_dirty_names( trk ));
 
             if (dirty)

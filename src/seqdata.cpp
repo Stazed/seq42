@@ -288,10 +288,13 @@ seqdata::on_scroll_event( GdkEventScroll* a_ev )
     if ((a_ev->state & modifiers) != 0)
         return false;
 
+    //m_seq->push_undo(); // FIXME
+
     if (  a_ev->direction == GDK_SCROLL_UP )
     {
         m_seq->increment_selected( m_status, m_cc );
     }
+
     if (  a_ev->direction == GDK_SCROLL_DOWN )
     {
         m_seq->decrement_selected( m_status, m_cc );
@@ -308,7 +311,7 @@ seqdata::on_button_press_event(GdkEventButton* a_p0)
 {
     if ( a_p0->type == GDK_BUTTON_PRESS )
     {
-        m_seq->push_undo(); // FIXME check this
+        m_seq->push_undo(); // FIXME pushes regardless of change
 
         /* set values for line */
         m_drop_x = (int) a_p0->x + m_scroll_offset_x;
@@ -501,7 +504,6 @@ seqdata::change_horz( )
     force_draw();
 }
 
-
 void
 seqdata::on_size_allocate(Gtk::Allocation& a_r )
 {
@@ -512,7 +514,6 @@ seqdata::on_size_allocate(Gtk::Allocation& a_r )
 
     update_sizes();
 }
-
 
 void
 seqdata::force_draw()

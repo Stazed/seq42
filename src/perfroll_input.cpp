@@ -56,7 +56,6 @@ bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
     m_current_x = (int) a_ev->x;
     m_current_y = (int) a_ev->y;
 
-
     ths.convert_xy( ths.m_drop_x, ths.m_drop_y, &ths.m_drop_tick, &ths.m_drop_track );
 
     /*      left mouse button     */
@@ -166,7 +165,6 @@ void FruityPerfInput::on_left_button_pressed(GdkEventButton* a_ev, perfroll& ths
                         ths.m_drop_tick_trigger_offset = ths.m_drop_tick -
                                                          ths.m_mainperf->get_track( ths.m_drop_track )->
                                                          get_selected_trigger_start_tick( );
-
                     }
 
                     ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
@@ -178,15 +176,12 @@ void FruityPerfInput::on_left_button_pressed(GdkEventButton* a_ev, perfroll& ths
                 else
                 {
                     tick = tick - (tick % ths.get_default_trigger_length(ths));
-                    //tick = tick - (tick % c_default_trigger_length);
 
                     ths.m_mainperf->push_trigger_undo(ths.m_drop_track);
-                    //ths.m_mainperf->get_track( ths.m_drop_track )->add_trigger( tick, c_default_trigger_length );
                     ths.m_mainperf->get_track( ths.m_drop_track )->add_trigger( tick, ths.get_default_trigger_length(ths));
                     ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
                     ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
                     ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
-
                 }
             }
         }
@@ -255,13 +250,11 @@ bool FruityPerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths
         if ( ths.m_mainperf->is_active_track( ths.m_drop_track ))
         {
             tick = tick - (tick % ths.get_default_trigger_length(ths));
-            //tick = tick - (tick % c_default_trigger_length);
 
             /*long min_tick = (tick < m_drop_tick) ? tick : m_drop_tick;*/
 
             ths.m_mainperf->get_track( ths.m_drop_track )
-            ->grow_trigger( ths.m_drop_tick, tick, ths.get_default_trigger_length(ths));
-            //->grow_trigger( ths.m_drop_tick, tick, c_default_trigger_length);
+                        ->grow_trigger( ths.m_drop_tick, tick, ths.get_default_trigger_length(ths));
             ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
             ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
             ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
@@ -361,12 +354,10 @@ bool Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
                 }
                 else
                 {
-                    //tick = tick - (tick % c_default_trigger_length);
                     tick = tick - (tick % ths.get_default_trigger_length(ths));
 
                     ths.m_mainperf->push_trigger_undo(ths.m_drop_track);
                     ths.m_mainperf->get_track( ths.m_drop_track )->add_trigger( tick, ths.get_default_trigger_length(ths));
-                    //ths.m_mainperf->get_track( ths.m_drop_track )->add_trigger( tick, c_default_trigger_length );
                     ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
                     ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
                     ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
@@ -496,7 +487,6 @@ bool Seq42PerfInput::on_button_release_event(GdkEventButton* a_ev, perfroll& ths
 
     if ( ths.m_mainperf->is_active_track( ths.m_drop_track  ))
     {
-
         ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
         ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
         ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y );
@@ -516,12 +506,10 @@ bool Seq42PerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths)
 
         if ( ths.m_mainperf->is_active_track( ths.m_drop_track ))
         {
-            //tick = tick - (tick % c_default_trigger_length);
             tick = tick - (tick % ths.get_default_trigger_length(ths));
 
             ths.m_mainperf->get_track( ths.m_drop_track )
-            ->grow_trigger( ths.m_drop_tick, tick, ths.get_default_trigger_length(ths));
-            //->grow_trigger( ths.m_drop_tick, tick, c_default_trigger_length);
+                ->grow_trigger( ths.m_drop_tick, tick, ths.get_default_trigger_length(ths));
 
             ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
             ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
@@ -530,7 +518,6 @@ bool Seq42PerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths)
     }
     else if ( ths.m_moving || ths.m_growing )
     {
-
         if ( ths.m_mainperf->is_active_track( ths.m_drop_track))
         {
             if(ths.have_button_press)
@@ -550,6 +537,7 @@ bool Seq42PerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths)
                 ths.m_mainperf->get_track( ths.m_drop_track )
                 ->move_selected_triggers_to( tick, true );
             }
+
             if ( ths.m_growing )
             {
                 if ( ths.m_grow_direction )
@@ -559,7 +547,6 @@ bool Seq42PerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths)
                     ths.m_mainperf->get_track( ths.m_drop_track )
                     ->move_selected_triggers_to( tick-1, false, 1 );
             }
-
 
             ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
             ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );

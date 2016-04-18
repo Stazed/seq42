@@ -278,7 +278,6 @@ seqroll::redraw()
     update_background();
     update_pixmap();
     force_draw();
-
 }
 
 void
@@ -958,7 +957,6 @@ seqroll::on_button_press_event(GdkEventButton* a_ev)
     return result;
 }
 
-
 bool
 seqroll::on_button_release_event(GdkEventButton* a_ev)
 {
@@ -1354,7 +1352,6 @@ void FruitySeqRollInput::updateMousePtr(seqroll& ths)
     }
 }
 
-
 bool FruitySeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& ths)
 {
     int numsel;
@@ -1569,7 +1566,6 @@ bool FruitySeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& th
             }
         }
 
-
         /*     right click      */
         if ( a_ev->button == 3 )
         {
@@ -1578,7 +1574,6 @@ bool FruitySeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& th
 
             /* turn x,y in to tick/note */
             ths.convert_xy( ths.m_drop_x, ths.m_drop_y, &tick_s, &note_h );
-
 
             // erase event(s) under cursor if there is one
             if ( ths.m_seq->select_note_events( tick_s, note_h,
@@ -1685,7 +1680,6 @@ bool FruitySeqRollInput::on_button_release_event(GdkEventButton* a_ev, seqroll& 
     long int current_tick;
     int current_note;
     ths.convert_xy( ths.m_current_x, ths.m_current_y, &current_tick, &current_note );
-
 
     // ctrl-left click button up for select/drag copy/paste
     // left click button up for ending a move of selected notes
@@ -1934,8 +1928,7 @@ bool Seq42SeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& ths
     else
     {
         /*  left mouse button     */
-        if ( a_ev->button == 1 ||
-                a_ev->button == 2 )
+        if ( a_ev->button == 1 || a_ev->button == 2 )
         {
             /* selection, normal x */
             ths.m_current_x = ths.m_drop_x = norm_x;
@@ -1965,7 +1958,6 @@ bool Seq42SeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& ths
 
                     needs_update = true;
                 }
-
             }
             else /* selecting */
             {
@@ -1993,7 +1985,6 @@ bool Seq42SeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& ths
                         needs_update = true;
                     }
                 }
-
 
                 if ( ths.m_seq->select_note_events( tick_s, note_h,
                                                     tick_s, note_h,

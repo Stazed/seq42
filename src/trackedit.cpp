@@ -191,12 +191,14 @@ trackedit::popup_midich_menu()
         sprintf( b, "%d", i+1 );
         std::string name = string(b);
         int instrument = global_user_midi_bus_definitions[midi_bus].instrument[i];
+
         if ( instrument >= 0 && instrument < c_maxBuses )
         {
             name = name + (string(" (") +
                            global_user_instrument_definitions[instrument].instrument +
                            string(")") );
         }
+
         m_menu_midich->items().push_back(MenuElem(name,
                                          sigc::bind(mem_fun(*this,&trackedit::midi_channel_button_callback),
                                                  i )));

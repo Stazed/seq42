@@ -59,6 +59,7 @@ userfile::parse( perform *a_perf )
         int channel;
 
         sscanf( m_line, "%d", &instruments );
+
         for ( int j=0; j<instruments; j++ )
         {
             next_data_line( &file );
@@ -86,6 +87,7 @@ userfile::parse( perform *a_perf )
         char cc_name[1024];
 
         sscanf( m_line, "%d", &ccs );
+
         for ( int j=0; j<ccs; j++ )
         {
             next_data_line( &file );

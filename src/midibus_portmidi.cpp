@@ -320,8 +320,6 @@ midibus::clock( long a_tick )
                 event.timestamp = 0;
                 event.message = Pm_Message( EVENT_MIDI_CLOCK, 0,0 );
                 Pm_Write( m_pms, &event, 1 );
-
-
             }
         }
     }
@@ -348,7 +346,6 @@ void
 mastermidibus::start()
 {
     lock();
-
 
     for ( int i=0; i < m_num_out_buses; i++ )
         m_buses_out[i]->start();
@@ -432,9 +429,6 @@ mastermidibus::flush()
 /* fills the array with our buses */
 mastermidibus::mastermidibus()
 {
-    /* temp return */
-    //int ret;
-
     /* set initial number buses */
     m_num_out_buses = 0;
     m_num_in_buses = 0;
@@ -519,7 +513,6 @@ mastermidibus::init( )
 
     for ( int i=0; i<m_num_in_buses; i++ )
         set_input(i,m_init_input[i]);
-
 }
 
 mastermidibus::~mastermidibus()
@@ -664,8 +657,6 @@ mastermidibus::get_num_in_buses()
 int
 mastermidibus::poll_for_midi( )
 {
-    //int ret = 0;
-
     while(1)
     {
         for ( int i=0; i<m_num_in_buses; i++ )

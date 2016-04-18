@@ -319,7 +319,6 @@ main (int argc, char *argv[])
         {
             printf( "Error writing [%s]\n", total_file.c_str());
         }
-
     }
     else
     {

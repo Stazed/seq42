@@ -98,8 +98,16 @@ void lfownd::scale_lfo_change()
     m_speed = m_scale_speed->get_value();
     m_phase = m_scale_phase->get_value();
     m_wave = m_scale_wave->get_value();
-    m_seq->change_event_data_lfo(m_value, m_range, m_speed, m_phase, m_wave,
-                                 m_seqdata->m_status, m_seqdata->m_cc);
+    m_seq->change_event_data_lfo
+    (
+        m_value,
+        m_range,
+        m_speed,
+        m_phase,
+        m_wave,
+        m_seqdata->m_status,
+        m_seqdata->m_cc
+    );
     m_seqdata->update_pixmap();
     m_seqdata->draw_pixmap_on_window();
 }

@@ -137,6 +137,7 @@ trackmenu::popup_menu()
                     {
                         merge_seq_menu = manage( new Menu());
                     }
+
                     inserted = true;
                     snprintf(name, sizeof(name), "[%d] %s", t+1, some_track->get_name());
                     menu_t = manage( new Menu());
@@ -186,6 +187,7 @@ trackmenu::popup_menu()
                 snprintf(b, sizeof(b), "%d", j + 1);
                 std::string name = string(b);
                 int instrument = global_user_midi_bus_definitions[i].instrument[j];
+
                 if ( instrument >= 0 && instrument < c_maxBuses )
                 {
                     name = name + (string(" (") +
@@ -466,7 +468,6 @@ trackmenu::new_sequence()
     sequence *a_sequence = a_track->get_sequence(seq_idx);
     new seqedit( a_sequence, m_mainperf );
 }
-
 
 void
 trackmenu::trk_clear_perf()

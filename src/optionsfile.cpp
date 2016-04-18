@@ -51,13 +51,11 @@ optionsfile::parse( perform *a_perf )
 
     for ( int i=0; i<buses; ++i )
     {
-
         long bus_on, bus;
         sscanf( m_line, "%ld %ld", &bus, &bus_on );
         a_perf->get_master_midi_bus( )->set_clock( bus, (clock_e) bus_on );
         next_data_line( &file );
     }
-
 
     line_after( &file, "[keyboard-control]" );
 
@@ -103,7 +101,6 @@ optionsfile::parse( perform *a_perf )
     sscanf( m_line, "%ld", &flag );
     global_with_jack_master_cond = (bool) flag;
 
-
     line_after( &file, "[midi-input]" );
     buses = 0;
     sscanf( m_line, "%ld", &buses );
@@ -111,7 +108,6 @@ optionsfile::parse( perform *a_perf )
 
     for ( int i=0; i<buses; ++i )
     {
-
         long bus_on, bus;
         sscanf( m_line, "%ld %ld", &bus, &bus_on );
         a_perf->get_master_midi_bus( )->set_input( bus, (bool) bus_on );
@@ -123,7 +119,6 @@ optionsfile::parse( perform *a_perf )
     line_after( &file, "[midi-clock-mod-ticks]" );
     sscanf( m_line, "%ld", &ticks );
     midibus::set_clock_mod(ticks);
-
 
     /* manual alsa ports */
     line_after( &file, "[manual-alsa-ports]" );
@@ -164,14 +159,11 @@ optionsfile::write( perform *a_perf  )
     if( ! file.is_open() )
         return false;
 
-
-
     /* midi control */
 
     file << "#\n";
     file << "# Seq 42 Init File\n";
     file << "#\n\n\n";
-
 
     int buses = a_perf->get_master_midi_bus( )->get_num_out_buses();
 
@@ -180,8 +172,6 @@ optionsfile::write( perform *a_perf  )
 
     for (int i=0; i< buses; i++ )
     {
-
-
         file << "# " << a_perf->get_master_midi_bus( )->get_midi_out_bus_name(i) << "\n";
         snprintf(outs, sizeof(outs), "%d %d", i,
                  (char) a_perf->get_master_midi_bus( )->get_clock(i));
@@ -200,14 +190,11 @@ optionsfile::write( perform *a_perf  )
 
     for (int i=0; i< buses; i++ )
     {
-
-
         file << "# " << a_perf->get_master_midi_bus( )->get_midi_in_bus_name(i) << "\n";
         snprintf(outs, sizeof(outs), "%d %d", i,
                  (char) a_perf->get_master_midi_bus( )->get_input(i));
         file << outs << "\n";
     }
-
 
     /* manual alsa ports */
     file << "\n\n\n[manual-alsa-ports]\n";
@@ -225,7 +212,6 @@ optionsfile::write( perform *a_perf  )
         ++x;
     }
     file << global_interactionmethod << "\n";
-
 
     file << "\n\n\n[keyboard-control]\n";
 

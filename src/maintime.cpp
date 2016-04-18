@@ -60,11 +60,14 @@ maintime::idle_progress( long a_ticks )
     m_window->clear();
 
     m_gc->set_foreground(m_black);
-    m_window->draw_rectangle(m_gc,false,
-                             0,
-                             0,
-                             c_maintime_x - 1,
-                             c_maintime_y - 1  );
+    m_window->draw_rectangle
+    (
+        m_gc,false,
+        0,
+        0,
+        c_maintime_x - 1,
+        c_maintime_y - 1
+    );
 
     int width = c_maintime_x - 1 - c_pill_width;
 
@@ -74,27 +77,35 @@ maintime::idle_progress( long a_ticks )
 
     if ( tick_x <= (c_maintime_x / 4 ))
     {
-
         m_gc->set_foreground(m_grey);
-        m_window->draw_rectangle(m_gc,true,
-                                 2, //tick_x + 2,
-                                 2,
-                                 c_maintime_x - 4,
-                                 c_maintime_y - 4  );
+        m_window->draw_rectangle
+        (
+            m_gc,true,
+            2, //tick_x + 2,
+            2,
+            c_maintime_x - 4,
+            c_maintime_y - 4
+        );
     }
 
     m_gc->set_foreground(m_black);
-    m_window->draw_rectangle(m_gc,true,
-                             beat_x + 2,
-                             2,
-                             c_pill_width,
-                             c_maintime_y - 4  );
+    m_window->draw_rectangle
+    (
+        m_gc,true,
+        beat_x + 2,
+        2,
+        c_pill_width,
+        c_maintime_y - 4
+    );
 
-    m_window->draw_rectangle(m_gc,true,
-                             bar_x + 2,
-                             2,
-                             c_pill_width,
-                             c_maintime_y - 4  );
+    m_window->draw_rectangle
+    (
+        m_gc,true,
+        bar_x + 2,
+        2,
+        c_pill_width,
+        c_maintime_y - 4
+    );
 
     return true;
 }

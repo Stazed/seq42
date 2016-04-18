@@ -183,7 +183,6 @@ seqlist::on_realize()
                                    c_redraw_ms);
 }
 
-
 bool
 seqlist::timeout()
 {

@@ -593,8 +593,6 @@ seqevent::on_motion_notify_event(GdkEventMotion* a_ev)
     return result;
 }
 
-
-
 /* performs a 'snap' on y */
 void
 seqevent::snap_y( int *a_y )
@@ -717,7 +715,6 @@ void FruitySeqEventInput::updateMousePtr(seqevent& ths)
     if ( tick_s < 0 )
         tick_s = 0; // clamp to 0
 
-
     if (m_is_drag_pasting || ths.m_selecting || ths.m_moving || ths.m_paste)
     {
         ths.get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
@@ -794,7 +791,6 @@ bool FruitySeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& 
                     ths.m_seq->push_undo();
                     ths.drop_event( tick_s );
                 }
-
             }
             else /* selecting */
             {
@@ -881,7 +877,6 @@ bool FruitySeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& 
                     {
                         m_is_drag_pasting_start = true;
                     }
-
                 }
             }
         } /* end if button == 1 */
@@ -1047,7 +1042,6 @@ bool FruitySeqEventInput::on_motion_notify_event(GdkEventMotion* a_ev, seqevent&
     long tick = 0;
     ths.m_current_x = (int) a_ev->x  + ths.m_scroll_offset_x;
 
-
     if ( ths.m_moving_init )
     {
         ths.m_moving_init = false;
@@ -1086,7 +1080,6 @@ bool FruitySeqEventInput::on_motion_notify_event(GdkEventMotion* a_ev, seqevent&
 
     return true;
 }
-
 
 void
 Seq42SeqEventInput::set_adding( bool a_adding, seqevent& ths )
@@ -1164,7 +1157,6 @@ bool Seq42SeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& t
                     ths.m_seq->push_undo();
                     ths.drop_event( tick_s );
                 }
-
             }
             else /* selecting */
             {
@@ -1337,7 +1329,6 @@ bool Seq42SeqEventInput::on_motion_notify_event(GdkEventMotion* a_ev, seqevent& 
 
         ths.draw_selection_on_window();
     }
-
 
     if ( ths.m_painting )
     {

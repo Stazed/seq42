@@ -198,10 +198,13 @@ event::get_note_velocity()
 void
 event::print()
 {
-    printf( "[%06ld] [%04X] %02X ",
-            m_timestamp,
-            m_sysex.size(),
-            m_status );
+    printf
+    (
+        "[%06ld] [%04X] %02X ",
+        m_timestamp,
+        m_sysex.size(),
+        m_status
+    );
 
     if ( m_status == EVENT_SYSEX )
     {
@@ -217,9 +220,12 @@ event::print()
     }
     else
     {
-        printf( "%02X %02X\n",
-                m_data[0],
-                m_data[1] );
+        printf
+        (
+            "%02X %02X\n",
+            m_data[0],
+            m_data[1]
+        );
     }
 }
 

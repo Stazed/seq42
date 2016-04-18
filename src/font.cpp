@@ -78,13 +78,16 @@ font::render_string_on_drawable(
         if ( col == font::WHITE )
             m_pixmap = m_white_pixmap;
 
-        a_draw->draw_drawable(a_gc,
-                              m_pixmap,
-                              pixbuf_index_x,
-                              pixbuf_index_y,
-                              x + (i*font_w),
-                              y,
-                              font_w,
-                              font_h );
+        a_draw->draw_drawable
+        (
+            a_gc,
+            m_pixmap,
+            pixbuf_index_x,
+            pixbuf_index_y,
+            x + (i*font_w),
+            y,
+            font_w,
+            font_h
+        );
     }
 }

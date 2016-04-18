@@ -158,7 +158,6 @@ seqedit::seqedit( sequence *a_seq,
                                            m_vadjust,
                                            m_toggle_play));
 
-
     /* menus */
     m_menubar   =  manage( new MenuBar());
     m_menu_tools = manage( new Menu() );
@@ -326,7 +325,6 @@ seqedit::seqedit( sequence *a_seq,
     set_track_info();
     m_seqroll_wid->redraw();
 }
-
 
 void
 seqedit::create_menus()
@@ -631,7 +629,6 @@ seqedit::popup_tool_menu()
 
     m_menu_tools->items().push_back( MenuElem( "Modify Time", *holder ));
 
-
     holder = manage( new Menu());
 
     char num[11];
@@ -669,7 +666,6 @@ seqedit::popup_tool_menu()
     }
 
     m_menu_tools->items().push_back( MenuElem( "Modify Pitch", *holder ));
-
 
     holder = manage( new Menu());
     for ( int i=1; i<17; ++i)
@@ -1408,14 +1404,12 @@ seqedit::name_change_callback()
 {
     m_seq->set_name( m_entry_name->get_text());
     global_is_modified = true;
-    // m_mainwid->update_sequence_on_window( m_pos );
 }
 
 void
 seqedit::play_change_callback()
 {
     m_seq->set_playing( m_toggle_play->get_active() );
-    // m_mainwid->update_sequence_on_window( m_pos );
 }
 
 void
@@ -1442,7 +1436,6 @@ seqedit::undo_callback()
     m_seqevent_wid->redraw();
     m_seq->set_dirty();
 }
-
 
 void
 seqedit::redo_callback()
@@ -1663,7 +1656,6 @@ seqedit::on_key_press_event( GdkEventKey* a_ev )
 
         return result;
     }
-//        return Gtk::Window::on_key_press_event(a_ev);
 
     return false;
 }

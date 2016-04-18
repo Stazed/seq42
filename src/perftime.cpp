@@ -132,7 +132,6 @@ perftime::on_expose_event (GdkEventExpose * /* ev */ )
     return true;
 }
 
-
 void
 perftime::draw_background()
 {

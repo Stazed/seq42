@@ -65,11 +65,14 @@ midibus::midibus( int a_localclient,
 
     /* copy names */
     char tmp[60];
-    snprintf( tmp, 59, "[%d] %d:%d %s",
-              m_id,
-              m_dest_addr_client,
-              m_dest_addr_port,
-              name );
+    snprintf
+    (
+        tmp, 59, "[%d] %d:%d %s",
+        m_id,
+        m_dest_addr_client,
+        m_dest_addr_port,
+        name
+    );
 
     m_name = tmp;
 }
@@ -88,9 +91,12 @@ midibus::midibus( int a_localclient,
 {
     /* copy names */
     char tmp[60];
-    snprintf( tmp, 59, "[%d] seq42 %d",
-              m_id,
-              m_id );
+    snprintf
+    (
+        tmp, 59, "[%d] seq42 %d",
+        m_id,
+        m_id
+    );
 
     m_name = tmp;
 }
@@ -107,9 +113,12 @@ midibus::midibus( char a_id, int a_queue )
 
     /* copy names */
     char tmp[60];
-    snprintf( tmp, 59, "[%d] seq42 %d",
-              m_id,
-              m_id );
+    snprintf
+    (
+        tmp, 59, "[%d] seq42 %d",
+        m_id,
+        m_id
+    );
 
     m_name = tmp;
 }
@@ -136,12 +145,15 @@ bool midibus::init_out( )
     int ret;
 
     /* create ports */
-    ret = snd_seq_create_simple_port(m_seq,
-                                     m_name.c_str(),
-                                     SND_SEQ_PORT_CAP_NO_EXPORT |
-                                     SND_SEQ_PORT_CAP_READ,
-                                     SND_SEQ_PORT_TYPE_MIDI_GENERIC |
-                                     SND_SEQ_PORT_TYPE_APPLICATION );
+    ret = snd_seq_create_simple_port
+          (
+              m_seq,
+              m_name.c_str(),
+              SND_SEQ_PORT_CAP_NO_EXPORT |
+              SND_SEQ_PORT_CAP_READ,
+              SND_SEQ_PORT_TYPE_MIDI_GENERIC |
+              SND_SEQ_PORT_TYPE_APPLICATION
+          );
     m_local_addr_port = ret;
 
     if ( ret < 0 )
@@ -151,10 +163,13 @@ bool midibus::init_out( )
     }
 
     /* connect to */
-    ret = snd_seq_connect_to( m_seq,
-                              m_local_addr_port,
-                              m_dest_addr_client,
-                              m_dest_addr_port );
+    ret = snd_seq_connect_to
+          (
+              m_seq,
+              m_local_addr_port,
+              m_dest_addr_client,
+              m_dest_addr_port
+          );
     if ( ret < 0 )
     {
         printf( "snd_seq_connect_to(%d:%d) error\n",
@@ -172,12 +187,15 @@ bool midibus::init_out_sub( )
     int ret;
 
     /* create ports */
-    ret = snd_seq_create_simple_port(m_seq,
-                                     m_name.c_str(),
-                                     SND_SEQ_PORT_CAP_READ |
-                                     SND_SEQ_PORT_CAP_SUBS_READ,
-                                     SND_SEQ_PORT_TYPE_MIDI_GENERIC |
-                                     SND_SEQ_PORT_TYPE_APPLICATION );
+    ret = snd_seq_create_simple_port
+          (
+              m_seq,
+              m_name.c_str(),
+              SND_SEQ_PORT_CAP_READ |
+              SND_SEQ_PORT_CAP_SUBS_READ,
+              SND_SEQ_PORT_TYPE_MIDI_GENERIC |
+              SND_SEQ_PORT_TYPE_APPLICATION
+          );
     m_local_addr_port = ret;
 
     if ( ret < 0 )
@@ -196,12 +214,15 @@ bool midibus::init_in( )
     int ret;
 
     /* create ports */
-    ret = snd_seq_create_simple_port(m_seq,
-                                     "seq42 in",
-                                     SND_SEQ_PORT_CAP_NO_EXPORT |
-                                     SND_SEQ_PORT_CAP_WRITE,
-                                     SND_SEQ_PORT_TYPE_MIDI_GENERIC |
-                                     SND_SEQ_PORT_TYPE_APPLICATION );
+    ret = snd_seq_create_simple_port
+          (
+              m_seq,
+              "seq42 in",
+              SND_SEQ_PORT_CAP_NO_EXPORT |
+              SND_SEQ_PORT_CAP_WRITE,
+              SND_SEQ_PORT_TYPE_MIDI_GENERIC |
+              SND_SEQ_PORT_TYPE_APPLICATION
+          );
     m_local_addr_port = ret;
 
     if ( ret < 0 )
@@ -248,11 +269,15 @@ bool midibus::init_in_sub( )
     int ret;
 
     /* create ports */
-    ret = snd_seq_create_simple_port(m_seq, "seq42 in",
-                                     SND_SEQ_PORT_CAP_WRITE |
-                                     SND_SEQ_PORT_CAP_SUBS_WRITE,
-                                     SND_SEQ_PORT_TYPE_MIDI_GENERIC |
-                                     SND_SEQ_PORT_TYPE_APPLICATION );
+    ret = snd_seq_create_simple_port
+          (
+              m_seq,
+              "seq42 in",
+              SND_SEQ_PORT_CAP_WRITE |
+              SND_SEQ_PORT_CAP_SUBS_WRITE,
+              SND_SEQ_PORT_TYPE_MIDI_GENERIC |
+              SND_SEQ_PORT_TYPE_APPLICATION
+          );
     m_local_addr_port = ret;
 
     if ( ret < 0 )
@@ -405,9 +430,12 @@ midibus::sysex( event *a_e24 )
 
         long data_left = data_size - offset;
 
-        snd_seq_ev_set_sysex( &ev,
-                              min( data_left, c_midibus_sysex_chunk),
-                              &data[offset] );
+        snd_seq_ev_set_sysex
+        (
+            &ev,
+            min( data_left, c_midibus_sysex_chunk),
+            &data[offset]
+        );
 
         /* pump it into the queue */
         snd_seq_event_output_direct(m_seq, &ev);
@@ -521,7 +549,6 @@ midibus::start()
 
     if ( m_clock_type != e_clock_off )
     {
-
         snd_seq_event_t ev;
         ev.type = SND_SEQ_EVENT_START;
         snd_seq_ev_set_fixed( &ev );
@@ -536,7 +563,6 @@ midibus::start()
 
         /* pump it into the queue */
         snd_seq_event_output(m_seq, &ev);
-
     }
 #endif
 }
@@ -546,7 +572,6 @@ midibus::set_clock( clock_e a_clock_type )
 {
     m_clock_type = a_clock_type;
 }
-
 
 clock_e
 midibus::get_clock( )
@@ -559,7 +584,6 @@ midibus::set_input( bool a_inputing )
 {
     if ( m_inputing != a_inputing )
     {
-
         m_inputing = a_inputing;
 
         if (m_inputing)
@@ -587,7 +611,6 @@ midibus::stop()
 
     if ( m_clock_type != e_clock_off )
     {
-
         snd_seq_event_t ev;
         ev.type = SND_SEQ_EVENT_STOP;
         snd_seq_ev_set_fixed( &ev );
@@ -614,7 +637,6 @@ midibus::clock( long a_tick )
 #ifdef HAVE_LIBASOUND
     if ( m_clock_type != e_clock_off )
     {
-
         bool done = false;
         long uptotick = a_tick;
 
@@ -623,7 +645,6 @@ midibus::clock( long a_tick )
 
         while ( !done )
         {
-
             m_lasttick++;
 
             if ( m_lasttick >= uptotick )
@@ -632,7 +653,6 @@ midibus::clock( long a_tick )
             /* tick time? */
             if ( m_lasttick % ( c_ppqn / 24 ) == 0 )
             {
-
                 snd_seq_event_t ev;
                 ev.type = SND_SEQ_EVENT_CLOCK;
 
@@ -652,7 +672,6 @@ midibus::clock( long a_tick )
 
                 /* pump it into the queue */
                 snd_seq_event_output(m_seq, &ev);
-
             }
         }
         /* and send out */
@@ -891,12 +910,10 @@ mastermidibus::init( )
 
     if ( global_manual_alsa_ports )
     {
-
         int num_buses = 16;
 
         for( int i=0; i<num_buses; ++i )
         {
-
             m_buses_out[i] =
                 new midibus( snd_seq_client_id( m_alsa_seq ), m_alsa_seq, i+1, m_queue );
 
@@ -909,23 +926,23 @@ mastermidibus::init( )
 
         /* only one in */
         m_buses_in[0] =
-            new midibus( snd_seq_client_id( m_alsa_seq ),
-                         m_alsa_seq,
-                         m_num_in_buses, m_queue);
+            new midibus
+        (
+            snd_seq_client_id( m_alsa_seq ),
+            m_alsa_seq,
+            m_num_in_buses, m_queue
+        );
 
         m_buses_in[0]->init_in_sub();
         m_buses_in_active[0] = true;
         m_buses_in_init[0] = true;
         m_num_in_buses = 1;
-
-
     }
     else
     {
         /* while the next client one the sequencer is avaiable */
         while (snd_seq_query_next_client(m_alsa_seq, cinfo) >= 0)
         {
-
             /* get client from cinfo */
             client = snd_seq_client_info_get_client(cinfo);
 
@@ -937,19 +954,16 @@ mastermidibus::init( )
             /* while the next port is avail */
             while (snd_seq_query_next_port(m_alsa_seq, pinfo) >= 0 )
             {
-
                 /* get its capability */
                 int cap =  snd_seq_port_info_get_capability(pinfo);
 
                 if ( snd_seq_client_id( m_alsa_seq ) != snd_seq_port_info_get_client(pinfo) &&
                         snd_seq_port_info_get_client(pinfo) != SND_SEQ_CLIENT_SYSTEM)
                 {
-
                     /* the outs */
                     if ( (cap & SND_SEQ_PORT_CAP_SUBS_WRITE) != 0 &&
                             snd_seq_client_id( m_alsa_seq ) != snd_seq_port_info_get_client(pinfo))
                     {
-
                         m_buses_out[m_num_out_buses] =
                             new midibus( snd_seq_client_id( m_alsa_seq ),
                                          snd_seq_port_info_get_client(pinfo),
@@ -976,15 +990,17 @@ mastermidibus::init( )
                     if ( (cap & SND_SEQ_PORT_CAP_SUBS_READ) != 0 &&
                             snd_seq_client_id( m_alsa_seq ) != snd_seq_port_info_get_client(pinfo))
                     {
-
                         m_buses_in[m_num_in_buses] =
-                            new midibus( snd_seq_client_id( m_alsa_seq ),
-                                         snd_seq_port_info_get_client(pinfo),
-                                         snd_seq_port_info_get_port(pinfo),
-                                         m_alsa_seq,
-                                         snd_seq_client_info_get_name(cinfo),
-                                         snd_seq_port_info_get_name(pinfo),
-                                         m_num_in_buses, m_queue);
+                            new midibus
+                        (
+                            snd_seq_client_id( m_alsa_seq ),
+                            snd_seq_port_info_get_client(pinfo),
+                            snd_seq_port_info_get_port(pinfo),
+                            m_alsa_seq,
+                            snd_seq_client_info_get_name(cinfo),
+                            snd_seq_port_info_get_name(pinfo),
+                            m_num_in_buses, m_queue
+                        );
 
                         //if ( m_buses_in[m_num_in_buses]->init_in() ){
                         m_buses_in_active[m_num_in_buses] = true;
@@ -996,7 +1012,6 @@ mastermidibus::init( )
                     }
                 }
             }
-
         } /* end loop for clients */
     }
 
@@ -1015,10 +1030,13 @@ mastermidibus::init( )
     m_poll_descriptors = new pollfd[m_num_poll_descriptors];
 
     /* get descriptors */
-    snd_seq_poll_descriptors(m_alsa_seq,
-                             m_poll_descriptors,
-                             m_num_poll_descriptors,
-                             POLLIN);
+    snd_seq_poll_descriptors
+    (
+        m_alsa_seq,
+        m_poll_descriptors,
+        m_num_poll_descriptors,
+        POLLIN
+    );
 
     set_sequence_input( false, NULL );
 
@@ -1028,15 +1046,17 @@ mastermidibus::init( )
 
 
     m_bus_announce =
-        new midibus( snd_seq_client_id( m_alsa_seq ),
-                     SND_SEQ_CLIENT_SYSTEM,
-                     SND_SEQ_PORT_SYSTEM_ANNOUNCE,
-                     m_alsa_seq,
-                     "system", "annouce",
-                     0, m_queue);
+        new midibus
+    (
+        snd_seq_client_id( m_alsa_seq ),
+        SND_SEQ_CLIENT_SYSTEM,
+        SND_SEQ_PORT_SYSTEM_ANNOUNCE,
+        m_alsa_seq,
+        "system", "annouce",
+        0, m_queue
+    );
 
     m_bus_announce->set_input(true);
-
 
     for ( int i=0; i<m_num_out_buses; i++ )
         set_clock(i,m_init_clock[i]);
@@ -1052,7 +1072,6 @@ mastermidibus::init( )
 
     for( int i=0; i<num_buses; ++i )
     {
-
         m_buses_out[i] =
             new midibus( i+1, m_queue );
 
@@ -1071,7 +1090,6 @@ mastermidibus::init( )
     m_buses_in_active[0] = true;
     m_buses_in_init[0] = true;
     m_num_in_buses = 1;
-
 
     set_bpm( c_bpm );
     set_ppqn( c_ppqn );
@@ -1121,7 +1139,6 @@ mastermidibus::sysex( event *a_ev )
         m_buses_out[i]->sysex( a_ev );
 
     flush();
-
     unlock();
 }
 
@@ -1213,10 +1230,13 @@ mastermidibus::get_midi_out_bus_name( int a_bus )
 
     if ( m_buses_out_init[a_bus] )
     {
-        snprintf( tmp, 59, "[%d] %d:%d (disconnected)",
-                  a_bus,
-                  m_buses_out[a_bus]->get_client(),
-                  m_buses_out[a_bus]->get_port() );
+        snprintf
+        (
+            tmp, 59, "[%d] %d:%d (disconnected)",
+            a_bus,
+            m_buses_out[a_bus]->get_client(),
+            m_buses_out[a_bus]->get_port()
+        );
     }
     else
     {
@@ -1226,7 +1246,6 @@ mastermidibus::get_midi_out_bus_name( int a_bus )
 
     string ret = tmp;
     return ret;
-
 }
 
 string
@@ -1242,10 +1261,13 @@ mastermidibus::get_midi_in_bus_name( int a_bus )
 
     if ( m_buses_in_init[a_bus] )
     {
-        snprintf( tmp, 59, "[%d] %d:%d (disconnected)",
-                  a_bus,
-                  m_buses_in[a_bus]->get_client(),
-                  m_buses_in[a_bus]->get_port() );
+        snprintf
+        (
+            tmp, 59, "[%d] %d:%d (disconnected)",
+            a_bus,
+            m_buses_in[a_bus]->get_client(),
+            m_buses_in[a_bus]->get_port()
+        );
     }
     else
     {
@@ -1255,7 +1277,6 @@ mastermidibus::get_midi_in_bus_name( int a_bus )
 
     string ret = tmp;
     return ret;
-
 }
 
 void
@@ -1295,7 +1316,6 @@ mastermidibus::poll_for_midi( )
 bool
 mastermidibus::is_more_input( )
 {
-
     lock();
 
     int size=0;
@@ -1333,38 +1353,36 @@ mastermidibus::port_start( int a_client, int a_port )
 
     if ( snd_seq_client_id( m_alsa_seq ) != snd_seq_port_info_get_client(pinfo))
     {
-
         /* the outs */
         if ( (cap & (SND_SEQ_PORT_CAP_SUBS_WRITE | SND_SEQ_PORT_CAP_WRITE ))
                 == (SND_SEQ_PORT_CAP_SUBS_WRITE | SND_SEQ_PORT_CAP_WRITE )
                 && snd_seq_client_id( m_alsa_seq ) != snd_seq_port_info_get_client(pinfo))
         {
-
-
             bool replacement = false;
             int bus_slot = m_num_out_buses;
 
             for( int i=0; i< m_num_out_buses; i++ )
             {
-
                 if( m_buses_out[i]->get_client() == a_client  &&
                         m_buses_out[i]->get_port() == a_port &&
                         m_buses_out_active[i] == false )
                 {
-
                     replacement = true;
                     bus_slot = i;
                 }
             }
 
             m_buses_out[bus_slot] =
-                new midibus( snd_seq_client_id( m_alsa_seq ),
-                             snd_seq_port_info_get_client(pinfo),
-                             snd_seq_port_info_get_port(pinfo),
-                             m_alsa_seq,
-                             snd_seq_client_info_get_name(cinfo),
-                             snd_seq_port_info_get_name(pinfo),
-                             m_num_out_buses, m_queue );
+                new midibus
+            (
+                snd_seq_client_id( m_alsa_seq ),
+                snd_seq_port_info_get_client(pinfo),
+                snd_seq_port_info_get_port(pinfo),
+                m_alsa_seq,
+                snd_seq_client_info_get_name(cinfo),
+                snd_seq_port_info_get_name(pinfo),
+                m_num_out_buses, m_queue
+            );
 
             m_buses_out[bus_slot]->init_out();
             m_buses_out_active[bus_slot] = true;
@@ -1381,20 +1399,15 @@ mastermidibus::port_start( int a_client, int a_port )
                 == (SND_SEQ_PORT_CAP_SUBS_READ | SND_SEQ_PORT_CAP_READ )
                 && snd_seq_client_id( m_alsa_seq ) != snd_seq_port_info_get_client(pinfo))
         {
-
             bool replacement = false;
             int bus_slot = m_num_in_buses;
 
-
-
             for( int i=0; i< m_num_in_buses; i++ )
             {
-
                 if( m_buses_in[i]->get_client() == a_client  &&
                         m_buses_in[i]->get_port() == a_port &&
                         m_buses_in_active[i] == false )
                 {
-
                     replacement = true;
                     bus_slot = i;
                 }
@@ -1403,13 +1416,16 @@ mastermidibus::port_start( int a_client, int a_port )
             //printf( "in [%d] [%d]\n", replacement, bus_slot );
 
             m_buses_in[bus_slot] =
-                new midibus( snd_seq_client_id( m_alsa_seq ),
-                             snd_seq_port_info_get_client(pinfo),
-                             snd_seq_port_info_get_port(pinfo),
-                             m_alsa_seq,
-                             snd_seq_client_info_get_name(cinfo),
-                             snd_seq_port_info_get_name(pinfo),
-                             m_num_in_buses, m_queue);
+                new midibus
+            (
+                snd_seq_client_id( m_alsa_seq ),
+                snd_seq_port_info_get_client(pinfo),
+                snd_seq_port_info_get_port(pinfo),
+                m_alsa_seq,
+                snd_seq_client_info_get_name(cinfo),
+                snd_seq_port_info_get_name(pinfo),
+                m_num_in_buses, m_queue
+            );
 
             //m_buses_in[bus_slot]->init_in();
             m_buses_in_active[bus_slot] = true;
@@ -1435,10 +1451,13 @@ mastermidibus::port_start( int a_client, int a_port )
     m_poll_descriptors = new pollfd[m_num_poll_descriptors];
 
     /* get descriptors */
-    snd_seq_poll_descriptors(m_alsa_seq,
-                             m_poll_descriptors,
-                             m_num_poll_descriptors,
-                             POLLIN);
+    snd_seq_poll_descriptors
+    (
+        m_alsa_seq,
+        m_poll_descriptors,
+        m_num_poll_descriptors,
+        POLLIN
+    );
 #endif
     unlock();
 }
@@ -1450,22 +1469,18 @@ mastermidibus::port_exit( int a_client, int a_port )
 #ifdef HAVE_LIBASOUND
     for( int i=0; i< m_num_out_buses; i++ )
     {
-
         if( m_buses_out[i]->get_client() == a_client  &&
                 m_buses_out[i]->get_port() == a_port )
         {
-
             m_buses_out_active[i] = false;
         }
     }
 
     for( int i=0; i< m_num_in_buses; i++ )
     {
-
         if( m_buses_in[i]->get_client() == a_client  &&
                 m_buses_in[i]->get_port() == a_port )
         {
-
             m_buses_in_active[i] = false;
         }
     }
@@ -1492,7 +1507,6 @@ mastermidibus::get_midi_event( event *a_in )
     {
         switch(ev->type)
         {
-
         case SND_SEQ_EVENT_PORT_START:
         {
             //printf("SND_SEQ_EVENT_PORT_START:    addr[%d:%d]\n",
@@ -1553,7 +1567,6 @@ mastermidibus::get_midi_event( event *a_in )
     //if ( buffer[0] == EVENT_SYSEX ){
     if (0)
     {
-
         /* set up for sysex if needed */
         a_in->start_sysex( );
         sysex = a_in->append_sysex( buffer, bytes );
@@ -1575,7 +1588,6 @@ mastermidibus::get_midi_event( event *a_in )
     /* sysex messages might be more than one message */
     while (sysex)
     {
-
         snd_seq_event_input(m_alsa_seq, &ev);
 
         bytes = snd_midi_event_decode(midi_ev, buffer, sizeof(buffer), ev);

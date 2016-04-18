@@ -460,6 +460,7 @@ track::play( long a_tick, bool a_playback_mode )
                     break;
                 }
             }
+
             if ( i->m_tick_start > a_tick )
             {
                 break;
@@ -521,7 +522,6 @@ track::clear_triggers()
     m_list_trigger.clear();
     unlock();
 }
-
 
 void
 track::add_trigger( long a_tick, long a_length, long a_offset, int a_seq )
@@ -873,6 +873,7 @@ track::move_triggers( long a_start_tick,
     while(  i != m_list_trigger.end() )
     {
         a_seq = get_trigger_sequence(&(*i));
+
         if(a_seq)
         {
             seq_length = a_seq->get_length();
@@ -888,6 +889,7 @@ track::move_triggers( long a_start_tick,
             {
                 (*i).m_tick_start += a_distance;
                 (*i).m_tick_end   += a_distance;
+
                 if(seq_length)
                 {
                     (*i).m_offset += a_distance;
@@ -1168,7 +1170,6 @@ track::get_trigger_sequence( trigger *a_trigger )
     }
 }
 
-//void track::set_trigger_sequence( trigger *a_trigger, sequence *a_sequence )
 void track::set_trigger_sequence( trigger *a_trigger, int a_sequence )
 {
     // to make all newly added sequences align seq start with trigger start
@@ -1242,8 +1243,6 @@ track::unselect_triggers()
 
     return ret;
 }
-
-
 
 void
 track::del_selected_trigger()
@@ -1437,6 +1436,7 @@ track::save(ofstream *file)
 
     unsigned int num_seqs = get_number_of_sequences();
     file->write((const char *) &num_seqs, sizeof(int));
+
     for(unsigned int i=0; i<m_vector_sequence.size(); i++)
     {
         if(!  m_vector_sequence[i]->save(file))
@@ -1447,6 +1447,7 @@ track::save(ofstream *file)
 
     unsigned int num_triggers = m_list_trigger.size();
     file->write((const char *) &num_triggers, sizeof(int));
+
     for( list<trigger>::iterator iter = m_list_trigger.begin();
             iter != m_list_trigger.end(); iter++ )
     {

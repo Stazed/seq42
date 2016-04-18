@@ -162,7 +162,6 @@ sequence::get_bw()
     return m_time_beat_width;
 }
 
-
 sequence::~sequence()
 {
 
@@ -241,6 +240,7 @@ sequence::play(long a_tick, trigger *a_trigger)
 
     int swing_mode = get_swing_mode();
     int swing_amount = 0;
+
     if(swing_mode == c_swing_eighths)
     {
         swing_amount = get_master_midi_bus()->get_swing_amount8();
@@ -251,10 +251,12 @@ sequence::play(long a_tick, trigger *a_trigger)
     }
 
     int transpose = get_master_midi_bus()->get_transpose();
+
     if (! m_track->get_transposable())
     {
         transpose = 0;
     }
+
     event transposed_event;
 
     unsigned long orig_event_timestamp;
@@ -283,6 +285,7 @@ sequence::play(long a_tick, trigger *a_trigger)
                     {
                         swung_event_timestamp += (swing_amount * 2);
                         max_swung_event_timestamp = (((orig_event_timestamp / c_ppqn) + 1) * c_ppqn) - c_note_off_margin;
+
                         if(swung_event_timestamp > max_swung_event_timestamp)
                         {
                             swung_event_timestamp = max_swung_event_timestamp;
@@ -295,6 +298,7 @@ sequence::play(long a_tick, trigger *a_trigger)
                     {
                         swung_event_timestamp += swing_amount;
                         max_swung_event_timestamp = (((orig_event_timestamp / c_ppen) + 1) * c_ppen) - c_note_off_margin;
+
                         if(swung_event_timestamp > max_swung_event_timestamp)
                         {
                             swung_event_timestamp = max_swung_event_timestamp;
@@ -308,7 +312,6 @@ sequence::play(long a_tick, trigger *a_trigger)
             if ( ( offset_timestamp >= start_tick_offset) &&
                     ( offset_timestamp <= end_tick_offset) )
             {
-
                 // printf("orig_event_timestamp=%06ld swung_event_timestamp=%06ld offset_timestamp=%06ld  start_tick_offset=%06ld  end_tick_offset=%06ld\n",
                 //        orig_event_timestamp, swung_event_timestamp, offset_timestamp, start_tick_offset, end_tick_offset);
                 if(
@@ -329,7 +332,6 @@ sequence::play(long a_tick, trigger *a_trigger)
                     //printf( "event: ");(*e).print();
                 }
             }
-
             else if ( offset_timestamp > end_tick_offset )
             {
                 break;
@@ -419,13 +421,13 @@ sequence::verify_and_link()
             if (!end_found)
             {
                 off = m_list_event.begin();
+
                 while ( off != on)
                 {
                     if ( (*off).is_note_off()                  &&
                             (*off).get_note() == (*on).get_note() &&
                             ! (*off).is_marked()                  )
                     {
-
                         /* link + mark */
                         (*on).link( &(*off) );
                         (*off).link( &(*on) );
@@ -490,6 +492,7 @@ sequence::link_new( )
             off = on;
             off++;
             end_found = false;
+
             while ( off != m_list_event.end())
             {
                 /* is a off event, == notes, and isnt
@@ -786,17 +789,20 @@ sequence::select_even_or_odd_notes(int note_len, bool even)
         if ( (*i).is_note_on() )
         {
             tick = (*i).get_timestamp();
+
             if(tick % note_len == 0)
             {
                 // Note that from the user POV of even and odd,
                 // we start counting from 1, not 0.
                 is_even = (tick / note_len) % 2;
+
                 if (
                     (even && is_even) || (!even && !is_even)
                 )
                 {
                     (*i).select( );
                     ret++;
+
                     if ( (*i).is_linked() )
                     {
                         note_off = (*i).get_linked();
@@ -862,6 +868,7 @@ sequence::select_note_events( long a_tick_s, int a_note_h,
                         if ( a_action == e_select_one )
                             break;
                     }
+
                     if ( a_action == e_is_selected )
                     {
                         if ( (*i).is_selected())
@@ -870,11 +877,13 @@ sequence::select_note_events( long a_tick_s, int a_note_h,
                             break;
                         }
                     }
+
                     if ( a_action == e_would_select )
                     {
                         ret = 1;
                         break;
                     }
+
                     if ( a_action == e_deselect )
                     {
                         ret = 0;
@@ -882,6 +891,7 @@ sequence::select_note_events( long a_tick_s, int a_note_h,
                         ev->unselect();
                         //break;
                     }
+
                     if ( a_action == e_toggle_selection &&
                             (*i).is_note_on()) // don't toggle twice
                     {
@@ -898,6 +908,7 @@ sequence::select_note_events( long a_tick_s, int a_note_h,
                             ret ++;
                         }
                     }
+
                     if ( a_action == e_remove_one )
                     {
                         remove( &(*i) );
@@ -920,6 +931,7 @@ sequence::select_note_events( long a_tick_s, int a_note_h,
                         if ( a_action == e_select_one )
                             break;
                     }
+
                     if ( a_action == e_is_selected )
                     {
                         if ( (*i).is_selected())
@@ -928,16 +940,19 @@ sequence::select_note_events( long a_tick_s, int a_note_h,
                             break;
                         }
                     }
+
                     if ( a_action == e_would_select )
                     {
                         ret = 1;
                         break;
                     }
+
                     if ( a_action == e_deselect )
                     {
                         ret = 0;
                         (*i).unselect();
                     }
+
                     if ( a_action == e_toggle_selection )
                     {
                         if ((*i).is_selected())
@@ -951,6 +966,7 @@ sequence::select_note_events( long a_tick_s, int a_note_h,
                             ret ++;
                         }
                     }
+
                     if ( a_action == e_remove_one )
                     {
                         remove( &(*i) );
@@ -1074,7 +1090,6 @@ sequence::unselect()
 
     unlock();
 }
-
 
 /* removes and adds readds selected in position */
 void
@@ -1335,7 +1350,6 @@ sequence::decrement_selected(unsigned char a_status, unsigned char a_control )
     unlock();
 }
 
-
 void
 sequence::randomize_selected( unsigned char a_status, unsigned char a_control, int a_plus_minus )
 {
@@ -1375,6 +1389,7 @@ sequence::randomize_selected( unsigned char a_status, unsigned char a_control, i
             // See http://c-faq.com/lib/randrange.html
             random = (rand() / (RAND_MAX / ((2 * a_plus_minus) + 1) + 1)) - a_plus_minus;
             data_item += random;
+
             if(data_item > 127)
             {
                 data_item = 127;
@@ -1902,7 +1917,6 @@ sequence::play_note_off( int a_note )
     unlock();
 }
 
-
 bool sequence::intersectNotes( long position, long position_note, long& start, long& end, long& note )
 {
     lock();
@@ -1922,6 +1936,7 @@ bool sequence::intersectNotes( long position, long position_note, long& start, l
             {
                 ++off;
             }
+
             if ((*on).get_note() == (*off).get_note() && (*off).is_note_off() &&
                     (*on).get_timestamp() <= position && position <= (*off).get_timestamp())
             {
@@ -1963,7 +1978,6 @@ bool sequence::intersectEvents( long posstart, long posend, long status, long& s
     return false;
 }
 
-
 /* this refreshes the play marker to the LastTick */
 void
 sequence::reset_draw_marker()
@@ -1995,7 +2009,6 @@ sequence::get_lowest_note_event()
     return ret;
 }
 
-
 int
 sequence::get_highest_note_event()
 {
@@ -2023,7 +2036,6 @@ sequence::get_next_note_event( long *a_tick_s,
                                bool *a_selected,
                                int  *a_velocity  )
 {
-
     draw_type ret = DRAW_FIN;
     *a_tick_f = 0;
 
@@ -2067,7 +2079,6 @@ sequence::get_next_note_event( long *a_tick_s,
     return DRAW_FIN;
 }
 
-
 bool
 sequence::get_next_event( unsigned char *a_status,
                           unsigned char *a_cc)
@@ -2086,7 +2097,6 @@ sequence::get_next_event( unsigned char *a_status,
     }
     return false;
 }
-
 
 bool
 sequence::get_next_event( unsigned char a_status,
@@ -2585,6 +2595,7 @@ sequence::shift_notes( int a_ticks )
 
             long timestamp = e.get_timestamp();
             timestamp += a_ticks;
+
             if(timestamp < 0L)
             {
                 /* wraparound */
@@ -2941,7 +2952,6 @@ sequence::fill_list( list<char> *a_list, int a_pos )
     unlock();
 }
 
-
 void
 sequence::song_fill_list_track_name( list<char> *a_list, int a_pos )
 {
@@ -3004,7 +3014,6 @@ sequence::song_fill_list_seq_event( list<char> *a_list, trigger *a_trig, long pr
     for(int ii = 0; ii <= times_played; ii++ )
     {
         /* events */
-
         long timestamp = 0, delta_time = 0;
 
         list<event>::iterator i;
@@ -3047,13 +3056,11 @@ sequence::song_fill_list_seq_event( list<char> *a_list, trigger *a_trig, long pr
                         }
                         else                                // not past end so just use it
                             note_is_used[note]--;
-
                     }
                 }
             }
             else  // event is before the trigger start - skip
                 continue;
-
 
             /* if the event is past the trigger end - for non notes - skip */
             if(timestamp >= a_trig->m_tick_end )
@@ -3137,7 +3144,6 @@ sequence::song_fill_list_seq_trigger( list<char> *a_list, trigger *a_trig, long 
 
     unlock();
 }
-
 
 bool
 sequence::save(ofstream *file)
