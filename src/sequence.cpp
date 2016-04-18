@@ -2784,9 +2784,49 @@ addLongList( list<char> *a_list, long a_x )
 }
 
 void
+sequence::seq_number_fill_list( list<char> *a_list, int a_pos )
+{
+    lock();
+
+    /* clear list */
+    *a_list = list<char>();
+
+    /* sequence number */
+    addListVar( a_list, 0 );
+    a_list->push_front( 0xFF );
+    a_list->push_front( 0x00 );
+    a_list->push_front( 0x02 );
+    a_list->push_front( (a_pos & 0xFF00) >> 8 );
+    a_list->push_front( (a_pos & 0x00FF)      );
+
+    unlock();
+}
+
+void
+sequence::seq_name_fill_list( list<char> *a_list )
+{
+    lock();
+
+    addListVar( a_list, 0 );
+    a_list->push_front( 0xFF );
+    a_list->push_front( 0x03 );
+
+    int length =  m_name.length();
+
+    if ( length > 0x7F )
+        length = 0x7f;
+
+    a_list->push_front( length );
+
+    for ( int i=0; i< length; i++ )
+        a_list->push_front( m_name.c_str()[i] );
+
+    unlock();
+}
+
+void
 sequence::fill_proprietary_list(list < char >*a_list)
 {
-    /* FIXME: move bus and channel stuff into track */
     /* bus */
     addListVar( a_list, 0 );
     a_list->push_front( 0xFF );
@@ -2822,35 +2862,22 @@ sequence::fill_proprietary_list(list < char >*a_list)
 }
 
 void
+sequence::meta_track_end( list<char> *a_list, long delta_time)
+{
+    addListVar( a_list, delta_time );
+    a_list->push_front( 0xFF );
+    a_list->push_front( 0x2F );
+    a_list->push_front( 0x00 );
+}
+
+void
 sequence::fill_list( list<char> *a_list, int a_pos )
 {
+    seq_number_fill_list( a_list, a_pos ); // locks
+
+    seq_name_fill_list( a_list );          // locks
+
     lock();
-
-    /* clear list */
-    *a_list = list<char>();
-
-    /* sequence number */
-    addListVar( a_list, 0 );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x00 );
-    a_list->push_front( 0x02 );
-    a_list->push_front( (a_pos & 0xFF00) >> 8 );
-    a_list->push_front( (a_pos & 0x00FF)      );
-
-    /* name */
-    addListVar( a_list, 0 );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x03 );
-
-    int length =  m_name.length();
-
-    if ( length > 0x7F )
-        length = 0x7f;
-
-    a_list->push_front( length );
-
-    for ( int i=0; i< length; i++ )
-        a_list->push_front( m_name.c_str()[i] );
 
     long timestamp = 0, delta_time = 0, prev_timestamp = 0;
     list<event>::iterator i;
@@ -2943,45 +2970,7 @@ sequence::fill_list( list<char> *a_list, int a_pos )
 
     delta_time = m_length - prev_timestamp;
 
-    /* meta track end */
-    addListVar( a_list, delta_time );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x2F );
-    a_list->push_front( 0x00 );
-
-    unlock();
-}
-
-void
-sequence::song_fill_list_track_name( list<char> *a_list, int a_pos )
-{
-    lock();
-
-    /* clear list */
-    *a_list = list<char>();
-
-    /* sequence number */
-    addListVar( a_list, 0 );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x00 );
-    a_list->push_front( 0x02 );
-    a_list->push_front( (a_pos & 0xFF00) >> 8 );
-    a_list->push_front( (a_pos & 0x00FF)      );
-
-    /* name */
-    addListVar( a_list, 0 );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x03 );
-
-    int length =  m_name.length();
-
-    if ( length > 0x7F )
-        length = 0x7f;
-
-    a_list->push_front( length );
-
-    for ( int i=0; i< length; i++ )
-        a_list->push_front( m_name.c_str()[i] );
+    meta_track_end( a_list, delta_time );
 
     unlock();
 }
@@ -3136,11 +3125,7 @@ sequence::song_fill_list_seq_trigger( list<char> *a_list, trigger *a_trig, long 
 
     //printf("delta_time [%ld]: a_length [%ld]: prev_timestamp[%ld]\n",delta_time,a_length,prev_timestamp);
 
-    /* meta track end */
-    addListVar( a_list, delta_time );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x2F );
-    a_list->push_front( 0x00 );
+    meta_track_end( a_list, delta_time );
 
     unlock();
 }

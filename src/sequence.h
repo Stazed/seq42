@@ -382,10 +382,12 @@ public:
 
     sequence & operator= (const sequence & a_rhs);
 
+    void seq_number_fill_list( list<char> *a_list, int a_pos );
+    void seq_name_fill_list( list<char> *a_list );
     void fill_proprietary_list(list < char >*a_list);
-    void fill_list (list < char >*a_list, int a_pos);
+    void meta_track_end( list<char> *a_list, long delta_time);
+    void fill_list(list < char >*a_list, int a_pos);
 
-    void song_fill_list_track_name( list<char> *a_list, int a_pos );
     long song_fill_list_seq_event( list<char> *a_list, trigger *a_trig, long prev_timestamp );
     void song_fill_list_seq_trigger( list<char> *a_list, trigger *a_trig, long a_length, long prev_timestamp );
 

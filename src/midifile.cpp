@@ -828,14 +828,18 @@ bool midifile::write_song (perform * a_perf)
                 if(seq == NULL)
                     continue;
 
-                seq->song_fill_list_track_name(&l,numtracks);
+                seq->seq_number_fill_list( &l, numtracks );
+                seq->seq_name_fill_list( &l );
+
                 break;
             }
 
             if(seq == NULL) // this is the case of a track has only empty triggers(but has sequences!)
             {
                 seq = a_perf->get_track(curTrack)->get_sequence(0); // so just use the first one
-                seq->song_fill_list_track_name(&l,numtracks);
+
+                seq->seq_number_fill_list( &l, numtracks );
+                seq->seq_name_fill_list( &l );
             }
 
             // now for each trigger get sequence and add events to list char below - fill_list one by one in order,
