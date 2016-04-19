@@ -100,9 +100,9 @@ mainwnd::mainwnd(perform *a_p):
                                             mem_fun(*this, &mainwnd::file_save)));
     m_menu_file->items().push_back(MenuElem("Save _as...",
                                             sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 0)));
+
     m_menu_file->items().push_back(SeparatorElem());
-    m_menu_file->items().push_back(MenuElem("_Import midi...",
-                                            mem_fun(*this, &mainwnd::file_import_dialog)));
+
     m_menu_file->items().push_back(MenuElem("O_ptions...",
                                             mem_fun(*this,&mainwnd::options_dialog)));
     m_menu_file->items().push_back(SeparatorElem());
@@ -112,8 +112,8 @@ mainwnd::mainwnd(perform *a_p):
 
 
     /* edit menu items */
-//    m_menu_edit->items().push_back(MenuElem("_Sequence list",
-//                mem_fun(*this, &mainwnd::open_seqlist)));
+    m_menu_edit->items().push_back(MenuElem("Sequence _list",
+                                            mem_fun(*this, &mainwnd::open_seqlist)));
 
     m_menu_edit->items().push_back(MenuElem("_Mute all tracks",
                                             sigc::bind(mem_fun(*this, &mainwnd::set_song_mute), MUTE_ON)));
@@ -129,10 +129,13 @@ mainwnd::mainwnd(perform *a_p):
     m_menu_edit->items().push_back(MenuElem("_Apply song transpose",
                                             mem_fun(*this, &mainwnd::apply_song_transpose)));
 
-    m_menu_edit->items().push_back(MenuElem("_Increase grid size",
+    m_menu_edit->items().push_back(MenuElem("Increase _grid size",
                                             mem_fun(*this, &mainwnd::grow)));
 
     m_menu_edit->items().push_back(SeparatorElem());
+
+    m_menu_edit->items().push_back(MenuElem("_Import midi...",
+                                            mem_fun(*this, &mainwnd::file_import_dialog)));
 
     m_menu_edit->items().push_back(MenuElem("Midi e_xport (Seq 24)",
                                             sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 1)));
