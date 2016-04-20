@@ -873,7 +873,7 @@ bool midifile::write_song (perform * a_perf)
             write_long (0x4D54726B);
 
             int size_tempo_time_sig = 0;
-            if(curTrack == 0)
+            if(numtracks == 0)
                 size_tempo_time_sig = 15; // size, (s/b 19(total) - 4(trk end) = 15 bytes)
 
             write_long (l.size () + size_tempo_time_sig);
