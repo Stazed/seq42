@@ -110,11 +110,17 @@ mainwnd::mainwnd(perform *a_p):
                                             Gtk::AccelKey("<control>Q"),
                                             mem_fun(*this, &mainwnd::file_exit)));
 
-
     /* edit menu items */
     m_menu_edit->items().push_back(MenuElem("Sequence _list",
                                             mem_fun(*this, &mainwnd::open_seqlist)));
 
+    m_menu_edit->items().push_back(MenuElem("_Apply song transpose",
+                                            mem_fun(*this, &mainwnd::apply_song_transpose)));
+
+    m_menu_edit->items().push_back(MenuElem("Increase _grid size",
+                                            mem_fun(*this, &mainwnd::grow)));
+
+    m_menu_edit->items().push_back(SeparatorElem());
     m_menu_edit->items().push_back(MenuElem("_Mute all tracks",
                                             sigc::bind(mem_fun(*this, &mainwnd::set_song_mute), MUTE_ON)));
 
@@ -125,15 +131,6 @@ mainwnd::mainwnd(perform *a_p):
                                             sigc::bind(mem_fun(*this, &mainwnd::set_song_mute), MUTE_TOGGLE)));
 
     m_menu_edit->items().push_back(SeparatorElem());
-
-    m_menu_edit->items().push_back(MenuElem("_Apply song transpose",
-                                            mem_fun(*this, &mainwnd::apply_song_transpose)));
-
-    m_menu_edit->items().push_back(MenuElem("Increase _grid size",
-                                            mem_fun(*this, &mainwnd::grow)));
-
-    m_menu_edit->items().push_back(SeparatorElem());
-
     m_menu_edit->items().push_back(MenuElem("_Import midi...",
                                             mem_fun(*this, &mainwnd::file_import_dialog)));
 
