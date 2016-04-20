@@ -19,8 +19,8 @@
 //-----------------------------------------------------------------------------
 
 #include "midifile.h"
-#include "seqedit.h"
 #include <iostream>
+#include <gtkmm.h>
 #include <math.h>
 
 midifile::midifile(const Glib::ustring& a_name) :
@@ -680,7 +680,6 @@ bool midifile::write_sequences (perform * a_perf)
             numtracks += a_perf->get_track(i)->get_number_of_sequences();
         }
     }
-    //printf ("numtracks[%d]\n", numtracks );
 
     write_header(numtracks);
 
@@ -691,7 +690,6 @@ bool midifile::write_sequences (perform * a_perf)
 
     for (int curTrack = 0; curTrack < c_max_track; curTrack++)
     {
-        //printf ("track[%d]\n", curTrack );
         if (a_perf->is_active_track(curTrack) && !a_perf->get_track(curTrack)->get_song_mute())
         {
             unsigned int num_seq = a_perf->get_track(curTrack)->get_number_of_sequences();
@@ -701,16 +699,12 @@ bool midifile::write_sequences (perform * a_perf)
             {
                 sequence * seq = a_perf->get_track(curTrack)->get_sequence(a_seq);
 
-                //printf ("seq[%d]\n", a_seq );
-
                 list<char> l;
                 seq->fill_list (&l, numtracks);
 
                 /* magic number 'MTrk' */
                 write_long (0x4D54726B);
                 write_long (l.size ());
-
-                //printf("MTrk len[%d]\n", l.size());
 
                 while (l.size () > 0)
                 {
@@ -787,7 +781,6 @@ bool midifile::write_song (perform * a_perf)
                 numtracks ++;
         }
     }
-    //printf ("numtracks[%d]\n", numtracks );
 
     write_header(numtracks);
 
@@ -798,7 +791,6 @@ bool midifile::write_song (perform * a_perf)
 
     for (int curTrack = 0; curTrack < c_max_track; curTrack++)
     {
-        //printf ("track[%d]\n", curTrack );
         if (a_perf->is_active_track(curTrack) && !a_perf->get_track(curTrack)->get_song_mute())
         {
             if(a_perf->get_track(curTrack)->get_number_of_sequences() < 1) // skip tracks with NO sequences
@@ -806,7 +798,6 @@ bool midifile::write_song (perform * a_perf)
 
             /* all track triggers */
             track *a_track = a_perf->get_track(curTrack);
-            list < trigger > seq_list_trigger;
             trigger *a_trig;
 
             std::vector<trigger> trig_vect;
@@ -826,12 +817,12 @@ bool midifile::write_song (perform * a_perf)
                 seq = a_perf->get_track(curTrack)->get_sequence(a_trig->m_sequence); // get trigger sequence
 
                 if(seq == NULL)
-                    continue;
+                    continue;  		   // keep checking until we find one
 
                 seq->seq_number_fill_list( &l, numtracks );
                 seq->seq_name_fill_list( &l );
 
-                break;
+                break;                // we found one so get out
             }
 
             if(seq == NULL) // this is the case of a track has only empty triggers(but has sequences!)
@@ -862,7 +853,6 @@ bool midifile::write_song (perform * a_perf)
 
             total_seq_length = trig_vect[vect_size-1].m_tick_end;
 
-            //printf("total_seq_length = [%ld]\n",total_seq_length);
             /*
                 The sequence trigger is NOT part of the standard midi format and is proprietary to seq24.
                 It is added here because the trigger combining has an alternative benefit for editing.

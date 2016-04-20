@@ -2786,8 +2786,6 @@ addLongList( list<char> *a_list, long a_x )
 void
 sequence::seq_number_fill_list( list<char> *a_list, int a_pos )
 {
-    lock();
-
     /* clear list */
     *a_list = list<char>();
 
@@ -2798,15 +2796,11 @@ sequence::seq_number_fill_list( list<char> *a_list, int a_pos )
     a_list->push_front( 0x02 );
     a_list->push_front( (a_pos & 0xFF00) >> 8 );
     a_list->push_front( (a_pos & 0x00FF)      );
-
-    unlock();
 }
 
 void
 sequence::seq_name_fill_list( list<char> *a_list )
 {
-    lock();
-
     addListVar( a_list, 0 );
     a_list->push_front( 0xFF );
     a_list->push_front( 0x03 );
@@ -2820,8 +2814,6 @@ sequence::seq_name_fill_list( list<char> *a_list )
 
     for ( int i=0; i< length; i++ )
         a_list->push_front( m_name.c_str()[i] );
-
-    unlock();
 }
 
 void
