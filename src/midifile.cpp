@@ -393,10 +393,13 @@ bool midifile::parse (perform * a_perf)
                                 if(bp_measure == 0 || bw == 0)      // spec assumes 4 x 4 as we do
                                     break;
 
-                                a_perf->set_bp_measure(bp_measure); // set main perform
-                                a_perf->set_bw(bw);
+                                if(curTrack == 0)                   // set main perform if first track
+                                {
+                                    a_perf->set_bp_measure(bp_measure);
+                                    a_perf->set_bw(bw);
+                                }
 
-                                seq->set_bp_measure(bp_measure);    // also sets the sequence
+                                seq->set_bp_measure(bp_measure);    // sets the sequence always
                                 seq->set_bw(bw);
 
                                 /*printf
@@ -417,11 +420,11 @@ bool midifile::parse (perform * a_perf)
                                 tempo = (tempo * 256) + unsigned(read_byte());
                                 tempo = (tempo * 256) + unsigned(read_byte());
 
-                                if(tempo == 0)          /* Midi spec assumes 120 bpm as we do */
-                                    break;
+                                if(tempo == 0 || curTrack != 0)          /* Midi spec & seq42 assumes 120 bpm if tempo == 0 */
+                                    break;                               /* If not first track don't use because we
+                                                                            don't support tempo change */
 
                                 int bpm = (double) 60000000.0 / tempo;
-
                                 a_perf->set_bpm(bpm);
                                 //printf("BPM set to %d\n", bpm);
                             }
@@ -880,7 +883,7 @@ bool midifile::write_song (perform * a_perf)
                 So we don't have an extra one...
             */
 
-            if(curTrack == 0)
+            if(numtracks == 0)
             {
                 /* time signature */
                 write_byte(0x00); // delta time
@@ -888,7 +891,7 @@ bool midifile::write_song (perform * a_perf)
                 write_byte(0x04); // length of remaining bytes
                 write_byte(a_perf->get_bp_measure());           // nn
                 write_byte(log(a_perf->get_bw())/log(2.0));     // dd
-                write_short(0x1808);
+                write_short(0x1808);                            // cc bb
 
                 /* Tempo */
                 write_byte(0x00); // delta time
