@@ -55,6 +55,8 @@ private:
     list < event > m_list_event;
     static list < event > m_list_clipboard;
 
+    list < event > m_list_undo_hold;
+
     stack < list < event > >m_list_undo;
     stack < list < event > >m_list_redo;
 
@@ -134,6 +136,11 @@ public:
 
     sequence ();
     ~sequence ();
+
+    /* seqdata & lfownd hold for undo */
+    void set_hold_undo (bool a_hold);
+    int get_hold_undo ();
+    void push_hold_undo ();
 
     bool m_have_undo;
     bool m_have_redo;

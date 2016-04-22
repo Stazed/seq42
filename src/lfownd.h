@@ -53,5 +53,6 @@ public:
 public:
     lfownd (sequence *a_seq, seqdata *a_seqdata);
     void toggle_visible();
+    bool on_focus_out_event(GdkEventFocus* p0 );
     virtual ~lfownd();
 };

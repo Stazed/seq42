@@ -86,9 +86,18 @@ lfownd::lfownd(sequence *a_seq, seqdata *a_seqdata)
 
 void lfownd::toggle_visible()
 {
-    m_seq->push_undo();
     show_all();
     raise();
+}
+
+bool lfownd::on_focus_out_event(GdkEventFocus* p0 )
+{
+    if(m_seq->get_hold_undo() > 0)
+    {
+        m_seq->push_hold_undo();
+        m_seq->set_hold_undo(false);
+    }
+    return true;
 }
 
 void lfownd::scale_lfo_change()

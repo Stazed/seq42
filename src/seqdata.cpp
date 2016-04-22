@@ -288,8 +288,6 @@ seqdata::on_scroll_event( GdkEventScroll* a_ev )
     if ((a_ev->state & modifiers) != 0)
         return false;
 
-    //m_seq->push_undo(); // FIXME
-
     if (  a_ev->direction == GDK_SCROLL_UP )
     {
         m_seq->increment_selected( m_status, m_cc );
@@ -311,8 +309,6 @@ seqdata::on_button_press_event(GdkEventButton* a_p0)
 {
     if ( a_p0->type == GDK_BUTTON_PRESS )
     {
-        m_seq->push_undo(); // FIXME pushes regardless of change
-
         /* set values for line */
         m_drop_x = (int) a_p0->x + m_scroll_offset_x;
         m_drop_y = (int) a_p0->y;
@@ -447,6 +443,12 @@ bool
 seqdata::on_leave_notify_event(GdkEventCrossing* p0)
 {
     // m_dragging = false;
+    if(m_seq->get_hold_undo() > 0)
+    {
+        m_seq->push_hold_undo();
+        m_seq->set_hold_undo(false);
+    }
+
     update_pixmap();
     queue_draw();
     return true;
