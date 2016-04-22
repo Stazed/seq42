@@ -115,7 +115,7 @@ bool lfownd::on_focus_out_event(GdkEventFocus* p0 )
 {
     if(m_seq->get_hold_undo())
     {
-        m_seq->push_hold_undo();
+        m_seq->push_undo(true);
         m_seq->set_hold_undo(false);
     }
     return true;

@@ -65,8 +65,6 @@ sequence::set_hold_undo (bool a_hold)
 
     lock();
 
-    m_list_undo_hold.clear( );
-
     if(a_hold)
     {
         for ( i = m_list_event.begin(); i != m_list_event.end(); i++ )
@@ -74,6 +72,9 @@ sequence::set_hold_undo (bool a_hold)
             m_list_undo_hold.push_back( (*i) );
         }
     }
+    else
+       m_list_undo_hold.clear( );
+
     unlock();
 }
 
@@ -84,19 +85,13 @@ sequence::get_hold_undo ()
 }
 
 void
-sequence::push_hold_undo ()
+sequence::push_undo(bool a_hold)
 {
     lock();
-    m_list_undo.push( m_list_undo_hold );
-    unlock();
-    set_have_undo();
-}
-
-void
-sequence::push_undo()
-{
-    lock();
-    m_list_undo.push( m_list_event );
+    if(a_hold)
+        m_list_undo.push( m_list_undo_hold );
+    else
+        m_list_undo.push( m_list_event );
     unlock();
     set_have_undo();
 }

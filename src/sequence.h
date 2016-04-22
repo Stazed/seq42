@@ -139,13 +139,12 @@ public:
 
     /* seqdata & lfownd hold for undo */
     void set_hold_undo (bool a_hold);
-    int get_hold_undo ();
-    void push_hold_undo ();
+    int get_hold_undo ();;
 
     bool m_have_undo;
     bool m_have_redo;
 
-    void push_undo ();
+    void push_undo (bool a_hold = false);
     void pop_undo ();
     void pop_redo ();
 
