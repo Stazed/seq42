@@ -90,16 +90,6 @@ void lfownd::toggle_visible()
     raise();
 }
 
-bool lfownd::on_focus_out_event(GdkEventFocus* p0 )
-{
-    if(m_seq->get_hold_undo() > 0)
-    {
-        m_seq->push_hold_undo();
-        m_seq->set_hold_undo(false);
-    }
-    return true;
-}
-
 void lfownd::scale_lfo_change()
 {
     m_value = m_scale_value->get_value();
@@ -121,3 +111,12 @@ void lfownd::scale_lfo_change()
     m_seqdata->draw_pixmap_on_window();
 }
 
+bool lfownd::on_focus_out_event(GdkEventFocus* p0 )
+{
+    if(m_seq->get_hold_undo() > 0)
+    {
+        m_seq->push_hold_undo();
+        m_seq->set_hold_undo(false);
+    }
+    return true;
+}
