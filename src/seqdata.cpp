@@ -443,7 +443,7 @@ bool
 seqdata::on_leave_notify_event(GdkEventCrossing* p0)
 {
     // m_dragging = false;
-    if(m_seq->get_hold_undo() > 0)
+    if(m_seq->get_hold_undo())
     {
         m_seq->push_hold_undo();
         m_seq->set_hold_undo(false);

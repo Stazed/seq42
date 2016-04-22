@@ -1338,7 +1338,7 @@ sequence::increment_selected( unsigned char a_status, unsigned char a_control )
                     a_status == EVENT_CONTROL_CHANGE ||
                     a_status == EVENT_PITCH_WHEEL )
             {
-                if(get_hold_undo() == 0)
+                if(!get_hold_undo())
                     set_hold_undo(true);
 
                 (*i).increment_data2();
@@ -1347,7 +1347,7 @@ sequence::increment_selected( unsigned char a_status, unsigned char a_control )
             if ( a_status == EVENT_PROGRAM_CHANGE ||
                     a_status == EVENT_CHANNEL_PRESSURE )
             {
-                if(get_hold_undo() == 0)
+                if(!get_hold_undo())
                     set_hold_undo(true);
 
                 (*i).increment_data1();
@@ -1376,7 +1376,7 @@ sequence::decrement_selected(unsigned char a_status, unsigned char a_control )
                     a_status == EVENT_CONTROL_CHANGE ||
                     a_status == EVENT_PITCH_WHEEL )
             {
-                if(get_hold_undo() == 0)
+                if(!get_hold_undo())
                     set_hold_undo(true);
 
                 (*i).decrement_data2();
@@ -1385,7 +1385,7 @@ sequence::decrement_selected(unsigned char a_status, unsigned char a_control )
             if ( a_status == EVENT_PROGRAM_CHANGE ||
                     a_status == EVENT_CHANNEL_PRESSURE )
             {
-                if(get_hold_undo() == 0)
+                if(!get_hold_undo())
                     set_hold_undo(true);
 
                 (*i).decrement_data1();
@@ -1560,7 +1560,7 @@ void sequence::change_event_data_lfo(double a_value, double a_range,
 
         if ( set )
         {
-            if(get_hold_undo() == 0)
+            if(!get_hold_undo())
                 set_hold_undo(true);
 
             //float weight;
@@ -1656,7 +1656,7 @@ sequence::change_event_data_range( long a_tick_s, long a_tick_f,
 
         if ( set )
         {
-            if(get_hold_undo() == 0)
+            if(!get_hold_undo())
                 set_hold_undo(true);
 
             //float weight;
