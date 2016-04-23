@@ -187,7 +187,6 @@ public:
 
     void reset_draw_trigger_marker ();
 
-    // FIXME: Change API to just return a pointer to the next trigger (or a NULL pointer if no more triggers)?
     bool get_next_trigger (long *a_tick_on, long *a_tick_off, bool * a_selected, long *a_tick_offset, int *a_seq_idx);
 
     /* Return true if at least one of this track's sequences is being edited. */

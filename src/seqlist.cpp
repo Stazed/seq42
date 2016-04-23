@@ -248,7 +248,16 @@ seqlist::del_seq( track *a_track, int a_seq )
 {
     if( a_track->get_trigger_count_for_seqidx(a_seq))
     {
-        // FIXME: if sequence is triggered, ask for confirmation
+        Gtk::MessageDialog warning(*this,
+                                   "Sequence is triggered!\n"
+                                   "Do you still want to delete it?",
+                                   false,
+                                   Gtk::MESSAGE_WARNING, Gtk::BUTTONS_YES_NO, true);
+
+        auto result = warning.run();
+
+        if (result == Gtk::RESPONSE_NO || result == Gtk::RESPONSE_DELETE_EVENT)
+            return;
     }
     m_perf->push_track_undo(m_perf->get_track_index(a_track));
     a_track->delete_sequence( a_seq );

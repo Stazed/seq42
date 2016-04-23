@@ -226,7 +226,6 @@ trackmenu::trk_new()
         m_mainperf->push_track_undo(m_current_trk);
         m_mainperf->new_track( m_current_trk );
         m_mainperf->get_track( m_current_trk )->set_dirty();
-        // FIXME: add a bool preference: "New track pops up edit window?"
         trk_edit();
     }
 }
