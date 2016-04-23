@@ -75,6 +75,9 @@ seqdata::update_sizes()
 void
 seqdata::reset()
 {
+    m_scroll_offset_ticks = (int) m_hadjust->get_value();
+    m_scroll_offset_x = m_scroll_offset_ticks / m_zoom;
+
     update_sizes();
     update_pixmap();
     queue_draw();
