@@ -21,6 +21,7 @@
 #include "trackedit.h"
 #include "pixmaps/bus.xpm"
 #include "pixmaps/midi.xpm"
+#include "pixmaps/transpose.xpm"
 
 // tooltip helper, for old vs new gtk...
 #if GTK_MINOR_VERSION >= 12
@@ -99,12 +100,14 @@ trackedit::trackedit (track *a_track)
     m_vbox->pack_start (*m_hbox3, false, false);
 
     m_check_transposable = manage( new CheckButton( "Transposable" ));
+    m_check_transposable->set_image( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( transpose_xpm  ))));
     m_check_transposable->set_active(m_track->get_transposable());
     m_check_transposable->signal_toggled ().
     connect (bind
              (mem_fun (*this, &trackedit::transposable_change_callback),
               m_check_transposable));
-    m_hbox3->pack_start( *m_check_transposable, false, false );
+    add_tooltip( m_check_transposable, "Remove check if track should NOT apply song transpose.");
+    m_hbox3->pack_start( *m_check_transposable, PACK_EXPAND_WIDGET );
 
     this->add( *m_vbox );
     show_all();
