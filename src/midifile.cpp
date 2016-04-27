@@ -197,8 +197,6 @@ bool midifile::parse (perform * a_perf, int screen_set)
 
     for (int curTrack = 0; curTrack < NumTracks; curTrack++)
     {
-        printf("screen_set_start [%d]\n", screen_set_start);
-
         /* done for each track */
         bool done = false;
 
@@ -217,11 +215,6 @@ bool midifile::parse (perform * a_perf, int screen_set)
            (screen_set >= 0 && track_count >= (SEQ24_SCREEN_SET_SIZE - 1)))
         {
             m_pos += TrackLength; // eat the unused tracks
-            //printf ( "track_count ST [%d]: curTrack [%d]: screen_set_start [%d]: Track_end [%d]\n",
-            //         track_count, curTrack,
-            //         screen_set_start,
-            //         Track_End );
-
             continue;
         }
 
@@ -514,7 +507,6 @@ bool midifile::parse (perform * a_perf, int screen_set)
                             {
                                 read_byte();
                             }
-                            //printf("\n");
                             break;
                         }
                     }
@@ -555,23 +547,22 @@ bool midifile::parse (perform * a_perf, int screen_set)
             {
                 a_perf->add_track(a_track,track_count);
             }
-            else
+            else // for seq24 screen set import we can't tell the screen set until we load the track
             {
-                delete a_track;
-                //printf("Track Deleted: curTrack [%d]: screen_set_start [%d]\n", curTrack, screen_set_start);
+                delete a_track; // Not in the correct screen set or > c_max_track
             }
         }
 
-        /* dont know what kind of chunk */
+        /* don't know what kind of chunk */
         else
         {
-            /* its not a MTrk, we dont know how to deal with it,
+            /* its not a MTrk, we don't know how to deal with it,
                so we just eat it */
             fprintf(stderr, "Unsupported MIDI header detected: %8lX\n", ID);
             m_pos += TrackLength;
             done = true;
         }
-    }				/* for(eachtrack) */
+    }				/* for(each track) */
 
     //printf ( "file_size[%d] m_pos[%d]\n", file_size, m_pos );
 
@@ -588,7 +579,7 @@ bool midifile::parse (perform * a_perf, int screen_set)
         if (ID == c_midiclocks)
         {
             TrackLength = read_long ();
-            /* TrackLength is nyumber of buses */
+            /* TrackLength is number of buses */
             for (unsigned int x = 0; x < TrackLength; x++)
             {
                 int bus_on = read_byte ();
