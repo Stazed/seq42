@@ -86,7 +86,7 @@ midifile::read_var ()
     return ret;
 }
 
-bool midifile::parse (perform * a_perf)
+bool midifile::parse (perform * a_perf, int screen_set)
 {
     /* open binary file */
     ifstream file(m_name.c_str(), ios::in | ios::binary | ios::ate);
@@ -181,9 +181,24 @@ bool midifile::parse (perform * a_perf)
     /* We should be good to load now   */
     a_perf->push_perf_undo();
 
+    /* seq24 screen set import */
+    int screen_set_start = 0;
+    unsigned short Track_End = NumTracks;
+    if(screen_set >= 0)
+    {
+        screen_set_start = screen_set * SEQ24_SCREEN_SET_SIZE;
+
+        if((screen_set_start + SEQ24_SCREEN_SET_SIZE) < Track_End)
+            Track_End = screen_set_start + SEQ24_SCREEN_SET_SIZE;
+    }
+
     /* for each Track in the midi file */
+    int track_count = 0; // necessary for screen set offset
+
     for (int curTrack = 0; curTrack < NumTracks; curTrack++)
     {
+        printf("screen_set_start [%d]\n", screen_set_start);
+
         /* done for each track */
         bool done = false;
 
@@ -196,6 +211,19 @@ bool midifile::parse (perform * a_perf)
         ID = read_long ();
         TrackLength = read_long ();
         //printf( "[%8lX] len[%8lX]\n", ID,  TrackLength );
+
+        /* Seq24 import using screen set */
+        if(track_count >= c_max_track || curTrack >= Track_End ||
+           (screen_set >= 0 && track_count >= (SEQ24_SCREEN_SET_SIZE - 1)))
+        {
+            m_pos += TrackLength; // eat the unused tracks
+            //printf ( "track_count ST [%d]: curTrack [%d]: screen_set_start [%d]: Track_end [%d]\n",
+            //         track_count, curTrack,
+            //         screen_set_start,
+            //         Track_End );
+
+            continue;
+        }
 
         /* magic number 'MTrk' */
         if (ID == 0x4D54726B)
@@ -210,7 +238,7 @@ bool midifile::parse (perform * a_perf)
                 error_message_gtk("Memory allocation failed");
                 return false;
             }
-            a_perf->add_track(a_track,curTrack);
+
             a_track->set_name((char*)"Midi Import");
             a_track->set_master_midi_bus (&a_perf->m_master_bus);
 
@@ -464,8 +492,21 @@ bool midifile::parse (perform * a_perf)
 
                         /* sequence number */
                         case 0x00:
-                            if(len != 0x00)
-                                read_short();
+                            if (len == 0x00)
+                                track_count = 0;
+                            else
+                            {
+                                int seq_number = read_short();
+                                //printf ( "seq_number[%d]\n",  seq_number );
+                                if(screen_set >= 0)
+                                {
+                                    seq_number -= (screen_set * 32);
+                                }
+                                track_count = seq_number;
+                            }
+
+                            //printf ( "track_count [%d]\n", track_count );
+
                             break;
 
                         default:
@@ -508,8 +549,17 @@ bool midifile::parse (perform * a_perf)
                 }
             }			/* while ( !done loading Trk chunk */
 
-            /* the sequence has been filled, add it  */
-            seq->set_track(a_track);
+            /* the track has been filled - add it */
+            if(track_count < c_max_track  &&
+               (screen_set < 0 || (screen_set >= 0 && (track_count < SEQ24_SCREEN_SET_SIZE) && (track_count >= 0))))
+            {
+                a_perf->add_track(a_track,track_count);
+            }
+            else
+            {
+                delete a_track;
+                //printf("Track Deleted: curTrack [%d]: screen_set_start [%d]\n", curTrack, screen_set_start);
+            }
         }
 
         /* dont know what kind of chunk */

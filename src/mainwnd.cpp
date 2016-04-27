@@ -1300,6 +1300,13 @@ mainwnd::file_import_dialog()
     ButtonBox *btnbox = dialog.get_action_area();
     HBox hbox( false, 2 );
 
+    m_adjust_load_offset = manage( new Adjustment( -1, -1, SEQ24_SCREEN_SET_SIZE - 1, 1 ));
+    m_spinbutton_load_offset = manage( new SpinButton( *m_adjust_load_offset ));
+    m_spinbutton_load_offset->set_editable( false );
+    m_spinbutton_load_offset->set_wrap( true );
+    hbox.pack_end(*m_spinbutton_load_offset, false, false );
+    hbox.pack_end(*(manage( new Label("Seq24 Screen Import"))), false, false, 4);
+
     btnbox->pack_start(hbox, false, false );
 
     dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
@@ -1318,7 +1325,7 @@ mainwnd::file_import_dialog()
         {
             midifile f( dialog.get_filename() );
 
-            if(f.parse( m_mainperf ))
+            if(f.parse( m_mainperf, (int) m_adjust_load_offset->get_value() ))
                 last_midi_dir = dialog.get_filename().substr(0, dialog.get_filename().rfind("/") + 1);
             else return;
         }

@@ -25,18 +25,14 @@
 #include "event.h"
 #include "options.h"
 #include "maintime.h"
-
-
-//#pragma once
-
-#include <map>
-#include <gtkmm.h>
-#include <string>
-
 #include "globals.h"
 #include "perfnames.h"
 #include "perfroll.h"
 #include "perftime.h"
+
+#include <map>
+#include <gtkmm.h>
+#include <string>
 
 using namespace Gtk;
 
@@ -121,6 +117,9 @@ private:
 
     Button      *m_button_bw;
     Entry       *m_entry_bw;
+
+    SpinButton  *m_spinbutton_load_offset;
+    Adjustment  *m_adjust_load_offset;
 
     HBox *m_hbox;
     HBox *m_hlbox;

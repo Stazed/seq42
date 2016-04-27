@@ -371,3 +371,5 @@ string NumberToString ( T Number )
 	ss << Number;
 	return ss.str();
 }
+
+#define SEQ24_SCREEN_SET_SIZE (32)
