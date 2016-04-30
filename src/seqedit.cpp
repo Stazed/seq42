@@ -1294,6 +1294,7 @@ seqedit::apply_length( int a_bp_measure, int a_bw, int a_measures, bool a_adjust
     m_seqtime_wid->reset();
     m_seqdata_wid->reset();
     m_seqevent_wid->reset();
+    m_seq->set_dirty();
 }
 
 long
