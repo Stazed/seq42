@@ -102,6 +102,12 @@ perfroll::change_vert( )
 {
     if ( m_track_offset != (int) m_vadjust->get_value() )
     {
+        /*   must adjust m_drop_y or perfroll_input unselect_triggers will not work if   */
+        /*   scrolled up or down to a new location - see note in on_button_press_event() */
+        /*   in perfroll_input.cpp */
+
+        m_drop_y += ((m_track_offset - (int) m_vadjust->get_value()) *c_names_y);
+
         m_track_offset = (int) m_vadjust->get_value();
         queue_draw();
     }
@@ -602,6 +608,9 @@ perfroll::redraw_dirty_tracks()
 void
 perfroll::draw_drawable_row( Glib::RefPtr<Gdk::Drawable> a_dest, Glib::RefPtr<Gdk::Drawable> a_src,  long a_y )
 {
+    if( a_y < 0) // if user scrolled up off the window
+        return;
+
     int s = a_y / c_names_y;
     a_dest->draw_drawable
     (
