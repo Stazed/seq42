@@ -48,6 +48,12 @@ bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
         ths.m_mainperf->get_track( ths.m_drop_track )->unselect_triggers( );
         ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
         ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
+
+        /* ths.m_drop_y will be adjusted by perfroll.cpp change_vert() for any        */
+        /* scroll after it was originally selected. Below call to draw_drawable_row   */
+        /* will have the wrong y location and un-select will not occur if the user    */
+        /* scrolls the track up or down to a new y location if not adjusted.          */
+
         ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
     }
 
@@ -325,6 +331,12 @@ bool Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
         ths.m_mainperf->get_track( ths.m_drop_track )->unselect_triggers( );
         ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
         ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
+
+        /* ths.m_drop_y will be adjusted by perfroll.cpp change_vert() for any        */
+        /* scroll after it was originally selected. Below call to draw_drawable_row   */
+        /* will have the wrong y location and un-select will not occur if the user    */
+        /* scrolls the track up or down to a new y location if not adjusted.          */
+
         ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
     }
 
