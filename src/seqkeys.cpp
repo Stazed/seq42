@@ -25,7 +25,8 @@ seqkeys::seqkeys(sequence *a_seq,
                  Gtk::Adjustment *a_vadjust ):
     m_black(Gdk::Color("black")),
     m_white(Gdk::Color("white")),
-    m_grey(Gdk::Color("grey")),
+    m_grey(Gdk::Color("red")),  // piano roll note highlight FIXME name
+   // m_grey(Gdk::Color("grey")),  // piano roll note highlight
     m_seq(a_seq),
     m_vadjust(a_vadjust),
     m_scroll_offset_key(0),

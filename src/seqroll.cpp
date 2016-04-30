@@ -38,10 +38,12 @@ seqroll::seqroll(perform *a_perf,
                  Adjustment *a_hadjust,
                  Adjustment *a_vadjust,
                  ToggleButton *a_toggle_play):
-    m_black(Gdk::Color("black")),
+    m_black(Gdk::Color("black")),           // vertical lines on bar
     m_white(Gdk::Color("white")),
-    m_grey(Gdk::Color("gray")),
-    m_dk_grey(Gdk::Color("gray50")),
+    m_green(Gdk::Color("light green")),     //  scale highlighting
+    m_grey(Gdk::Color("light blue")),             // grid
+    //m_grey(Gdk::Color("gray")),             // grid
+    m_dk_grey(Gdk::Color("gray50")),        // horizontal grid lines
     m_dk_cyan(Gdk::Color("dark cyan")),
     m_red(Gdk::Color("orange")),
 
@@ -96,6 +98,7 @@ seqroll::seqroll(perform *a_perf,
     Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
     colormap->alloc_color( m_black );
     colormap->alloc_color( m_white );
+    colormap->alloc_color( m_green );
     colormap->alloc_color( m_grey );
     colormap->alloc_color( m_dk_grey );
     colormap->alloc_color( m_dk_cyan );
@@ -362,6 +365,7 @@ seqroll::update_background()
 
         if ( m_scale != c_scale_off )
         {
+            m_gc->set_foreground(m_green);
             if ( !c_scales_policy[m_scale][ ((c_num_keys - i)
                                              - m_scroll_offset_key
                                              - 1 + ( 12 - m_key )) % 12] )
@@ -370,6 +374,7 @@ seqroll::update_background()
                                              i * c_key_y + 1,
                                              m_window_x,
                                              c_key_y - 1 );
+            m_gc->set_foreground(m_grey);
         }
     }
 

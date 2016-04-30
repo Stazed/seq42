@@ -25,7 +25,8 @@
 perftime::perftime( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
     m_black(Gdk::Color("black")),
     m_white(Gdk::Color("white")),
-    m_grey(Gdk::Color("grey")),
+    m_grey(Gdk::Color("green")),
+    //m_grey(Gdk::Color("grey")),
 
     m_mainperf(a_perf),
     m_mainwnd(a_main),

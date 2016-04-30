@@ -29,8 +29,10 @@ perfroll::perfroll( perform *a_perf,
                     Adjustment * a_vadjust  ) :
     m_black(Gdk::Color("black")),
     m_white(Gdk::Color("white")),
-    m_grey(Gdk::Color("grey")),
-    m_lt_grey(Gdk::Color("light grey")),
+    m_grey(Gdk::Color("light blue")),
+    //m_grey(Gdk::Color("grey")),
+    m_lt_grey(Gdk::Color("black")), // sequence end marker FIXME name
+    //m_lt_grey(Gdk::Color("light grey")),
 
     m_mainperf(a_perf),
     m_mainwnd(a_main),
