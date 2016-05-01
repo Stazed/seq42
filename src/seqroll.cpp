@@ -40,12 +40,14 @@ seqroll::seqroll(perform *a_perf,
                  ToggleButton *a_toggle_play):
     m_black(Gdk::Color("black")),           // vertical lines on bar
     m_white(Gdk::Color("white")),
-    m_green(Gdk::Color("light green")),     //  scale highlighting
+    m_green(Gdk::Color("gray")),     //  scale highlighting
+    //m_green(Gdk::Color("light green")),     //  scale highlighting
     m_grey(Gdk::Color("light blue")),             // grid
     //m_grey(Gdk::Color("gray")),             // grid
     m_dk_grey(Gdk::Color("gray50")),        // horizontal grid lines
     m_dk_cyan(Gdk::Color("dark cyan")),
-    m_red(Gdk::Color("orange")),
+    m_red(Gdk::Color("red")),
+    //m_red(Gdk::Color("orange")),
 
     m_seq(a_seq),
     m_perform(a_perf),
@@ -374,7 +376,6 @@ seqroll::update_background()
                                              i * c_key_y + 1,
                                              m_window_x,
                                              c_key_y - 1 );
-            m_gc->set_foreground(m_grey);
         }
     }
 
@@ -749,7 +750,8 @@ seqroll::draw_selection_on_window()
         m_old.width = w;
         m_old.height = h + c_key_y;
 
-        m_gc->set_foreground(m_black);
+        //m_gc->set_foreground(m_black);
+        m_gc->set_foreground(m_red);
         m_window->draw_rectangle(m_gc,false,
                                  x,
                                  y,
@@ -768,7 +770,8 @@ seqroll::draw_selection_on_window()
         x -= m_scroll_offset_x;
         y -= m_scroll_offset_y;
 
-        m_gc->set_foreground(m_black);
+        m_gc->set_foreground(m_red);
+        //m_gc->set_foreground(m_black);
         m_window->draw_rectangle(m_gc,false,
                                  x,
                                  y,
@@ -794,7 +797,8 @@ seqroll::draw_selection_on_window()
         x -= m_scroll_offset_x;
         y -= m_scroll_offset_y;
 
-        m_gc->set_foreground(m_black);
+        m_gc->set_foreground(m_red);
+        //m_gc->set_foreground(m_black);
         m_window->draw_rectangle(m_gc,false,
                                  x,
                                  y,
