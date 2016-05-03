@@ -277,6 +277,8 @@ public:
     int select_events (long a_tick_s, long a_tick_f,
                        unsigned char a_status, unsigned char a_cc, select_action_e a_action);
 
+    int select_linked (long a_tick_s, long a_tick_f, unsigned char a_status);
+
     int get_num_selected_notes ();
     int get_num_selected_events (unsigned char a_status, unsigned char a_cc);
 
