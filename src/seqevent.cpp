@@ -25,10 +25,11 @@ seqevent::seqevent(sequence *a_seq,
                    int a_snap,
                    seqdata *a_seqdata_wid,
                    Gtk::Adjustment   *a_hadjust):
-    m_black(Gdk::Color("black")),
+    m_black(Gdk::Color("dark blue")),   // event outline
+    //m_black(Gdk::Color("black")),   // event outline
     m_white(Gdk::Color("white")),
     m_grey(Gdk::Color("grey")),
-    m_red(Gdk::Color("red")),
+    m_red(Gdk::Color("red")),       // selected event, selection box
     //m_red(Gdk::Color("orange")),
     m_hadjust(a_hadjust),
 
@@ -1274,6 +1275,12 @@ bool Seq42SeqEventInput::on_button_release_event(GdkEventButton* a_ev, seqevent&
             ths.m_seq->select_events( tick_s, tick_f,
                                       ths.m_status,
                                       ths.m_cc, sequence::e_select );
+
+            if(ths.m_status == EVENT_NOTE_ON || ths.m_status == EVENT_NOTE_OFF)
+            {
+                // get the note and select both
+            }
+
         }
 
         if ( ths.m_moving )

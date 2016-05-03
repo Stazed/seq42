@@ -38,16 +38,19 @@ seqroll::seqroll(perform *a_perf,
                  Adjustment *a_hadjust,
                  Adjustment *a_vadjust,
                  ToggleButton *a_toggle_play):
-    m_black(Gdk::Color("black")),           // vertical lines on bar
-    m_white(Gdk::Color("white")),
-    m_green(Gdk::Color("gray")),     //  scale highlighting
+    m_black(Gdk::Color("dark blue")),             // vertical lines on bar, note outline
+    //m_black(Gdk::Color("black")),             // vertical lines on bar, note outline
+    //m_white(Gdk::Color("black")),             // background and notes inside unselected
+    m_white(Gdk::Color("white")),             // background and notes inside unselected
+    m_green(Gdk::Color("gray")),              //  scale highlighting
     //m_green(Gdk::Color("light green")),     //  scale highlighting
     m_grey(Gdk::Color("light blue")),             // grid
     //m_grey(Gdk::Color("gray")),             // grid
-    m_dk_grey(Gdk::Color("gray50")),        // horizontal grid lines
-    m_dk_cyan(Gdk::Color("dark cyan")),
-    m_red(Gdk::Color("red")),
-    //m_red(Gdk::Color("orange")),
+    m_dk_grey(Gdk::Color("dark blue")),          // horizontal grid lines
+    //m_dk_grey(Gdk::Color("gray50")),          // horizontal grid lines
+    m_dk_cyan(Gdk::Color("dark cyan")),       // background sequence
+    //m_red(Gdk::Color("blue")),                 // note selected
+    m_red(Gdk::Color("red")),                  // note selected
 
     m_seq(a_seq),
     m_perform(a_perf),
@@ -645,6 +648,8 @@ void seqroll::draw_events_on( Glib::RefPtr<Gdk::Drawable> a_draw )
                                         note_y,
                                         note_width,
                                         note_height);
+
+                /* if note wraps around to the beginning */
                 if (tick_f < tick_s)
                 {
                     a_draw->draw_rectangle(	m_gc,true,
