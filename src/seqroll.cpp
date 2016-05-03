@@ -1218,8 +1218,11 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
             /* paste */
             if ( a_p0->keyval == GDK_v || a_p0->keyval == GDK_V )
             {
-                start_paste();
-                ret = true;
+                if(this->has_focus())
+                {
+                    start_paste();
+                    ret = true;
+                }
             }
 
             /* Undo */
