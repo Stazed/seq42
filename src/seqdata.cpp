@@ -26,6 +26,8 @@ seqdata::seqdata(sequence *a_seq, int a_zoom, Gtk::Adjustment *a_hadjust):
     m_black(Gdk::Color("black")),
     m_white(Gdk::Color("white")),
     m_grey(Gdk::Color("grey")),
+    m_blue(Gdk::Color("blue")),
+    m_red(Gdk::Color("red")),
 
     m_seq(a_seq),
 
@@ -50,6 +52,8 @@ seqdata::seqdata(sequence *a_seq, int a_zoom, Gtk::Adjustment *a_hadjust):
     colormap->alloc_color( m_black );
     colormap->alloc_color( m_white );
     colormap->alloc_color( m_grey );
+    colormap->alloc_color( m_blue );
+    colormap->alloc_color( m_red );
 
     set_flags(Gtk::CAN_FOCUS );
     set_double_buffered( false );
@@ -190,7 +194,7 @@ seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
                            m_window_y );
 
 
-    m_gc->set_foreground( m_black );
+    m_gc->set_foreground( m_blue );
 
     m_seq->reset_draw_marker();
     while ( m_seq->get_next_event( m_status,
@@ -200,6 +204,11 @@ seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
     {
         if ( tick >= start_tick && tick <= end_tick )
         {
+            if(selected)
+                m_gc->set_foreground( m_red );
+            else
+                m_gc->set_foreground( m_blue );
+
             /* turn into screen corrids */
 
             event_x = tick / m_zoom;
@@ -491,7 +500,7 @@ seqdata::draw_line_on_window()
     m_old.width = w;
     m_old.height = h;
 
-    m_gc->set_foreground(m_black);
+    m_gc->set_foreground(m_red);
     m_window->draw_line(m_gc,
                         m_current_x - m_scroll_offset_x,
                         m_current_y,
