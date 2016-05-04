@@ -1031,6 +1031,8 @@ sequence::select_linked (long a_tick_s, long a_tick_f, unsigned char a_status)
         {
             if((*i).is_selected())
                 (*i).get_linked()->select();
+            else
+                (*i).get_linked()->unselect();
 
             ret++;
         }

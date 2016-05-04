@@ -906,7 +906,11 @@ bool FruitySeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& 
             if (ths.m_seq->select_events( tick_s, tick_f,
                                           ths.m_status, ths.m_cc, sequence::e_would_select ))
             {
-                /* remove only the note under the cursor,
+                /* Don't allow individual deletion of note on/off */
+                if(ths.m_status == EVENT_NOTE_ON || ths.m_status == EVENT_NOTE_OFF)
+                    return true;
+
+                /* remove only the event under the cursor,
                    leave the selection intact */
                 ths.m_seq->push_undo();
                 ths.m_seq->select_events( tick_s, tick_f,
