@@ -541,6 +541,9 @@ seqevent::drop_event( long a_tick )
     unsigned char d0 = m_cc;
     unsigned char d1 = 0x40;
 
+    if ( m_status == EVENT_NOTE_ON || m_status == EVENT_NOTE_OFF )
+        return;
+
     if ( m_status == EVENT_AFTERTOUCH )
         d0 = 0;
 
@@ -758,6 +761,7 @@ bool FruitySeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& 
         ths.m_paste = false;
         ths.m_seq->push_undo();
         ths.m_seq->paste_selected( tick_s, 0 );
+        ths.m_seq->set_dirty();
     }
     else
     {
@@ -818,6 +822,11 @@ bool FruitySeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& 
                                                        ths.m_status,
                                                        ths.m_cc, sequence::e_select_one );
 
+                    if(ths.m_status == EVENT_NOTE_ON || ths.m_status == EVENT_NOTE_OFF)
+                    {
+                        ths.m_seq->select_linked( tick_s, tick_f, ths.m_status);
+                        ths.m_seq->set_dirty();
+                    }
                     // prevent deselect in button_release()
                     if (numsel)
                         m_justselected_one = true;
@@ -1004,7 +1013,7 @@ bool FruitySeqEventInput::on_button_release_event(GdkEventButton* a_ev, seqevent
         }
     }
 
-    if ( a_ev->button == 3 || a_ev->button == 1 )
+    if ( a_ev->button == 3 || (a_ev->button == 1  && a_ev->state & GDK_CONTROL_MASK))
     {
         if ( ths.m_selecting )
         {
@@ -1131,7 +1140,7 @@ bool Seq42SeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& t
         ths.m_paste = false;
         ths.m_seq->push_undo();
         ths.m_seq->paste_selected( tick_s, 0 );
-
+        ths.m_seq->set_dirty();
     }
     else
     {
@@ -1177,6 +1186,12 @@ bool Seq42SeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& t
                     numsel = ths.m_seq->select_events( tick_s, tick_f,
                                                        ths.m_status,
                                                        ths.m_cc, sequence::e_select_one );
+
+                    if(ths.m_status == EVENT_NOTE_ON || ths.m_status == EVENT_NOTE_OFF)
+                    {
+                        ths.m_seq->select_linked( tick_s, tick_f, ths.m_status);
+                        ths.m_seq->set_dirty();
+                    }
 
                     /* if we didnt select anyhing (user clicked empty space)
                        unselect all notes, and start selecting */
