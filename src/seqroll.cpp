@@ -379,6 +379,8 @@ seqroll::update_background()
                                              i * c_key_y + 1,
                                              m_window_x,
                                              c_key_y - 1 );
+            /* reset */
+            m_gc->set_foreground(m_grey);
         }
     }
 
