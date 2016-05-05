@@ -234,6 +234,12 @@ seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
                               event_x -  m_scroll_offset_x + 1,
                               c_dataarea_y );
 
+            a_draw->draw_rectangle(m_gc,
+                              true,
+                              event_x -  m_scroll_offset_x -3,
+                              c_dataarea_y - event_height ,
+                              8,4);
+
             a_draw->draw_drawable(m_gc,
                                   m_numbers[event_height],
                                   0,0,
