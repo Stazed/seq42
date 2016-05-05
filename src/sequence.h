@@ -384,7 +384,7 @@ public:
                          unsigned char a_cc,
                          long *a_tick,
                          unsigned char *a_D0,
-                         unsigned char *a_D1, bool * a_selected);
+                         unsigned char *a_D1, bool * a_selected, int type = ALL_EVENTS);
 
     bool get_next_event (unsigned char *a_status, unsigned char *a_cc);
 

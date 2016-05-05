@@ -2185,18 +2185,33 @@ sequence::get_next_event( unsigned char a_status,
                           long *a_tick,
                           unsigned char *a_D0,
                           unsigned char *a_D1,
-                          bool *a_selected )
+                          bool *a_selected, int type )
 {
     while (  m_iterator_draw  != m_list_event.end() )
     {
         /* note on, so its linked */
         if( (*m_iterator_draw).get_status() == a_status )
         {
+            if(type == UNSELECTED_EVENTS && (*m_iterator_draw).is_selected() == true)
+            {
+                /* keep going until we hit null or find one */
+                m_iterator_draw++;
+                continue;
+            }
+
+            /* selected events */
+            if(type > 0 && (*m_iterator_draw).is_selected() == false)
+            {
+                /* keep going until we hit null or find one */
+                m_iterator_draw++;
+                continue;
+            }
+
             (*m_iterator_draw).get_data( a_D0, a_D1 );
             *a_tick   = (*m_iterator_draw).get_timestamp();
             *a_selected = (*m_iterator_draw).is_selected();
 
-            /* either we have a control chage with the right CC
+            /* either we have a control change with the right CC
                or its a different type of event */
             if ( (a_status == EVENT_CONTROL_CHANGE &&
                     *a_D0 == a_cc )

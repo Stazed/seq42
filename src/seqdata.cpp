@@ -176,10 +176,31 @@ seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
 
     unsigned char d0,d1;
 
+    bool selected;
+
     int event_x;
     int event_height;
 
-    bool selected;
+    /*  For note ON there can be multiple events on the same vertical in which
+        the selected item can be covered.  For note ON's the selected item needs
+        to be drawn last so it can be seen.  So, for other events the below var
+        num_selected_events will be -1 for ALL_EVENTS. For note ON's only, the
+        var will be the number of selected events. If 0 then only one pass is
+        needed. If > 0 then two passes are needed, one for unselected (first), and one for
+        selected (last).
+    */
+    int num_selected_events = ALL_EVENTS;
+    int selection_type = num_selected_events;
+
+    if ( m_status == EVENT_NOTE_ON)
+    {
+        num_selected_events = m_seq->get_num_selected_events(m_status, m_cc);
+
+        /* For first pass - if any selected,  selection_type = UNSELECTED_EVENTS.
+           For second pass will be set to num_selected_events*/
+        if(num_selected_events > 0)
+            selection_type = UNSELECTED_EVENTS;
+    }
 
     int start_tick = m_scroll_offset_ticks ;
     int end_tick = (m_window_x * m_zoom) + m_scroll_offset_ticks;
@@ -196,11 +217,14 @@ seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
 
     m_gc->set_foreground( m_blue );
 
+    SECOND_PASS_NOTE_ON: // yes this is a goto... yikes!!!!
+
     m_seq->reset_draw_marker();
+
     while ( m_seq->get_next_event( m_status,
                                    m_cc,
                                    &tick, &d0, &d1,
-                                   &selected ) == true )
+                                   &selected, selection_type ) == true )
     {
         if ( tick >= start_tick && tick <= end_tick )
         {
@@ -247,6 +271,12 @@ seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
                                   c_dataarea_y - 25,
                                   6,30);
         }
+    }
+
+    if(selection_type == UNSELECTED_EVENTS)
+    {
+        selection_type = num_selected_events;
+        goto SECOND_PASS_NOTE_ON; // this is NOT spaghetti code... it's very clear what is going on!!!
     }
 }
 
