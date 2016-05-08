@@ -25,8 +25,7 @@ seqkeys::seqkeys(sequence *a_seq,
                  Gtk::Adjustment *a_vadjust ):
     m_black(Gdk::Color("black")),
     m_white(Gdk::Color("white")),
-    m_grey(Gdk::Color("red")),  // piano roll note highlight FIXME name
-   // m_grey(Gdk::Color("grey")),  // piano roll note highlight
+    m_red(Gdk::Color("red")),  // piano roll note hint
     m_seq(a_seq),
     m_vadjust(a_vadjust),
     m_scroll_offset_key(0),
@@ -55,7 +54,7 @@ seqkeys::seqkeys(sequence *a_seq,
 
     colormap->alloc_color( m_black );
     colormap->alloc_color( m_white );
-    colormap->alloc_color( m_grey );
+    colormap->alloc_color( m_red );
 
     set_double_buffered( false );
 }
@@ -329,7 +328,7 @@ seqkeys::set_hint_state( bool a_state )
         draw_key( m_hint_key, false );
 }
 
-/* a_state, false = normal, true = grayed */
+/* a_state, false = normal, true = red */
 void
 seqkeys::draw_key( int a_key, bool a_state )
 {
@@ -355,9 +354,9 @@ seqkeys::draw_key( int a_key, bool a_state )
                              c_key_x - 3,
                              c_key_y - 3 );
 
-    if ( a_state )
+    if ( a_state ) // piano hint key
     {
-        m_gc->set_foreground(m_grey);
+        m_gc->set_foreground(m_red);
 
         m_window->draw_rectangle(m_gc,true,
                                  c_keyoffset_x + 1,

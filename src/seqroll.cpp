@@ -38,19 +38,13 @@ seqroll::seqroll(perform *a_perf,
                  Adjustment *a_hadjust,
                  Adjustment *a_vadjust,
                  ToggleButton *a_toggle_play):
-    m_black(Gdk::Color("dark blue")),             // vertical lines on bar, note outline
-    //m_black(Gdk::Color("black")),             // vertical lines on bar, note outline
-    //m_white(Gdk::Color("black")),             // background and notes inside unselected
-    m_white(Gdk::Color("white")),             // background and notes inside unselected
-    m_green(Gdk::Color("gray")),              //  scale highlighting
-    //m_green(Gdk::Color("light green")),     //  scale highlighting
-    m_grey(Gdk::Color("light blue")),             // grid
-    //m_grey(Gdk::Color("gray")),             // grid
-    m_dk_grey(Gdk::Color("dark blue")),          // horizontal grid lines
-    //m_dk_grey(Gdk::Color("gray50")),          // horizontal grid lines
-    m_dk_cyan(Gdk::Color("dark cyan")),       // background sequence
-    //m_red(Gdk::Color("blue")),                 // note selected
-    m_red(Gdk::Color("red")),                  // note selected
+    m_dk_blue(Gdk::Color("dark blue")),         // note outline
+    m_black(Gdk::Color("black")),               // vertical lines on bar
+    m_white(Gdk::Color("white")),               // background and notes inside unselected
+    m_grey(Gdk::Color("gray")),                 // grid & scale highlighting
+    m_dk_grey(Gdk::Color("gray50")),            // horizontal grid lines
+    m_sgreen(Gdk::Color("green")),              // background sequence
+    m_red(Gdk::Color("red")),                   // note selected
 
     m_seq(a_seq),
     m_perform(a_perf),
@@ -101,12 +95,12 @@ seqroll::seqroll(perform *a_perf,
     using namespace Menu_Helpers;
 
     Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
+    colormap->alloc_color( m_dk_blue );
     colormap->alloc_color( m_black );
     colormap->alloc_color( m_white );
-    colormap->alloc_color( m_green );
     colormap->alloc_color( m_grey );
     colormap->alloc_color( m_dk_grey );
-    colormap->alloc_color( m_dk_cyan );
+    colormap->alloc_color( m_sgreen );
     colormap->alloc_color( m_red );
 
     m_toggle_play = a_toggle_play;
@@ -370,7 +364,7 @@ seqroll::update_background()
 
         if ( m_scale != c_scale_off )
         {
-            m_gc->set_foreground(m_green);
+            m_gc->set_foreground(m_grey);
             if ( !c_scales_policy[m_scale][ ((c_num_keys - i)
                                              - m_scroll_offset_key
                                              - 1 + ( 12 - m_key )) % 12] )
@@ -636,14 +630,14 @@ void seqroll::draw_events_on( Glib::RefPtr<Gdk::Drawable> a_draw )
                 note_x -= m_scroll_offset_x;
                 note_y -= m_scroll_offset_y;
 
-                m_gc->set_foreground(m_black);
+                m_gc->set_foreground(m_dk_blue);  // Note box frame
+                //m_gc->set_foreground(m_black);
 
                 /* draw boxes from sequence */
                 /* method 0 is background sequence */
 
                 if ( method == 0 )
-                    m_gc->set_foreground( m_dk_cyan );
-                //m_gc->set_foreground( m_dk_grey );
+                    m_gc->set_foreground( m_sgreen );
 
                 a_draw->draw_rectangle(	m_gc,true,
                                         note_x,

@@ -29,10 +29,8 @@ perfroll::perfroll( perform *a_perf,
                     Adjustment * a_vadjust  ) :
     m_black(Gdk::Color("black")),
     m_white(Gdk::Color("white")),
-    m_grey(Gdk::Color("light blue")),
-    //m_grey(Gdk::Color("grey")),
-    m_lt_grey(Gdk::Color("black")), // sequence end marker FIXME name
-    //m_lt_grey(Gdk::Color("light grey")),
+    m_grey(Gdk::Color("grey")),
+    m_lt_grey(Gdk::Color("light grey")),
 
     m_mainperf(a_perf),
     m_mainwnd(a_main),
@@ -426,7 +424,7 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
                         {
                             long tick_marker_x = (tick_marker / m_perf_scale_x) - x_offset;
 
-                            if ( tick_marker > tick_on )
+                            if ( tick_marker > tick_on ) // sequence end marker
                             {
                                 m_gc->set_foreground(m_lt_grey);
                                 a_draw->draw_rectangle(m_gc,true,

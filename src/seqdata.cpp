@@ -214,9 +214,6 @@ seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
                            m_window_x,
                            m_window_y );
 
-
-    m_gc->set_foreground( m_blue );
-
     SECOND_PASS_NOTE_ON: // yes this is a goto... yikes!!!!
 
     m_seq->reset_draw_marker();
@@ -258,12 +255,14 @@ seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
                               event_x -  m_scroll_offset_x + 1,
                               c_dataarea_y );
 
+            /* draw cap */
             a_draw->draw_rectangle(m_gc,
                               true,
                               event_x -  m_scroll_offset_x -3,
                               c_dataarea_y - event_height ,
                               8,4);
 
+            /* event numbers */
             a_draw->draw_drawable(m_gc,
                                   m_numbers[event_height],
                                   0,0,

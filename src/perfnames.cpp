@@ -25,7 +25,7 @@ perfnames::perfnames( perform *a_perf, Adjustment *a_vadjust ):
     trackmenu(a_perf),
     m_black(Gdk::Color( "black" )),
     m_white(Gdk::Color( "white" )),
-    m_grey(Gdk::Color( "light blue" )), // FIXME name
+    m_grey(Gdk::Color( "grey" )),
     m_red(Gdk::Color( "red" )), // Mute
     m_mainperf(a_perf),
     m_vadjust(a_vadjust),
