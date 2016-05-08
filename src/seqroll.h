@@ -112,6 +112,7 @@ private:
     int          m_note_length;
 
     int          m_scale;
+    int          m_chord;
     int          m_key;
 
     int m_window_x, m_window_y;
@@ -214,6 +215,7 @@ public:
     void set_ignore_redraw(bool a_ignore);
 
     void set_scale( int a_scale );
+    void set_chord( int a_chord );
     void set_key( int a_key );
 
     void update_sizes();

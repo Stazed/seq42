@@ -65,6 +65,7 @@ private:
     Menu       *m_menu_data;
     Menu       *m_menu_key;
     Menu       *m_menu_scale;
+    Menu       *m_menu_chords;
     Menu       *m_menu_sequences;
 
     /* time signature, beats per measure, beat width */
@@ -132,6 +133,9 @@ private:
     Button      *m_button_scale;
     Entry       *m_entry_scale;
 
+    Button      *m_button_chord;
+    Entry       *m_entry_chord;
+
     Tooltips    *m_tooltips;
 
     Button       *m_button_data;
@@ -177,6 +181,9 @@ private:
     int         m_scale;
     static int  m_initial_scale;
 
+    int         m_chord;
+    static int  m_initial_chord;
+
     int         m_key;
     static int  m_initial_key;
 
@@ -206,6 +213,7 @@ private:
     int get_swing_mode();
 
     void set_scale( int a_scale );
+    void set_chord( int a_chord );
     void set_key( int a_note );
 
     void set_background_sequence( int a_trk, int a_seq );
