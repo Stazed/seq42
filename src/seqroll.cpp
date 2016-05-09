@@ -642,7 +642,6 @@ void seqroll::draw_events_on( Glib::RefPtr<Gdk::Drawable> a_draw )
                 note_y -= m_scroll_offset_y;
 
                 m_gc->set_foreground(m_dk_blue);  // Note box frame
-                //m_gc->set_foreground(m_black);
 
                 /* draw boxes from sequence */
                 /* method 0 is background sequence */
@@ -762,7 +761,6 @@ seqroll::draw_selection_on_window()
         m_old.width = w;
         m_old.height = h + c_key_y;
 
-        //m_gc->set_foreground(m_black);
         m_gc->set_foreground(m_red);
         m_window->draw_rectangle(m_gc,false,
                                  x,
@@ -783,7 +781,6 @@ seqroll::draw_selection_on_window()
         y -= m_scroll_offset_y;
 
         m_gc->set_foreground(m_red);
-        //m_gc->set_foreground(m_black);
         m_window->draw_rectangle(m_gc,false,
                                  x,
                                  y,
@@ -810,7 +807,6 @@ seqroll::draw_selection_on_window()
         y -= m_scroll_offset_y;
 
         m_gc->set_foreground(m_red);
-        //m_gc->set_foreground(m_black);
         m_window->draw_rectangle(m_gc,false,
                                  x,
                                  y,
