@@ -56,6 +56,7 @@ seqroll::seqroll(perform *a_perf,
     m_snap(a_snap),
 
     m_scale(0),
+    m_chord(0),
     m_key(0),
 
     m_window_x(10),
@@ -488,6 +489,16 @@ seqroll::set_scale( int a_scale )
     {
         m_scale = a_scale;
         reset();
+    }
+}
+
+/* sets the music chord */
+void
+seqroll::set_chord( int a_chord )
+{
+    if ( m_chord != a_chord )
+    {
+        m_chord = a_chord;
     }
 }
 
@@ -1440,8 +1451,24 @@ bool FruitySeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& th
                 {
                     /* add note, length = little less than snap */
                     ths.m_seq->push_undo();
-                    ths.m_seq->add_note( tick_s, ths.m_note_length - c_note_off_margin, note_h, true );
 
+                    if(ths.m_chord == 0) // single note
+                    {
+                        ths.m_seq->add_note( tick_s, ths.m_note_length - c_note_off_margin, note_h, true );
+                    }
+                    else                 // chords
+                    {
+                        for(int i = 0; i < c_chord_size; i++)
+                        {
+                            if(c_chord_table[ths.m_chord][i] == -1)
+                                break;
+
+                            ths.m_seq->add_note(tick_s,
+                                                ths.m_note_length - c_note_off_margin,
+                                                note_h + c_chord_table[ths.m_chord][i],
+                                                false );
+                        }
+                    }
                     needs_update = true;
                 }
             }
@@ -1967,7 +1994,24 @@ bool Seq42SeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& ths
                 {
                     /* add note, length = little less than snap */
                     ths.m_seq->push_undo();
-                    ths.m_seq->add_note( tick_s, ths.m_note_length - c_note_off_margin, note_h, true );
+
+                    if(ths.m_chord == 0) // single note
+                    {
+                        ths.m_seq->add_note( tick_s, ths.m_note_length - c_note_off_margin, note_h, true );
+                    }
+                    else                 // chords
+                    {
+                        for(int i = 0; i < c_chord_size; i++)
+                        {
+                            if(c_chord_table[ths.m_chord][i] == -1)
+                                break;
+
+                            ths.m_seq->add_note(tick_s,
+                                                ths.m_note_length - c_note_off_margin,
+                                                note_h + c_chord_table[ths.m_chord][i],
+                                                false );
+                        }
+                    }
 
                     needs_update = true;
                 }
