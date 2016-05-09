@@ -2,6 +2,7 @@
 
 EXTRA_DIST = \
 	bus.xpm \
+	chord.xpm\
 	collapse.xpm \
 	copy.xpm \
 	down.xpm \
