@@ -147,8 +147,6 @@ private:
     Button      *m_button_bw;
     Entry       *m_entry_bw;
 
-    Button      *m_button_stop;
-    Button      *m_button_play;
     Button	    *m_button_lfo;
     lfownd      *m_lfo_wnd;
 
