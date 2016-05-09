@@ -217,6 +217,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 EXTRA_DIST = \
 	bus.xpm \
+	chord.xpm\
 	collapse.xpm \
 	copy.xpm \
 	down.xpm \

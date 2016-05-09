@@ -45,6 +45,7 @@
 #include "pixmaps/sequences.xpm"
 #include "pixmaps/tools.xpm"
 #include "pixmaps/seq-editor.xpm"
+#include "pixmaps/chord.xpm"
 
 // tooltip helper, for old vs new gtk...
 #if GTK_MINOR_VERSION >= 12
@@ -979,12 +980,12 @@ seqedit::fill_top_bar()
     m_hbox2->pack_start( *m_entry_scale, true, true );
 
     /* music chord */
-    m_button_chord = manage( new Button("Chord"));
-    //m_button_chord->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( chord_xpm  ))));
+    m_button_chord = manage( new Button());
+    m_button_chord->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( chord_xpm  ))));
     m_button_chord->signal_clicked().connect(
         sigc::bind<Menu *>( mem_fun( *this, &seqedit::popup_menu),
                             m_menu_chords  ));
-    add_tooltip( m_button_chord, "Chords" );
+    add_tooltip( m_button_chord, "Chord Selection" );
     m_entry_chord = manage( new Entry());
     m_entry_chord->set_size_request(10, -1);
     m_entry_chord->set_editable( false );
