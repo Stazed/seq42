@@ -337,7 +337,7 @@ const int c_chord_number = 40;
 
 const char c_chord_table_text[c_chord_number][32] =
 {
-    "octave",
+    "Off (octave)",
     "Major",
     "Majb5",
     "minor",

@@ -45,8 +45,6 @@
 #include "pixmaps/sequences.xpm"
 #include "pixmaps/tools.xpm"
 #include "pixmaps/seq-editor.xpm"
-#include "pixmaps/play2.xpm"
-#include "pixmaps/stop.xpm"
 
 // tooltip helper, for old vs new gtk...
 #if GTK_MINOR_VERSION >= 12
@@ -218,25 +216,8 @@ seqedit::seqedit( sequence *a_seq,
     /* exapand, cause rollview expands */
     m_vbox->pack_start(*m_table, true, true, 0);
 
-
-    /* Stop and play buttons */
-/*    m_button_stop = manage( new Button( ));
-    m_button_stop->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( stop_xpm ))));
-    m_button_stop->signal_clicked().connect( mem_fun(*this,&seqedit::stop_playing));
-    dhbox->pack_start(*m_button_stop, false, false);
-
-    m_button_play = manage( new Button() );
-    m_button_play->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( play2_xpm  ))));
-    m_button_play->signal_clicked().connect(  mem_fun( *this, &seqedit::start_playing));
-    dhbox->pack_start(*m_button_play, false, false);
-    dhbox->pack_start( *(manage(new VSeparator( ))), false, false, 4);
-*/
-    m_button_lfo = manage (new Button("lfo") );
-    dhbox->pack_start(*m_button_lfo, false, false);
-    m_button_lfo->signal_clicked().connect ( mem_fun(m_lfo_wnd, &lfownd::toggle_visible));
-
     /* data button */
-    m_button_data = manage( new Button( " Event " ));
+    m_button_data = manage( new Button( "Event" ));
     m_button_data->signal_clicked().connect(
         mem_fun( *this, &seqedit::popup_event_menu));
 
@@ -247,6 +228,11 @@ seqedit::seqedit( sequence *a_seq,
     dhbox->pack_start( *m_button_data, false, false );
     dhbox->pack_start( *m_entry_data, true, true );
 
+    /* lfo button */
+    m_button_lfo = manage (new Button("lfo") );
+    dhbox->pack_start(*m_button_lfo, false, false);
+    m_button_lfo->signal_clicked().connect ( mem_fun(m_lfo_wnd, &lfownd::toggle_visible));
+
     /* background sequence */
     m_button_sequence = manage( new Button());
     m_button_sequence->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( sequences_xpm  ))));
@@ -254,12 +240,11 @@ seqedit::seqedit( sequence *a_seq,
         mem_fun( *this, &seqedit::popup_sequence_menu));
     add_tooltip( m_button_sequence, "Background Sequence" );
     m_entry_sequence = manage( new Entry());
-    m_entry_sequence->set_width_chars(14);
+    m_entry_sequence->set_size_request(10, -1);
     m_entry_sequence->set_editable( false );
 
     dhbox->pack_start( *m_button_sequence, false, false );
-    dhbox->pack_start( *m_entry_sequence, false, true );
-    //dhbox->pack_start( *m_entry_sequence, true, true );
+    dhbox->pack_start( *m_entry_sequence, true, true );
 
     /* play, rec, thru */
     m_toggle_play->add(  *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( play_xpm ))));
@@ -461,7 +446,7 @@ seqedit::create_menus()
                                                   c_ppqn / 16 / 3 )));
 
     /* Key */
-    for (int i = int(0); i < int(11); i++)
+    for (int i = 0; i < 12; i++)
     {
         m_menu_key->items().push_back                 /* key      */
         (
@@ -469,32 +454,6 @@ seqedit::create_menus()
         );
     }
 
-/*
-    m_menu_key->items().push_back(MenuElem( c_key_text[0],
-                                            sigc::bind(mem_fun(*this, &seqedit::set_key), 0 )));
-    m_menu_key->items().push_back(MenuElem( c_key_text[1],
-                                            sigc::bind(mem_fun(*this, &seqedit::set_key), 1 )));
-    m_menu_key->items().push_back(MenuElem( c_key_text[2],
-                                            sigc::bind(mem_fun(*this, &seqedit::set_key), 2 )));
-    m_menu_key->items().push_back(MenuElem( c_key_text[3],
-                                            sigc::bind(mem_fun(*this, &seqedit::set_key), 3 )));
-    m_menu_key->items().push_back(MenuElem( c_key_text[4],
-                                            sigc::bind(mem_fun(*this, &seqedit::set_key), 4 )));
-    m_menu_key->items().push_back(MenuElem( c_key_text[5],
-                                            sigc::bind(mem_fun(*this, &seqedit::set_key), 5 )));
-    m_menu_key->items().push_back(MenuElem( c_key_text[6],
-                                            sigc::bind(mem_fun(*this, &seqedit::set_key), 6 )));
-    m_menu_key->items().push_back(MenuElem( c_key_text[7],
-                                            sigc::bind(mem_fun(*this, &seqedit::set_key), 7 )));
-    m_menu_key->items().push_back(MenuElem( c_key_text[8],
-                                            sigc::bind(mem_fun(*this, &seqedit::set_key), 8 )));
-    m_menu_key->items().push_back(MenuElem( c_key_text[9],
-                                            sigc::bind(mem_fun(*this, &seqedit::set_key), 9 )));
-    m_menu_key->items().push_back(MenuElem( c_key_text[10],
-                                            sigc::bind(mem_fun(*this, &seqedit::set_key), 10 )));
-    m_menu_key->items().push_back(MenuElem( c_key_text[11],
-                                            sigc::bind(mem_fun(*this, &seqedit::set_key), 11 )));
-*/
     /* bw */
     m_menu_bw->items().push_back(MenuElem("1",
                                           sigc::bind(mem_fun(*this, &seqedit::set_bw), 1  )));
@@ -544,7 +503,6 @@ seqedit::create_menus()
             MenuElem(c_chord_table_text[i], sigc::bind(mem_fun(*this, &seqedit::set_chord), i))
         );
     }
-
 
     for( int i=0; i<16; i++ )
     {
@@ -1015,43 +973,24 @@ seqedit::fill_top_bar()
                             m_menu_scale  ));
     add_tooltip( m_button_scale, "Musical Scale" );
     m_entry_scale = manage( new Entry());
-    m_entry_scale->set_width_chars(5);
+    m_entry_scale->set_size_request(10, -1);
     m_entry_scale->set_editable( false );
-
     m_hbox2->pack_start( *m_button_scale, false, false );
-    m_hbox2->pack_start( *m_entry_scale, false, false );
-
+    m_hbox2->pack_start( *m_entry_scale, true, true );
 
     /* music chord */
     m_button_chord = manage( new Button("Chord"));
-    //m_button_scale->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( scale_xpm  ))));
+    //m_button_chord->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( chord_xpm  ))));
     m_button_chord->signal_clicked().connect(
         sigc::bind<Menu *>( mem_fun( *this, &seqedit::popup_menu),
                             m_menu_chords  ));
-    add_tooltip( m_button_chord, "Musical Chords" );
+    add_tooltip( m_button_chord, "Chords" );
     m_entry_chord = manage( new Entry());
-    m_entry_chord->set_width_chars(14);
+    m_entry_chord->set_size_request(10, -1);
     m_entry_chord->set_editable( false );
 
     m_hbox2->pack_start( *m_button_chord, false, false );
     m_hbox2->pack_start( *m_entry_chord, true, true );
-
-#if 0
-    m_hbox2->pack_start( *(manage(new VSeparator( ))), false, false, 4);
-
-    /* background sequence */
-    m_button_sequence = manage( new Button());
-    m_button_sequence->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( sequences_xpm  ))));
-    m_button_sequence->signal_clicked().connect(
-        mem_fun( *this, &seqedit::popup_sequence_menu));
-    add_tooltip( m_button_sequence, "Background Sequence" );
-    m_entry_sequence = manage( new Entry());
-    m_entry_sequence->set_width_chars(14);
-    m_entry_sequence->set_editable( false );
-
-    m_hbox2->pack_start( *m_button_sequence, false, false );
-    m_hbox2->pack_start( *m_entry_sequence, true, true );
-#endif // 0
 }
 
 void
