@@ -1,12 +1,9 @@
 /* XPM */
 static const char *chord_xpm[] = {
-/* columns rows colors chars-per-pixel */
-"17 18 4 1 ",
+"17 17 3 1 ",
 "  c #None",
 ". c #000000",
 "+ c #9E9E9E",
-"@ c #56BEFF",
-/* pixels */
 "     +....+      ",
 "    +.    .+     ",
 "................ ",
