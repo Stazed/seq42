@@ -1878,6 +1878,9 @@ bool FruitySeqRollInput::on_motion_notify_event(GdkEventMotion* a_ev, seqroll& t
 
     if ( ths.m_painting )
     {
+        if(ths.m_chord != 0) // chord, don't allow move paint
+            return true;
+
         ths.snap_x( &ths.m_current_x );
         ths.convert_xy( ths.m_current_x, ths.m_current_y, &tick, &note );
 
@@ -2256,6 +2259,9 @@ bool Seq42SeqRollInput::on_motion_notify_event(GdkEventMotion* a_ev, seqroll& th
 
     if ( ths.m_painting )
     {
+        if(ths.m_chord != 0) // chord, don't allow move paint
+            return true;
+
         ths.snap_x( &ths.m_current_x );
         ths.convert_xy( ths.m_current_x, ths.m_current_y, &tick, &note );
 
