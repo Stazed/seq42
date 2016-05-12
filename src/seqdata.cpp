@@ -255,12 +255,13 @@ seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
                               event_x -  m_scroll_offset_x + 1,
                               c_dataarea_y );
 
-            /* draw cap */
+            /* draw handle */
             a_draw->draw_rectangle(m_gc,
                               true,
                               event_x -  m_scroll_offset_x -3,
                               c_dataarea_y - event_height ,
-                              8,4);
+                              c_data_handle_x,
+                              c_data_handle_y);
 
             /* event numbers */
             a_draw->draw_drawable(m_gc,
@@ -324,6 +325,12 @@ seqdata::convert_x( int a_x, long *a_tick )
     *a_tick = a_x * m_zoom;
 }
 
+void
+seqdata::convert_y( int a_y, long *a_tick )
+{
+    *a_tick = c_dataarea_y - a_y -1 ;
+}
+
 bool
 seqdata::on_scroll_event( GdkEventScroll* a_ev )
 {
@@ -360,13 +367,24 @@ seqdata::on_button_press_event(GdkEventButton* a_p0)
         m_drop_x = (int) a_p0->x + m_scroll_offset_x;
         m_drop_y = (int) a_p0->y;
 
+        long tick_s, tick_f;
+
+        convert_x( m_drop_x - 3, &tick_s );
+        convert_x( m_drop_x + 3, &tick_f );
+        //convert_y( m_drop_y, &tick_f );
+
+        bool ret = m_seq->select_event_handle(tick_s, tick_f,
+                                              m_status, m_cc,
+                                              c_dataarea_y - m_drop_y +3);
+
         /* reset box that holds dirty redraw spot */
         m_old.x = 0;
         m_old.y = 0;
         m_old.width = 0;
         m_old.height = 0;
 
-        m_dragging = true;
+        m_dragging = !ret;
+        //m_dragging = true;
     }
 
     return true;

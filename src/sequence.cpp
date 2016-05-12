@@ -1051,6 +1051,68 @@ sequence::select_linked (long a_tick_s, long a_tick_f, unsigned char a_status)
     return ret;
 }
 
+int
+sequence::select_event_handle( long a_tick_s, long a_tick_f,
+                         unsigned char a_status,
+                         unsigned char a_cc, int a_data_s)
+{
+    int ret=0;
+    list<event>::iterator i;
+
+    lock();
+
+    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ )
+    {
+        if( (*i).get_status()    == a_status &&
+                (*i).get_timestamp() >= a_tick_s &&
+                (*i).get_timestamp() <= a_tick_f )
+        {
+            unsigned char d0,d1;
+            (*i).get_data( &d0, &d1 );
+
+            printf("a_data_s [%d]: d0 [%d]: d1 [%d] \n", a_data_s, d0, d1);
+
+            if ( a_status == EVENT_CONTROL_CHANGE && d0 == a_cc )
+            {
+                if(d1 <= (a_data_s + 2) && d1 >= (a_data_s - 2) )
+                {
+                    (*i).select( );
+                    ret++;
+                    break;
+                }
+            }
+
+            if(a_status != EVENT_CONTROL_CHANGE )
+            {
+
+                if(a_status == EVENT_NOTE_ON || a_status == EVENT_NOTE_OFF
+                   || a_status == EVENT_AFTERTOUCH || a_status == EVENT_PITCH_WHEEL )
+                {
+                    if(d1 <= (a_data_s + 2) && d1 >= (a_data_s - 2) )
+                    {
+                        (*i).select( );
+                        ret++;
+                        break;
+                    }
+                }
+                else
+                {
+                    if(d0 <= (a_data_s + 2) && d0 >= (a_data_s - 2) )
+                    {
+                        (*i).select( );
+                        ret++;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    unlock();
+
+    return ret;
+}
+
 
 /* select events in range, returns number
    selected */
