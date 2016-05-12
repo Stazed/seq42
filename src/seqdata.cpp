@@ -368,11 +368,11 @@ seqdata::on_button_press_event(GdkEventButton* a_p0)
         m_drop_x = (int) a_p0->x + m_scroll_offset_x;
         m_drop_y = (int) a_p0->y;
 
+        /* if they select the handle */
         long tick_s, tick_f;
 
         convert_x( m_drop_x - 3, &tick_s );
         convert_x( m_drop_x + 3, &tick_f );
-        //convert_y( m_drop_y, &tick_f );
 
         m_drag_handle = m_seq->select_event_handle(tick_s, tick_f,
                                               m_status, m_cc,
@@ -420,6 +420,13 @@ seqdata::on_button_release_event(GdkEventButton* a_p0)
         m_dragging = false;
     }
 
+    if(m_drag_handle)
+    {
+        m_drag_handle = false;
+        m_seq->unselect();
+        m_seq->set_dirty();
+    }
+
     update_pixmap();
     queue_draw();
     return true;
@@ -463,33 +470,19 @@ seqdata::on_motion_notify_event(GdkEventMotion* a_p0)
 {
     if(m_drag_handle)
     {
-        long tick_s, tick_f;
+        m_current_y = (int) a_p0->y - 3;
 
-        convert_x( m_drop_x - 3, &tick_s );
-        convert_x( m_drop_x + 3, &tick_f );
+        m_current_y = c_dataarea_y - m_current_y;
+        if(m_current_y < 0 )
+            m_current_y = 0;
 
-        int adj_y_min, adj_y_max;
+        //printf("m_current_y [%d]\n", m_current_y);
 
-        if ( m_current_y < m_drop_y )
-        {
-            adj_y_min = m_current_y;
-            adj_y_max = m_drop_y;
-        }
-        else
-        {
-            adj_y_max = m_current_y;
-            adj_y_min = m_drop_y;
-        }
+        m_seq->adjust_data_handle(m_status, m_current_y );
 
-        m_seq->change_event_data_range( tick_s, tick_f,
-                                m_status,
-                                m_cc,
-                                c_dataarea_y - adj_y_min -1,
-                                c_dataarea_y - adj_y_max -1 );
         update_pixmap();
         draw_events_on( m_window );
     }
-
 
     if ( m_dragging )
     {

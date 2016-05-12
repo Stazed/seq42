@@ -1070,12 +1070,13 @@ sequence::select_event_handle( long a_tick_s, long a_tick_f,
             unsigned char d0,d1;
             (*i).get_data( &d0, &d1 );
 
-            printf("a_data_s [%d]: d0 [%d]: d1 [%d] \n", a_data_s, d0, d1);
+            //printf("a_data_s [%d]: d0 [%d]: d1 [%d] \n", a_data_s, d0, d1);
 
             if ( a_status == EVENT_CONTROL_CHANGE && d0 == a_cc )
             {
                 if(d1 <= (a_data_s + 2) && d1 >= (a_data_s - 2) )
                 {
+                    unselect();
                     (*i).select( );
                     ret++;
                     break;
@@ -1090,6 +1091,7 @@ sequence::select_event_handle( long a_tick_s, long a_tick_f,
                 {
                     if(d1 <= (a_data_s + 2) && d1 >= (a_data_s - 2) )
                     {
+                        unselect();
                         (*i).select( );
                         ret++;
                         break;
@@ -1099,6 +1101,7 @@ sequence::select_event_handle( long a_tick_s, long a_tick_f,
                 {
                     if(d0 <= (a_data_s + 2) && d0 >= (a_data_s - 2) )
                     {
+                        unselect();
                         (*i).select( );
                         ret++;
                         break;
@@ -1531,6 +1534,59 @@ sequence::randomize_selected( unsigned char a_status, unsigned char a_control, i
             // See http://c-faq.com/lib/randrange.html
             random = (rand() / (RAND_MAX / ((2 * a_plus_minus) + 1) + 1)) - a_plus_minus;
             data_item += random;
+
+            if(data_item > 127)
+            {
+                data_item = 127;
+            }
+            else if(data_item < 0)
+            {
+                data_item = 0;
+            }
+
+            data[data_idx] = data_item;
+
+            (*i).set_data(data[0], data[1]);
+        }
+    }
+
+    unlock();
+}
+
+void
+sequence::adjust_data_handle( unsigned char a_status, int a_data )
+{
+    unsigned char data[2];
+    unsigned char data_item;;
+    int data_idx = 0;
+
+    lock();
+
+    list<event>::iterator i;
+
+    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ )
+    {
+        if ( (*i).is_selected() &&
+                (*i).get_status() == a_status )
+        {
+            (*i).get_data( data, data+1 );
+
+            if ( a_status == EVENT_NOTE_ON ||
+                    a_status == EVENT_NOTE_OFF ||
+                    a_status == EVENT_AFTERTOUCH ||
+                    a_status == EVENT_CONTROL_CHANGE ||
+                    a_status == EVENT_PITCH_WHEEL )
+            {
+                data_idx = 1;
+            }
+
+            if ( a_status == EVENT_PROGRAM_CHANGE ||
+                    a_status == EVENT_CHANNEL_PRESSURE )
+            {
+                data_idx = 0;
+            }
+
+            data_item = a_data;
 
             if(data_item > 127)
             {

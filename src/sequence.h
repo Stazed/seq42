@@ -336,6 +336,8 @@ public:
 
     void randomize_selected( unsigned char a_status, unsigned char a_control, int a_plus_minus );
 
+    void adjust_data_handle( unsigned char a_status, int a_data );
+
     /* moves note off event */
     void grow_selected (long a_delta_tick);
     void stretch_selected(long a_delta_tick);
