@@ -78,6 +78,7 @@ private:
     GdkRectangle m_old;
 
     bool m_dragging;
+    bool m_drag_handle;
 
     void on_realize();
     bool on_expose_event(GdkEventExpose* a_ev);
