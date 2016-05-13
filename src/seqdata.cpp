@@ -378,6 +378,10 @@ seqdata::on_button_press_event(GdkEventButton* a_p0)
                                               m_status, m_cc,
                                               c_dataarea_y - m_drop_y +3);
 
+        if(m_drag_handle)
+            if(!m_seq->get_hold_undo()) // if they used line draw but did not leave...
+                m_seq->push_undo();
+
         /* reset box that holds dirty redraw spot */
         m_old.x = 0;
         m_old.y = 0;

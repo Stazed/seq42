@@ -1056,6 +1056,13 @@ sequence::select_event_handle( long a_tick_s, long a_tick_f,
                          unsigned char a_status,
                          unsigned char a_cc, int a_data_s)
 {
+    /* use selected note ons/offs if any */
+    bool have_selection = false;
+
+    if(a_status == EVENT_NOTE_ON || a_status == EVENT_NOTE_OFF)
+        if( get_num_selected_events(a_status, a_cc) )
+            have_selection = true;
+
     int ret=0;
     list<event>::iterator i;
 
@@ -1074,7 +1081,7 @@ sequence::select_event_handle( long a_tick_s, long a_tick_f,
 
             if ( a_status == EVENT_CONTROL_CHANGE && d0 == a_cc )
             {
-                if(d1 <= (a_data_s + 2) && d1 >= (a_data_s - 2) )
+                if(d1 <= (a_data_s + 2) && d1 >= (a_data_s - 2) )  // is it in range
                 {
                     unselect();
                     (*i).select( );
@@ -1085,12 +1092,40 @@ sequence::select_event_handle( long a_tick_s, long a_tick_f,
 
             if(a_status != EVENT_CONTROL_CHANGE )
             {
-
                 if(a_status == EVENT_NOTE_ON || a_status == EVENT_NOTE_OFF
                    || a_status == EVENT_AFTERTOUCH || a_status == EVENT_PITCH_WHEEL )
                 {
-                    if(d1 <= (a_data_s + 2) && d1 >= (a_data_s - 2) )
+                    if(d1 <= (a_data_s + 2) && d1 >= (a_data_s - 2) ) // is it in range
                     {
+                        if( have_selection)       // note on/off
+                        {
+                            if((*i).is_selected())
+                            {
+                                unselect();       // all events
+                                (*i).select( );   // only this one
+                                if(ret)           // if we have a marked (unselected) one
+                                {
+                                    for ( i = m_list_event.begin(); i != m_list_event.end(); i++ )
+                                    {
+                                        if((*i).is_marked())
+                                        {
+                                            (*i).unmark();
+                                            break;
+                                        }
+                                    }
+                                    ret--;       // clear the marked one
+                                    have_selection = false; // reset for marked flag at end
+                                }
+                                ret++;
+                                break;
+                            }
+                            else                  // not selected but in range
+                            {
+                                (*i).mark( );     // hold until done
+                                ret++;
+                                continue;         // keep going until we find a selected one if any
+                            }
+                        }
                         unselect();
                         (*i).select( );
                         ret++;
@@ -1099,7 +1134,7 @@ sequence::select_event_handle( long a_tick_s, long a_tick_f,
                 }
                 else
                 {
-                    if(d0 <= (a_data_s + 2) && d0 >= (a_data_s - 2) )
+                    if(d0 <= (a_data_s + 2) && d0 >= (a_data_s - 2) )  // is it in range
                     {
                         unselect();
                         (*i).select( );
@@ -1110,6 +1145,25 @@ sequence::select_event_handle( long a_tick_s, long a_tick_f,
             }
         }
     }
+
+    if(ret && have_selection)
+    {
+        for ( i = m_list_event.begin(); i != m_list_event.end(); i++ )
+        {
+            if((*i).is_marked())
+            {
+                unselect();
+                (*i).unmark();
+                (*i).select();
+                break;
+            }
+        }
+    }
+
+    if((*i).is_linked()) // for note on/off
+        (*i).get_linked()->select();
+
+    set_dirty();
 
     unlock();
 
