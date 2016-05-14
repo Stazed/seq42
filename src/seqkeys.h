@@ -98,7 +98,7 @@ public:
     void set_listen_button_release(GdkEventButton* a_ev);
     void set_listen_motion_notify(GdkEventMotion* a_p0);
 
-    /* sets key to grey */
+    /* sets key to red */
     void set_hint_key( int a_key );
 
     /* true == on, false == off */

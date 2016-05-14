@@ -29,6 +29,7 @@ perfroll::perfroll( perform *a_perf,
                     Adjustment * a_vadjust  ) :
     m_black(Gdk::Color("black")),
     m_white(Gdk::Color("white")),
+    m_blue(Gdk::Color("SteelBlue1")),
     m_grey(Gdk::Color("grey")),
     m_lt_grey(Gdk::Color("light grey")),
 
@@ -59,6 +60,7 @@ perfroll::perfroll( perform *a_perf,
     Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
     colormap->alloc_color( m_black );
     colormap->alloc_color( m_white );
+    colormap->alloc_color( m_blue );
     colormap->alloc_color( m_grey );
     colormap->alloc_color( m_lt_grey );
 
@@ -370,7 +372,7 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
                     x = x - x_offset;
 
                     if ( selected )
-                        m_gc->set_foreground(m_grey);
+                        m_gc->set_foreground(m_blue);
                     else
                         m_gc->set_foreground(m_white);
 
@@ -426,7 +428,11 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
 
                             if ( tick_marker > tick_on ) // sequence end marker
                             {
-                                m_gc->set_foreground(m_lt_grey);
+                                if ( selected )
+                                    m_gc->set_foreground(m_white);
+                                else
+                                    m_gc->set_foreground(m_grey);
+
                                 a_draw->draw_rectangle(m_gc,true,
                                                        tick_marker_x,
                                                        y+4,
