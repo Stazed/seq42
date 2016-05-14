@@ -326,12 +326,6 @@ seqdata::convert_x( int a_x, long *a_tick )
     *a_tick = a_x * m_zoom;
 }
 
-void
-seqdata::convert_y( int a_y, long *a_tick )
-{
-    *a_tick = c_dataarea_y - a_y -1 ;
-}
-
 bool
 seqdata::on_scroll_event( GdkEventScroll* a_ev )
 {
@@ -389,7 +383,6 @@ seqdata::on_button_press_event(GdkEventButton* a_p0)
         m_old.height = 0;
 
         m_dragging = !m_drag_handle;
-        //m_dragging = true;
     }
 
     return true;
@@ -480,8 +473,6 @@ seqdata::on_motion_notify_event(GdkEventMotion* a_p0)
         if(m_current_y < 0 )
             m_current_y = 0;
 
-        //printf("m_current_y [%d]\n", m_current_y);
-
         m_seq->adjust_data_handle(m_status, m_current_y );
 
         update_pixmap();
@@ -535,7 +526,6 @@ seqdata::on_motion_notify_event(GdkEventMotion* a_p0)
 bool
 seqdata::on_leave_notify_event(GdkEventCrossing* p0)
 {
-    // m_dragging = false;
     if(m_seq->get_hold_undo())
     {
         m_seq->push_undo(true);

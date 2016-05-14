@@ -96,7 +96,6 @@ private:
     void draw_line_on_window();
 
     void convert_x( int a_x, long *a_tick );
-    void convert_y( int a_y, long *a_tick );
 
     void xy_to_rect( int a_x1,  int a_y1,
                      int a_x2,  int a_y2,
