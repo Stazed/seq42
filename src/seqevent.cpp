@@ -407,7 +407,6 @@ seqevent::draw_selection_on_window()
         m_old.x = x;
         m_old.width = w;
 
-        //m_gc->set_foreground(m_black);
         m_gc->set_foreground(m_red);
         m_window->draw_rectangle(m_gc,false,
                                  x,
@@ -423,7 +422,6 @@ seqevent::draw_selection_on_window()
         x = m_selected.x + delta_x;
         x -= m_scroll_offset_x;
 
-        //m_gc->set_foreground(m_black);
         m_gc->set_foreground(m_red);
         m_window->draw_rectangle(m_gc,false,
                                  x,

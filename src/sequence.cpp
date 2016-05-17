@@ -339,8 +339,8 @@ sequence::play(long a_tick, trigger *a_trigger)
 
             offset_timestamp = swung_event_timestamp + offset_base;
 
-            if ( ( offset_timestamp >= start_tick_offset) &&
-                    ( offset_timestamp <= end_tick_offset) )
+            if ( ( long(offset_timestamp) >= start_tick_offset) &&
+                    ( long(offset_timestamp) <= end_tick_offset) )
             {
                 // printf("orig_event_timestamp=%06ld swung_event_timestamp=%06ld offset_timestamp=%06ld  start_tick_offset=%06ld  end_tick_offset=%06ld\n",
                 //        orig_event_timestamp, swung_event_timestamp, offset_timestamp, start_tick_offset, end_tick_offset);
@@ -362,7 +362,7 @@ sequence::play(long a_tick, trigger *a_trigger)
                     //printf( "event: ");(*e).print();
                 }
             }
-            else if ( offset_timestamp > end_tick_offset )
+            else if ( long(offset_timestamp) > end_tick_offset )
             {
                 break;
             }

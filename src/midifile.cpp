@@ -842,7 +842,7 @@ bool midifile::write_song (perform * a_perf)
 
             /* all track triggers */
             track *a_track = a_perf->get_track(curTrack);
-            trigger *a_trig;
+            trigger *a_trig = NULL;
 
             std::vector<trigger> trig_vect;
             a_track->get_trak_triggers(trig_vect); // all triggers for the track
