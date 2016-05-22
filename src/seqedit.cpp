@@ -137,9 +137,6 @@ seqedit::seqedit( sequence *a_seq,
                                            m_zoom,
                                            m_hadjust));
 
-    m_lfo_wnd = manage( new lfownd(        m_seq,
-                                           m_seqdata_wid));
-
     m_seqevent_wid = manage( new seqevent( m_seq,
                                            m_zoom,
                                            m_snap,
@@ -158,6 +155,8 @@ seqedit::seqedit( sequence *a_seq,
                                            m_hadjust,
                                            m_vadjust,
                                            m_toggle_play));
+
+    m_lfo_wnd = new lfownd(m_seq, m_seqdata_wid); // not managed child window - must be deleted in on_delete_event
 
     /* menus */
     m_menubar   =  manage( new MenuBar());

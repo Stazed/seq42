@@ -53,8 +53,9 @@ private:
 
 public:
 
-    static double wave_func(double a_angle, int wave_type);
     lfownd (sequence *a_seq, seqdata *a_seqdata);
-    void toggle_visible();
     virtual ~lfownd();
+
+    static double wave_func(double a_angle, int wave_type);
+    void toggle_visible();
 };
