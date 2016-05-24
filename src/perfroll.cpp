@@ -382,20 +382,20 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
                                            w,
                                            h );
 
-                    m_gc->set_foreground(m_black);
+                    m_gc->set_foreground(m_black); // trigger outline
                     a_draw->draw_rectangle(m_gc,false,
                                            x,
                                            y,
                                            w,
                                            h );
 
-                    m_gc->set_foreground(m_black);
+                    m_gc->set_foreground(m_black); // resize handle - top left
                     a_draw->draw_rectangle(m_gc,false,
                                            x,
                                            y,
                                            c_perfroll_size_box_w,
                                            c_perfroll_size_box_w );
-
+                    // resize handle - bottom right
                     a_draw->draw_rectangle(m_gc,false,
                                            x+w-c_perfroll_size_box_w,
                                            y+h-c_perfroll_size_box_w,
@@ -459,7 +459,7 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
 
                             seq->reset_draw_marker();
 
-                            m_gc->set_foreground(m_black);
+                            m_gc->set_foreground(m_black); // notes
                             while ( (dt = seq->get_next_note_event( &tick_s, &tick_f, &note,
                                                                     &selected, &velocity )) != DRAW_FIN )
                             {
@@ -491,6 +491,9 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
                                        ----------------
                                 ------                      ------
                                 */
+
+                                //printf("tick_s [%ld]: tick_f[%ld]\n", tick_s, tick_f);
+                                //printf("tick_f_x [%d]: tick_s_x[%d]\n", tick_f_x, tick_s_x);
 
                                 if ( tick_f_x >= x && tick_s_x <= x+w )
                                     m_pixmap->draw_line(m_gc, tick_s_x,

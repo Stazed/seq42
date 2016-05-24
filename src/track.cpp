@@ -1507,6 +1507,11 @@ track::load(ifstream *file, int version)
         m_list_trigger.push_back(e);
     }
 
+    for (unsigned int i=0; i< num_seqs; i++ )
+    {
+        get_sequence(i)->verify_and_link();
+    }
+
     return true;
 }
 
