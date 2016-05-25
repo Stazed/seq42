@@ -807,6 +807,7 @@ void perform::push_track_undo( int a_track )
     redo_vect.clear();
     set_have_undo();
     set_have_redo();
+    global_seqlist_need_update = true;
     m_mutex.unlock();
 }
 

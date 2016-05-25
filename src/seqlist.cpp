@@ -195,9 +195,8 @@ seqlist::timeout()
     if(global_seqlist_need_update)
     {
         update_model();
+        global_seqlist_need_update = false;
     }
-
-    global_seqlist_need_update = false;
 
     return true;
 }
