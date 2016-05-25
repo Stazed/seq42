@@ -32,7 +32,6 @@ sequence::sequence( ) :
 
     m_dirty_edit(true),
     m_dirty_perf(true),
-    m_dirty_seqlist(true),
 
     m_editing(false),
     m_raise(false),
@@ -2138,19 +2137,6 @@ sequence::is_dirty_edit( )
     return ret;
 }
 
-bool
-sequence::is_dirty_seqlist( )
-{
-    lock();
-
-    bool ret = m_dirty_seqlist;
-    m_dirty_seqlist = false;
-
-    unlock();
-
-    return ret;
-}
-
 /* plays a note from the paino roll */
 void
 sequence::play_note_on( int a_note )
@@ -2550,7 +2536,7 @@ sequence::set_playing( bool a_p, bool set_dirty_seqlist )
             //printf("%s is turning off\n", get_name());
         }
         set_dirty();
-        if(set_dirty_seqlist) m_dirty_seqlist = true;
+        if(set_dirty_seqlist) global_seqlist_need_update = true;
     }
 
     unlock();
@@ -2638,7 +2624,7 @@ sequence::set_name( char *a_name )
 {
     m_name = a_name;
     set_dirty();
-    m_dirty_seqlist = true;
+    global_seqlist_need_update = true;
 }
 
 void
@@ -2646,7 +2632,7 @@ sequence::set_name( string a_name )
 {
     m_name = a_name;
     set_dirty();
-    m_dirty_seqlist = true;
+    global_seqlist_need_update = true;
 }
 
 char

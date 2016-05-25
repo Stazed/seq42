@@ -75,7 +75,6 @@ private:
 
     bool m_dirty_perf;
     bool m_dirty_names;
-    bool m_dirty_seqlist;
 
     mutex m_mutex;
 
@@ -138,7 +137,6 @@ public:
     /* resets flag on call */
     bool is_dirty_perf();
     bool is_dirty_names();
-    bool is_dirty_seqlist();
 
     /* dumps contents to stdout */
     void print ();

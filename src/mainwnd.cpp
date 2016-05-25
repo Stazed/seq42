@@ -51,6 +51,7 @@ using namespace sigc;
 
 bool global_is_running = false;
 bool global_is_modified = false;
+bool global_seqlist_need_update = false;
 
 // tooltip helper, for old vs new gtk...
 #if GTK_MINOR_VERSION >= 12

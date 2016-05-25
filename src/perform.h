@@ -305,8 +305,6 @@ public:
     friend class optionsfile;
     friend class options;
 
-    bool update_seqlist_on_change;
-
     void set_seqlist_open( bool a_edit )
     {
         m_seqlist_open = a_edit;

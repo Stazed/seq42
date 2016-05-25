@@ -35,7 +35,6 @@ track::track()
 
     m_dirty_perf = true;
     m_dirty_names = true;
-    m_dirty_seqlist = true;
 
     m_default_velocity = 100;
     m_is_NULL = false;
@@ -76,7 +75,6 @@ track::operator=(const track& other)
 
         m_dirty_perf = false;
         m_dirty_names = false;
-        m_dirty_seqlist = false;
         m_is_NULL = other.m_is_NULL;
 
         m_list_trigger = other.m_list_trigger;
@@ -109,7 +107,7 @@ track::operator=(const track& other)
 void
 track::set_dirty()
 {
-    m_dirty_names =  m_dirty_perf = m_dirty_seqlist = true;
+    m_dirty_names =  m_dirty_perf = global_seqlist_need_update = true;
 }
 
 void
@@ -234,29 +232,6 @@ track::is_dirty_perf( )
         }
     }
     m_dirty_perf = false;
-
-    unlock();
-
-    return ret;
-}
-
-bool
-track::is_dirty_seqlist( )
-{
-    lock();
-
-    bool ret = m_dirty_seqlist;
-    if(! ret)
-    {
-        for(unsigned i=0; i<m_vector_sequence.size(); i++)
-        {
-            if(m_vector_sequence[i]->is_dirty_seqlist())
-            {
-                ret = true;
-            }
-        }
-    }
-    m_dirty_seqlist = false;
 
     unlock();
 

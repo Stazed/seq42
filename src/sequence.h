@@ -81,7 +81,6 @@ private:
        a recording */
     bool m_dirty_edit;
     bool m_dirty_perf;
-    bool m_dirty_seqlist;
 
     /* anything editing currently ? */
     bool m_editing;
@@ -229,7 +228,6 @@ public:
     /* resets flag on call */
     bool is_dirty_edit ();
     bool is_dirty_perf ();
-    bool is_dirty_seqlist ();
 
     void set_dirty();
 

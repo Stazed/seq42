@@ -89,7 +89,6 @@ perform::perform()
     m_bp_measure = 4;
     m_bw = 4;
 
-    update_seqlist_on_change = false;
     m_have_undo = false; // for button sensitive
     m_have_redo = false; // for button sensitive
     m_undo_track_count = 0;
@@ -682,7 +681,7 @@ void perform::push_trigger_undo()
 
     undo_vect.push_back(a_undo);
     redo_vect.clear();
-    update_seqlist_on_change = true;
+    global_seqlist_need_update = true;
     set_have_undo();
     set_have_redo();
 }
@@ -704,7 +703,7 @@ void perform::pop_trigger_undo()
 
     undo_vect.pop_back();
     redo_vect.push_back(a_undo);
-    update_seqlist_on_change = true;
+    global_seqlist_need_update = true;
     set_have_redo();
 }
 
@@ -725,7 +724,7 @@ void perform::pop_trigger_redo()
 
     redo_vect.pop_back();
     undo_vect.push_back(a_undo);
-    update_seqlist_on_change = true;
+    global_seqlist_need_update = true;
     set_have_undo();
 }
 
@@ -743,7 +742,7 @@ void perform::push_trigger_undo( int a_track )
 
     undo_vect.push_back(a_undo);
     redo_vect.clear();
-    update_seqlist_on_change = true;
+    global_seqlist_need_update = true;
     set_have_undo();
     set_have_redo();
 }
@@ -762,7 +761,7 @@ void perform::pop_trigger_undo( int a_track )
 
     undo_vect.pop_back();
     redo_vect.push_back(a_undo);
-    update_seqlist_on_change = true;
+    global_seqlist_need_update = true;
     set_have_redo();
 }
 
@@ -780,7 +779,7 @@ void perform::pop_trigger_redo( int a_track )
 
     redo_vect.pop_back();
     undo_vect.push_back(a_undo);
-    update_seqlist_on_change = true;
+    global_seqlist_need_update = true;
     set_have_undo();
 }
 
@@ -869,7 +868,7 @@ void perform::pop_track_undo( int a_track )
 
     undo_vect.pop_back();
     redo_vect.push_back(a_undo);
-    update_seqlist_on_change = true; // in case the seqlist is open
+    global_seqlist_need_update = true; // in case track set_dirty() is not triggered above
     set_have_redo();
     m_mutex.unlock();
 }
@@ -931,7 +930,7 @@ void perform::pop_track_redo( int a_track )
 
     redo_vect.pop_back();
     undo_vect.push_back(a_undo);
-    update_seqlist_on_change = true; // in case the seqlist is open
+    global_seqlist_need_update = true; // in case track set_dirty() is not triggered above
     set_have_undo();
     m_mutex.unlock();
 }
@@ -1005,7 +1004,7 @@ perform::pop_perf_undo()
 
     undo_vect.pop_back();
     redo_vect.push_back(a_undo);
-    update_seqlist_on_change = true; // in case the seqlist is open
+    global_seqlist_need_update = true; // in case track set_dirty() is not triggered above
     set_have_redo();
     m_mutex.unlock();
 }
@@ -1050,7 +1049,7 @@ perform::pop_perf_redo()
 
     redo_vect.pop_back();
     undo_vect.push_back(a_undo);
-    update_seqlist_on_change = true;
+    global_seqlist_need_update = true; // in case track set_dirty() is not triggered above
     set_have_undo();
     m_mutex.unlock();
 }

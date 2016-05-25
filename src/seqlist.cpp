@@ -192,27 +192,13 @@ seqlist::timeout()
         raise();
     }
 
-    bool need_update = false;
-
-    // FIXME: instead of polling for dirt... move to a model where the mainwnd
-    // sends us notification events.
-    for(int i=0; i< c_max_track; i++ )
-    {
-        if ( m_perf->is_active_track(i) )
-        {
-            track *a_track =  m_perf->get_track( i );
-            if(a_track->is_dirty_seqlist())
-            {
-                need_update = true;
-            }
-        }
-    }
-
-    if(need_update || m_perf->update_seqlist_on_change)
+    if(global_seqlist_need_update)
     {
         update_model();
     }
-    m_perf->update_seqlist_on_change = false;
+
+    global_seqlist_need_update = false;
+
     return true;
 }
 
