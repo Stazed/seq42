@@ -38,7 +38,7 @@ F8 loop off
 
 [ ] Change bpm from int to float... and allow one decimal place in UI (134.5 for example)
 
-[ ] Show midi bus and channel in sequence list.
+[X] Show midi bus and channel in sequence list.
 
 [X] Clean up is_pattern_playing stuff and consolidate global key (start, stop, loop, bpm, etc) handling.
 

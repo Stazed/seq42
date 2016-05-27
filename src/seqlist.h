@@ -41,6 +41,8 @@ private:
         ModelColumns()
         {
             add(m_trk_num);
+            add(m_midi_bus);
+            add(m_midi_chan);
             add(m_trk_name);
             add(m_seq_num);
             add(m_seq_name);
@@ -49,6 +51,8 @@ private:
         }
 
         Gtk::TreeModelColumn<int> m_trk_num;
+        Gtk::TreeModelColumn<char> m_midi_bus;
+        Gtk::TreeModelColumn<char> m_midi_chan;
         Gtk::TreeModelColumn<Glib::ustring> m_trk_name;
         Gtk::TreeModelColumn<int> m_seq_num;
         Gtk::TreeModelColumn<Glib::ustring> m_seq_name;

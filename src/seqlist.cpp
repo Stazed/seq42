@@ -30,7 +30,7 @@ seqlist::seqlist (perform *a_perf)
 
     /* main window */
     set_title("seq42 - sequence list");
-    set_size_request(458, 200);
+    set_size_request(548, 200);
     set_border_width( 2 );
 
     m_vbox = manage( new VBox( false, 2 ));
@@ -64,6 +64,8 @@ seqlist::seqlist (perform *a_perf)
     m_TreeView.set_rules_hint(true);
 
     m_TreeView.append_column("Trk", m_Columns.m_trk_num);
+    m_TreeView.append_column("Bus", m_Columns.m_midi_bus);
+    m_TreeView.append_column("Chan", m_Columns.m_midi_chan);
     m_TreeView.append_column("Trk Name", m_Columns.m_trk_name);
     m_TreeView.append_column("Seq", m_Columns.m_seq_num);
     m_TreeView.append_column("Seq Name", m_Columns.m_seq_name);
@@ -72,7 +74,7 @@ seqlist::seqlist (perform *a_perf)
 
     // Allow sorting by clicking on columns
     Gtk::TreeView::Column* pColumn;
-    for(guint i = 0; i < 6; i++)
+    for(guint i = 0; i < 8; i++)
     {
         pColumn = m_TreeView.get_column(i);
         pColumn->set_sort_column(i);
@@ -164,6 +166,8 @@ seqlist::update_model()
                 sequence *a_seq =  a_track->get_sequence( s );
                 row = *(m_refTreeModel->append());
                 row[m_Columns.m_trk_num] = i+1;
+                row[m_Columns.m_midi_bus] =  a_seq->get_midi_bus()+1;
+                row[m_Columns.m_midi_chan] = a_seq->get_midi_channel()+1;
                 row[m_Columns.m_trk_name] = a_track->get_name();
                 row[m_Columns.m_seq_num] = s+1;
                 row[m_Columns.m_seq_name] = a_seq->get_name();
