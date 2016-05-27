@@ -667,6 +667,7 @@ void perform::move_triggers( bool a_direction )
 // collapse and expand - all tracks
 void perform::push_trigger_undo()
 {
+    m_mutex.lock();
     for (int i=0; i< c_max_track; i++ )
     {
         if ( is_active_track(i) == true )
@@ -684,10 +685,12 @@ void perform::push_trigger_undo()
     global_seqlist_need_update = true;
     set_have_undo();
     set_have_redo();
+    m_mutex.unlock();
 }
 
 void perform::pop_trigger_undo()
 {
+    m_mutex.lock();
     for (int i=0; i< c_max_track; i++ )
     {
         if ( is_active_track(i) == true )
@@ -705,10 +708,12 @@ void perform::pop_trigger_undo()
     redo_vect.push_back(a_undo);
     global_seqlist_need_update = true;
     set_have_redo();
+    m_mutex.unlock();
 }
 
 void perform::pop_trigger_redo()
 {
+    m_mutex.lock();
     for (int i=0; i< c_max_track; i++ )
     {
         if ( is_active_track(i) == true )
@@ -726,11 +731,13 @@ void perform::pop_trigger_redo()
     undo_vect.push_back(a_undo);
     global_seqlist_need_update = true;
     set_have_undo();
+    m_mutex.unlock();
 }
 
 // single track items
 void perform::push_trigger_undo( int a_track )
 {
+    m_mutex.lock();
     if ( is_active_track(a_track) == true )
     {
         assert( m_tracks[a_track] );
@@ -745,10 +752,12 @@ void perform::push_trigger_undo( int a_track )
     global_seqlist_need_update = true;
     set_have_undo();
     set_have_redo();
+    m_mutex.unlock();
 }
 
 void perform::pop_trigger_undo( int a_track )
 {
+    m_mutex.lock();
     if ( is_active_track(a_track) == true )
     {
         assert( m_tracks[a_track] );
@@ -763,10 +772,12 @@ void perform::pop_trigger_undo( int a_track )
     redo_vect.push_back(a_undo);
     global_seqlist_need_update = true;
     set_have_redo();
+    m_mutex.unlock();
 }
 
 void perform::pop_trigger_redo( int a_track )
 {
+    m_mutex.lock();
     if ( is_active_track(a_track) == true )
     {
         assert( m_tracks[a_track] );
@@ -781,6 +792,7 @@ void perform::pop_trigger_redo( int a_track )
     undo_vect.push_back(a_undo);
     global_seqlist_need_update = true;
     set_have_undo();
+    m_mutex.unlock();
 }
 
 // tracks - merge sequence, cross track trigger, track cut, track paste
@@ -1058,6 +1070,7 @@ perform::pop_perf_redo()
 void
 perform::check_max_undo_redo()
 {
+    m_mutex.lock();
     if(m_undo_track_count > 100 || m_redo_track_count > 100 ||
             m_undo_perf_count > 40 || m_redo_perf_count > 40 )
     {
@@ -1073,6 +1086,7 @@ perform::check_max_undo_redo()
                 m_tracks[i]->clear_trigger_undo_redo();
         }
     }
+    m_mutex.unlock();
 }
 
 void
@@ -2298,6 +2312,7 @@ int main ()
 bool
 perform::save( const Glib::ustring& a_filename )
 {
+    m_mutex.lock();
     ofstream file (a_filename.c_str (), ios::out | ios::binary | ios::trunc);
 
     if (!file.is_open ()) return false;
@@ -2340,6 +2355,8 @@ perform::save( const Glib::ustring& a_filename )
     }
 
     file.close();
+
+    m_mutex.unlock();
     return true;
 }
 

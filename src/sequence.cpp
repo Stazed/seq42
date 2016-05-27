@@ -254,12 +254,11 @@ sequence::play(long a_tick, trigger *a_trigger)
     if(a_trigger)
     {
         trigger_offset = a_trigger->m_offset;
-        // FIXME: does this even make sense?
+
         if(a_trigger->m_tick_start > m_last_tick)
         {
             start_tick = a_trigger->m_tick_start;
         }
-        // FIXME: do we need to adjust end_tick in any case?
     }
     set_trigger_offset(trigger_offset);
 
@@ -3156,7 +3155,6 @@ sequence::fill_list( list<char> *a_list, int a_pos )
         /* now that the timestamp is encoded, do the status and
            data */
 
-        /* FIXME: move channel stuff to track */
         a_list->push_front( e.m_status | get_midi_channel() );
 
         switch( e.m_status & 0xF0 )
