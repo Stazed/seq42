@@ -220,5 +220,6 @@ public:
     bool save( ofstream *file );
     bool load( ifstream *file, int version );
 
+    void delete_unused_sequences();
     void apply_song_transpose ();
 };

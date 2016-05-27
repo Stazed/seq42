@@ -2435,6 +2435,20 @@ perform::load( const Glib::ustring& a_filename )
 }
 
 void
+perform::delete_unused_sequences()
+{
+    push_perf_undo();
+    for (int i=0; i< c_max_track; i++ )
+    {
+        if ( is_active_track(i) )
+        {
+            get_track(i)->delete_unused_sequences();
+        }
+    }
+}
+
+
+void
 perform::apply_song_transpose()
 {
     for (int i=0; i< c_max_track; i++ )

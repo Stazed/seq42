@@ -20,6 +20,7 @@
 #include "track.h"
 #include <stdlib.h>
 #include <fstream>
+#include <gtkmm.h>
 
 track::track()
 {
@@ -1507,6 +1508,33 @@ long
 track::get_default_velocity( )
 {
     return m_default_velocity;
+}
+
+void
+track::delete_unused_sequences()
+{
+    for(unsigned int i=0; i<m_vector_sequence.size(); i++)
+    {
+        if(get_trigger_count_for_seqidx(i) == 0)
+        {
+            Glib::ustring message = "Sequence  ";
+            message += get_sequence(i)->get_name();
+            message += " will be deleted!\nDo you still want to delete it?";
+
+            Gtk::MessageDialog warning(message,
+                                   false,
+                                   Gtk::MESSAGE_WARNING, Gtk::BUTTONS_YES_NO, true);
+
+            auto result = warning.run();
+
+            if (result == Gtk::RESPONSE_NO || result == Gtk::RESPONSE_DELETE_EVENT)
+            {
+                continue; // next sequence
+            }
+
+            delete_sequence(i);
+        }
+    }
 }
 
 void

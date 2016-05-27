@@ -325,6 +325,7 @@ public:
         return m_seqlist_raise;
     };
 
+    void delete_unused_sequences();
     void apply_song_transpose ();
 
 #ifdef JACK_SUPPORT

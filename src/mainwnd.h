@@ -177,6 +177,7 @@ private:
     void apply_song_transpose ();
 
     void grow ();
+    void delete_unused_seq ();
     void open_seqlist ();
     void set_song_mute(mute_op op);
 

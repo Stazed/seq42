@@ -121,6 +121,9 @@ mainwnd::mainwnd(perform *a_p):
     m_menu_edit->items().push_back(MenuElem("Increase _grid size",
                                             mem_fun(*this, &mainwnd::grow)));
 
+    m_menu_edit->items().push_back(MenuElem("_Delete unused sequences",
+                                            mem_fun(*this, &mainwnd::delete_unused_seq)));
+
     m_menu_edit->items().push_back(SeparatorElem());
     m_menu_edit->items().push_back(MenuElem("_Mute all tracks",
                                             sigc::bind(mem_fun(*this, &mainwnd::set_song_mute), MUTE_ON)));
@@ -902,6 +905,12 @@ mainwnd::grow()
 {
     m_perfroll->increment_size();
     m_perftime->increment_size();
+}
+
+void
+mainwnd::delete_unused_seq()
+{
+    m_mainperf->delete_unused_sequences();
 }
 
 void
