@@ -1517,9 +1517,11 @@ track::delete_unused_sequences()
     {
         if(get_trigger_count_for_seqidx(i) == 0)
         {
-            Glib::ustring message = "Sequence  ";
+            Glib::ustring message = "From track: ";
+            message += get_name();
+            message += "\nSequence:  ";
             message += get_sequence(i)->get_name();
-            message += " will be deleted!\nDo you still want to delete it?";
+            message += "\n\nWill be deleted!\nAre you sure?";
 
             Gtk::MessageDialog warning(message,
                                    false,

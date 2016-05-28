@@ -42,7 +42,7 @@ F8 loop off
 
 [X] Clean up is_pattern_playing stuff and consolidate global key (start, stop, loop, bpm, etc) handling.
 
-[ ] Add to Edit menu a new action "Delete all untriggered sequences"
+[X] Add to Edit menu a new action "Delete all untriggered sequences"
 
 [X] Add to Edit menu a new action "Pack track list" (shifts all active tracks 
     to the top of the track list).  After this change, change the file save 
