@@ -1056,6 +1056,12 @@ perfroll::edit_sequence( track *a_track, trigger *a_trigger )
     }
 }
 
+void perfroll::play_sequence( track *a_track, trigger *a_trigger)
+{
+    sequence *a_seq =  a_track->get_trigger_sequence(a_trigger);
+    a_seq->set_playing(!a_seq->get_playing());
+}
+
 void perfroll::set_trigger_sequence( track *a_track, trigger *a_trigger, int a_sequence )
 {
     m_mainperf->push_trigger_undo(m_mainperf->get_track_index(a_track));
@@ -1142,6 +1148,11 @@ perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
         if(a_trigger->m_sequence > -1)
         {
             menu_trigger->items().push_back(MenuElem("Edit sequence", sigc::bind(mem_fun(ths,&perfroll::edit_sequence), a_track, a_trigger )));
+        }
+
+        if(a_trigger->m_sequence > -1 && !global_song_start_mode)
+        {
+            menu_trigger->items().push_back(MenuElem("Set/Unset playing", sigc::bind(mem_fun(ths,&perfroll::play_sequence), a_track, a_trigger )));
         }
 
         menu_trigger->items().push_back(MenuElem("New sequence", sigc::bind(mem_fun(ths,&perfroll::new_sequence), a_track, a_trigger )));

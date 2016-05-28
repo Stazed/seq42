@@ -22,7 +22,7 @@ Adds a random value from the specified range to the velocity or CC value of all 
 insert row
 delete row (if row isn't empty, deletes the track too)
 
-[ ] In trigger popup menu, if the trigger has a pattern, add an option to set the pattern's play flag (if it's off) or unset it (if on).  Only show the option if not in song mode.
+[X] In trigger popup menu, if the trigger has a pattern, add an option to set the pattern's play flag (if it's off) or unset it (if on).  Only show the option if not in song mode.
 
 [ ] Get rid of configurable keys in Options dialog... hard code the few
     that are currently configurable.
