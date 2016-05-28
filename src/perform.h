@@ -326,6 +326,7 @@ public:
     };
 
     void delete_unused_sequences();
+    void create_triggers();
     void apply_song_transpose ();
 
 #ifdef JACK_SUPPORT

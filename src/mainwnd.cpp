@@ -124,6 +124,9 @@ mainwnd::mainwnd(perform *a_p):
     m_menu_edit->items().push_back(MenuElem("_Delete unused sequences",
                                             mem_fun(*this, &mainwnd::delete_unused_seq)));
 
+    m_menu_edit->items().push_back(MenuElem("_Create triggers between L and R for 'playing' sequences",
+                                            mem_fun(*this, &mainwnd::create_triggers)));
+
     m_menu_edit->items().push_back(SeparatorElem());
     m_menu_edit->items().push_back(MenuElem("_Mute all tracks",
                                             sigc::bind(mem_fun(*this, &mainwnd::set_song_mute), MUTE_ON)));
@@ -911,6 +914,12 @@ void
 mainwnd::delete_unused_seq()
 {
     m_mainperf->delete_unused_sequences();
+}
+
+void
+mainwnd::create_triggers()
+{
+    m_mainperf->create_triggers();
 }
 
 void

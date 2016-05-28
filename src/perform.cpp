@@ -2447,6 +2447,18 @@ perform::delete_unused_sequences()
     }
 }
 
+void
+perform::create_triggers()
+{
+    push_perf_undo();
+    for (int i=0; i< c_max_track; i++ )
+    {
+        if ( is_active_track(i) )
+        {
+            get_track(i)->create_triggers(m_left_tick, m_right_tick);
+        }
+    }
+}
 
 void
 perform::apply_song_transpose()

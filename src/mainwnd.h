@@ -178,6 +178,7 @@ private:
 
     void grow ();
     void delete_unused_seq ();
+    void create_triggers();
     void open_seqlist ();
     void set_song_mute(mute_op op);
 

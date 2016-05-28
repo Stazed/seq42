@@ -1540,6 +1540,19 @@ track::delete_unused_sequences()
 }
 
 void
+track::create_triggers(long left_tick, long right_tick)
+{
+    for(unsigned int i=0; i<m_vector_sequence.size(); i++)
+    {
+        if(m_vector_sequence[i]->get_playing())
+        {
+            add_trigger (left_tick, right_tick - left_tick, 0, i);
+            m_vector_sequence[i]->set_dirty();
+        }
+    }
+}
+
+void
 track::apply_song_transpose()
 {
     if(m_transposable)

@@ -221,5 +221,6 @@ public:
     bool load( ifstream *file, int version );
 
     void delete_unused_sequences();
+    void create_triggers(long left_tick, long right_tick);
     void apply_song_transpose ();
 };
