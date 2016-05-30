@@ -1453,8 +1453,6 @@ int jack_sync_callback(jack_transport_state_t state,
         break;
     case JackTransportStarting:
         //printf( "[JackTransportStarting]\n" );
-        if(global_is_running)       // when looping in jack mode with other master
-            p->off_sequences();     // to stop playing of notes that were cut off by loop
         p->inner_start( global_song_start_mode );
         break;
     case JackTransportLooping:
@@ -1851,8 +1849,7 @@ void perform::output_func()
                         double leftover_tick = current_tick - (get_right_tick());
 
                         play( get_right_tick() - 1 );
-                        off_sequences();
-                        //reset_sequences();
+                        reset_sequences();
 
                         set_orig_ticks( get_left_tick() );
                         current_tick = (double) get_left_tick() + leftover_tick;
