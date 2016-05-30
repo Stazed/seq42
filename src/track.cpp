@@ -272,8 +272,7 @@ track::reset_sequences(bool a_playback_mode)
         m_vector_sequence[i]->off_playing_notes();
         m_vector_sequence[i]->set_playing(false);
         m_vector_sequence[i]->zero_markers();
-        if (!a_playback_mode)
-            m_vector_sequence[i]->set_playing(state);
+        m_vector_sequence[i]->set_playing(state);
     }
 }
 

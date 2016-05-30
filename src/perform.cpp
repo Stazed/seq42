@@ -1266,7 +1266,6 @@ void perform::inner_start(bool a_state)
 {
     m_condition_var.lock();
 
-    //if (!is_running()) {
     if (!global_is_running)
     {
         set_playback_mode( a_state );
@@ -1454,6 +1453,8 @@ int jack_sync_callback(jack_transport_state_t state,
         break;
     case JackTransportStarting:
         //printf( "[JackTransportStarting]\n" );
+        if(global_is_running)       // when looping in jack mode with other master
+            p->off_sequences();     // to stop playing of notes that were cut off by loop
         p->inner_start( global_song_start_mode );
         break;
     case JackTransportLooping:
@@ -1725,6 +1726,10 @@ void perform::output_func()
                     current_tick = clock_tick = total_tick = jack_ticks_converted_last = jack_ticks_converted;
                     init_clock = true;
 
+                /*
+                    JackTransportRolling occurs on the initial start, but not after... i.e NOT when
+                    already running. This means that when looping, below does not get called.
+                */
                     if ( m_looping && m_playback_mode )
                     {
                         //printf( "left[%lf] right[%lf]\n", (double) get_left_tick(), (double) get_right_tick() );
@@ -1832,25 +1837,28 @@ void perform::output_func()
             {
                 if ( m_looping && m_playback_mode )
                 {
+                    static bool jack_position_once = false;
                     if ( current_tick >= get_right_tick() )
                     {
-                        if(m_jack_running && m_jack_master)
+                        //printf("current_tick [%f]: right_tick [%ld]\n", current_tick, get_right_tick());
+#ifdef JACK_SUPPORT
+                        if(m_jack_running && m_jack_master && !jack_position_once)
                         {
                             position_jack(true);
+                            jack_position_once = true;
                         }
-                        else
-                        {
-                            double leftover_tick = current_tick - (get_right_tick());
+#endif // JACK_SUPPORT
+                        double leftover_tick = current_tick - (get_right_tick());
 
-                            play( get_right_tick() - 1 );
-                            reset_sequences();
+                        play( get_right_tick() - 1 );
+                        off_sequences();
+                        //reset_sequences();
 
-                            set_orig_ticks( get_left_tick() );
-                            current_tick = (double) get_left_tick() + leftover_tick;
-
-                            //printf("current_tick - outputting [%ld]\n",(long) current_tick);
-                        }
+                        set_orig_ticks( get_left_tick() );
+                        current_tick = (double) get_left_tick() + leftover_tick;
                     }
+                    else
+                        jack_position_once = false;
                 }
                 /* play */
                 play( (long) current_tick );
