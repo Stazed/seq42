@@ -1196,7 +1196,12 @@ void perform::position_jack( bool a_state )
 
     jack_nframes_t rate = jack_get_sample_rate( m_jack_client ) ;
 
-    long current_tick = m_left_frame;
+    long current_tick = 0;
+
+    if(a_state) // master in song mode
+    {
+        current_tick = m_left_tick;
+    }
 
     jack_position_t pos;
 
@@ -1759,7 +1764,7 @@ void perform::output_func()
                 {
                     m_jack_frame_current =  jack_get_current_transport_frame( m_jack_client );
 
-                    //printf( " frame[%7d]", m_jack_pos.frame );
+                    //printf( " frame[%7d]\n", m_jack_pos.frame );
                     //printf( " current_transport_frame[%7d]", m_jack_frame_current );
 
                     // if we are moving ahead
