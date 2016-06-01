@@ -1207,7 +1207,7 @@ void perform::position_jack( bool a_state )
 
     pos.valid = JackPositionBBT;
     pos.beats_per_bar = m_bp_measure;
-    pos.beat_type = 4;
+    pos.beat_type = m_bw;
     pos.ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
     pos.beats_per_minute =  m_master_bus.get_bpm();
 
@@ -1698,14 +1698,23 @@ void perform::output_func()
                 m_jack_transport_state = jack_transport_query( m_jack_client, &m_jack_pos );
                 m_jack_frame_current =  jack_get_current_transport_frame( m_jack_client );
 
-                if( (uint)m_jack_pos.beats_per_bar == 0 ) // to fix the case of no master set while in slave mode
-                {
-                    // in this case the bbt info will be 0 so just plug it so it will play
-                    m_jack_pos.beats_per_bar = m_bp_measure;
-                    m_jack_pos.beat_type = 4;
-                    m_jack_pos.ticks_per_beat = c_ppqn * 10;
-                    m_jack_pos.beats_per_minute =  m_master_bus.get_bpm();
-                }
+                /*
+                    Another note about jack....
+                    If another jack client is supplying tempo/BBT info that is different from seq42 (as Master),
+                    the perfroll grid will be incorrect. Perfroll uses internal temp/BBT and cannot update on
+                    the fly. Even if seq42 could support tempo/BBT changes, all info would have to be available
+                    before the transport start, to work. For this reason, the tempo/BBT info will be plugged from
+                    the seq42 internal settings here... always. This is the method used by probably all other jack
+                    clients with some sort of time-line. The jack API indicates that BBT is optional and AFIK,
+                    other sequencers only use frame & frame_rate from jack for internal calculations. The tempo
+                    and BBT info is always internal. Also, if there is no Master set, then we would need to plug
+                    it here to follow the jack frame anyways.
+                */
+
+                m_jack_pos.beats_per_bar = m_bp_measure;
+                m_jack_pos.beat_type = m_bw;
+                m_jack_pos.ticks_per_beat = c_ppqn * 10;
+                m_jack_pos.beats_per_minute =  m_master_bus.get_bpm();
 
                 if ( m_jack_transport_state_last  ==  JackTransportStarting &&
                         m_jack_transport_state       == JackTransportRolling )
@@ -2150,6 +2159,11 @@ void perform::input_func()
 }
 
 #ifdef JACK_SUPPORT
+
+/*
+    This callback is only called by jack when seq42 is Master and is used to supply jack
+    with tempo and BBT information based on frame position and frame_rate.
+*/
 void jack_timebase_callback(jack_transport_state_t state,
                             jack_nframes_t nframes,
                             jack_position_t *pos, int new_pos, void *arg)
@@ -2169,7 +2183,7 @@ void jack_timebase_callback(jack_transport_state_t state,
 
     pos->valid = JackPositionBBT;
     pos->beats_per_bar = p->m_bp_measure;
-    pos->beat_type = 4;
+    pos->beat_type = p->m_bw;
     pos->ticks_per_beat = c_ppqn * 10;
     pos->beats_per_minute = p->get_bpm();
 
