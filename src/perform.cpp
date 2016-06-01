@@ -610,7 +610,7 @@ void perform::play( long a_tick )
 {
     /* just run down the list of sequences and have them dump */
 
-    //printf( "play [%d]\n", a_tick );
+    //printf( "play [%ld]\n", a_tick );
 
     m_tick = a_tick;
     for (int i=0; i< c_max_track; i++ )
@@ -1196,7 +1196,7 @@ void perform::position_jack( bool a_state )
 
     jack_nframes_t rate = jack_get_sample_rate( m_jack_client ) ;
 
-    long current_tick = 0;
+    long current_tick = m_left_frame;
 
     jack_position_t pos;
 
@@ -1430,14 +1430,14 @@ int jack_sync_callback(jack_transport_state_t state,
 
     perform *p = (perform *) arg;
 
-    p->m_jack_frame_current = jack_get_current_transport_frame(p->m_jack_client);
+//    p->m_jack_frame_current = jack_get_current_transport_frame(p->m_jack_client);
 
-    p->m_jack_tick =
-        p->m_jack_frame_current *
-        p->m_jack_pos.ticks_per_beat *
-        p->m_jack_pos.beats_per_minute / (p->m_jack_pos.frame_rate * 60.0);
+//    p->m_jack_tick =
+//        p->m_jack_frame_current *
+//        p->m_jack_pos.ticks_per_beat *
+//        p->m_jack_pos.beats_per_minute / (p->m_jack_pos.frame_rate * 60.0);
 
-    p->m_jack_frame_last = p->m_jack_frame_current;
+//    p->m_jack_frame_last = p->m_jack_frame_current;
 
     p->m_jack_transport_state_last =
         p->m_jack_transport_state =
@@ -1724,32 +1724,22 @@ void perform::output_func()
                     current_tick = clock_tick = total_tick = jack_ticks_converted_last = jack_ticks_converted;
                     init_clock = true;
 
-                /*
-                    JackTransportRolling occurs on the initial start, but not after... i.e NOT when
-                    already running. This means that when looping, below does not get called.
-                */
                     if ( m_looping && m_playback_mode )
                     {
                         //printf( "left[%lf] right[%lf]\n", (double) get_left_tick(), (double) get_right_tick() );
 
                         if ( current_tick >= get_right_tick() )
                         {
-                            if(m_jack_master)
+                            while ( current_tick >= get_right_tick() )
                             {
-                                position_jack(true);
-                            }
-                            else
-                            {
-                                while ( current_tick >= get_right_tick() )
-                                {
-                                    double size = get_right_tick() - get_left_tick();
-                                    current_tick = current_tick - size;
+                                double size = get_right_tick() - get_left_tick();
+                                current_tick = current_tick - size;
 
-                                    //printf( "> current_tick[%lf]\n", current_tick );
-                                }
-                                reset_sequences();
-                                set_orig_ticks( (long)current_tick );
+                                //printf( "> current_tick[%lf]\n", current_tick );
                             }
+                               // reset_sequences();
+                            off_sequences();
+                            set_orig_ticks( (long)current_tick );
                         }
                     }
                 }
@@ -1790,7 +1780,8 @@ void perform::output_func()
                     /* convert ticks */
                     jack_ticks_converted =
                         m_jack_tick * ((double) c_ppqn /
-                                       (m_jack_pos.ticks_per_beat * m_jack_pos.beat_type / 4.0  ));
+                                       (m_jack_pos.ticks_per_beat *
+                                        m_jack_pos.beat_type / 4.0  ));
 
                     //printf ( "jack_ticks_conv[%lf] = \n",  jack_ticks_converted );
                     //printf ( "    m_jack_tick[%lf] * ((double) c_ppqn[%lf] / \n", m_jack_tick, (double) c_ppqn );
@@ -1859,7 +1850,7 @@ void perform::output_func()
                 }
                 /* play */
                 play( (long) current_tick );
-                //printf( "play[%d]\n", current_tick );
+                //printf( "play[%f]\n", current_tick );
 
                 /* midi clock */
                 m_master_bus.clock( clock_tick );
