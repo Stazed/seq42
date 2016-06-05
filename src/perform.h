@@ -126,7 +126,8 @@ private:
 
     jack_client_t *m_jack_client;
     jack_nframes_t m_jack_frame_current,
-                   m_jack_frame_last;
+                   m_jack_frame_last,
+                   m_jack_frame_rate;
     jack_position_t m_jack_pos;
     jack_transport_state_t m_jack_transport_state;
     jack_transport_state_t m_jack_transport_state_last;
