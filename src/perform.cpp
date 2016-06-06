@@ -1276,12 +1276,36 @@ void perform::start(bool a_state)
     inner_start(a_state);
 }
 
+/*
+    stop(); This function's sole purpose was to prevent inner_stop() from being called
+    internally when jack was running...potentially twice?. inner_stop() was called by output_func()
+    when jack sent a JackTransportStopped message. If seq42 initiated the stop, then
+    stop_jack() was called which then triggered the JackTransportStopped message
+    to output_func() which then triggered the bool stop_jack to call inner_stop().
+    The output_func() call to inner_stop() is only necessary when some other jack
+    client sends a jack_transport_stop message to jack, not when it is initiated
+    by seq42.  The method of relying on jack to call inner_stop() when internally initiated
+    caused a (very) obscure apparent freeze if you press and hold the start/stop key
+    if set to toggle. This occurs because of the delay between JackTransportStarting and
+    JackTransportStopped if both triggered in rapid succession by holding the toggle key
+    down.  The variable global_is_running gets set false by a delayed inner_stop()
+    from jack after the start (true) is already sent. This means the global is set to true
+    when jack is actually off (false). Any subsequent presses to the toggle key send a
+    stop message because the global is set to true. Because jack is not running,
+    output_func() is not running to send the inner_stop() call which resets the global
+    to false. Thus an apparent freeze as the toggle key endlessly sends a stop, but
+    inner_stop() never gets called to reset. Whoo! So, to fix this we just need to call
+    inner_stop() directly rather than wait for jack to send a delayed stop, only when
+    running. This makes the whole purpose of this stop() function unneeded. The check
+    for m_jack_running is commented out and this function could be removed. It is
+    being left for future generations to ponder!!!
+*/
 void perform::stop()
 {
-    if (m_jack_running)
-    {
-        return;
-    }
+//    if (m_jack_running)
+//    {
+//        return;
+//   }
 
     inner_stop();
 }
