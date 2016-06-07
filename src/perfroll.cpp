@@ -845,6 +845,24 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
 
     bool ret = false;
 
+    if (a_p0->keyval == GDK_p)         /* Move to mouse position */
+    {
+        int x = 0;
+        int y = 0;
+
+        long a_tick = 0;
+
+        get_pointer(x, y);
+        if(x < 0)
+            x = 0;
+        snap_x(&x);
+        convert_x(x, &a_tick);
+        m_mainperf->set_left_tick(a_tick); // FIXME don't use
+        m_mainperf->set_left_frame(); // FIXME allow to pass the tick instead of only m_left_tick
+        m_mainperf->position_jack(true);
+        ret = true;
+    }
+
     if ( m_mainperf->is_active_track( m_drop_track))
     {
         if ( a_p0->type == GDK_KEY_PRESS )
