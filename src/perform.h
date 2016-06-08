@@ -104,7 +104,7 @@ private:
     int thread_trigger_width_ms;
 
     long m_left_tick;
-    uint32_t m_left_frame;
+    uint32_t m_jack_position_frame;
     long m_right_tick;
     long m_starting_tick;
 
@@ -248,8 +248,8 @@ public:
 
     void start_jack();
     void stop_jack();
-    void set_left_frame(); // for jack looping
-    void position_jack( bool a_state );
+    void set_jack_position_frame(long a_tick);
+    void position_jack( bool a_state, long a_tick );
 
     void off_sequences();
     void all_notes_off();

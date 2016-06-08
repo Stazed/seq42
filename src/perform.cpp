@@ -59,7 +59,7 @@ perform::perform()
     thread_trigger_width_ms = c_thread_trigger_width_ms;
 
     m_left_tick = 0;
-    m_left_frame = 0;
+    m_jack_position_frame = 0;
     m_right_tick = c_ppqn * 16;
     m_starting_tick = 0;
 
@@ -316,8 +316,8 @@ perform::start_playing()
     {
         if(m_jack_master)
         {
-            set_left_frame();        // make sure it gets initial set if m_left_tick moved when !m_jack_running
-            position_jack(true);     // for cosmetic reasons - to stop transport line flicker on start
+            set_jack_position_frame(m_left_tick);        // make sure it gets initial set if m_left_tick moved when !m_jack_running
+            position_jack(true, m_left_tick);     // for cosmetic reasons - to stop transport line flicker on start
         }
         start_jack( );
         start( true );           // true for setting song m_playback_mode = true
@@ -325,7 +325,7 @@ perform::start_playing()
     else                         // live mode
     {
         if(m_jack_master)
-            position_jack(false);   // for cosmetic reasons - to stop transport line flicker on start
+            position_jack(false, m_left_tick);   // for cosmetic reasons - to stop transport line flicker on start
         start( false );
         start_jack( );
     }
@@ -345,7 +345,7 @@ void perform::toggle_song_mode()
     else
     {
         global_song_start_mode = true;
-        set_left_frame();
+        set_jack_position_frame(m_left_tick);
     }
 }
 
@@ -392,7 +392,7 @@ void perform::set_left_tick( long a_tick )
     if ( m_left_tick >= m_right_tick )
         m_right_tick = m_left_tick + c_ppqn * 4;
 
-    set_left_frame();
+    set_jack_position_frame(m_left_tick);
 }
 
 long perform::get_left_tick()
@@ -420,7 +420,7 @@ void perform::set_right_tick( long a_tick )
         {
             m_left_tick = m_right_tick - c_ppqn * 4;
             m_starting_tick = m_left_tick;
-            set_left_frame();
+            set_jack_position_frame(m_left_tick);
         }
     }
 }
@@ -1176,17 +1176,16 @@ void perform::stop_jack(  )
 #endif // JACK_SUPPORT
 }
 
-void perform::set_left_frame() // jack master in song mode
+void perform::set_jack_position_frame(long a_tick)
 {
 #ifdef JACK_SUPPORT
 
     if(!m_jack_running)
         return;
 
-    long current_tick = 0;
+    long current_tick = a_tick;
     jack_nframes_t rate = jack_get_sample_rate( m_jack_client ) ;
 
-    current_tick = m_left_tick;
     current_tick *= 10;
     long ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
     long beats_per_minute =  m_master_bus.get_bpm();
@@ -1194,7 +1193,7 @@ void perform::set_left_frame() // jack master in song mode
     long tpb_min = ticks_per_beat * beats_per_minute;
     uint64_t frame = ctticks / tpb_min;
 
-    m_left_frame = (uint32_t) frame;
+    m_jack_position_frame = (uint32_t) frame;
 
     //printf("current_tick [%ld]", current_tick);
     //printf("rate [%zu]", rate);
@@ -1204,7 +1203,7 @@ void perform::set_left_frame() // jack master in song mode
 #endif // JACK_SUPPORT
 }
 
-void perform::position_jack( bool a_state )
+void perform::position_jack( bool a_state, long a_tick )
 {
     //printf( "perform::position_jack()\n" );
 
@@ -1212,14 +1211,14 @@ void perform::position_jack( bool a_state )
 
     if ( !a_state ) //  master in live mode
     {
-        m_left_frame = 0;
+        m_jack_position_frame = 0;
     }
 
     long current_tick = 0;
 
     if(a_state) // master in song mode
     {
-        current_tick = m_left_tick;
+        current_tick = a_tick;
     }
 
     jack_position_t pos;
@@ -1244,7 +1243,7 @@ void perform::position_jack( bool a_state )
 
     pos.bar_start_tick = pos.bar * pos.beats_per_bar * pos.ticks_per_beat;
     pos.frame_rate =  m_jack_frame_rate;
-    pos.frame = m_left_frame;
+    pos.frame = m_jack_position_frame;
 
     //pos.frame = (jack_nframes_t) ( (current_tick *  m_jack_frame_rate * 60.0)
     //        / (pos.ticks_per_beat * pos.beats_per_minute) );
@@ -1633,9 +1632,9 @@ void perform::output_func()
         to correctly start as master when another program is used to start the transport rolling. */
 
         if(m_jack_running && m_jack_master && m_playback_mode) // song mode master start left tick marker
-            position_jack(true);
+            position_jack(true, m_left_tick);
         if(m_jack_running && m_jack_master && !m_playback_mode)// live mode master start at zero
-            position_jack(false);
+            position_jack(false, 0);
 
 #endif // JACK_SUPPORT
 
@@ -1890,7 +1889,7 @@ void perform::output_func()
 #ifdef JACK_SUPPORT
                         if(m_jack_running && m_jack_master && !jack_position_once)
                         {
-                            position_jack(true);
+                            position_jack(true, m_left_tick);
                             jack_position_once = true;
                         }
 #endif // JACK_SUPPORT

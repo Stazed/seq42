@@ -752,7 +752,7 @@ void
 mainwnd::set_song_mode()
 {
     global_song_start_mode = m_button_mode->get_active();
-    m_mainperf->set_left_frame();
+    m_mainperf->set_jack_position_frame(m_mainperf->get_left_tick());
 }
 
 void
@@ -762,7 +762,7 @@ mainwnd::toggle_song_mode()
     if(!global_is_running)
     {
         m_button_mode->set_active( ! m_button_mode->get_active() );
-        m_mainperf->set_left_frame();
+        m_mainperf->set_jack_position_frame(m_mainperf->get_left_tick());
     }
 }
 
