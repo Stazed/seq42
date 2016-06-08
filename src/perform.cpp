@@ -48,6 +48,7 @@ perform::perform()
     m_seqlist_open = false;
     m_seqlist_raise = false;
     m_looping = false;
+    m_reposition = false;
     m_inputing = true;
     m_outputing = true;
     m_tick = 0;
@@ -262,6 +263,11 @@ int perform::get_track_index( track *a_track )
             }
     }
     return -1;
+}
+
+void perform::set_reposition()
+{
+    m_reposition = true;
 }
 
 void perform::set_song_mute( mute_op op  )
@@ -1864,6 +1870,15 @@ void perform::output_func()
                 current_tick   += delta_tick;
                 total_tick     += delta_tick;
                 dumping = true;
+
+            /* if we reposition key-p from perfroll
+               then reset to adjusted starting  */
+            if ( m_playback_mode && !m_jack_running && !m_usemidiclock && m_reposition)
+            {
+                current_tick = m_starting_tick;
+                set_orig_ticks( m_starting_tick );
+                m_reposition = false;
+            }
 
 #ifdef JACK_SUPPORT
             }

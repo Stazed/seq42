@@ -97,6 +97,7 @@ private:
     bool m_inputing;
     bool m_outputing;
     bool m_looping;
+    bool m_reposition;
 
     bool m_playback_mode;
     bool m_follow_transport;
@@ -289,6 +290,8 @@ public:
     {
         m_looping = a_looping;
     };
+
+    void set_reposition();
 
     void set_song_mute( mute_op op );
 
