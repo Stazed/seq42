@@ -344,6 +344,20 @@ perform::stop_playing()
     stop();
 }
 
+void
+perform::rewind()
+{
+    printf("Rewind - FIXME\n");
+    return;
+}
+
+void
+perform::fast_forward()
+{
+    printf("fast_forward - FIXME\n");
+    return;
+}
+
 void perform::toggle_song_mode()
 {
     if(global_song_start_mode)

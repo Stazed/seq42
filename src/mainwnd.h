@@ -65,7 +65,9 @@ private:
     Gdk::Cursor   m_main_cursor;
 
     Button      *m_button_stop;
+    Button      *m_button_rewind;
     Button      *m_button_play;
+    Button      *m_button_fastforward;
 
     SpinButton  *m_spinbutton_bpm;
     Adjustment  *m_adjust_bpm;
@@ -149,6 +151,8 @@ private:
 
     void start_playing();
     void stop_playing();
+    void rewind();
+    void fast_forward();
     void update_window_title();
     void toLower(basic_string<char>&);
     void file_new();

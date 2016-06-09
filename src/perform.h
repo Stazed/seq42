@@ -177,6 +177,9 @@ public:
     void start_playing();
     void stop_playing();
 
+    void rewind();
+    void fast_forward();
+
     void toggle_song_mode();
 
     void toggle_jack_mode();

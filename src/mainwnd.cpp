@@ -46,6 +46,8 @@
 #include "pixmaps/jack.xpm"
 #include "pixmaps/transportFollow.xpm"
 #include "pixmaps/transpose.xpm"
+#include "pixmaps/fastforward.xpm"
+#include "pixmaps/rewind.xpm"
 
 using namespace sigc;
 
@@ -155,20 +157,30 @@ mainwnd::mainwnd(perform *a_p):
     HBox *hbox1 = manage( new HBox( false, 2 ) );
     hbox1->set_border_width( 2 );
 
-    m_button_loop = manage( new ToggleButton() );
-    m_button_loop->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( loop_xpm ))));
-    m_button_loop->signal_toggled().connect(  mem_fun( *this, &mainwnd::set_looped ));
-    add_tooltip( m_button_loop, "Play looped between L and R." );
-
     m_button_stop = manage( new Button() );
     m_button_stop->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( stop_xpm ))));
     m_button_stop->signal_clicked().connect( mem_fun( *this, &mainwnd::stop_playing));
     add_tooltip( m_button_stop, "Stop playing." );
 
+    m_button_rewind = manage( new Button() );
+    m_button_rewind->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( rewind_xpm ))));
+    m_button_rewind->signal_clicked().connect( mem_fun( *this, &mainwnd::rewind));
+    add_tooltip( m_button_rewind, "Rewind." );
+
     m_button_play = manage( new Button() );
     m_button_play->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( play2_xpm ))));
     m_button_play->signal_clicked().connect(  mem_fun( *this, &mainwnd::start_playing));
     add_tooltip( m_button_play, "Begin playing at L marker." );
+
+    m_button_fastforward = manage( new Button() );
+    m_button_fastforward->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( fastforward_xpm ))));
+    m_button_fastforward->signal_clicked().connect( mem_fun( *this, &mainwnd::fast_forward));
+    add_tooltip( m_button_fastforward, "Fast Forward." );
+
+    m_button_loop = manage( new ToggleButton() );
+    m_button_loop->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( loop_xpm ))));
+    m_button_loop->signal_toggled().connect(  mem_fun( *this, &mainwnd::set_looped ));
+    add_tooltip( m_button_loop, "Play looped between L and R." );
 
     m_button_mode = manage( new ToggleButton( "song mode" ) );
     m_button_mode->signal_toggled().connect(  mem_fun( *this, &mainwnd::set_song_mode ));
@@ -201,7 +213,9 @@ mainwnd::mainwnd(perform *a_p):
     m_button_follow->set_active(true);
 
     hbox1->pack_start( *m_button_stop, false, false );
+    hbox1->pack_start( *m_button_rewind, false, false );
     hbox1->pack_start( *m_button_play, false, false );
+    hbox1->pack_start( *m_button_fastforward, false, false );
     hbox1->pack_start( *m_button_loop, false, false );
     hbox1->pack_start( *m_button_mode, false, false );
 #ifdef JACK_SUPPORT
@@ -709,6 +723,18 @@ void
 mainwnd::stop_playing()
 {
     m_mainperf->stop_playing();
+}
+
+void
+mainwnd::rewind()
+{
+    m_mainperf->rewind();
+}
+
+void
+mainwnd::fast_forward()
+{
+   m_mainperf->fast_forward();
 }
 
 void
