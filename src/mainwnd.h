@@ -151,8 +151,8 @@ private:
 
     void start_playing();
     void stop_playing();
-    void rewind();
-    void fast_forward();
+    void rewind(bool a_press);
+    void fast_forward(bool a_press);
     void update_window_title();
     void toLower(basic_string<char>&);
     void file_new();

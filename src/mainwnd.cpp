@@ -164,7 +164,8 @@ mainwnd::mainwnd(perform *a_p):
 
     m_button_rewind = manage( new Button() );
     m_button_rewind->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( rewind_xpm ))));
-    m_button_rewind->signal_clicked().connect( mem_fun( *this, &mainwnd::rewind));
+    m_button_rewind->signal_pressed().connect(sigc::bind (mem_fun( *this, &mainwnd::rewind), true));
+    m_button_rewind->signal_released().connect(sigc::bind (mem_fun( *this, &mainwnd::rewind), false));
     add_tooltip( m_button_rewind, "Rewind." );
 
     m_button_play = manage( new Button() );
@@ -174,7 +175,8 @@ mainwnd::mainwnd(perform *a_p):
 
     m_button_fastforward = manage( new Button() );
     m_button_fastforward->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( fastforward_xpm ))));
-    m_button_fastforward->signal_clicked().connect( mem_fun( *this, &mainwnd::fast_forward));
+    m_button_fastforward->signal_pressed().connect(sigc::bind (mem_fun( *this, &mainwnd::fast_forward), true));
+    m_button_fastforward->signal_released().connect(sigc::bind (mem_fun( *this, &mainwnd::fast_forward), false));
     add_tooltip( m_button_fastforward, "Fast Forward." );
 
     m_button_loop = manage( new ToggleButton() );
@@ -726,15 +728,18 @@ mainwnd::stop_playing()
 }
 
 void
-mainwnd::rewind()
+mainwnd::rewind(bool a_press)
 {
+    printf("a_press [%d]\n", a_press);
     m_mainperf->rewind();
 }
 
 void
-mainwnd::fast_forward()
+mainwnd::fast_forward(bool a_press)
 {
-   m_mainperf->fast_forward();
+    printf("a_press [%d]\n", a_press);
+
+    m_mainperf->fast_forward();
 }
 
 void

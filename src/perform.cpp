@@ -347,15 +347,41 @@ perform::stop_playing()
 void
 perform::rewind()
 {
+    long measure_ticks = (c_ppqn * 4) * m_bp_measure / m_bw;
+    long a_tick = m_tick - measure_ticks;
+    if(a_tick < 0)
+        a_tick = 0;
+    if(m_jack_running)
+    {
+        set_jack_position_frame(a_tick);
+        position_jack(true, a_tick);
+    }
+    else
+    {
+        set_starting_tick(a_tick);
+        set_reposition();
+    }
+
     printf("Rewind - FIXME\n");
-    return;
 }
 
 void
 perform::fast_forward()
 {
+    long measure_ticks = (c_ppqn * 4) * m_bp_measure / m_bw;
+    long a_tick = m_tick + measure_ticks;
+    if(m_jack_running)
+    {
+        set_jack_position_frame(a_tick);
+        position_jack(true, a_tick);
+    }
+    else
+    {
+        set_starting_tick(a_tick);
+        set_reposition();
+    }
+
     printf("fast_forward - FIXME\n");
-    return;
 }
 
 void perform::toggle_song_mode()
