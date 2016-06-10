@@ -361,8 +361,6 @@ perform::rewind()
         set_starting_tick(a_tick);
         set_reposition();
     }
-
-    printf("Rewind - FIXME\n");
 }
 
 void
@@ -380,8 +378,6 @@ perform::fast_forward()
         set_starting_tick(a_tick);
         set_reposition();
     }
-
-    printf("fast_forward - FIXME\n");
 }
 
 void perform::toggle_song_mode()
