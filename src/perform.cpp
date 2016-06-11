@@ -60,7 +60,6 @@ perform::perform()
     thread_trigger_width_ms = c_thread_trigger_width_ms;
 
     m_left_tick = 0;
-    m_jack_position_frame = 0;
     m_right_tick = c_ppqn * 16;
     m_starting_tick = 0;
 
@@ -330,7 +329,7 @@ perform::start_playing()
     else                         // live mode
     {
         if(m_jack_master)
-            position_jack(false, m_left_tick);   // for cosmetic reasons - to stop transport line flicker on start
+            position_jack(false, 0);   // for cosmetic reasons - to stop transport line flicker on start
         start( false );
         start_jack( );
     }
@@ -1216,11 +1215,6 @@ void perform::position_jack( bool a_state, long a_tick )
     //printf( "perform::position_jack()\n" );
 
 #ifdef JACK_SUPPORT
-
-    if ( !a_state ) //  master in live mode
-    {
-        m_jack_position_frame = 0;
-    }
 
     long current_tick = 0;
 
