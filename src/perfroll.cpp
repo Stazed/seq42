@@ -858,7 +858,6 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
 
         if(m_mainperf->is_jack_running())
         {
-            m_mainperf->set_jack_position_frame(a_tick);
             m_mainperf->position_jack(true, a_tick);
         }
         else

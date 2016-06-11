@@ -252,7 +252,6 @@ public:
 
     void start_jack();
     void stop_jack();
-    void set_jack_position_frame(long a_tick);
     void position_jack( bool a_state, long a_tick );
 
     void off_sequences();
