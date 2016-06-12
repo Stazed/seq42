@@ -1238,7 +1238,7 @@ void perform::position_jack( bool a_state, long a_tick )
     int beats_per_minute =  m_master_bus.get_bpm();
 
     uint64_t tick_rate = ((uint64_t)m_jack_frame_rate * current_tick * 60.0);
-    long tpb_bpm = ticks_per_beat * beats_per_minute;
+    long tpb_bpm = ticks_per_beat * beats_per_minute / (m_bw / 4.0 );
     uint64_t jack_frame = tick_rate / tpb_bpm;
 
     jack_transport_locate(m_jack_client,jack_frame);
