@@ -252,6 +252,7 @@ public:
     void start_jack();
     void stop_jack();
     void position_jack( bool a_state, long a_tick );
+    void jack_BBT_position(jack_position_t &pos, double jack_tick);
 
     void off_sequences();
     void all_notes_off();
