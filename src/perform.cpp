@@ -1743,7 +1743,7 @@ void perform::output_func()
 
             /* delta time to ticks */
             /* bpm */
-            int bpm  = m_master_bus.get_bpm();
+            int bpm = m_master_bus.get_bpm() * ( 4.0 / m_bw);
 
             /* get delta ticks, delta_ticks_f is in 1000th of a tick */
             long long delta_tick_num = bpm * ppqn * delta_us + delta_tick_frac;
@@ -1766,7 +1766,7 @@ void perform::output_func()
                 //init_clock = true;
             }
 
-            //printf ( "    delta_tick[%lf]\n", delta_tick  );
+            //printf ( "delta_tick[%ld]: delta_tick_num[%lld]: bpm [%d]\n", delta_tick, delta_tick_num, bpm  );
 #ifdef JACK_SUPPORT
 
             // no init until we get a good lock
@@ -1903,14 +1903,14 @@ void perform::output_func()
                 total_tick     += delta_tick;
                 dumping = true;
 
-            /* if we reposition key-p from perfroll
-               then reset to adjusted starting  */
-            if ( m_playback_mode && !m_jack_running && !m_usemidiclock && m_reposition)
-            {
-                current_tick = m_starting_tick;
-                set_orig_ticks( m_starting_tick );
-                m_reposition = false;
-            }
+                /* if we reposition key-p from perfroll
+                   then reset to adjusted starting  */
+                if ( m_playback_mode && !m_jack_running && !m_usemidiclock && m_reposition)
+                {
+                    current_tick = m_starting_tick;
+                    set_orig_ticks( m_starting_tick );
+                    m_reposition = false;
+                }
 
 #ifdef JACK_SUPPORT
             }
