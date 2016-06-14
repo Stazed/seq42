@@ -321,7 +321,8 @@ perform::start_playing()
     {
         if(m_jack_master)
         {
-            position_jack(true, m_left_tick);     // for cosmetic reasons - to stop transport line flicker on start
+            if(!m_reposition)    // allow to start at key-p position if set
+                position_jack(true, m_left_tick);     // for cosmetic reasons - to stop transport line flicker on start
         }
         start_jack( );
         start( true );           // true for setting song m_playback_mode = true
@@ -1269,6 +1270,9 @@ void perform::position_jack( bool a_state, long a_tick )
 
     jack_transport_reposition( m_jack_client, &pos );
 
+    if(global_is_running)
+        m_reposition = false;
+
 #endif // JACK_SUPPORT
 }
 
@@ -1670,7 +1674,13 @@ void perform::output_func()
         to correctly start as master when another program is used to start the transport rolling. */
 
         if(m_jack_running && m_jack_master && m_playback_mode) // song mode master start left tick marker
-            position_jack(true, m_left_tick);
+        {
+            if(!m_reposition)                                  // allow to start if key-p set
+                position_jack(true, m_left_tick);
+            else
+                m_reposition = false;
+        }
+
         if(m_jack_running && m_jack_master && !m_playback_mode)// live mode master start at zero
             position_jack(false, 0);
 
@@ -1907,8 +1917,9 @@ void perform::output_func()
                    then reset to adjusted starting  */
                 if ( m_playback_mode && !m_jack_running && !m_usemidiclock && m_reposition)
                 {
-                    current_tick = m_starting_tick;
+                    current_tick = m_starting_tick; // reposition sets m_starting_tick
                     set_orig_ticks( m_starting_tick );
+                    m_starting_tick = m_left_tick;  // restart at left marker
                     m_reposition = false;
                 }
 
