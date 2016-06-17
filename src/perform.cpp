@@ -1233,11 +1233,12 @@ void perform::position_jack( bool a_state, long a_tick )
         is rolling. There is no need to send BBT on position change - the fact that
         the function jack_transport_locate() exists and only uses the frame position
         is proof that BBT is not needed! Upon further reflection, why not send BBT?
+        Because other programs do not.... lets follow convention.
         The below calculation for jack_transport_locate(), works, is simpler and
-        does not send BBT. It is commented out to use the BBT call to jack_BBT_position()
-        because it is useful in debugging.
+        does not send BBT. The calc for jack_transport_reposition() will be commented
+        out again....
     */
-    /*
+
     int ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
     int beats_per_minute =  m_master_bus.get_bpm();
 
@@ -1246,12 +1247,17 @@ void perform::position_jack( bool a_state, long a_tick )
     uint64_t jack_frame = tick_rate / tpb_bpm;
 
     jack_transport_locate(m_jack_client,jack_frame);
-    */
 
+#if 0
     /* The below BBT call to jack_BBT_position() is not necessary to change jack position!!! */
 
     jack_position_t pos;
     double jack_tick = current_tick * (m_bw / 4.0 );
+
+    /* gotta set these here since they are set in timebase */
+    pos.ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
+    pos.beats_per_minute =  m_master_bus.get_bpm();
+
     jack_BBT_position(pos, jack_tick);
 
     /* this calculates jack frame to put into pos.frame.
@@ -1269,6 +1275,7 @@ void perform::position_jack( bool a_state, long a_tick )
        num secords * frame_rate  = frame */
 
     jack_transport_reposition( m_jack_client, &pos );
+#endif // 0
 
     if(global_is_running)
         m_reposition = false;
@@ -1282,8 +1289,9 @@ void perform::jack_BBT_position(jack_position_t &pos, double jack_tick)
     pos.valid = JackPositionBBT;
     pos.beats_per_bar = m_bp_measure;
     pos.beat_type = m_bw;
-    pos.ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
-    pos.beats_per_minute =  m_master_bus.get_bpm();
+    /* these are set in the timebase callback since they are needed for jack_tick */
+    //pos.ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
+    //pos.beats_per_minute =  m_master_bus.get_bpm();
 
     pos.frame_rate =  m_jack_frame_rate; // comes from init_jack()
 
@@ -2286,15 +2294,15 @@ void jack_timebase_callback(jack_transport_state_t state,
     perform *p = (perform *) arg;
     current_frame = jack_get_current_transport_frame( p->m_jack_client );
 
-    double beats_per_minute = p->get_bpm();
-    double ticks_per_beat = c_ppqn * 10;
+    pos->beats_per_minute = p->get_bpm();
+    pos->ticks_per_beat = c_ppqn * 10;
 
     //printf( "jack_timebase_callback() [%d] [%d] [%d]\n", state, new_pos, current_frame);
 
     jack_tick =
         (current_frame) *
-        ticks_per_beat  *
-        beats_per_minute / ( p->m_jack_frame_rate* 60.0);
+        pos->ticks_per_beat  *
+        pos->beats_per_minute / ( p->m_jack_frame_rate* 60.0);
 
     p->jack_BBT_position(*pos, jack_tick);
 }
