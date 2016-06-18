@@ -99,7 +99,6 @@ private:
     bool m_looping;
     bool m_reposition;
 
-    bool m_playback_mode;
     bool m_follow_transport;
 
     int thread_trigger_width_ms;

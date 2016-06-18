@@ -388,7 +388,7 @@ sequence::zero_markers()
 {
     lock();
 
-    m_last_tick = 0;
+    //m_last_tick = 0;
 
     //m_masterbus->flush( );
 
