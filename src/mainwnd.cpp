@@ -818,6 +818,16 @@ mainwnd::set_jack_mode ()
         m_button_jack->set_active(false);
 
     m_mainperf->set_jack_mode(m_mainperf->is_jack_running()); // for seqroll keybinding
+
+    // for setting the transport tick to display in the correct location
+    // FIXME currently does not work for slave from disconnected - need jack position
+    if(global_song_start_mode)
+    {
+        m_mainperf->set_reposition(false);
+        m_mainperf->set_starting_tick(m_mainperf->get_left_tick());
+    }
+    else
+        m_mainperf->set_starting_tick(m_mainperf->get_tick());
 }
 
 void

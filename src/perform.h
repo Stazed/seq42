@@ -293,7 +293,7 @@ public:
         m_looping = a_looping;
     };
 
-    void set_reposition();
+    void set_reposition(bool a_pos_type = true);
 
     void set_song_mute( mute_op op );
 

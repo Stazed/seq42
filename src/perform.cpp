@@ -264,9 +264,9 @@ int perform::get_track_index( track *a_track )
     return -1;
 }
 
-void perform::set_reposition()
+void perform::set_reposition(bool a_pos_type)
 {
-    m_reposition = true;
+    m_reposition = a_pos_type;
 }
 
 void perform::set_song_mute( mute_op op  )
