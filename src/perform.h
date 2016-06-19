@@ -155,6 +155,7 @@ public:
 
     track m_tracks_clipboard[c_max_track];
 
+    float m_excell_FF_RW;
     bool m_have_undo;
     bool m_have_redo;
 

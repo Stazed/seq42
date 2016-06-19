@@ -88,6 +88,7 @@ perform::perform()
 
     m_bp_measure = 4;
     m_bw = 4;
+    m_excell_FF_RW = 1.0;
 
     m_have_undo = false; // for button sensitive
     m_have_redo = false; // for button sensitive
@@ -349,6 +350,9 @@ perform::rewind()
     if(global_song_start_mode)  // don't allow in live mode
     {
         long measure_ticks = (c_ppqn * 4) * m_bp_measure / m_bw;
+        measure_ticks /= 4;
+        measure_ticks *= m_excell_FF_RW;
+
         long a_tick = m_tick - measure_ticks;
         if(a_tick < 0)
             a_tick = 0;
@@ -361,7 +365,7 @@ perform::rewind()
         else
         {
             set_starting_tick(a_tick);  // this will set progress line
-            set_reposition();   // set after cause position_jack() sets false for key-p
+            set_reposition();
         }
     }
 }
@@ -372,8 +376,10 @@ perform::fast_forward()
     if(global_song_start_mode)  // don't allow in live mode
     {
         long measure_ticks = (c_ppqn * 4) * m_bp_measure / m_bw;
-        long a_tick = m_tick + measure_ticks;
+        measure_ticks /= 4;
+        measure_ticks *= m_excell_FF_RW;
 
+        long a_tick = m_tick + measure_ticks;
         if(m_jack_running)
         {
             set_starting_tick(a_tick);  // this will set progress line
@@ -383,7 +389,7 @@ perform::fast_forward()
         else
         {
             set_starting_tick(a_tick);  // this will set progress line
-            set_reposition();   // set after cause position_jack() sets false for key-p
+            set_reposition();
         }
     }
 }

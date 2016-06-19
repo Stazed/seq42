@@ -1708,12 +1708,17 @@ skip_timeout(void *arg)
     if(m_skip < 0)
     {
         p->rewind();
+        if(p->m_excell_FF_RW < 60.0f)
+            p->m_excell_FF_RW *= 1.1f;
         return (TRUE);
     }
     if(m_skip > 0)
     {
         p->fast_forward();
+        if(p->m_excell_FF_RW < 60.0f)
+            p->m_excell_FF_RW *= 1.1f;
         return (TRUE);
     }
+    p->m_excell_FF_RW = 1.0;
     return (FALSE);
 }
