@@ -83,6 +83,7 @@ perform::perform()
     m_out_thread_launched = false;
     m_in_thread_launched = false;
 
+    m_playback_mode = false;
     m_follow_transport = true;
 
     m_bp_measure = 4;
@@ -321,16 +322,16 @@ perform::start_playing()
         if(m_jack_master)
         {
             if(!m_reposition)    // allow to start at key-p position if set
-                position_jack(true, m_left_tick);     // for cosmetic reasons - to stop transport line flicker on start
+                position_jack(global_song_start_mode, m_left_tick);     // for cosmetic reasons - to stop transport line flicker on start
         }
         start_jack( );
-        start( true );           // true for setting song global_song_start_mode = true
+        start( global_song_start_mode );             // true for setting song m_playback_mode = true
     }
     else                         // live mode
     {
         if(m_jack_master)
-            position_jack(false, 0);   // for cosmetic reasons - to stop transport line flicker on start
-        start( false );
+            position_jack(global_song_start_mode, 0);   // for cosmetic reasons - to stop transport line flicker on start
+        start( global_song_start_mode );
         start_jack( );
     }
 }
@@ -345,36 +346,45 @@ perform::stop_playing()
 void
 perform::rewind()
 {
-    long measure_ticks = (c_ppqn * 4) * m_bp_measure / m_bw;
-    long a_tick = m_tick - measure_ticks;
-    if(a_tick < 0)
-        a_tick = 0;
-    if(m_jack_running)
+    if(global_song_start_mode)  // don't allow in live mode
     {
-        position_jack(true, a_tick);
-        set_reposition();
-    }
-    else
-    {
-        set_starting_tick(a_tick);
-        set_reposition();
+        long measure_ticks = (c_ppqn * 4) * m_bp_measure / m_bw;
+        long a_tick = m_tick - measure_ticks;
+        if(a_tick < 0)
+            a_tick = 0;
+        if(m_jack_running && global_song_start_mode)
+        {
+            set_starting_tick(a_tick);  // this will set progress line
+            position_jack(global_song_start_mode, a_tick);
+            set_reposition();   // set after cause position_jack() sets false for key-p
+        }
+        else
+        {
+            set_starting_tick(a_tick);  // this will set progress line
+            set_reposition();   // set after cause position_jack() sets false for key-p
+        }
     }
 }
 
 void
 perform::fast_forward()
 {
-    long measure_ticks = (c_ppqn * 4) * m_bp_measure / m_bw;
-    long a_tick = m_tick + measure_ticks;
-    if(m_jack_running)
+    if(global_song_start_mode)  // don't allow in live mode
     {
-        position_jack(true, a_tick);
-        set_reposition();
-    }
-    else
-    {
-        set_starting_tick(a_tick);
-        set_reposition();
+        long measure_ticks = (c_ppqn * 4) * m_bp_measure / m_bw;
+        long a_tick = m_tick + measure_ticks;
+
+        if(m_jack_running)
+        {
+            set_starting_tick(a_tick);  // this will set progress line
+            position_jack(global_song_start_mode, a_tick);
+            set_reposition();   // set after cause position_jack() sets false for key-p
+        }
+        else
+        {
+            set_starting_tick(a_tick);  // this will set progress line
+            set_reposition();   // set after cause position_jack() sets false for key-p
+        }
     }
 }
 
@@ -445,7 +455,7 @@ long perform::get_left_tick()
 void perform::set_starting_tick( long a_tick )
 {
     m_starting_tick = a_tick;
-    m_tick = a_tick;
+    m_tick = a_tick;    // set progress line
 }
 
 long perform::get_starting_tick()
@@ -686,7 +696,7 @@ void perform::play( long a_tick )
         if ( is_active_track(i) )
         {
             assert( m_tracks[i] );
-            m_tracks[i]->play( a_tick, global_song_start_mode );
+            m_tracks[i]->play( a_tick, m_playback_mode );
         }
     }
 
@@ -1229,9 +1239,6 @@ void perform::position_jack( bool a_state, long a_tick )
 
 #ifdef JACK_SUPPORT
 
-    if(m_reposition)
-        m_tick = a_tick;
-
     long current_tick = 0;
 
     if(a_state) // master in song mode
@@ -1433,7 +1440,7 @@ void perform::reset_sequences()
         if (is_active_track(i))
         {
             assert( m_tracks[i] );
-            m_tracks[i]->reset_sequences(global_song_start_mode);
+            m_tracks[i]->reset_sequences(m_playback_mode);
         }
     }
     /* flush the bus */
@@ -1455,7 +1462,7 @@ void perform::launch_output_thread()
 
 void perform::set_playback_mode( bool a_playback_mode )
 {
-    global_song_start_mode = a_playback_mode;
+    m_playback_mode = a_playback_mode;
 }
 
 void perform::launch_input_thread()
@@ -1694,7 +1701,7 @@ void perform::output_func()
         line before being set correctly here. The below position_jack() settings also serves to allow seq42
         to correctly start as master when another program is used to start the transport rolling. */
 
-        if(m_jack_running && m_jack_master && global_song_start_mode) // song mode master start left tick marker
+        if(m_jack_running && m_jack_master && m_playback_mode) // song mode master start left tick marker
         {
             if(!m_reposition)                                  // allow to start if key-p set
                 position_jack(true, m_left_tick);
@@ -1702,7 +1709,7 @@ void perform::output_func()
                 m_reposition = false;
         }
 
-        if(m_jack_running && m_jack_master && !global_song_start_mode)// live mode master start at zero
+        if(m_jack_running && m_jack_master && !m_playback_mode)// live mode master start at zero
             position_jack(false, 0);
 
 #endif // JACK_SUPPORT
@@ -1715,7 +1722,7 @@ void perform::output_func()
 
         /* if we are in the performance view, we care
            about starting from the offset */
-        if ( global_song_start_mode && !m_jack_running)
+        if ( m_playback_mode && !m_jack_running)
         {
             current_tick = m_starting_tick;
             clock_tick = m_starting_tick;
@@ -1849,7 +1856,7 @@ void perform::output_func()
                     current_tick = clock_tick = total_tick = jack_ticks_converted_last = jack_ticks_converted;
                     init_clock = true;
 
-                    if ( m_looping && global_song_start_mode )
+                    if ( m_looping && m_playback_mode )
                     {
                         //printf( "left[%lf] right[%lf]\n", (double) get_left_tick(), (double) get_right_tick() );
 
@@ -1936,7 +1943,7 @@ void perform::output_func()
 
                 /* if we reposition key-p from perfroll
                    then reset to adjusted starting  */
-                if ( global_song_start_mode && !m_jack_running && !m_usemidiclock && m_reposition)
+                if ( m_playback_mode && !m_jack_running && !m_usemidiclock && m_reposition)
                 {
                     current_tick = m_starting_tick; // reposition sets m_starting_tick
                     set_orig_ticks( m_starting_tick );
@@ -1959,7 +1966,7 @@ void perform::output_func()
 
             if (dumping)
             {
-                if ( m_looping && global_song_start_mode )
+                if ( m_looping && m_playback_mode )
                 {
                     static bool jack_position_once = false;
                     if ( current_tick >= get_right_tick() )
@@ -2162,19 +2169,21 @@ void perform::output_func()
             }
         }
 
+
+        /* m_tick is the progress play tick that displays the progress line */
 #ifdef JACK_SUPPORT
-        if(global_song_start_mode && m_jack_master)
+        if(m_playback_mode && m_jack_master)
             m_tick = m_left_tick;
 #endif // JACK_SUPPORT
-        if(global_song_start_mode && !m_jack_running)
+        if(m_playback_mode && !m_jack_running)
             m_tick = m_left_tick;
 
-        if(!global_song_start_mode)
+        if(!m_playback_mode)
             m_tick = 0;
-
         // this means we leave m_tick as is if in slave mode
 
-        //m_tick = 0;   // This resets the draw progress line to zero
+        m_reposition = false;   // needed if FF/Rewind pressed while playing
+
         m_master_bus.flush();
         m_master_bus.stop();
     }
