@@ -54,7 +54,7 @@ using namespace sigc;
 bool global_is_running = false;
 bool global_is_modified = false;
 bool global_seqlist_need_update = false;
-int m_skip = 0;
+int FF_RW_button_type = 0;
 
 // tooltip helper, for old vs new gtk...
 #if GTK_MINOR_VERSION >= 12
@@ -732,22 +732,22 @@ void
 mainwnd::rewind(bool a_press)
 {
     if(a_press)
-        m_skip = -1;
+        FF_RW_button_type = -1;
     else
-        m_skip = 0;
+        FF_RW_button_type = 0;
 
-	gtk_timeout_add(120,skip_timeout,m_mainperf);
+	gtk_timeout_add(120,FF_RW_timeout,m_mainperf);
 }
 
 void
 mainwnd::fast_forward(bool a_press)
 {
     if(a_press)
-        m_skip = 1;
+        FF_RW_button_type = 1;
     else
-        m_skip = 0;
+        FF_RW_button_type = 0;
 
-	gtk_timeout_add(120,skip_timeout,m_mainperf);
+	gtk_timeout_add(120,FF_RW_timeout,m_mainperf);
 }
 
 void
@@ -1701,24 +1701,18 @@ mainwnd::signal_action(Glib::IOCondition condition)
 }
 
 int
-skip_timeout(void *arg)
+FF_RW_timeout(void *arg)
 {
     perform *p = (perform *) arg;
 
-    if(m_skip < 0)
+    if(FF_RW_button_type != 0)
     {
-        p->rewind();
+        p->FF_rewind();
         if(p->m_excell_FF_RW < 60.0f)
             p->m_excell_FF_RW *= 1.1f;
         return (TRUE);
     }
-    if(m_skip > 0)
-    {
-        p->fast_forward();
-        if(p->m_excell_FF_RW < 60.0f)
-            p->m_excell_FF_RW *= 1.1f;
-        return (TRUE);
-    }
+
     p->m_excell_FF_RW = 1.0;
     return (FALSE);
 }

@@ -155,6 +155,11 @@ also fixed a bug, it didn't work with bw.
 re-factored to call a common function for both position_jack() and jack_timebase_callback(). 
 
 --------------------
+
+Update - revert back to using jack_transport_locate() on position change (no BBT sent) - commit 6/17/2016. Because upon further research, is seems to be the norm.
+
+-------------------
+
 Ardour: http://manual.ardour.org/synchronization/timecode-generators-and-slaves/
 JACK Transport
 
@@ -645,7 +650,7 @@ if(!m_jack_running)
     play( (long) current_tick );
 
 This calculates the amount the current tick (play tick) is beyond the loop marker (right_tick).
-This is needed because current_tick calc is not exact in terms of the position of the right_tick so it may go beyond. The leftover_tick is the calc beyond the right_tick. The - play( get_right_tick() - 1 ); is the last play before resetting to the left_tick via - set_orig_ticks( get_left_tick() ); The reset sequences is needed to shut off any notes in the middle of the right_tick marker so they will not be left on continued playing. It then turns them back on for continued playing. The adjustment of adding the leftover tick to the current tick is to make the play seamless and timed since this is where the play should be if the current tick had not gone past the right tick. Immediatly after the loop, the adjusted current_tick is played.
+This is needed because current_tick calc is not exact in terms of the position of the right_tick so it may go beyond. The leftover_tick is the calc beyond the right_tick. The - play( get_right_tick() - 1 ); is the last play before resetting to the left_tick via - set_orig_ticks( get_left_tick() ); The reset sequences is needed to shut off any notes in the middle of the right_tick marker so they will not be left on continued playing. It then turns them back on for next loop. The adjustment of adding the leftover tick to the current tick is to make the play seamless and timed since this is where the play should be if the current tick had not gone past the right tick. Immediatly after the loop, the adjusted current_tick is played.
 
 --------------------------------
 Jack looping - the following is added:
@@ -676,11 +681,12 @@ When jack loops, the first time - if ( current_tick >= get_right_tick() ) hits, 
 ------------------------------------
 Testing BW for default - non jack
 
-The original seq24 and imported into seq42/32 did not adjust for beat width (bw) when NOT connected to jack.
+The original seq24 and imported into seq42/32 did not adjust for beat width (bw) timing when NOT connected to jack.
 The bug was fixed with the following simple addition in output_func() - commit 6/13/2016:
 
-int bpm = m_master_bus.get_bpm();
-int bpm = m_master_bus.get_bpm() * ( 4.0 / m_bw);
+before:  int bpm = m_master_bus.get_bpm();
+
+after :  int bpm = m_master_bus.get_bpm() * ( 4.0 / m_bw);
 
 The following test was used to confirm the accuracy and consistancy with jack.
 Jack uses jack_ticks_delta and the default uses delta_tick to adjust the play location. 

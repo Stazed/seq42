@@ -345,42 +345,28 @@ perform::stop_playing()
 }
 
 void
-perform::rewind()
+perform::FF_rewind()
 {
+    if(FF_RW_button_type == 0)
+        return;
+
     if(global_song_start_mode)  // don't allow in live mode
     {
+        long a_tick = 0;
         long measure_ticks = (c_ppqn * 4) * m_bp_measure / m_bw;
         measure_ticks /= 4;
         measure_ticks *= m_excell_FF_RW;
 
-        long a_tick = m_tick - measure_ticks;
-        if(a_tick < 0)
-            a_tick = 0;
+        if(FF_RW_button_type < 0)  // rewind
+        {
+            a_tick = m_tick - measure_ticks;
+            if(a_tick < 0)
+                a_tick = 0;
+        }
+        if(FF_RW_button_type > 0)  // Fast Forward
+            a_tick = m_tick + measure_ticks;
+
         if(m_jack_running && global_song_start_mode)
-        {
-            set_starting_tick(a_tick);  // this will set progress line
-            position_jack(global_song_start_mode, a_tick);
-            set_reposition();   // set after cause position_jack() sets false for key-p
-        }
-        else
-        {
-            set_starting_tick(a_tick);  // this will set progress line
-            set_reposition();
-        }
-    }
-}
-
-void
-perform::fast_forward()
-{
-    if(global_song_start_mode)  // don't allow in live mode
-    {
-        long measure_ticks = (c_ppqn * 4) * m_bp_measure / m_bw;
-        measure_ticks /= 4;
-        measure_ticks *= m_excell_FF_RW;
-
-        long a_tick = m_tick + measure_ticks;
-        if(m_jack_running)
         {
             set_starting_tick(a_tick);  // this will set progress line
             position_jack(global_song_start_mode, a_tick);

@@ -177,8 +177,7 @@ public:
     void start_playing();
     void stop_playing();
 
-    void rewind();
-    void fast_forward();
+    void FF_rewind();
 
     void toggle_song_mode();
 
@@ -349,6 +348,9 @@ public:
 /* located in perform.C */
 extern void *output_thread_func(void *a_p);
 extern void *input_thread_func(void *a_p);
+
+/* located in mainwnd.h */
+extern int FF_RW_button_type;
 
 #ifdef JACK_SUPPORT
 

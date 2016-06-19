@@ -232,8 +232,7 @@ public:
     void open_file(const Glib::ustring&);
     bool on_delete_event(GdkEventAny *a_e);
     bool on_key_press_event(GdkEventKey* a_ev);
-    friend int skip_timeout(void *arg);
+    friend int FF_RW_timeout(void *arg);
 };
 
-extern int m_skip;
-int skip_timeout(void *arg);
+int FF_RW_timeout(void *arg);
