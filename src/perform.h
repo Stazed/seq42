@@ -171,6 +171,8 @@ public:
     unsigned int m_key_seqlist;
     unsigned int m_key_follow_trans;
 
+    long jack_stop_tick;
+
     perform();
     ~perform();
 

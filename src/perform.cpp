@@ -75,6 +75,8 @@ perform::perform()
     m_key_seqlist   = GDK_F3;
     m_key_follow_trans  = GDK_F4;
 
+    jack_stop_tick = 0;
+
     m_jack_running = false;
     m_toggle_jack = false;
 
@@ -2173,6 +2175,10 @@ void perform::output_func()
         if(!m_playback_mode)
             m_tick = 0;
         // this means we leave m_tick as is if in slave mode
+
+#ifdef JACK_SUPPORT
+        jack_stop_tick = get_current_jack_position(this);
+#endif // JACK_SUPPORT
 
         m_reposition = false;   // needed if FF/Rewind pressed while playing
 
