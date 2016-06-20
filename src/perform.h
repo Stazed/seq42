@@ -143,6 +143,7 @@ private:
     bool m_jack_running;
     bool m_toggle_jack;
     bool m_jack_master;
+    long m_jack_stop_tick;
 
     void inner_start( bool a_state );
     void inner_stop();
@@ -170,8 +171,6 @@ public:
     unsigned int m_key_jack;
     unsigned int m_key_seqlist;
     unsigned int m_key_follow_trans;
-
-    long jack_stop_tick;
 
     perform();
     ~perform();
@@ -212,6 +211,12 @@ public:
     long get_tick( )
     {
         return m_tick;
+    };
+
+    void set_jack_stop_tick(long a_tick);
+    long get_jack_stop_tick( )
+    {
+        return m_jack_stop_tick;
     };
 
     void set_left_tick( long a_tick );
@@ -296,7 +301,6 @@ public:
     };
 
     void set_reposition(bool a_pos_type = true);
-
     void set_song_mute( mute_op op );
 
     mastermidibus* get_master_midi_bus( );

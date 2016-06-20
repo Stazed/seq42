@@ -525,21 +525,18 @@ mainwnd::timer_callback(  )
 #ifdef JACK_SUPPORT
         if(m_mainperf->is_jack_running())
         {
-            if(!FF_RW_button_type)  // position change by another jack client
+            long tick = get_current_jack_position(m_mainperf);
+            long diff = tick - m_mainperf->get_jack_stop_tick();
+            //printf("diff [%ld]\n", diff);
+            if(diff != 0)
             {
-                long tick = get_current_jack_position(m_mainperf);
-                long diff = tick - m_mainperf->jack_stop_tick;
-
-                if(abs(diff)>10)
-                {
-                    //printf("jack_stop_tick [%ld]: tick [%ld]\n",m_mainperf->jack_stop_tick, tick);
-                    m_mainperf->set_reposition();
-                    m_mainperf->set_starting_tick(tick);
-                }
+                m_mainperf->set_reposition();
+                m_mainperf->set_starting_tick(tick);
+                m_mainperf->set_jack_stop_tick(tick);
             }
         }
 #endif // JACK_SUPPORT
-        m_perfroll->auto_scroll_horz();
+        m_perfroll->auto_scroll_horz(); // adjust to transport position when stopped
     }
 
     m_main_time->idle_progress( ticks );

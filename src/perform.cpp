@@ -75,7 +75,7 @@ perform::perform()
     m_key_seqlist   = GDK_F3;
     m_key_follow_trans  = GDK_F4;
 
-    jack_stop_tick = 0;
+    m_jack_stop_tick = 0;
 
     m_jack_running = false;
     m_toggle_jack = false;
@@ -370,9 +370,7 @@ perform::FF_rewind()
 
         if(m_jack_running && global_song_start_mode)
         {
-            set_starting_tick(a_tick);  // this will set progress line
             position_jack(global_song_start_mode, a_tick);
-            set_reposition();   // set after cause position_jack() sets false for key-p
         }
         else
         {
@@ -425,6 +423,11 @@ bool perform::get_follow_transport()
 void perform::toggle_follow_transport()
 {
     set_follow_transport(!m_follow_transport);
+}
+
+void perform::set_jack_stop_tick(long a_tick)
+{
+    m_jack_stop_tick = a_tick;
 }
 
 void perform::set_left_tick( long a_tick )
@@ -2173,10 +2176,10 @@ void perform::output_func()
 #ifdef JACK_SUPPORT
         if(m_playback_mode && m_jack_master)
         {
-            //m_tick = m_left_tick;
             position_jack(m_playback_mode,m_left_tick);
         }
-
+        if(!m_playback_mode && m_jack_running)
+            position_jack(m_playback_mode,0);
 
 #endif // JACK_SUPPORT
         if(m_playback_mode && !m_jack_running)
@@ -2186,15 +2189,15 @@ void perform::output_func()
             m_tick = 0;
         // this means we leave m_tick as is if in slave mode
 
+        m_master_bus.flush();
+        m_master_bus.stop();
+
 #ifdef JACK_SUPPORT
         if(m_jack_running)
-            jack_stop_tick = get_current_jack_position(this);
+            m_jack_stop_tick = get_current_jack_position(this);
 #endif // JACK_SUPPORT
 
         m_reposition = false;   // needed if FF/Rewind pressed while playing
-
-        m_master_bus.flush();
-        m_master_bus.stop();
     }
     pthread_exit(0);
 }
