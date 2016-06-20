@@ -433,7 +433,12 @@ void perform::set_left_tick( long a_tick )
     m_starting_tick = a_tick;
 
     if(global_song_start_mode && (m_jack_master || !m_jack_running))
-        m_tick = a_tick;
+    {
+        if(m_jack_master && global_song_start_mode && m_jack_running)
+            position_jack(global_song_start_mode, a_tick);
+        else
+            m_tick = a_tick;
+    }
 
     m_reposition = false;
 
@@ -2167,7 +2172,12 @@ void perform::output_func()
         /* m_tick is the progress play tick that displays the progress line */
 #ifdef JACK_SUPPORT
         if(m_playback_mode && m_jack_master)
-            m_tick = m_left_tick;
+        {
+            //m_tick = m_left_tick;
+            position_jack(m_playback_mode,m_left_tick);
+        }
+
+
 #endif // JACK_SUPPORT
         if(m_playback_mode && !m_jack_running)
             m_tick = m_left_tick;
@@ -2177,7 +2187,8 @@ void perform::output_func()
         // this means we leave m_tick as is if in slave mode
 
 #ifdef JACK_SUPPORT
-        jack_stop_tick = get_current_jack_position(this);
+        if(m_jack_running)
+            jack_stop_tick = get_current_jack_position(this);
 #endif // JACK_SUPPORT
 
         m_reposition = false;   // needed if FF/Rewind pressed while playing
