@@ -2333,6 +2333,28 @@ void jack_timebase_callback(jack_transport_state_t state,
     p->jack_BBT_position(*pos, jack_tick);
 }
 
+long get_current_jack_position(void *arg)
+{
+    perform *p = (perform *) arg;
+    jack_nframes_t current_frame;
+    double jack_tick;
+    double ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
+    double beats_per_minute =  p->get_bpm();
+    double beat_type = p->get_bw();
+
+    current_frame = jack_get_current_transport_frame( p->m_jack_client );
+
+    jack_tick =
+        (current_frame) *
+        ticks_per_beat  *
+        beats_per_minute / ( p->m_jack_frame_rate* 60.0);
+
+
+    /* convert ticks */
+    return jack_tick * ((double) c_ppqn /
+                    (ticks_per_beat *
+                     beat_type / 4.0  ));
+}
 
 void jack_shutdown(void *arg)
 {

@@ -113,7 +113,7 @@ private:
     bool on_motion_notify_event(GdkEventMotion* a_ev);
     bool on_scroll_event( GdkEventScroll* a_ev ) ;
 
-    void auto_scroll_horz();
+    //void auto_scroll_horz();
 
     bool on_focus_in_event(GdkEventFocus*);
     bool on_focus_out_event(GdkEventFocus*);
@@ -144,6 +144,7 @@ private:
 
 public:
 
+    void auto_scroll_horz();
     void set_zoom (int a_zoom);
 
     void set_guides( int a_snap, int a_measure, int a_beat );

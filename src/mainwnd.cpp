@@ -520,6 +520,18 @@ mainwnd::timer_callback(  )
 
     long ticks = m_mainperf->get_tick();
 
+    if(!global_is_running)      //  FF/RW when not running
+    {
+#ifdef JACK_SUPPORT
+        if(!FF_RW_button_type)  // position change by another jack client
+        {
+            long tick = get_current_jack_position(m_mainperf);
+            m_mainperf->set_starting_tick(tick);
+        }
+#endif // JACK_SUPPORT
+        m_perfroll->auto_scroll_horz();
+    }
+
     m_main_time->idle_progress( ticks );
 
     if ( m_adjust_bpm->get_value() != m_mainperf->get_bpm())

@@ -342,6 +342,8 @@ public:
     friend void jack_shutdown(void *arg);
     friend void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
                                        jack_position_t *pos, int new_pos, void *arg);
+
+    friend long get_current_jack_position(void *arg);
 #endif
 };
 
