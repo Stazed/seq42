@@ -44,8 +44,28 @@ the track edit items (name,channel,bus,transpose,mute)... except when undo/redo 
 * NEW - Fixed BBT calcualtions as master to send correct starting position.
 * NEW - Added Jack sync button to main window and removed from options menu.
 * NEW - Added sequence list button popup to main window and removed from edit.
-* NEW - Added auto scroll to song editor and sequence editor(seq only on larger sequences)
+* NEW - Added auto scroll to song editor and sequence editor (Thanks to Chris Ahlstrom - sequencer64 for the better code).
 * NEW - Midi step edit is added on record(seq42 not playing), starting at transport line. Sequence editor Ctrl-right and Ctrl-left key moves transport line by snap. Home key moves transport line to start.
+* NEW - Data event edit handles added for individual adjustment.
+* NEW - New colors for sequence editor.
+* NEW - Added Fast Forward / Rewind buttons.
+* NEW - Added Zoom of song editor (Thanks to Chris Ahlstrom - sequencer64) - ctrl mouse wheel, z and Z when focus on track editor.
+* NEW - Added Chord note selection to sequence editor (Thanks to LMMS for the lookup table).
+* NEW - Added song editor will display play position marker even when stopped and show position changes from other jack clients.
+* NEW - Added auto scroll will follow position marker even when stopped.
+* New - Fixed beat width to work when NOT in jack mode.
+* NEW - Added non-timeline like key-p reposition song editor play location. With mouse focus on song editor(tracks), press 'p' to move play position to mouse location.
+* NEW - Added edit menu item to create new triggers between L and R play markers for triggers with their 'playing' box checked in the sequence list.
+* NEW - Added in the trigger popup meny an option to set the pattern's play flag (if it's off) or unset it (if on). The option only shows if not in song mode.
+* NEW - Added new edit menu item to "Delete unused sequences".
+* NEW - Added midi bus and midi channel to sequence list.
+* NEW - Add sequence data selected note Ons to draw last in case mutiple events cover the selection.
+* NEW - Move midi import to edit menu.
+* NEW - Midi import and export now read/supply type 1 midi temp and time signature (Thanks to Chris Ahlstrom - sequencer64).
+* NEW - Add support for transposable flag on seq32 import.
+* NEW - Add pause to follow transport when editing with button press on song editor and sequence editor.
+* NEW - Added additional music scale items in sequence editor (Thanks to Chris Ahlstrom - sequencer64).
+
 
 What to do with a fresh repository checkout?
 --------------------------------------------
