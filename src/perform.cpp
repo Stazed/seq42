@@ -477,6 +477,8 @@ void perform::set_right_tick( long a_tick )
             m_starting_tick = m_left_tick;
 
             if( global_song_start_mode && (m_jack_master || !m_jack_running))
+                position_jack(true, m_left_tick);
+            else
                 m_tick = m_left_tick;
 
             m_reposition = false;
