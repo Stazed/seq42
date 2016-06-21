@@ -471,15 +471,18 @@ void perform::set_right_tick( long a_tick )
     {
         m_right_tick = a_tick;
 
-        if ( m_right_tick <= m_left_tick )
+        if ( m_right_tick <= m_left_tick ) // don't allow right tick to be left of left tick
         {
             m_left_tick = m_right_tick - c_ppqn * 4;
             m_starting_tick = m_left_tick;
 
-            if( global_song_start_mode && (m_jack_master || !m_jack_running))
-                position_jack(true, m_left_tick);
-            else
-                m_tick = m_left_tick;
+            if(global_song_start_mode && (m_jack_master || !m_jack_running))
+            {
+                if(m_jack_master && global_song_start_mode && m_jack_running)
+                    position_jack(global_song_start_mode, m_left_tick);
+                else
+                    m_tick = m_left_tick;
+            }
 
             m_reposition = false;
         }
