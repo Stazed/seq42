@@ -152,9 +152,11 @@ void perform::init_jack()
                     If TRUE, it contains whatever was set by the requester.
                     The timebase_callback's task is to update the extended information here."
 
-                The "If TRUE" line seems to be the issue. It seems that qjackctl does not
-                always set pos.frame_rate so we get garbage and some strange BBT calculations
-                that display in qjackctl. So we need to set it here and just use m_jack_frame_rate
+                The "If TRUE" line seems to be the issue. Any client that uses jack_transport_locate()
+                to change jack position will only send frame, not BBT or any other information.
+                Screen dumps indicated that pos.frame_rate would contain garbage, while tempo and time
+                signature fields would be zero filled. This resulted in the strange BBT calculations
+                that display in qjackctl. So we are setting frame_rate here and just use m_jack_frame_rate
                 for calculations instead of pos.frame_rate.
             */
 

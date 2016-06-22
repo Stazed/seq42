@@ -678,6 +678,25 @@ Jack looping hesitates due to "slow sync" clients.
 The entire - if ( m_looping && m_playback_mode ) routine will play several times before the call to position_jack() takes effect. 
 When jack loops, the first time - if ( current_tick >= get_right_tick() ) hits, then position_jack() is called. The remainder of the loop will run as before, adjusting for the amount of time past the right_tick. But the jack reposition takes 3 (seq42 while cycles) cycles before it actually gets adjusted by jack. On each seq42 cycle the current tick is adjusted by the jack frame location beyond the right-tick. The - if ( current_tick >= get_right_tick() ) will catch it each time, and adjust the play accordingly. The - static bool jack_position_once = false; was added to prevent position_jack() from being called for the second and third cycles (perhaps more?). After the jack reposition hits, then jack sets the frame to the seq42 left_tick position.... and waits....for....the....slow...sync...clients. During this wait, which varies, and according to the jack API can be as long as 2 seconds, the same frame, left tick, will be played because jack does not progress. Also, because of the seq42 adjustment for the 3 cycles beyond the right_tick, seq42 has already played three cycles past the left_tick. The jack reposition sets the play position backwards to the left_tick mark. The backward reposition and repeated play at the left_tick mark caused some notes to hang and many xruns when connected to zyn. The xruns and hangs were especially bad when using the FF or rewind buttons. Thus the need for - if(m_jack_running && m_jack_transport_state != JackTransportStarting). This stops play when jack is waiting for slow sync.  And it really works! The FF/rewind no longer hesitates and produces NO xruns. This is actually better than when using FF/rewind without jack. The number of xruns without jack were very minimal - but none with jack. The >> and << keys were also tested with qjackctl and also produced no xruns. Also, during FF/rewind an occasional JackTransportRolling would hit and give the effect of an analog FF (tape) ... without the pitch change.
 
+
+From within the if ( m_jack_running ) {} routine:
+
+if ( m_looping && m_playback_mode )
+{
+    if ( current_tick >= get_right_tick() )
+    {
+        while ( current_tick >= get_right_tick() )
+        {
+            double size = get_right_tick() - get_left_tick();
+            current_tick = current_tick - size;
+        }
+        off_sequences();
+        set_orig_ticks( (long)current_tick );
+    }
+}
+
+The above routine - similar to the primary looping routine is only run for jack purposes. It's purpose is to re-adjust the current tick to align with the jack frame by subtracting incremently the size of the loop until within the right loop marker. This is only called on the change from JackTransportStarting to JackTransportRolling, i.e. a position change or startup, in which the frame is beyond the right tick marker. It allows seq42 to loop independently from jack, but in sync with the frame calculated BBT. It is only used when in slave mode. In master mode it will adjust within the loop marker then send a position change upon reaching the right tick as previously indicated.
+
 ------------------------------------
 Testing BW for default - non jack
 
@@ -708,9 +727,31 @@ The difference is minimal i.e. the fix runs at the same speed.
 
 TODO: Stop the calc for delta_tick (non jack) from running when in jack mode.
 
+----------------------------------
+The following code was tested in mainwnd timeout() to test non slow sync capabilities.
 
+#ifdef JACK_SUPPORT
+    if(m_mainperf->m_jack_running && !global_is_running)
+    {
+        jack_transport_state_t state = jack_transport_query( m_mainperf->m_jack_client, nullptr );
+        if(state == JackTransportRolling || state == JackTransportStarting )
+        {
+            m_mainperf->m_jack_transport_state_last = JackTransportStarting;
+            m_mainperf->inner_start( global_song_start_mode );
+            //printf("JackTransportState [%d]\n",m_mainperf->m_jack_transport_state);
+        }
+    }
+#endif // JACK_SUPPORT
 
+The jack_set_sync_callback() was commented out and terminal dump of the play() function was taken during jack looping. There were no other jack clients running, not even qjackctl. The terminal dump indicated the same hesitation for slow sync clients - appx 7 seq42 cycles at the reposition location. It appears that jack always hesitates?
 
+The API: 
+	"The new position takes effect in two process cycles. If there are slow-sync clients and the transport is already rolling,
+	 it will enter the JackTransportStarting state and begin invoking their sync_callbacks until ready.
+	 This function is realtime-safe."
+
+Must be that the "two process cycles" for jack = appx 7 seq42 cycles. This hesistation was no different than when connected as "slow sync". It appears that seq42 does not need to be slow sync... but it makes no difference since the seq42 sync_callback responds immediatly.
+-------------------------------------
 
 
 
