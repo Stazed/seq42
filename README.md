@@ -25,10 +25,11 @@ Here are some of the other enhancements of seq42:
 * sequence editor has new menu items to select notes that occur on specific beats (even 1/4, odd 1/4, even 1/8, odd 1/8, even 1/16, odd 1/16)
 * song window has new menu items to mute all tracks, unmute all tracks and toggle track mute status.
 * NEW - Add SIGINT and SIGUSR1 for session handling.
-* NEW - Import seq24 files, and any type 1 midi files. Maximum number of tracks is currently 64.
+* NEW - Import seq24/32/64 files, and any type 1 midi files. Maximum number of tracks is currently 64. 
+* NEW - Import now supports selection of seq24/32 by set number.
 * NEW - split trigger (middle mouse button) will now split on mouse pointer location - grid-snapped
 * NEW - fix 'fruity' input method to work for trigger popup menu (middle mouse button). Split trigger is ctrl-L and paste is middle mouse or ctrl-L.
-* NEW - merge sequence: right click on existing track name - select Merge Sequence - Select the sequence from the available list.  The Sequences AND song triggers will be added to the track. Now you can easily combine those seq24 tracks!! - any overlapping trigger will be overwritten and/or split - just create a new sequence for them...
+* NEW - merge sequence: right click on existing track name - select Merge Sequence - Select the sequence from the available list.  The Sequences AND song triggers will be added to the track. Now you can easily combine those seq24/32/64 tracks!! - any overlapping trigger will be overwritten and/or split - just create a new sequence for them...
 * NEW - ctrl-C song trigger and paste to any location. Middle mouse button click to location ctrl-V will paste to the location grid-snapped. Subsequent ctrl-V will paste directly after previous paste location. If no paste location is selected, then default will paste after copied trigger. 
 * NEW - Copy song triggers across different tracks. This will also copy the sequence into the new track.  Select trigger with mouse, ctrl-C: middle mouse click on new track location, ctrl-V. After paste, the subsequent ctrl-V will revert to default behavior - paste trigger only after previous paste. Paste across track is only allowed once per ctrl-C action... to prevent accidental duplication of sequence copies.
 * NEW - Track row insert/delete/pack. Right click the track name - popup menu - all sequence editors and track edit must be closed.
@@ -36,8 +37,18 @@ Here are some of the other enhancements of seq42:
 * NEW - Undo/Redo completely re-written. All tirgger, sequence, track actions can be undone/redone. Redo is cleared upon any new edit of track items.  This is done to eliminate the possibility of undo pushing to redo items such as trigger edits, then deleting the track. If redo were not cleared, then attempting to redo items on a track that no longer exists would not work. Undo/redo does not change
 the track edit items (name,channel,bus,transpose,mute)... except when undo/redo row insert/delete/pack or deleting midi import. Sequence copies will now copy the seq level undo/redo. For track level undo/redo, (insert/delete/pack,copy,seq copy), the track editor and sequence editor windows must be closed.
 * NEW - Now beats-per-measure, beat-width song editor are saved to file. Also these now work for trigger default length selection. New grid-snaps were added to accomodate.
-* NEW - Export midi files - sequences in seq24 format - edit menu, export(seq24).
+* NEW - Export midi files - sequences in seq24/32/64 format - edit menu, export(seq24/32/64).
 * NEW - Export midi song render - combines all triggers on track together - can be used in conventional midi players. From edit menu, export song.
+		Muted tracks and tracks with NO triggers will NOT be exported.
+		This feature can also be used as a powerfull editing feature as follows:
+			The user can split, slice and rearrange triggers to form a new sequence. Then mute all
+			other tracks and export to a temporary midi file. Now they can import the combined
+		    triggers/sequence as a new item. This makes editing of long improvised sequences into
+		    smaller or modified sequences as well as combining several sequence parts painless. Also,
+		    if the user has a variety of common items such as drum beats, control codes, etc that
+		    can be used in other projects, this method is very convenient. The common items can
+		    be kept in one file and exported all, individually, or in part by creating triggers and muting.
+		    
 * NEW - Note listen added to sequence draw notes and move notes.
 * NEW - Fixed Jack master to work properly. Start as master on left tick marker and looping works.
 * NEW - Jack slave and master conditional work - and will follow the jack frame without master BBT
@@ -48,20 +59,20 @@ the track edit items (name,channel,bus,transpose,mute)... except when undo/redo 
 * NEW - Midi step edit is added on record(seq42 not playing), starting at transport line. Sequence editor Ctrl-right and Ctrl-left key moves transport line by snap. Home key moves transport line to start.
 * NEW - Data event edit handles added for individual adjustment.
 * NEW - New colors for sequence editor.
-* NEW - Added Fast Forward / Rewind buttons.
+* NEW - Added Fast Forward / Rewind buttons that work with or without jack.
 * NEW - Added Zoom of song editor (Thanks to Chris Ahlstrom - sequencer64) - ctrl mouse wheel, z and Z when focus on track editor.
 * NEW - Added Chord note selection to sequence editor (Thanks to LMMS for the lookup table).
-* NEW - Added song editor will display play position marker even when stopped and show position changes from other jack clients.
-* NEW - Added auto scroll will follow position marker even when stopped.
-* New - Fixed beat width to work when NOT in jack mode.
-* NEW - Added non-timeline like key-p reposition song editor play location. With mouse focus on song editor(tracks), press 'p' to move play position to mouse location.
-* NEW - Added edit menu item to create new triggers between L and R play markers for triggers with their 'playing' box checked in the sequence list.
-* NEW - Added in the trigger popup meny an option to set the pattern's play flag (if it's off) or unset it (if on). The option only shows if not in song mode.
+* NEW - Added Song editor will display play position marker even when stopped and show position changes from other jack clients.
+* NEW - Added Auto scroll will follow position marker even when stopped.
+* New - Fixed Beat width to work when NOT in jack mode.
+* NEW - Added Non-timeline like key-p reposition song editor play location. With mouse focus on song editor(tracks), press 'p' to move play position to mouse location.
+* NEW - Added Edit menu item to create new triggers between L and R play markers for triggers with their 'playing' box checked in the sequence list.
+* NEW - Added in the trigger popup menu an option to set the pattern's play flag (if it's off) or unset it (if on). The option only shows if not in song mode.
 * NEW - Added new edit menu item to "Delete unused sequences".
 * NEW - Added midi bus and midi channel to sequence list.
 * NEW - Add sequence data selected note Ons to draw last in case mutiple events cover the selection.
 * NEW - Move midi import to edit menu.
-* NEW - Midi import and export now read/supply type 1 midi temp and time signature (Thanks to Chris Ahlstrom - sequencer64).
+* NEW - Midi import and export now read/supply type 1 midi tempo and time signature (Thanks to Chris Ahlstrom - sequencer64).
 * NEW - Add support for transposable flag on seq32 import.
 * NEW - Add pause to follow transport when editing with button press on song editor and sequence editor.
 * NEW - Added additional music scale items in sequence editor (Thanks to Chris Ahlstrom - sequencer64).

@@ -144,7 +144,7 @@ mainwnd::mainwnd(perform *a_p):
     m_menu_edit->items().push_back(MenuElem("_Import midi...",
                                             mem_fun(*this, &mainwnd::file_import_dialog)));
 
-    m_menu_edit->items().push_back(MenuElem("Midi e_xport (Seq 24)",
+    m_menu_edit->items().push_back(MenuElem("Midi e_xport (Seq 24/32/64)",
                                             sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 1)));
 
     m_menu_edit->items().push_back(MenuElem("Midi export _song",

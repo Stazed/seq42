@@ -397,7 +397,7 @@ bool midifile::parse (perform * a_perf, int screen_set)
                         case 0x58:    /* Time Signature  bp_measure / bw */
                             /*
                                 If the midi file contains both proprietary (c_timesig)
-                                and Midi type 0x58 then it came from seq42 or seq24 (Stazed versions).
+                                and Midi type 0x58 then it came from seq42 or seq32.
                                 In this case the Midi type is parsed first (because it is listed first)
                                 then it gets overwritten by the proprietary, above.
                             */
@@ -547,7 +547,7 @@ bool midifile::parse (perform * a_perf, int screen_set)
             {
                 a_perf->add_track(a_track,track_count);
             }
-            else // for seq24 screen set import we can't tell the screen set until we load the track
+            else // for seq24/32 screen set import we can't tell the screen set until we load the track
             {
                 delete a_track; // Not in the correct screen set or > c_max_track
             }
