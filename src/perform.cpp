@@ -68,6 +68,9 @@ perform::perform()
 
     m_key_start  = GDK_space;
     m_key_stop   = GDK_Escape;
+    m_key_forward   = GDK_f;
+    m_key_rewind   = GDK_r;
+    m_key_pointer   = GDK_p;
 
     m_key_loop   = GDK_quoteleft;
     m_key_song   = GDK_F1;

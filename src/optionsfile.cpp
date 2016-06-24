@@ -81,6 +81,15 @@ optionsfile::parse( perform *a_perf )
     next_data_line( &file );
 
     sscanf( m_line, "%u", &a_perf->m_key_follow_trans );
+    next_data_line( &file );
+
+    sscanf( m_line, "%u", &a_perf->m_key_forward );
+    next_data_line( &file );
+
+    sscanf( m_line, "%u", &a_perf->m_key_rewind );
+    next_data_line( &file );
+
+    sscanf( m_line, "%u", &a_perf->m_key_pointer );
 
 #ifdef JACK_SUPPORT
     next_data_line( &file );
@@ -244,6 +253,18 @@ optionsfile::write( perform *a_perf  )
     file << a_perf->m_key_follow_trans << "        # "
          << gdk_keyval_name( a_perf->m_key_follow_trans )
          << " follow transport\n";
+
+    file << a_perf->m_key_forward << "        # "
+         << gdk_keyval_name( a_perf->m_key_forward )
+         << " fast forward\n";
+
+    file << a_perf->m_key_rewind << "        # "
+         << gdk_keyval_name( a_perf->m_key_rewind )
+         << " rewind\n";
+
+    file << a_perf->m_key_pointer << "        # "
+         << gdk_keyval_name( a_perf->m_key_pointer )
+         << " pointer key\n";
 
 #ifdef JACK_SUPPORT
     file << a_perf->m_key_jack << "        # "

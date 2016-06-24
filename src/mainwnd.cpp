@@ -1589,6 +1589,19 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
             toggle_follow_transport();
             return true;
         }
+
+        if ( a_ev->keyval ==  m_mainperf->m_key_forward )
+        {
+            fast_forward(true);
+            return true;
+        }
+
+        if ( a_ev->keyval ==  m_mainperf->m_key_rewind )
+        {
+            rewind(true);
+            return true;
+        }
+
 #ifdef JACK_SUPPORT
         if ( a_ev->keyval ==  m_mainperf->m_key_jack )
         {
@@ -1622,7 +1635,24 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
     return Gtk::Window::on_key_press_event(a_ev);
 }
 
-
+bool
+mainwnd::on_key_release_event(GdkEventKey* a_ev)
+{
+    if ( a_ev->type == GDK_KEY_RELEASE )
+    {
+        if ( a_ev->keyval ==  m_mainperf->m_key_forward )
+        {
+            fast_forward(false);
+            return true;
+        }
+        if ( a_ev->keyval ==  m_mainperf->m_key_rewind )
+        {
+            rewind(false);
+            return true;
+        }
+    }
+    return false;
+}
 void
 mainwnd::update_window_title()
 {

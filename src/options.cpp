@@ -192,41 +192,59 @@ options::add_keyboard_page()
     controltable->attach(*label, 0, 1, 1, 2);
     controltable->attach(*entry, 1, 2, 1, 2);
 
-    label = manage(new Label("looping", Gtk::ALIGN_RIGHT));
-    entry = manage(new KeyBindEntry(&m_perf->m_key_loop));
+    label = manage(new Label("Rewind", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_rewind));
     controltable->attach(*label, 0, 1, 2, 3);
     controltable->attach(*entry, 1, 2, 2, 3);
 
-    label = manage(new Label("Song", Gtk::ALIGN_RIGHT));
-    entry = manage(new KeyBindEntry(&m_perf->m_key_song));
+    label = manage(new Label("Forward", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_forward));
     controltable->attach(*label, 0, 1, 3, 4);
     controltable->attach(*entry, 1, 2, 3, 4);
-#ifdef JACK_SUPPORT
-    label = manage(new Label("Jack", Gtk::ALIGN_RIGHT));
-    entry = manage(new KeyBindEntry(&m_perf->m_key_jack));
+
+    label = manage(new Label("Pointer key", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_pointer));
     controltable->attach(*label, 0, 1, 4, 5);
     controltable->attach(*entry, 1, 2, 4, 5);
-#endif // JACK_SUPPORT
 
-    label = manage(new Label("seqlist", Gtk::ALIGN_RIGHT));
-    entry = manage(new KeyBindEntry(&m_perf->m_key_seqlist));
+    label = manage(new Label("looping", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_loop));
+    controltable->attach(*label, 0, 1, 5, 6);
+    controltable->attach(*entry, 1, 2, 5, 6);
+
+    label = manage(new Label("Song", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_song));
     controltable->attach(*label, 2, 3, 0, 1);
     controltable->attach(*entry, 3, 4, 0, 1);
 
-    label = manage(new Label("transport", Gtk::ALIGN_RIGHT));
-    entry = manage(new KeyBindEntry(&m_perf->m_key_follow_trans));
+    label = manage(new Label("seqlist", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_seqlist));
     controltable->attach(*label, 2, 3, 1, 2);
     controltable->attach(*entry, 3, 4, 1, 2);
 
-    label = manage(new Label("bpm down", Gtk::ALIGN_RIGHT));
-    entry = manage(new KeyBindEntry(&m_perf->m_key_bpm_dn));
+    label = manage(new Label("transport", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_follow_trans));
     controltable->attach(*label, 2, 3, 2, 3);
     controltable->attach(*entry, 3, 4, 2, 3);
 
-    label = manage(new Label("bpm up", Gtk::ALIGN_RIGHT));
-    entry = manage(new KeyBindEntry(&m_perf->m_key_bpm_up));
+    label = manage(new Label("bpm down", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_bpm_dn));
     controltable->attach(*label, 2, 3, 3, 4);
     controltable->attach(*entry, 3, 4, 3, 4);
+
+    label = manage(new Label("bpm up", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_bpm_up));
+    controltable->attach(*label, 2, 3, 4, 5);
+    controltable->attach(*entry, 3, 4, 4, 5);
+
+#ifdef JACK_SUPPORT
+    label = manage(new Label("Jack", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_jack));
+    controltable->attach(*label, 2, 3, 5, 6);
+    controltable->attach(*entry, 3, 4, 5, 6);
+#endif // JACK_SUPPORT
+
+
 }
 
 /*Mouse page*/

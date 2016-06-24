@@ -165,6 +165,9 @@ public:
 
     unsigned int m_key_start;
     unsigned int m_key_stop;
+    unsigned int m_key_forward;
+    unsigned int m_key_rewind;
+    unsigned int m_key_pointer;
 
     unsigned int m_key_loop;
     unsigned int m_key_song;
