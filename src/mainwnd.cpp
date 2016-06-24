@@ -527,7 +527,7 @@ mainwnd::timer_callback(  )
         {
             long tick = get_current_jack_position(m_mainperf);
             long diff = tick - m_mainperf->get_jack_stop_tick();
-            //printf("diff [%ld]\n", diff);
+
             if(diff != 0)
             {
                 m_mainperf->set_reposition();
