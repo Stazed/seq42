@@ -338,8 +338,7 @@ perfroll::draw_progress()
                            Gdk::JOIN_MITER );
     m_old_progress_ticks = tick;
 
-    if(global_is_running)
-        auto_scroll_horz();
+    auto_scroll_horz();
 }
 
 

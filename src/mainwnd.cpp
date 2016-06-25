@@ -514,15 +514,9 @@ mainwnd::~mainwnd()
 bool
 mainwnd::timer_callback(  )
 {
-    m_perfroll->redraw_dirty_tracks();
-    m_perfroll->draw_progress();
-    m_perfnames->redraw_dirty_tracks();
-
-    long ticks = m_mainperf->get_tick();
-
+#ifdef JACK_SUPPORT
     if(!global_is_running)      //  FF/RW when not running
     {
-#ifdef JACK_SUPPORT
         if(m_mainperf->is_jack_running())
         {
             long tick = get_current_jack_position(m_mainperf);
@@ -535,9 +529,14 @@ mainwnd::timer_callback(  )
                 m_mainperf->set_jack_stop_tick(tick);
             }
         }
-#endif // JACK_SUPPORT
-        m_perfroll->auto_scroll_horz(); // adjust to transport position when stopped
     }
+#endif // JACK_SUPPORT
+
+    m_perfroll->redraw_dirty_tracks();
+    m_perfroll->draw_progress();
+    m_perfnames->redraw_dirty_tracks();
+
+    long ticks = m_mainperf->get_tick();
 
     m_main_time->idle_progress( ticks );
 

@@ -2363,6 +2363,7 @@ void jack_timebase_callback(jack_transport_state_t state,
     p->jack_BBT_position(*pos, jack_tick);
 }
 
+/* used for checking jack stopped position for auto scroll when stopped */
 long get_current_jack_position(void *arg)
 {
     perform *p = (perform *) arg;
