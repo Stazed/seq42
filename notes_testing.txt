@@ -751,10 +751,49 @@ The API:
 	 This function is realtime-safe."
 
 Must be that the "two process cycles" for jack = appx 7 seq42 cycles. This hesistation was no different than when connected as "slow sync". It appears that seq42 does not need to be slow sync... but it makes no difference since the seq42 sync_callback responds immediatly.
+
 -------------------------------------
+EVENT_MIDI_SONG_POS
+
+http://www.blitter.com/~russtopia/MIDI/~jglatt/tech/midispec/ssp.htm
+
+Song Position Pointer
+
+Category: System Common
+
+Purpose
+
+Some master device that controls sequence playback sends this message to force a slave device to cue the playback to a certain point in the song/sequence. In other words, this message sets the device's "Song Position". This message doesn't actually start the playback. It just sets up the device to be "ready to play" at a particular point in the song.
+
+Status
+
+0xF2
+
+Data
+
+Two data bytes follow the status. Just like with the Pitch Wheel, these two bytes are combined into a 14-bit value. (See Pitch Wheel). This 14-bit value is the MIDI Beat upon which to start the song. Songs are always assumed to start on a MIDI Beat of 0. Each MIDI Beat spans 6 MIDI Clocks. In other words, each MIDI Beat is a 16th note (since there are 24 MIDI Clocks in a quarter note).
+
+Errata
+
+Example: If a Song Position value of 8 is received, then a sequencer (or drum box) should cue playback to the third quarter note of the song. (8 MIDI beats * 6 MIDI clocks per MIDI beat = 48 MIDI Clocks. Since there are 24 MIDI Clocks in a quarter note, the first quarter occurs on a time of 0 MIDI Clocks, the second quarter note occurs upon the 24th MIDI Clock, and the third quarter note occurs on the 48th MIDI Clock).
+
+Often, the slave device has its playback tempo synced to the master via MIDI Clock. See Syncing Sequence Playback.
 
 
+http://www.blitter.com/~russtopia/MIDI/~jglatt/tech/midispec/wheel.htm
 
+Two data bytes follow the status. The two bytes should be combined together to form a 14-bit value. The first data byte's bits 0 to 6 are bits 0 to 6 of the 14-bit value. The second data byte's bits 0 to 6 are really bits 7 to 13 of the 14-bit value. In other words, assuming that a C program has the first byte in the variable First and the second data byte in the variable Second, here's how to combine them into a 14-bit value (actually 16-bit since most computer CPUs deal with 16-bit, not 14-bit, integers):
+
+unsigned short CombineBytes(unsigned char First, unsigned char Second)
+{
+   unsigned short _14bit;
+   _14bit = (unsigned short)Second;
+   _14bit <<= 7;
+   _14bit |= (unsigned short)First;
+   return(_14bit);
+}
+
+--------------------------------------------------
 
     
 

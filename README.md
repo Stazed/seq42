@@ -76,7 +76,8 @@ the track edit items (name,channel,bus,transpose,mute)... except when undo/redo 
 * NEW - Add support for transposable flag on seq32 import.
 * NEW - Add pause to follow transport when editing with button press on song editor and sequence editor.
 * NEW - Added additional music scale items in sequence editor (Thanks to Chris Ahlstrom - sequencer64).
-
+* NEW - Add key binding to FF/Rewind (keys f,r) - configurable, also made key-p move to mouse position configurable.
+* NEW - Fixed midi song position to work when not starting from beginning of song. Play conditional upon song button.
 
 What to do with a fresh repository checkout?
 --------------------------------------------
