@@ -112,7 +112,7 @@ private:
     bool m_usemidiclock;
     bool m_midiclockrunning; // stopped or started
     int  m_midiclocktick;
-    int  m_midiclockpos;
+    long  m_midiclockpos;
 
     int m_bp_measure;
     int m_bw;
@@ -310,6 +310,8 @@ public:
 
     void output_func();
     void input_func();
+
+    unsigned short combine_bytes(unsigned char First, unsigned char Second);
 
     long get_max_trigger();
 
