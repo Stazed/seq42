@@ -2263,36 +2263,33 @@ void perform::input_func()
             {
                 if (m_master_bus.get_midi_event(&ev) )
                 {
-                    // Obey MidiTimeClock:
+                    // EVENT_MIDI_START is only used when starting from the beginning of the song
                     if (ev.get_status() == EVENT_MIDI_START)
                     {
                         //printf("EVENT_MIDI_START\n");
                         stop();
-                        start(true);    // assume true for song mode for seq42
-                        //start(false);
+                        start(global_song_start_mode);
                         m_midiclockrunning = true;
                         m_usemidiclock = true;
                         m_midiclocktick = 0;
                         m_midiclockpos = 0;
                     }
                     // midi continue: start from midi song position
+                    // this will be sent immediately after  EVENT_MIDI_SONG_POS
+                    // and is used for start from other than beginning of the song
                     else if (ev.get_status() == EVENT_MIDI_CONTINUE)
                     {
                         //printf("EVENT_MIDI_CONTINUE\n");
                         m_midiclockrunning = true;
-                        start(true);   // assume true for song mode for seq42
-                        //start(false);   // the false sets playback_mode to live
+                        start(global_song_start_mode);
                         //m_usemidiclock = true;
                     }
                     else if (ev.get_status() == EVENT_MIDI_STOP)
                     {
                         //printf("EVENT_MIDI_STOP\n");
-                        // do nothing, just let the system pause
-                        // since we're not getting ticks after the stop, the song wont advance
-                        // when start is recieved, we'll reset the position, or
-                        // when continue is recieved, we wont
                         m_midiclockrunning = false;
                         all_notes_off();
+                        stop();
                     }
                     else if (ev.get_status() == EVENT_MIDI_CLOCK)
                     {
