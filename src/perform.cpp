@@ -1414,10 +1414,8 @@ void perform::inner_start(bool a_state)
 void perform::inner_stop(bool a_midi_clock)
 {
     global_is_running = false;
-    //off_sequences();
     reset_sequences();
     m_usemidiclock = a_midi_clock;
-    //m_usemidiclock = false;
 }
 
 void perform::off_sequences()
@@ -2192,7 +2190,8 @@ void perform::output_func()
             if(!m_playback_mode)
                 m_tick = 0;
         }
-        // this means we leave m_tick at stopped location if in slave mode or m_usemidiclock = true
+        
+        /* this means we leave m_tick at stopped location if in slave mode or m_usemidiclock = true */
 
         m_master_bus.flush();
         m_master_bus.stop();
@@ -2201,9 +2200,8 @@ void perform::output_func()
         if(m_jack_running)
             m_jack_stop_tick = get_current_jack_position(this);
 #endif // JACK_SUPPORT
-
-        m_reposition = false;   // needed if FF/Rewind pressed while playing
     }
+    
     pthread_exit(0);
 }
 
