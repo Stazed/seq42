@@ -146,7 +146,7 @@ private:
     long m_jack_stop_tick;
 
     void inner_start( bool a_state );
-    void inner_stop();
+    void inner_stop(bool a_midi_clock = false);
 
 public:
 

@@ -1411,12 +1411,13 @@ void perform::inner_start(bool a_state)
     m_condition_var.unlock();
 }
 
-void perform::inner_stop()
+void perform::inner_stop(bool a_midi_clock)
 {
     global_is_running = false;
     //off_sequences();
     reset_sequences();
-    m_usemidiclock = false;
+    m_usemidiclock = a_midi_clock;
+    //m_usemidiclock = false;
 }
 
 void perform::off_sequences()
@@ -1560,15 +1561,6 @@ int jack_sync_callback(jack_transport_state_t state,
     //printf( "jack_sync_callback() " );
 
     perform *p = (perform *) arg;
-
-//    p->m_jack_frame_current = jack_get_current_transport_frame(p->m_jack_client);
-
-//    p->m_jack_tick =
-//        p->m_jack_frame_current *
-//        p->m_jack_pos.ticks_per_beat *
-//        p->m_jack_pos.beats_per_minute / (p->m_jack_pos.frame_rate * 60.0);
-
-//    p->m_jack_frame_last = p->m_jack_frame_current;
 
     p->m_jack_transport_state_last =
         p->m_jack_transport_state =
@@ -2192,12 +2184,15 @@ void perform::output_func()
             position_jack(m_playback_mode,0);
 
 #endif // JACK_SUPPORT
-        if(m_playback_mode && !m_jack_running)
-            m_tick = m_left_tick;
+        if(!m_usemidiclock) // will be true if stopped by midi event
+        {
+            if(m_playback_mode && !m_jack_running)
+                m_tick = m_left_tick;
 
-        if(!m_playback_mode)
-            m_tick = 0;
-        // this means we leave m_tick as is if in slave mode
+            if(!m_playback_mode)
+                m_tick = 0;
+        }
+        // this means we leave m_tick at stopped location if in slave mode or m_usemidiclock = true
 
         m_master_bus.flush();
         m_master_bus.stop();
@@ -2263,37 +2258,39 @@ void perform::input_func()
             {
                 if (m_master_bus.get_midi_event(&ev) )
                 {
-                    // EVENT_MIDI_START is only used when starting from the beginning of the song
+                    // only used when starting from the beginning of the song = 0
                     if (ev.get_status() == EVENT_MIDI_START)
                     {
                         //printf("EVENT_MIDI_START\n");
-                        stop();
+                        //stop();
                         start(global_song_start_mode);
                         m_midiclockrunning = true;
                         m_usemidiclock = true;
-                        m_midiclocktick = 0;
-                        m_midiclockpos = 0;
+                        m_midiclocktick = 0;    // start at beginning of song
+                        m_midiclockpos = 0;     // start at beginning of song
                     }
                     // midi continue: start from midi song position
                     // this will be sent immediately after  EVENT_MIDI_SONG_POS
-                    // and is used for start from other than beginning of the song
+                    // and is used for start from other than beginning of the song,
+                    // or to start from previous location at EVENT_MIDI_STOP
                     else if (ev.get_status() == EVENT_MIDI_CONTINUE)
                     {
                         //printf("EVENT_MIDI_CONTINUE\n");
                         m_midiclockrunning = true;
                         start(global_song_start_mode);
-                        //m_usemidiclock = true;
                     }
+                    // should hold the stop position in case the next event is continue
                     else if (ev.get_status() == EVENT_MIDI_STOP)
                     {
                         //printf("EVENT_MIDI_STOP\n");
                         m_midiclockrunning = false;
                         all_notes_off();
-                        stop();
+                        inner_stop(true);        // true = m_usemidiclock = true, i.e. hold m_tick position(output_func)
+                        m_midiclockpos = m_tick; // set position to last location on stop - for continue
                     }
                     else if (ev.get_status() == EVENT_MIDI_CLOCK)
                     {
-                        //printf("EVENT_MIDI_CLOCK\n");
+                        //printf("EVENT_MIDI_CLOCK - m_tick [%ld] \n", m_tick);
                         if (m_midiclockrunning)
                             m_midiclocktick += 8;
                     }
