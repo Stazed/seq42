@@ -2076,7 +2076,12 @@ sequence::stream_event(  event *a_ev  )
         if ( global_is_running ) // This and below are the reason we need a global, no perform access
         {
             if((int)get_track()->get_default_velocity() != c_note_on_velocity_default)
-                a_ev->set_note_velocity((int)get_track()->get_default_velocity());
+            {
+                if ( a_ev->is_note_on())
+                {
+                    a_ev->set_note_velocity((int)get_track()->get_default_velocity());
+                }
+            }
 
             add_event( a_ev );
             set_dirty();
