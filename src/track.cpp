@@ -1498,7 +1498,7 @@ track::set_default_velocity( long a_vel )
     if((int)a_vel != 0)
         m_default_velocity = a_vel;
     else
-        m_default_velocity = 100;
+        m_default_velocity = c_note_on_velocity_default; //default = 100
 
     unlock();
 }

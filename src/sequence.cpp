@@ -2075,7 +2075,7 @@ sequence::stream_event(  event *a_ev  )
     {
         if ( global_is_running ) // This and below are the reason we need a global, no perform access
         {
-            if((int)get_track()->get_default_velocity() != 100)
+            if((int)get_track()->get_default_velocity() != c_note_on_velocity_default)
                 a_ev->set_note_velocity((int)get_track()->get_default_velocity());
 
             add_event( a_ev );
@@ -2175,7 +2175,7 @@ sequence::play_note_off( int a_note )
     event e;
 
     e.set_status( EVENT_NOTE_OFF );
-    e.set_data( a_note, m_track->get_default_velocity() );
+    e.set_data( a_note, c_note_off_velocity_default );
     get_master_midi_bus()->play( get_midi_bus(), &e, get_midi_channel() );
 
     get_master_midi_bus()->flush();
