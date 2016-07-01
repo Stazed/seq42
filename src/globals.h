@@ -55,6 +55,8 @@ const int c_ppsn         = c_ppqn / 4;  // 16th note
 
 const int c_note_off_margin = 2;  // # ticks to shave off end of painted notes
 
+const long c_note_off_velocity_default = 64;
+
 const int c_default_trigger_length_in_bars = 1; /* used when adding a new trigger */
 const long c_default_trigger_length = c_default_trigger_length_in_bars * 4 * c_ppqn;
 

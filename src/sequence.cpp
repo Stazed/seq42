@@ -1983,8 +1983,21 @@ sequence::add_note( long a_tick, long a_length, int a_note, bool a_paint)
 
             add_event( &e );
 
+            /*
+                http://www.blitter.com/~russtopia/MIDI/~jglatt/tech/midispec.htm
+                Note Off:
+                The first data is the note number. There are 128 possible notes on a MIDI device,
+                numbered 0 to 127 (where Middle C is note number 60). This indicates which note
+                should be released.
+
+                The second data byte is the velocity, a value from 0 to 127. This indicates how quickly
+                the note should be released (where 127 is the fastest). It's up to a MIDI device how it
+                uses velocity information. Often velocity will be used to tailor the VCA release time.
+                MIDI devices that can generate Note Off messages, but don't implement velocity features,
+                will transmit Note Off messages with a preset velocity of 64.
+            */
             e.set_status( EVENT_NOTE_OFF );
-            e.set_data( a_note, m_track->get_default_velocity() );
+            e.set_data( a_note, c_note_off_velocity_default ); // default = 64
             e.set_timestamp( a_tick + a_length );
 
             add_event( &e );

@@ -859,3 +859,195 @@ The second data byte is the pressure amount, a value from 0 to 127 (where 127 is
 Errata
 
 See the remarks under Channel Pressure.
+
+----------------------------------------
+http://www.blitter.com/~russtopia/MIDI/~jglatt/tech/midispec.htm
+Note Off
+
+Category: Voice
+
+Purpose
+
+Indicates that a particular note should be released. Essentially, this means that the note stops sounding, but some patches might have a long VCA release time that needs to slowly fade the sound out. Additionally, the device's Hold Pedal controller may be on, in which case the note's release is postponed until the Hold Pedal is released. In any event, this message either causes the VCA to move into the release stage, or if the Hold Pedal is on, indicates that the note should be released (by the device automatically) when the Hold Pedal is turned off. If the device is a MultiTimbral unit, then each one of its Parts may respond to Note Offs on its own channel. The Part that responds to a particular Note Off message is the one assigned to the message's MIDI channel.
+
+Status
+
+0x80 to 0x8F where the low nibble is the MIDI channel.
+
+Data
+
+Two data bytes follow the Status.
+
+The first data is the note number. There are 128 possible notes on a MIDI device, numbered 0 to 127 (where Middle C is note number 60). This indicates which note should be released.
+
+The second data byte is the velocity, a value from 0 to 127. This indicates how quickly the note should be released (where 127 is the fastest). It's up to a MIDI device how it uses velocity information. Often velocity will be used to tailor the VCA release time. MIDI devices that can generate Note Off messages, but don't implement velocity features, will transmit Note Off messages with a preset velocity of 64.
+
+Errata
+
+An All Notes Off controller message can be used to turn off all notes for which a device received Note On messages (without having received respective Note Off messages).
+
+
+-----------------------------------------------
+
+Controller
+
+Category: Voice
+
+Purpose
+
+Sets a particular controller's value. A controller is any switch, slider, knob, etc, that implements some function (usually) other than sounding or stopping notes (ie, which are the jobs of the Note On and Note Off messages respectively). There are 128 possible controllers on a MIDI device. These are numbered from 0 to 127. Some of these controller numbers are assigned to particular hardware controls on a MIDI device. For example, controller 1 is the Modulation Wheel. Other controller numbers are free to be arbitrarily interpreted by a MIDI device. For example, a drum box may have a slider controlling Tempo which it arbitrarily assigns to one of these free numbers. Then, when the drum box receives a Controller message with that controller number, it can adjust its tempo. A MIDI device need not have an actual physical control on it in order to respond to a particular controller. For example, even though a rack-mount sound module may not have a Mod Wheel on it, the module will likely still respond to and utilize Modulation controller messages to modify its sound. If the device is a MultiTimbral unit, then each one of its Parts may respond differently (or not at all) to various controller numbers. The Part affected by a particular controller message is the one assigned to the message's MIDI channel.
+
+Status
+
+0xB0 to 0xBF where the low nibble is the MIDI channel.
+
+Data
+
+Two data bytes follow the Status.
+
+The first data is the controller number (0 to 127). This indicates which controller is affected by the received MIDI message.
+
+The second data byte is the value to which the controller should be set, a value from 0 to 127.
+
+Errata
+
+An All Controllers Off controller message can be used to reset all controllers (that a MIDI device implements) to default values. For example, the Mod Wheel is reset to its "off" position upon receipt of this message.
+
+See the list of Defined Controller Numbers for more information about particular controllers.
+
+-------------------------------------------
+
+Program Change
+
+Category: Voice
+
+Purpose
+
+To cause the MIDI device to change to a particular Program (which some devices refer to as Patch, or Instrument, or Preset, or whatever). Most sound modules have a variety of instrumental sounds, such as Piano, and Guitar, and Trumpet, and Flute, etc. Each one of these instruments is contained in a Program. So, changing the Program changes the instrumental sound that the MIDI device uses when it plays Note On messages. Of course, other MIDI messages also may modify the current Program's (ie, instrument's) sound. But, the Program Change message actually selects which instrument currently plays. There are 128 possible program numbers, from 0 to 127. If the device is a MultiTimbral unit, then it usually can play 16 "Parts" at once, each receiving data upon its own MIDI channel. This message will then change the instrument sound for only that Part which is set to the message's MIDI channel.
+
+For MIDI devices that don't have instrument sounds, such as a Reverb unit which may have several Preset "room algorithms" stored, the Program Change message is often used to select which Preset to use. As another example, a drum box may use Program Change to select a particular rhythm pattern (ie, drum beat).
+
+Status
+
+0xC0 to 0xCF where the low nibble is the MIDI channel.
+
+Data
+
+One data byte follows the status. It is the program number to change to, a number from 0 to 127.
+
+Errata
+
+On MIDI sound modules (ie, whose Programs are instrumental sounds), it became desirable to define a standard set of Programs in order to make sound modules more compatible. This specification is called General MIDI Standard.
+
+Just like with MIDI channels 0 to 15 being displayed to a musician as channels 1 to 16, many MIDI devices display their Program numbers starting from 1 (even though a Program number of 0 in a Program Change message selects the first program in the device). On the other hand, this approach was never standardized, and some devices use vastly different schemes for the musician to select a Program. For example, some devices require the musician to specify a bank of Programs, and then select one within the bank (with each bank typically containing 8 to 10 Programs). So, the musician might specify the first Program as being bank 1, number 1. Nevertheless, a Program Change of number 0 would select that first Program.
+
+Receipt of a Program Change should not cut off any notes that were previously triggered on the channel, and which are still sustaining.
+
+-------------------------------------
+
+Channel Pressure
+
+Category: Voice
+
+Purpose
+
+While notes are playing, pressure can be applied to all of them. Many electronic keyboards have pressure sensing circuitry that can detect with how much force a musician is holding down keys. The musician can then vary this pressure, even while he continues to hold down the keys (and the notes continue sounding). The Channel Pressure message conveys the amount of overall (average) pressure on the keys at a given point. Since the musician can be continually varying his pressure, devices that generate Channel Pressure typically send out many such messages while the musician is varying his pressure. Upon receiving Channel Pressure, many devices typically use the message to vary all of the sounding notes' VCA and/or VCF envelope sustain levels, or control LFO amount and/or rate being applied to the notes' sound generation circuitry. But, it's up to the device how it chooses to respond to received Channel Pressure (if at all). If the device is a MultiTimbral unit, then each one of its Parts may respond differently (or not at all) to Channel Pressure. The Part affected by a particular Channel Pressure message is the one assigned to the message's MIDI channel.
+
+It is recommended that Channel Pressure default to controlling the VCA level (ie, a volume swell/fade effect).
+
+Status
+
+0xD0 to 0xDF where the low nibble is the MIDI channel.
+
+Data
+
+One data byte follows the Status. It is the pressure amount, a value from 0 to 127 (where 127 is the most pressure).
+
+--------------------------------------
+
+Pitch Wheel
+
+Category: Voice
+
+Purpose
+
+To set the Pitch Wheel value. The pitch wheel is used to slide a note's pitch up or down in cents (ie, fractions of a half-step). If the device is a MultiTimbral unit, then each one of its Parts may respond differently (or not at all) to Pitch Wheel. The Part affected by a particular Pitch Wheel message is the one assigned to the message's MIDI channel.
+
+Status
+
+0xE0 to 0xEF where the low nibble is the MIDI channel.
+
+Data
+
+Two data bytes follow the status. The two bytes should be combined together to form a 14-bit value. The first data byte's bits 0 to 6 are bits 0 to 6 of the 14-bit value. The second data byte's bits 0 to 6 are really bits 7 to 13 of the 14-bit value. In other words, assuming that a C program has the first byte in the variable First and the second data byte in the variable Second, here's how to combine them into a 14-bit value (actually 16-bit since most computer CPUs deal with 16-bit, not 14-bit, integers):
+
+unsigned short CombineBytes(unsigned char First, unsigned char Second)
+{
+   unsigned short _14bit;
+   _14bit = (unsigned short)Second;
+   _14bit <<= 7;
+   _14bit |= (unsigned short)First;
+   return(_14bit);
+}
+A combined value of 0x2000 is meant to indicate that the Pitch Wheel is centered (ie, the sounding notes aren't being transposed up or down). Higher values transpose pitch up, and lower values transpose pitch down.
+
+Errata
+
+The Pitch Wheel range is usually adjustable by the musician on each MIDI device. For example, although 0x2000 is always center position, on one MIDI device, a 0x3000 could transpose the pitch up a whole step, whereas on another device that may result in only a half step up. The GM spec recommends that MIDI devices default to using the entire range of possible Pitch Wheel message values (ie, 0x0000 to 0x3FFF) as +/- 2 half steps transposition (ie, 4 half-steps total range). The Pitch Wheel Range (or Sensitivity) is adjusted via an RPN controller message.
+
+---------------------------------------
+
+Here are the assigned Manufacturer ID numbers (ie, the second byte in a System Exclusive message):
+Sequential Circuits  1
+Big Briar            2
+Octave / Plateau     3
+Moog                 4
+Passport Designs     5
+Lexicon              6
+Kurzweil             7
+Fender               8
+Gulbransen           9
+Delta Labs         0x0A
+Sound Comp.        0x0B
+General Electro    0x0C
+Techmar            0x0D
+Matthews Research  0x0E
+Oberheim           0x10
+PAIA               0x11
+Simmons            0x12
+DigiDesign         0x13
+Fairlight          0x14
+Peavey             0x1B
+JL Cooper          0x15
+Lowery             0x16
+Lin                0x17
+Emu                0x18
+Bon Tempi          0x20
+S.I.E.L.           0x21
+SyntheAxe          0x23
+Hohner             0x24
+Crumar             0x25
+Solton             0x26
+Jellinghaus Ms     0x27
+CTS                0x28
+PPG                0x29
+Elka               0x2F
+Cheetah            0x36
+Waldorf            0x3E
+Kawai              0x40
+Roland             0x41
+Korg               0x42
+Yamaha             0x43
+Casio              0x44
+Akai               0x45
+You'll note that we use only one byte for the Manufacturer ID. And since a midi data byte can't be greater than 0x7F, that means we have only 127 IDs to dole out to manufacturers. Well, there are more than 127 manufacturers of MIDI products.
+
+To accomodate a greater range of manufacturer IDs, the MMA decided to reserve a manufacturer ID of 0 for a special purpose. When you see a manufacturer ID of 0, then there will be two more data bytes after this. These two data bytes combine to make the real manufacturer ID. So, some manufacturers have IDs that are 3 bytes, where the first byte is always 0. Using this "trick", the range of unique manufacturer IDs is extended to accomodate over 16,000 MIDI manufacturers.
+
+For example, Microsoft's manufacturer ID consists of the 3 bytes 0x00 0x00 0x41. Note that the first byte is 0 to indicate that the real ID is 0x0041, but is still different than Roland's ID which is only the single byte of 0x41.
+
+A manufacturer must get a registered ID from the MMA if he wants to define his own SysEx messages, or use the following:
+
+Educational Use  0x7D
+This ID is for educational or development use only, and should never appear in a commercial design.
+On the other hand, it is permissible to use another manufacturer's defined SysEx message(s) in your own products. For example, if the Roland S-770 has a particular SysEx message that you could use verbatim in your own design, you're free to use that message (and therefore the Roland ID in it). But, you're not allowed to transmit a mutated version of any Roland message with a Roland ID. Only Roland can develop new messages that contain a Roland ID.
