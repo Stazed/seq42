@@ -469,22 +469,22 @@ seqedit::create_menus()
     /* note volume */
     m_menu_rec_vol->items().push_back(MenuElem("Free",
                                       sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 0)));
-    m_menu_rec_vol->items().push_back(MenuElem("Fixed 8",
+    m_menu_rec_vol->items().push_back(MenuElem("Fixed 8 (127)",
                                       sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 127)));
-    m_menu_rec_vol->items().push_back(MenuElem("Fixed 7",
-                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 111)));
-    m_menu_rec_vol->items().push_back(MenuElem("Fixed 6",
-                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 95)));
-    m_menu_rec_vol->items().push_back(MenuElem("Fixed 5",
-                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 79)));
-    m_menu_rec_vol->items().push_back(MenuElem("Fixed 4",
-                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 63)));
-    m_menu_rec_vol->items().push_back(MenuElem("Fixed 3",
-                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 47)));
-    m_menu_rec_vol->items().push_back(MenuElem("Fixed 2",
-                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 31)));
-    m_menu_rec_vol->items().push_back(MenuElem("Fixed 1",
-                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 15)));
+    m_menu_rec_vol->items().push_back(MenuElem("Fixed 7 (112)",
+                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 112)));
+    m_menu_rec_vol->items().push_back(MenuElem("Fixed 6  (96)",
+                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 96)));
+    m_menu_rec_vol->items().push_back(MenuElem("Fixed 5  (80)",
+                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 80)));
+    m_menu_rec_vol->items().push_back(MenuElem("Fixed 4  (64)",
+                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 64)));
+    m_menu_rec_vol->items().push_back(MenuElem("Fixed 3  (48)",
+                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 48)));
+    m_menu_rec_vol->items().push_back(MenuElem("Fixed 2  (32)",
+                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 32)));
+    m_menu_rec_vol->items().push_back(MenuElem("Fixed 1  (16)",
+                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 16)));
 
 //#define SET_SCALE   mem_fun(*this, &seqedit::set_scale)
 
