@@ -130,7 +130,7 @@ public:
     /* set status to midi clock */
     void make_clock( );
 
-    /* gets the note assuming its note on/off */
+    /* gets the note assuming its note on/off or EVENT_AFTERTOUCH */
     unsigned char get_note();
     unsigned char get_note_velocity();
     void set_note_velocity( int a_vel );

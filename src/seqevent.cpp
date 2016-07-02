@@ -1034,8 +1034,8 @@ bool FruitySeqEventInput::on_button_release_event(GdkEventButton* a_ev, seqevent
             if(ths.m_status == EVENT_NOTE_ON || ths.m_status == EVENT_NOTE_OFF)
             {
                 ths.m_seq->select_linked( tick_s, tick_f, ths.m_status);
-                ths.m_seq->set_dirty();
             }
+            ths.m_seq->set_dirty(); // to update the select or un-select of notes by this action
         }
     }
 
@@ -1301,8 +1301,8 @@ bool Seq42SeqEventInput::on_button_release_event(GdkEventButton* a_ev, seqevent&
             if(ths.m_status == EVENT_NOTE_ON || ths.m_status == EVENT_NOTE_OFF)
             {
                 ths.m_seq->select_linked( tick_s, tick_f, ths.m_status);
-                ths.m_seq->set_dirty();
             }
+            ths.m_seq->set_dirty(); // to update the select or un-select of notes
         }
 
         if ( ths.m_moving )
