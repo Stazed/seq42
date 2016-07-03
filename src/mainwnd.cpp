@@ -43,11 +43,14 @@
 #include "pixmaps/undo.xpm"
 #include "pixmaps/redo.xpm"
 #include "pixmaps/down.xpm"
-#include "pixmaps/jack.xpm"
 #include "pixmaps/transportFollow.xpm"
 #include "pixmaps/transpose.xpm"
 #include "pixmaps/fastforward.xpm"
 #include "pixmaps/rewind.xpm"
+
+#ifdef JACK_SUPPORT
+#include "pixmaps/jack.xpm"
+#endif // JACK_SUPPORT
 
 using namespace sigc;
 

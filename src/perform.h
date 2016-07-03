@@ -262,7 +262,6 @@ public:
     void start_jack();
     void stop_jack();
     void position_jack( bool a_state, long a_tick );
-    void jack_BBT_position(jack_position_t &pos, double jack_tick);
 
     void off_sequences();
     void all_notes_off();
@@ -347,7 +346,7 @@ public:
     void apply_song_transpose ();
 
 #ifdef JACK_SUPPORT
-
+    void jack_BBT_position(jack_position_t &pos, double jack_tick);
     friend int jack_sync_callback(jack_transport_state_t state,
                                   jack_position_t *pos, void *arg);
     friend void jack_shutdown(void *arg);

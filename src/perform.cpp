@@ -1317,38 +1317,6 @@ void perform::position_jack( bool a_state, long a_tick )
 #endif // JACK_SUPPORT
 }
 
-/*  called by position_jack() and jack_timebase_callback()  */
-void perform::jack_BBT_position(jack_position_t &pos, double jack_tick)
-{
-    pos.valid = JackPositionBBT;
-    pos.beats_per_bar = m_bp_measure;
-    pos.beat_type = m_bw;
-    /* these are set in the timebase callback since they are needed for jack_tick */
-    //pos.ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
-    //pos.beats_per_minute =  m_master_bus.get_bpm();
-
-    pos.frame_rate =  m_jack_frame_rate; // comes from init_jack()
-
-    /* Compute BBT info from frame number.  This is relatively
-     * simple here, but would become complex if we supported tempo
-     * or time signature changes at specific locations in the
-     * transport timeline. */
-
-    long ptick = 0, pbeat = 0, pbar = 0;
-    pbar  = (long) ((long) jack_tick / (pos.ticks_per_beat *  pos.beats_per_bar ));
-    pbeat = (long) ((long) jack_tick % (long) (pos.ticks_per_beat *  pos.beats_per_bar ));
-    pbeat = pbeat / (long) pos.ticks_per_beat;
-    ptick = (long) jack_tick % (long) pos.ticks_per_beat;
-
-    pos.bar = pbar + 1;
-    pos.beat = pbeat + 1;
-    pos.tick = ptick;
-    pos.bar_start_tick = pos.bar * pos.beats_per_bar *
-                          pos.ticks_per_beat;
-
-    //printf( " bbb [%2d:%2d:%4d] jack_tick [%f]\n", pos.bar, pos.beat, pos.tick, jack_tick );
-}
-
 void perform::start(bool a_state)
 {
     if (m_jack_running)
@@ -2190,7 +2158,7 @@ void perform::output_func()
             if(!m_playback_mode)
                 m_tick = 0;
         }
-        
+
         /* this means we leave m_tick at stopped location if in slave mode or m_usemidiclock = true */
 
         m_master_bus.flush();
@@ -2201,7 +2169,7 @@ void perform::output_func()
             m_jack_stop_tick = get_current_jack_position(this);
 #endif // JACK_SUPPORT
     }
-    
+
     pthread_exit(0);
 }
 
@@ -2369,6 +2337,37 @@ unsigned short perform::combine_bytes(unsigned char First, unsigned char Second)
 
 #ifdef JACK_SUPPORT
 
+/*  called by jack_timebase_callback() & position_jack()>(debug)  */
+void perform::jack_BBT_position(jack_position_t &pos, double jack_tick)
+{
+    pos.valid = JackPositionBBT;
+    pos.beats_per_bar = m_bp_measure;
+    pos.beat_type = m_bw;
+    /* these are set in the timebase callback since they are needed for jack_tick */
+    //pos.ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
+    //pos.beats_per_minute =  m_master_bus.get_bpm();
+
+    pos.frame_rate =  m_jack_frame_rate; // comes from init_jack()
+
+    /* Compute BBT info from frame number.  This is relatively
+     * simple here, but would become complex if we supported tempo
+     * or time signature changes at specific locations in the
+     * transport timeline. */
+
+    long ptick = 0, pbeat = 0, pbar = 0;
+    pbar  = (long) ((long) jack_tick / (pos.ticks_per_beat *  pos.beats_per_bar ));
+    pbeat = (long) ((long) jack_tick % (long) (pos.ticks_per_beat *  pos.beats_per_bar ));
+    pbeat = pbeat / (long) pos.ticks_per_beat;
+    ptick = (long) jack_tick % (long) pos.ticks_per_beat;
+
+    pos.bar = pbar + 1;
+    pos.beat = pbeat + 1;
+    pos.tick = ptick;
+    pos.bar_start_tick = pos.bar * pos.beats_per_bar *
+                          pos.ticks_per_beat;
+
+    //printf( " bbb [%2d:%2d:%4d] jack_tick [%f]\n", pos.bar, pos.beat, pos.tick, jack_tick );
+}
 /*
     This callback is only called by jack when seq42 is Master and is used to supply jack
     with BBT information based on frame position and frame_rate.
