@@ -84,3 +84,11 @@ What to do with a fresh repository checkout?
 Apply "autoreconf -i" to get a configure script, then:
 Run the usual "./configure" then "make".  Finally copy the "seq42" binary (in the "src" directory) wherever you like.
 
+
+Re: macro `AM_PATH_ALSA' not found in library
+
+Please run 'aclocal -I m4' to regenerate the aclocal.m4 file.
+You need aclocal from GNU automake 1.5 (or newer) to do this.
+Then run 'autoreconf -i' to regenerate the configure file.
+
+
