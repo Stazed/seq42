@@ -1,7 +1,7 @@
 /* XPM */
 static const char *jack_xpm[] = {
 /* columns rows colors chars-per-pixel */
-"54 16 6 1 ",
+"47 15 6 1 ",
 "  c #5DE55B775879",
 ". c #000000",
 "X c #FFFFFF",
@@ -9,20 +9,19 @@ static const char *jack_xpm[] = {
 "O c #833A7FA57BEC",
 "C c #None",
 /* pixels */
-"CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC",
-"CCCCCCCO.........................oCCCCCCCCCCCCCCCCCCCC",
-"CCCCCCO...........................CCCCCCCCCCCCCCCCCCCC",
-"oOOOOO .... X...X .. XXXX.X .oX ..oCCCCCCCCCCCCCCCCCCC",
-"OXXXXXO.... X. OXO .Xo . .X  XO... OOoOOO . OCCo OCCCC",
-"OXXXXXO.... X..X.X. X ... XOXo....OXXXXXXo oOOO Xo oCC",
-" XXXXXo....OX.oX.Xo X.....XXX ....OXXXXXXo.XoXXoXXXXoo",
-" OOOOO .... X.OXXXO.X.....XXXO.... oOOOOO .  OoOoOOXXO",
-".  .. .....OX.XO.oX.XO....XO.XO.... .   ......  O     ",
-".     ...OXXO X.. XO XXXX.X . X ...OOooOo .  ooOoXooOC",
-" ooooo ...........................OoXXXXXo.o OOOXoOoCC",
-"OoXXXXO........................... oooOOOO.OoCCoOoCCCC",
-" oXXXXO....     . .    .   .   ...OCCCCCCCCCCCCCCCCCCC",
-"oooOOO...  O O.   O         .   ..oCCCCCCCCCCCCCCCCCCC",
-"CCCCCCO...........................CCCCCCCCCCCCCCCCCCCC",
-"CCCCCCCO.........................oCCCCCCCCCCCCCCCCCCCC"
+"o.........................oCCCCCCCCCCCCCCCCCCCC",
+"...........................CCCCCCCCCCCCCCCCCCCC",
+".... X...X .. XXXX.X .oX ..oCCCCCCCCCCCCCCCCCCC",
+".... X. OXO .Xo . .X  XO... OOoOOO . OCCo OCCCC",
+".... X..X.X. X ... XOXo....OXXXXXXo oOOO Xo oCC",
+"....OX.oX.Xo X.....XXX ....OXXXXXXo.XoXXoXXXOoo",
+".... X.OXXXO.X.....XXXO.... oOOOOO .  OoOoOOXXO",
+"....OX.XO.oX.XO....XO.XO.... .   ......  O     ",
+"..XXX  X.. XO XXXX.X . X ...OOooOo .  ooOoXooOC",
+"...........................OoXXXXXo.o OOOXoOoCC",
+"........................... oooOOOO.OoCCoOoCCCC",
+"....     . .    .   .   ...OCCCCCCCCCCCCCCCCCCC",
+"..  O O.   O         .   ..oCCCCCCCCCCCCCCCCCCC",
+"...........................CCCCCCCCCCCCCCCCCCCC",
+"o.........................oCCCCCCCCCCCCCCCCCCCC"
 };
