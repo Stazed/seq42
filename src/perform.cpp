@@ -510,7 +510,7 @@ void perform::add_track( track *a_track, int a_pref )
         set_active(a_pref, true);
 
     }
-    else
+    else if(a_pref >= 0)
     {
         for (int i=a_pref; i< c_max_track; i++ )
         {
