@@ -1051,3 +1051,62 @@ A manufacturer must get a registered ID from the MMA if he wants to define his o
 Educational Use  0x7D
 This ID is for educational or development use only, and should never appear in a commercial design.
 On the other hand, it is permissible to use another manufacturer's defined SysEx message(s) in your own products. For example, if the Roland S-770 has a particular SysEx message that you could use verbatim in your own design, you're free to use that message (and therefore the Roland ID in it). But, you're not allowed to transmit a mutated version of any Roland message with a Roland ID. Only Roland can develop new messages that contain a Roland ID.
+
+-----------------------------
+For text and copyright....
+midifile.cpp
+if(numtracks == 0)
+{
+    seq->seq_text_event_fill_list( &l, "The test of the text message");
+    seq->seq_copyright_fill_list( &l , "(C) 1850 J.Strauss");
+}
+
+FF 01 len text Text Event:
+Any amount of text describing anything. It is a good idea to put a text event right at the beginning of a track, with the name of the track, a description of its intended orchestration, and any other information which the user wants to put there. Text events may also occur at other times in a track, to be used as lyrics, or descriptions of cue points. The text in this event should be printable ASCII characters for maximum interchange. However, other character codes using the high-order bit may be used for interchange of files between different programs on the same computer which supports an extended character set. Programs on a computer which does not support non-ASCII characters should ignore those characters.
+
+    <len>	length of <text> (variable length quantity)
+    <text>	<len> bytes of ascii text, or 8-bit binary data
+
+void
+sequence::seq_text_event_fill_list( list<char> *a_list, std::string a_text )
+{
+    /* clear list */
+    *a_list = list<char>();
+
+    addListVar( a_list, 0 );
+    a_list->push_front( 0xFF );
+    a_list->push_front( 0x01 );
+
+    int length = a_text.length();
+    a_list->push_front( length );
+
+    for ( int i=0; i< length; i++ )
+        a_list->push_front( a_text.c_str()[i] );
+}
+
+
+
+FF 02 len text Copyright Notice:
+Contains a copyright notice as printable ASCII text. The notice should contain the characters (C), the year of the copyright, and the owner of the copyright. If several pieces of music are in the same MIDI File, all of the copyright notices should be placed together in this event so that it will be at the beginning of the file. This event should be the first event in the track chunk, at time 0.
+
+This should be of the form "(C) 1850 J.Strauss"
+
+void
+sequence::seq_copyright_fill_list( list<char> *a_list, std::string a_copyright )
+{
+    /* clear list */
+    *a_list = list<char>();
+
+    addListVar( a_list, 0 );
+    a_list->push_front( 0xFF );
+    a_list->push_front( 0x02 );
+
+    int length = a_copyright.length();
+
+    a_list->push_front( length );
+
+    for ( int i=0; i< length; i++ )
+        a_list->push_front( a_copyright.c_str()[i] );
+}
+
+.............................
