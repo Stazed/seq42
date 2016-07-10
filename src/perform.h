@@ -347,12 +347,15 @@ public:
 
 #ifdef JACK_SUPPORT
     void jack_BBT_position(jack_position_t &pos, double jack_tick);
-    friend int jack_sync_callback(jack_transport_state_t state,
+    /* now using jack_process_callback() ca. 7/10/16    */
+    /*
+        friend int jack_sync_callback(jack_transport_state_t state,
                                   jack_position_t *pos, void *arg);
+    */
     friend void jack_shutdown(void *arg);
     friend void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
                                        jack_position_t *pos, int new_pos, void *arg);
-
+    friend int jack_process_callback(jack_nframes_t nframes, void* arg);
     friend long get_current_jack_position(void *arg);
 #endif
 };
@@ -366,13 +369,14 @@ extern int FF_RW_button_type;
 
 #ifdef JACK_SUPPORT
 
-int jack_sync_callback(jack_transport_state_t state,
-                       jack_position_t *pos, void *arg);
+//int jack_sync_callback(jack_transport_state_t state,
+//                       jack_position_t *pos, void *arg);
 void print_jack_pos( jack_position_t* jack_pos );
 void jack_shutdown(void *arg);
 void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
                             jack_position_t *pos, int new_pos, void *arg);
 int jack_process_callback(jack_nframes_t nframes, void* arg);
+long get_current_jack_position(void *arg);
 #ifdef JACK_SESSION
 void jack_session_callback(jack_session_event_t *ev, void *arg);
 #endif

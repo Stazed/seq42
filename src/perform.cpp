@@ -164,9 +164,15 @@ void perform::init_jack()
             */
 
             jack_on_shutdown( m_jack_client, jack_shutdown,(void *) this );
-            jack_set_sync_callback(m_jack_client, jack_sync_callback,
+
+            /* now using jack_process_callback() ca. 7/10/16    */
+            /*
+                jack_set_sync_callback(m_jack_client, jack_sync_callback,
                                    (void *) this );
-            jack_set_process_callback(m_jack_client, jack_process_callback, NULL);
+            */
+
+            jack_set_process_callback(m_jack_client, jack_process_callback, (void *) this);
+
 #ifdef JACK_SESSION
             if (jack_set_session_callback)
                 jack_set_session_callback(m_jack_client, jack_session_callback,
@@ -1516,11 +1522,51 @@ void* output_thread_func(void *a_pef )
 
 #ifdef JACK_SUPPORT
 
+/*
+    This process callback is called by jack whether stopped or rolling.
+    Assuming every jack cycle...
+    "...client supplied function that is called by the engine anytime there is work to be done".
+    There seems to be no definition of '...work to be done'.
+    nframes = buffer_size -- is not used.
+*/
+
 int jack_process_callback(jack_nframes_t nframes, void* arg)
 {
+    perform *m_mainperf = (perform *) arg;
+
+    /* For start or FF/RW/ key-p when not running */
+    if(!global_is_running)
+    {
+        jack_transport_state_t state = jack_transport_query( m_mainperf->m_jack_client, nullptr );
+
+        /* we are stopped, do we need to start? */
+        if(state == JackTransportRolling || state == JackTransportStarting )
+        {
+            /* we need to start */
+            //printf("JackTransportState [%d]\n",state);
+            m_mainperf->m_jack_transport_state_last = JackTransportStarting;
+            m_mainperf->inner_start( global_song_start_mode );
+            //printf("JackTransportState [%d]\n",m_mainperf->m_jack_transport_state);
+        }
+        /* we don't need to start - just reposition transport marker */
+        else
+        {
+            long tick = get_current_jack_position((void *)m_mainperf);
+            long diff = tick - m_mainperf->get_jack_stop_tick();
+
+            if(diff != 0)
+            {
+                m_mainperf->set_reposition();
+                m_mainperf->set_starting_tick(tick);
+                m_mainperf->set_jack_stop_tick(tick);
+            }
+        }
+    }
+
     return 0;
 }
-
+#if 0
+/* former slow sync callback - no longer used - now using jack_process_callback() - ca. 7/10/16 */
 int jack_sync_callback(jack_transport_state_t state,
                        jack_position_t *pos, void *arg)
 {
@@ -1556,6 +1602,7 @@ int jack_sync_callback(jack_transport_state_t state,
     print_jack_pos( pos );
     return 1;
 }
+#endif // 0
 
 #ifdef JACK_SESSION
 
@@ -1783,9 +1830,6 @@ void perform::output_func()
             {
                 init_clock = false;
 
-                m_jack_transport_state = jack_transport_query( m_jack_client, &m_jack_pos );
-                m_jack_frame_current =  jack_get_current_transport_frame( m_jack_client );
-
                 /*
                     Another note about jack....
                     If another jack client is supplying tempo/BBT info that is different from seq42 (as Master),
@@ -1799,6 +1843,8 @@ void perform::output_func()
                     it here to follow the jack frame anyways.
                 */
 
+                m_jack_transport_state = jack_transport_query( m_jack_client, &m_jack_pos );
+
                 m_jack_pos.beats_per_bar = m_bp_measure;
                 m_jack_pos.beat_type = m_bw;
                 m_jack_pos.ticks_per_beat = c_ppqn * 10;
@@ -1807,9 +1853,11 @@ void perform::output_func()
                 if ( m_jack_transport_state_last  ==  JackTransportStarting &&
                         m_jack_transport_state       == JackTransportRolling )
                 {
+                    m_jack_frame_current =  jack_get_current_transport_frame( m_jack_client );
                     m_jack_frame_last = m_jack_frame_current;
 
                     //printf ("[Start Playback]\n" );
+
                     dumping = true;
                     m_jack_tick =
                         m_jack_pos.frame *
@@ -1862,7 +1910,6 @@ void perform::output_func()
                     m_jack_frame_current =  jack_get_current_transport_frame( m_jack_client );
 
                     //printf( " frame[%7d]\n", m_jack_pos.frame );
-                    //printf( " current_transport_frame[%7d]", m_jack_frame_current );
 
                     // if we are moving ahead
                     if ( (m_jack_frame_current > m_jack_frame_last))
@@ -2166,7 +2213,7 @@ void perform::output_func()
 
 #ifdef JACK_SUPPORT
         if(m_jack_running)
-            m_jack_stop_tick = get_current_jack_position(this);
+            m_jack_stop_tick = get_current_jack_position((void *)this);
 #endif // JACK_SUPPORT
     }
 
