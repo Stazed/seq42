@@ -1,3 +1,7 @@
+[ ] Mainwnd keybinding <home> - reset transport to left(master & default) or begining of song - add button.
+[ ] Mainwnd keybinding <s> set left marker to current transport location (master & default)
+
+
 [X] New file should reset to default BPM and time signature. Also clear undo & global modified flag.
 
 [X] Revise FruityPerfInput() & Seq24PerfInput() to sync with seq24 method.
