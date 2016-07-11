@@ -1410,7 +1410,7 @@ track::save(ofstream *file)
     file->write((const char *) &m_song_mute, sizeof(bool));
 
     unsigned int num_seqs = get_number_of_sequences();
-    file->write((const char *) &num_seqs, sizeof(int));
+    file->write((const char *) &num_seqs, sizeof(int32_t));
 
     for(unsigned int i=0; i<m_vector_sequence.size(); i++)
     {
@@ -1421,15 +1421,15 @@ track::save(ofstream *file)
     }
 
     unsigned int num_triggers = m_list_trigger.size();
-    file->write((const char *) &num_triggers, sizeof(int));
+    file->write((const char *) &num_triggers, sizeof(int32_t));
 
     for( list<trigger>::iterator iter = m_list_trigger.begin();
             iter != m_list_trigger.end(); iter++ )
     {
-        file->write((const char *) &(iter->m_tick_start), sizeof(long));
-        file->write((const char *) &(iter->m_tick_end), sizeof(long));
-        file->write((const char *) &(iter->m_offset), sizeof(long));
-        file->write((const char *) &(iter->m_sequence), sizeof(int));
+        file->write((const char *) &(iter->m_tick_start), sizeof(int32_t));
+        file->write((const char *) &(iter->m_tick_end), sizeof(int32_t));
+        file->write((const char *) &(iter->m_offset), sizeof(int32_t));
+        file->write((const char *) &(iter->m_sequence), sizeof(int32_t));
     }
     return true;
 }
@@ -1458,7 +1458,7 @@ track::load(ifstream *file, int version)
     }
 
     unsigned int num_seqs;
-    file->read((char *) &num_seqs, sizeof(int));
+    file->read((char *) &num_seqs, sizeof(int32_t));
 
     for (unsigned int i=0; i< num_seqs; i++ )
     {
@@ -1470,15 +1470,15 @@ track::load(ifstream *file, int version)
     }
 
     unsigned int num_triggers;
-    file->read((char *) &num_triggers, sizeof(int));
+    file->read((char *) &num_triggers, sizeof(int32_t));
 
     for (unsigned int i=0; i< num_triggers; i++ )
     {
         trigger e;
-        file->read((char *) &(e.m_tick_start), sizeof(long));
-        file->read((char *) &(e.m_tick_end), sizeof(long));
-        file->read((char *) &(e.m_offset), sizeof(long));
-        file->read((char *) &(e.m_sequence), sizeof(int));
+        file->read((char *) &(e.m_tick_start), sizeof(int32_t));
+        file->read((char *) &(e.m_tick_end), sizeof(int32_t));
+        file->read((char *) &(e.m_offset), sizeof(int32_t));
+        file->read((char *) &(e.m_sequence), sizeof(int32_t));
         m_list_trigger.push_back(e);
     }
 

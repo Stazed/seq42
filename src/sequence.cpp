@@ -3419,13 +3419,13 @@ sequence::save(ofstream *file)
     strncpy(name, m_name.c_str(), c_max_seq_name);
     file->write(name, sizeof(char)*c_max_seq_name);
 
-    file->write((const char *) &m_length, sizeof(long));
-    file->write((const char *) &m_time_beats_per_measure, sizeof(long));
-    file->write((const char *) &m_time_beat_width, sizeof(long));
-    file->write((const char *) &m_swing_mode, sizeof(int));
+    file->write((const char *) &m_length, sizeof(int32_t));
+    file->write((const char *) &m_time_beats_per_measure, sizeof(int32_t));
+    file->write((const char *) &m_time_beat_width, sizeof(int32_t));
+    file->write((const char *) &m_swing_mode, sizeof(int32_t));
 
     unsigned int num_events = m_list_event.size();
-    file->write((const char *) &num_events, sizeof(int));
+    file->write((const char *) &num_events, sizeof(int32_t));
     for( list<event>::iterator iter = m_list_event.begin();
             iter != m_list_event.end(); iter++ )
     {
@@ -3443,13 +3443,13 @@ sequence::load(ifstream *file, int version)
     name[c_max_seq_name] = '\0';
     set_name(name);
 
-    file->read((char *) &m_length, sizeof(long));
-    file->read((char *) &m_time_beats_per_measure, sizeof(long));
-    file->read((char *) &m_time_beat_width, sizeof(long));
+    file->read((char *) &m_length, sizeof(int32_t));
+    file->read((char *) &m_time_beats_per_measure, sizeof(int32_t));
+    file->read((char *) &m_time_beat_width, sizeof(int32_t));
 
     if(version > 1)
     {
-        file->read((char *) &m_swing_mode, sizeof(int));
+        file->read((char *) &m_swing_mode, sizeof(int32_t));
     }
     else
     {
@@ -3457,7 +3457,7 @@ sequence::load(ifstream *file, int version)
     }
 
     unsigned int num_events;
-    file->read((char *) &num_events, sizeof(int));
+    file->read((char *) &num_events, sizeof(int32_t));
 
     for (unsigned int i=0; i< num_events; i++ )
     {

@@ -2565,35 +2565,35 @@ perform::save( const Glib::ustring& a_filename )
 
     if (!file.is_open ()) return false;
 
-    file.write((const char *) &c_file_version, sizeof(int));
+    file.write((const char *) &c_file_version, sizeof(int32_t));
 
     int bpm = get_bpm();
-    file.write((const char *) &bpm, sizeof(int));
+    file.write((const char *) &bpm, sizeof(int32_t));
 
     int bp_measure = get_bp_measure(); // version 4
-    file.write((const char *) &bp_measure, sizeof(int));
+    file.write((const char *) &bp_measure, sizeof(int32_t));
 
     int bw = get_bw();                 // version 4
-    file.write((const char *) &bw, sizeof(int));
+    file.write((const char *) &bw, sizeof(int32_t));
 
     int swing_amount8 = get_swing_amount8();
-    file.write((const char *) &swing_amount8, sizeof(int));
+    file.write((const char *) &swing_amount8, sizeof(int32_t));
     int swing_amount16 = get_swing_amount16();
-    file.write((const char *) &swing_amount16, sizeof(int));
+    file.write((const char *) &swing_amount16, sizeof(int32_t));
 
     int active_tracks = 0;
     for (int i=0; i< c_max_track; i++ )
     {
         if ( is_active_track(i) ) active_tracks++;
     }
-    file.write((const char *) &active_tracks, sizeof(int));
+    file.write((const char *) &active_tracks, sizeof(int32_t));
 
     for (int i=0; i< c_max_track; i++ )
     {
         if ( is_active_track(i) )
         {
             int trk_idx = i; // file version 3
-            file.write((const char *) &trk_idx, sizeof(int));
+            file.write((const char *) &trk_idx, sizeof(int32_t));
 
             if(! get_track(i)->save(&file))
             {
@@ -2616,7 +2616,7 @@ perform::load( const Glib::ustring& a_filename )
     if (!file.is_open ()) return false;
 
     int version;
-    file.read((char *) &version, sizeof(int));
+    file.read((char *) &version, sizeof(int32_t));
 
     if (version < 0 || version > c_file_version)
     {
@@ -2625,13 +2625,13 @@ perform::load( const Glib::ustring& a_filename )
     }
 
     int bpm;
-    file.read((char *) &bpm, sizeof(int));
+    file.read((char *) &bpm, sizeof(int32_t));
     set_bpm(bpm);
 
     int bp_measure = 4;
     if(version > 3)
     {
-        file.read((char *) &bp_measure, sizeof(int));
+        file.read((char *) &bp_measure, sizeof(int32_t));
     }
 
     set_bp_measure(bp_measure);
@@ -2639,7 +2639,7 @@ perform::load( const Glib::ustring& a_filename )
     int bw = 4;
     if(version > 3)
     {
-        file.read((char *) &bw, sizeof(int));
+        file.read((char *) &bw, sizeof(int32_t));
     }
 
     set_bw(bw);
@@ -2647,20 +2647,20 @@ perform::load( const Glib::ustring& a_filename )
     int swing_amount8 = 0;
     if(version > 1)
     {
-        file.read((char *) &swing_amount8, sizeof(int));
+        file.read((char *) &swing_amount8, sizeof(int32_t));
     }
 
     set_swing_amount8(swing_amount8);
     int swing_amount16 = 0;
     if(version > 1)
     {
-        file.read((char *) &swing_amount16, sizeof(int));
+        file.read((char *) &swing_amount16, sizeof(int32_t));
     }
 
     set_swing_amount16(swing_amount16);
 
     int active_tracks;
-    file.read((char *) &active_tracks, sizeof(int));
+    file.read((char *) &active_tracks, sizeof(int32_t));
 
     int trk_index = 0;
     for (int i=0; i< active_tracks; i++ )
@@ -2668,7 +2668,7 @@ perform::load( const Glib::ustring& a_filename )
         trk_index = i;
         if(version > 2)
         {
-            file.read((char *) &trk_index, sizeof(int));
+            file.read((char *) &trk_index, sizeof(int32_t));
         }
 
         new_track(trk_index);
