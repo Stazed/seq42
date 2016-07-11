@@ -2186,23 +2186,23 @@ void perform::output_func()
             }
         }
 
-
         /* m_tick is the progress play tick that displays the progress line */
 #ifdef JACK_SUPPORT
-        if(m_playback_mode && m_jack_master)
+        if(m_playback_mode && m_jack_master) // master in song mode
         {
             position_jack(m_playback_mode,m_left_tick);
         }
-        if(!m_playback_mode && m_jack_running)
+        if(!m_playback_mode && m_jack_running && m_jack_master) // master in live mode
+        {
             position_jack(m_playback_mode,0);
-
+        }
 #endif // JACK_SUPPORT
         if(!m_usemidiclock) // will be true if stopped by midi event
         {
-            if(m_playback_mode && !m_jack_running)
+            if(m_playback_mode && !m_jack_running) // song mode default
                 m_tick = m_left_tick;
 
-            if(!m_playback_mode)
+            if(!m_playback_mode && !m_jack_running) // live mode default
                 m_tick = 0;
         }
 
