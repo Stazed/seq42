@@ -54,6 +54,8 @@
 
 using namespace sigc;
 
+short global_file_long_int_size = sizeof(int32_t);
+
 bool global_is_running = false;
 bool global_is_modified = false;
 bool global_seqlist_need_update = false;

@@ -1426,9 +1426,9 @@ track::save(ofstream *file)
     for( list<trigger>::iterator iter = m_list_trigger.begin();
             iter != m_list_trigger.end(); iter++ )
     {
-        file->write((const char *) &(iter->m_tick_start), sizeof(int32_t));
-        file->write((const char *) &(iter->m_tick_end), sizeof(int32_t));
-        file->write((const char *) &(iter->m_offset), sizeof(int32_t));
+        file->write((const char *) &(iter->m_tick_start), global_file_long_int_size);
+        file->write((const char *) &(iter->m_tick_end), global_file_long_int_size);
+        file->write((const char *) &(iter->m_offset), global_file_long_int_size);
         file->write((const char *) &(iter->m_sequence), sizeof(int32_t));
     }
     return true;
@@ -1475,9 +1475,9 @@ track::load(ifstream *file, int version)
     for (unsigned int i=0; i< num_triggers; i++ )
     {
         trigger e;
-        file->read((char *) &(e.m_tick_start), sizeof(int32_t));
-        file->read((char *) &(e.m_tick_end), sizeof(int32_t));
-        file->read((char *) &(e.m_offset), sizeof(int32_t));
+        file->read((char *) &(e.m_tick_start), global_file_long_int_size);
+        file->read((char *) &(e.m_tick_end), global_file_long_int_size);
+        file->read((char *) &(e.m_offset), global_file_long_int_size);
         file->read((char *) &(e.m_sequence), sizeof(int32_t));
         m_list_trigger.push_back(e);
     }

@@ -3419,9 +3419,9 @@ sequence::save(ofstream *file)
     strncpy(name, m_name.c_str(), c_max_seq_name);
     file->write(name, sizeof(char)*c_max_seq_name);
 
-    file->write((const char *) &m_length, sizeof(int32_t));
-    file->write((const char *) &m_time_beats_per_measure, sizeof(int32_t));
-    file->write((const char *) &m_time_beat_width, sizeof(int32_t));
+    file->write((const char *) &m_length, global_file_long_int_size);
+    file->write((const char *) &m_time_beats_per_measure, global_file_long_int_size);
+    file->write((const char *) &m_time_beat_width, global_file_long_int_size);
     file->write((const char *) &m_swing_mode, sizeof(int32_t));
 
     unsigned int num_events = m_list_event.size();
@@ -3443,9 +3443,9 @@ sequence::load(ifstream *file, int version)
     name[c_max_seq_name] = '\0';
     set_name(name);
 
-    file->read((char *) &m_length, sizeof(int32_t));
-    file->read((char *) &m_time_beats_per_measure, sizeof(int32_t));
-    file->read((char *) &m_time_beat_width, sizeof(int32_t));
+    file->read((char *) &m_length, global_file_long_int_size);
+    file->read((char *) &m_time_beats_per_measure, global_file_long_int_size);
+    file->read((char *) &m_time_beat_width, global_file_long_int_size);
 
     if(version > 1)
     {

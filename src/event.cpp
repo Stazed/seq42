@@ -372,7 +372,7 @@ event::is_marked( )
 void
 event::save(ofstream *file)
 {
-    file->write((const char *) &(m_timestamp), sizeof(int32_t));
+    file->write((const char *) &(m_timestamp), global_file_long_int_size);
     file->write((const char *) &(m_status), sizeof(char));
     file->write((const char *) &(m_data), sizeof(char)*2);
 }
@@ -380,7 +380,7 @@ event::save(ofstream *file)
 void
 event::load(ifstream *file)
 {
-    file->read((char *) &(m_timestamp), sizeof(int32_t));
+    file->read((char *) &(m_timestamp), global_file_long_int_size);
     file->read((char *) &(m_status), sizeof(char));
     file->read((char *) &(m_data), sizeof(char)*2);
 }

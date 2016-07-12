@@ -2561,6 +2561,9 @@ bool
 perform::save( const Glib::ustring& a_filename )
 {
     m_mutex.lock();
+
+    global_file_long_int_size = sizeof(int32_t); // reset hear in case changed by file load
+
     ofstream file (a_filename.c_str (), ios::out | ios::binary | ios::trunc);
 
     if (!file.is_open ()) return false;
@@ -2623,6 +2626,9 @@ perform::load( const Glib::ustring& a_filename )
         fprintf(stderr, "Invalid file version detected: %d\n", version);
         return false;
     }
+
+    if(version < 5)
+        global_file_long_int_size = sizeof(long);
 
     int bpm;
     file.read((char *) &bpm, sizeof(int32_t));
