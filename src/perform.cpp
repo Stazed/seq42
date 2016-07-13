@@ -2568,10 +2568,16 @@ perform::save( const Glib::ustring& a_filename )
 
     if (!file.is_open ()) return false;
 
-    file.write((const char *) &c_file_version, sizeof(int32_t));
+    //const uint64_t c_file_identification =  0x1A323451455389;
+    // dialog.set_version(VERSION); - program version
+    // time of file write
+
+    file.write((const char *) &c_file_identification, sizeof(uint64_t));
+
+    file.write((const char *) &c_file_version, sizeof(int16_t));
 
     int bpm = get_bpm();
-    file.write((const char *) &bpm, sizeof(int32_t));
+    file.write((const char *) &bpm, sizeof(int16_t));
 
     int bp_measure = get_bp_measure(); // version 4
     file.write((const char *) &bp_measure, sizeof(int32_t));
