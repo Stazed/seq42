@@ -314,6 +314,7 @@ public:
 
     long get_max_trigger();
 
+    std::string current_date_time();
     bool save( const Glib::ustring& a_filename );
     bool load( const Glib::ustring& a_filename );
 

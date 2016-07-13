@@ -2557,12 +2557,50 @@ int main ()
 #endif // JACK_SUPPORT
 
 
+std::string
+perform::current_date_time()
+{
+    std::string mystring;
+//    std::string strDisplay;
+    std::string strTemp;
+//    int nDate = 0;
+
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+    // for more information about date/time format
+    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+
+    mystring = std::string(buf);
+
+// Format: = "2012-05-06.01:03:59 PM" of mystring Does NOT use military time
+
+//    strTemp.append(mystring,5,2); // Month
+//    strTemp.append(mystring,8,2); // Day
+//    strTemp.append(mystring,2,2); // Year two digit
+//    std::istringstream ( strTemp ) >> nDate; // This is mm dd yy for actual storage in int
+
+
+// And once more for general display
+//    strTemp.insert(4,mystring,0,2);  // Year for 4 digit display of year
+//    strDisplay = strTemp;
+//    strDisplay.insert(2,1,'/');
+//    strDisplay.insert(5,1,'/');
+
+    return mystring;
+}
+
 bool
 perform::save( const Glib::ustring& a_filename )
 {
     m_mutex.lock();
 
-    global_file_long_int_size = sizeof(int32_t); // reset hear in case changed by file load
+    global_file_short_size = sizeof(int16_t); // FIXME
+    global_file_int_size = sizeof(int32_t); // FIXME
+    global_file_long_int_size = sizeof(int32_t); // reset hear in case changed by file load FIXME
+
 
     ofstream file (a_filename.c_str (), ios::out | ios::binary | ios::trunc);
 
@@ -2572,37 +2610,43 @@ perform::save( const Glib::ustring& a_filename )
     // dialog.set_version(VERSION); - program version
     // time of file write
 
-    file.write((const char *) &c_file_identification, sizeof(uint64_t));
+    file.write((const char *) &c_file_identification, sizeof(uint64_t)); // magic number file ID
+    file.write((const char *) &VERSION, 10);                // program version FIXME
 
-    file.write((const char *) &c_file_version, sizeof(int16_t));
+    char time[30];
+    std::string s_time = current_date_time();
+    strncpy(time, s_time.c_str(), 30);
+    file.write(time, 30);
+
+    file.write((const char *) &c_file_version, global_file_short_size);
 
     int bpm = get_bpm();
-    file.write((const char *) &bpm, sizeof(int16_t));
+    file.write((const char *) &bpm, global_file_short_size);
 
     int bp_measure = get_bp_measure(); // version 4
-    file.write((const char *) &bp_measure, sizeof(int32_t));
+    file.write((const char *) &bp_measure, global_file_short_size);
 
     int bw = get_bw();                 // version 4
-    file.write((const char *) &bw, sizeof(int32_t));
+    file.write((const char *) &bw, global_file_short_size);
 
     int swing_amount8 = get_swing_amount8();
-    file.write((const char *) &swing_amount8, sizeof(int32_t));
+    file.write((const char *) &swing_amount8, global_file_short_size);
     int swing_amount16 = get_swing_amount16();
-    file.write((const char *) &swing_amount16, sizeof(int32_t));
+    file.write((const char *) &swing_amount16, global_file_short_size);
 
     int active_tracks = 0;
     for (int i=0; i< c_max_track; i++ )
     {
         if ( is_active_track(i) ) active_tracks++;
     }
-    file.write((const char *) &active_tracks, sizeof(int32_t));
+    file.write((const char *) &active_tracks, global_file_short_size);
 
     for (int i=0; i< c_max_track; i++ )
     {
         if ( is_active_track(i) )
         {
             int trk_idx = i; // file version 3
-            file.write((const char *) &trk_idx, sizeof(int32_t));
+            file.write((const char *) &trk_idx, global_file_short_size);
 
             if(! get_track(i)->save(&file))
             {
@@ -2624,26 +2668,55 @@ perform::load( const Glib::ustring& a_filename )
 
     if (!file.is_open ()) return false;
 
+    bool ret = true;
+
+    int64_t file_id = 0;
+    file.read((char *) &file_id, sizeof(int64_t));
+
+    if(file_id != c_file_identification) // if it does not match, maybe its < version file 4 so reset to beginning
+    {
+        file.clear();
+        file.seekg(0, ios::beg);
+        /* since were are checking for the < version 5 files now then reset int sizes */
+        global_file_int_size = sizeof(int);
+        global_file_short_size = sizeof(int);   // yes this was originally int NOT short
+        global_file_long_int_size = sizeof(long);
+    }
+    else
+    {
+        char pversion[11];       // program version
+        file.read(pversion, 10);
+        pversion[11] = '\0';
+        printf("Program Version [%s]\n", pversion);
+
+        char time[31];
+        file.read(time, 30);
+        time[31] = '\0';
+        printf("%s\n",time);
+    }
+
     int version;
-    file.read((char *) &version, sizeof(int32_t));
+    file.read((char *) &version, global_file_short_size);
 
     if (version < 0 || version > c_file_version)
     {
         fprintf(stderr, "Invalid file version detected: %d\n", version);
+        /*reset to defaults */
+        global_file_short_size = sizeof(int16_t);
+        global_file_int_size = sizeof(int32_t);
+        global_file_long_int_size = sizeof(int32_t);
+        file.close();
         return false;
     }
 
-    if(version < 5)
-        global_file_long_int_size = sizeof(long);
-
     int bpm;
-    file.read((char *) &bpm, sizeof(int32_t));
+    file.read((char *) &bpm, global_file_short_size);
     set_bpm(bpm);
 
     int bp_measure = 4;
     if(version > 3)
     {
-        file.read((char *) &bp_measure, sizeof(int32_t));
+        file.read((char *) &bp_measure, global_file_short_size);
     }
 
     set_bp_measure(bp_measure);
@@ -2651,7 +2724,7 @@ perform::load( const Glib::ustring& a_filename )
     int bw = 4;
     if(version > 3)
     {
-        file.read((char *) &bw, sizeof(int32_t));
+        file.read((char *) &bw, global_file_short_size);
     }
 
     set_bw(bw);
@@ -2659,20 +2732,20 @@ perform::load( const Glib::ustring& a_filename )
     int swing_amount8 = 0;
     if(version > 1)
     {
-        file.read((char *) &swing_amount8, sizeof(int32_t));
+        file.read((char *) &swing_amount8, global_file_short_size);
     }
 
     set_swing_amount8(swing_amount8);
     int swing_amount16 = 0;
     if(version > 1)
     {
-        file.read((char *) &swing_amount16, sizeof(int32_t));
+        file.read((char *) &swing_amount16, global_file_short_size);
     }
 
     set_swing_amount16(swing_amount16);
 
     int active_tracks;
-    file.read((char *) &active_tracks, sizeof(int32_t));
+    file.read((char *) &active_tracks, global_file_short_size);
 
     int trk_index = 0;
     for (int i=0; i< active_tracks; i++ )
@@ -2680,18 +2753,27 @@ perform::load( const Glib::ustring& a_filename )
         trk_index = i;
         if(version > 2)
         {
-            file.read((char *) &trk_index, sizeof(int32_t));
+            file.read((char *) &trk_index, global_file_short_size);
         }
 
         new_track(trk_index);
         if(! get_track(trk_index)->load(&file, version))
         {
-            return false;
+            ret = false;
         }
     }
 
     file.close();
-    return true;
+
+    /* reset to default if ID does not match */
+    if(file_id != c_file_identification)
+    {
+        global_file_short_size = sizeof(int16_t);
+        global_file_int_size = sizeof(int32_t);
+        global_file_long_int_size = sizeof(int32_t);
+    }
+
+    return ret;
 }
 
 void

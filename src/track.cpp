@@ -1410,7 +1410,7 @@ track::save(ofstream *file)
     file->write((const char *) &m_song_mute, sizeof(bool));
 
     unsigned int num_seqs = get_number_of_sequences();
-    file->write((const char *) &num_seqs, sizeof(int32_t));
+    file->write((const char *) &num_seqs, global_file_int_size);
 
     for(unsigned int i=0; i<m_vector_sequence.size(); i++)
     {
@@ -1421,7 +1421,7 @@ track::save(ofstream *file)
     }
 
     unsigned int num_triggers = m_list_trigger.size();
-    file->write((const char *) &num_triggers, sizeof(int32_t));
+    file->write((const char *) &num_triggers, global_file_int_size);
 
     for( list<trigger>::iterator iter = m_list_trigger.begin();
             iter != m_list_trigger.end(); iter++ )
@@ -1429,7 +1429,7 @@ track::save(ofstream *file)
         file->write((const char *) &(iter->m_tick_start), global_file_long_int_size);
         file->write((const char *) &(iter->m_tick_end), global_file_long_int_size);
         file->write((const char *) &(iter->m_offset), global_file_long_int_size);
-        file->write((const char *) &(iter->m_sequence), sizeof(int32_t));
+        file->write((const char *) &(iter->m_sequence), global_file_int_size);
     }
     return true;
 }
@@ -1458,7 +1458,7 @@ track::load(ifstream *file, int version)
     }
 
     unsigned int num_seqs;
-    file->read((char *) &num_seqs, sizeof(int32_t));
+    file->read((char *) &num_seqs, global_file_int_size);
 
     for (unsigned int i=0; i< num_seqs; i++ )
     {
@@ -1470,7 +1470,7 @@ track::load(ifstream *file, int version)
     }
 
     unsigned int num_triggers;
-    file->read((char *) &num_triggers, sizeof(int32_t));
+    file->read((char *) &num_triggers, global_file_int_size);
 
     for (unsigned int i=0; i< num_triggers; i++ )
     {
@@ -1478,7 +1478,7 @@ track::load(ifstream *file, int version)
         file->read((char *) &(e.m_tick_start), global_file_long_int_size);
         file->read((char *) &(e.m_tick_end), global_file_long_int_size);
         file->read((char *) &(e.m_offset), global_file_long_int_size);
-        file->read((char *) &(e.m_sequence), sizeof(int32_t));
+        file->read((char *) &(e.m_sequence), global_file_int_size);
         m_list_trigger.push_back(e);
     }
 
