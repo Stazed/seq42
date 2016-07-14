@@ -2561,9 +2561,7 @@ std::string
 perform::current_date_time()
 {
     std::string mystring;
-//    std::string strDisplay;
     std::string strTemp;
-//    int nDate = 0;
 
     time_t     now = time(0);
     struct tm  tstruct;
@@ -2576,19 +2574,6 @@ perform::current_date_time()
     mystring = std::string(buf);
 
 // Format: = "2012-05-06.01:03:59 PM" of mystring Does NOT use military time
-
-//    strTemp.append(mystring,5,2); // Month
-//    strTemp.append(mystring,8,2); // Day
-//    strTemp.append(mystring,2,2); // Year two digit
-//    std::istringstream ( strTemp ) >> nDate; // This is mm dd yy for actual storage in int
-
-
-// And once more for general display
-//    strTemp.insert(4,mystring,0,2);  // Year for 4 digit display of year
-//    strDisplay = strTemp;
-//    strDisplay.insert(2,1,'/');
-//    strDisplay.insert(5,1,'/');
-
     return mystring;
 }
 
@@ -2597,56 +2582,51 @@ perform::save( const Glib::ustring& a_filename )
 {
     m_mutex.lock();
 
-    global_file_short_size = sizeof(int16_t); // FIXME
-    global_file_int_size = sizeof(int32_t); // FIXME
-    global_file_long_int_size = sizeof(int32_t); // reset hear in case changed by file load FIXME
-
-
     ofstream file (a_filename.c_str (), ios::out | ios::binary | ios::trunc);
 
     if (!file.is_open ()) return false;
 
-    //const uint64_t c_file_identification =  0x1A323451455389;
-    // dialog.set_version(VERSION); - program version
-    // time of file write
-
+    /* file version 5 */
     file.write((const char *) &c_file_identification, sizeof(uint64_t)); // magic number file ID
-    file.write((const char *) &VERSION, 10);                // program version FIXME
 
-    char time[30];
+    file.write((const char *) &VERSION, sizeof(char)* global_VERSION_array_size);
+
+    char time[global_time_array_size];
     std::string s_time = current_date_time();
-    strncpy(time, s_time.c_str(), 30);
-    file.write(time, 30);
+    strncpy(time, s_time.c_str(), global_time_array_size);
+    file.write(time, sizeof(char)* global_time_array_size);
 
-    file.write((const char *) &c_file_version, global_file_short_size);
+    /* end file version 5 */
+
+    file.write((const char *) &c_file_version, global_file_int_size);
 
     int bpm = get_bpm();
-    file.write((const char *) &bpm, global_file_short_size);
+    file.write((const char *) &bpm, global_file_int_size);
 
     int bp_measure = get_bp_measure(); // version 4
-    file.write((const char *) &bp_measure, global_file_short_size);
+    file.write((const char *) &bp_measure, global_file_int_size);
 
     int bw = get_bw();                 // version 4
-    file.write((const char *) &bw, global_file_short_size);
+    file.write((const char *) &bw, global_file_int_size);
 
     int swing_amount8 = get_swing_amount8();
-    file.write((const char *) &swing_amount8, global_file_short_size);
+    file.write((const char *) &swing_amount8, global_file_int_size);
     int swing_amount16 = get_swing_amount16();
-    file.write((const char *) &swing_amount16, global_file_short_size);
+    file.write((const char *) &swing_amount16, global_file_int_size);
 
     int active_tracks = 0;
     for (int i=0; i< c_max_track; i++ )
     {
         if ( is_active_track(i) ) active_tracks++;
     }
-    file.write((const char *) &active_tracks, global_file_short_size);
+    file.write((const char *) &active_tracks, global_file_int_size);
 
     for (int i=0; i< c_max_track; i++ )
     {
         if ( is_active_track(i) )
         {
             int trk_idx = i; // file version 3
-            file.write((const char *) &trk_idx, global_file_short_size);
+            file.write((const char *) &trk_idx, global_file_int_size);
 
             if(! get_track(i)->save(&file))
             {
@@ -2673,36 +2653,37 @@ perform::load( const Glib::ustring& a_filename )
     int64_t file_id = 0;
     file.read((char *) &file_id, sizeof(int64_t));
 
-    if(file_id != c_file_identification) // if it does not match, maybe its < version file 4 so reset to beginning
+    if(file_id != c_file_identification) // if it does not match, maybe its old file so reset to beginning
     {
         file.clear();
         file.seekg(0, ios::beg);
-        /* since were are checking for the < version 5 files now then reset int sizes */
+        /* since were are checking for the < version 5 files now, then reset int sizes to original */
         global_file_int_size = sizeof(int);
-        global_file_short_size = sizeof(int);   // yes this was originally int NOT short
         global_file_long_int_size = sizeof(long);
     }
-    else
+    else    // we have version 5 or greater file
     {
-        char pversion[11];       // program version
-        file.read(pversion, 10);
-        pversion[11] = '\0';
-        printf("Program Version [%s]\n", pversion);
+        char program_version[global_VERSION_array_size +1];
+        file.read(program_version,sizeof(char)* global_VERSION_array_size);
+        program_version[global_VERSION_array_size] = '\0';
 
-        char time[31];
-        file.read(time, 30);
-        time[31] = '\0';
-        printf("%s\n",time);
+        char time[global_time_array_size +1];
+        file.read(time,sizeof(char)* global_time_array_size);
+        time[global_time_array_size] = '\0';
+
+        printf("SEQ42 Release Version [%s]\n", program_version);
+        printf("File Created [%s]\n", time);
     }
 
     int version;
-    file.read((char *) &version, global_file_short_size);
+    file.read((char *) &version, global_file_int_size);
+
+    printf("File Version [%d]\n",version);
 
     if (version < 0 || version > c_file_version)
     {
         fprintf(stderr, "Invalid file version detected: %d\n", version);
         /*reset to defaults */
-        global_file_short_size = sizeof(int16_t);
         global_file_int_size = sizeof(int32_t);
         global_file_long_int_size = sizeof(int32_t);
         file.close();
@@ -2710,13 +2691,13 @@ perform::load( const Glib::ustring& a_filename )
     }
 
     int bpm;
-    file.read((char *) &bpm, global_file_short_size);
+    file.read((char *) &bpm, global_file_int_size);
     set_bpm(bpm);
 
     int bp_measure = 4;
     if(version > 3)
     {
-        file.read((char *) &bp_measure, global_file_short_size);
+        file.read((char *) &bp_measure, global_file_int_size);
     }
 
     set_bp_measure(bp_measure);
@@ -2724,7 +2705,7 @@ perform::load( const Glib::ustring& a_filename )
     int bw = 4;
     if(version > 3)
     {
-        file.read((char *) &bw, global_file_short_size);
+        file.read((char *) &bw, global_file_int_size);
     }
 
     set_bw(bw);
@@ -2732,20 +2713,20 @@ perform::load( const Glib::ustring& a_filename )
     int swing_amount8 = 0;
     if(version > 1)
     {
-        file.read((char *) &swing_amount8, global_file_short_size);
+        file.read((char *) &swing_amount8, global_file_int_size);
     }
 
     set_swing_amount8(swing_amount8);
     int swing_amount16 = 0;
     if(version > 1)
     {
-        file.read((char *) &swing_amount16, global_file_short_size);
+        file.read((char *) &swing_amount16, global_file_int_size);
     }
 
     set_swing_amount16(swing_amount16);
 
     int active_tracks;
-    file.read((char *) &active_tracks, global_file_short_size);
+    file.read((char *) &active_tracks, global_file_int_size);
 
     int trk_index = 0;
     for (int i=0; i< active_tracks; i++ )
@@ -2753,7 +2734,7 @@ perform::load( const Glib::ustring& a_filename )
         trk_index = i;
         if(version > 2)
         {
-            file.read((char *) &trk_index, global_file_short_size);
+            file.read((char *) &trk_index, global_file_int_size);
         }
 
         new_track(trk_index);
@@ -2765,10 +2746,10 @@ perform::load( const Glib::ustring& a_filename )
 
     file.close();
 
-    /* reset to default if ID does not match */
+    /* reset to default if ID does not match since
+    it would have been changed for prior < 5 version check */
     if(file_id != c_file_identification)
     {
-        global_file_short_size = sizeof(int16_t);
         global_file_int_size = sizeof(int32_t);
         global_file_long_int_size = sizeof(int32_t);
     }

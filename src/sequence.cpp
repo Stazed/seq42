@@ -3422,7 +3422,7 @@ sequence::save(ofstream *file)
     file->write((const char *) &m_length, global_file_long_int_size);
     file->write((const char *) &m_time_beats_per_measure, global_file_long_int_size);
     file->write((const char *) &m_time_beat_width, global_file_long_int_size);
-    file->write((const char *) &m_swing_mode, global_file_short_size);
+    file->write((const char *) &m_swing_mode, global_file_int_size);
 
     unsigned int num_events = m_list_event.size();
     file->write((const char *) &num_events, global_file_int_size);
@@ -3449,7 +3449,7 @@ sequence::load(ifstream *file, int version)
 
     if(version > 1)
     {
-        file->read((char *) &m_swing_mode, global_file_short_size);
+        file->read((char *) &m_swing_mode, global_file_int_size);
     }
     else
     {

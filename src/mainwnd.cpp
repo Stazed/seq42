@@ -54,7 +54,6 @@
 
 using namespace sigc;
 
-short global_file_short_size = sizeof(int16_t);
 short global_file_int_size = sizeof(int32_t);
 short global_file_long_int_size = sizeof(int32_t);
 
