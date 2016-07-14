@@ -78,6 +78,8 @@ the track edit items (name,channel,bus,transpose,mute)... except when undo/redo 
 * NEW - Added additional music scale items in sequence editor (Thanks to Chris Ahlstrom - sequencer64).
 * NEW - Add key binding to FF/Rewind (keys f,r) - configurable, also made key-p move to mouse position configurable.
 * NEW - Fixed midi song position to work when not starting from beginning of song. Play conditional upon song button.
+* NEW - Moved to jack_process_callback() - seq42 is not slow sync.
+* NEW - File version 5 - portable, file ID, date and time timestamp, program version added.
 
 What to do with a fresh repository checkout?
 --------------------------------------------

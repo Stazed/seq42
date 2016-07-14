@@ -1110,3 +1110,5 @@ sequence::seq_copyright_fill_list( list<char> *a_list, std::string a_copyright )
 }
 
 .............................
+
+seq24 has a drawback though, it records everything coming from a specific MIDI input, regardless its channel. So if you start a song on your Alesis seq24 will record everything into one single pattern. So if you want to record everything on separate channels at once seq24 isn't the right tool unfortunately :(
