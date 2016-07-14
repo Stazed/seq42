@@ -2589,7 +2589,9 @@ perform::save( const Glib::ustring& a_filename )
     /* file version 5 */
     file.write((const char *) &c_file_identification, sizeof(uint64_t)); // magic number file ID
 
-    file.write((const char *) &VERSION, sizeof(char)* global_VERSION_array_size);
+    char p_version[global_VERSION_array_size];
+    strncpy(p_version, VERSION, global_VERSION_array_size);
+    file.write((const char *) p_version, sizeof(char)* global_VERSION_array_size);
 
     char time[global_time_array_size];
     std::string s_time = current_date_time();

@@ -44,12 +44,12 @@ const int c_file_version = 5;  // Version of our save file format.  Increment th
 5 - Use int32_t for 32 bit 64 bit compatibility
 */
 
-/* for 32 bit & 64 bit compatible */
+/* for 32 bit & 64 bit compatible - file version 5 */
 extern short global_file_int_size;  // default sizeof(int32_t)
 extern short global_file_long_int_size; // default sizeof(int32_t) - define in mainwnd
-const uint64_t c_file_identification =  0x1A323451455389; // \211 S E Q 42 \032
-const short global_VERSION_array_size = 10;
-const short global_time_array_size = 30;
+const uint64_t c_file_identification =  0x293A323451455389; // \211 S E Q 42 : )
+const short global_VERSION_array_size = 8;
+const short global_time_array_size = 32;
 
 const int c_max_track_name = 16;
 const int c_max_seq_name = 32;
