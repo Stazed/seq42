@@ -80,6 +80,7 @@ the track edit items (name,channel,bus,transpose,mute)... except when undo/redo 
 * NEW - Fixed midi song position to work when not starting from beginning of song. Play conditional upon song button.
 * NEW - Moved to jack_process_callback() - seq42 is not slow sync.
 * NEW - File version 5 - portable, file ID, date and time timestamp, program version added.
+* NEW - Midi record is now channel specific.
 
 What to do with a fresh repository checkout?
 --------------------------------------------
