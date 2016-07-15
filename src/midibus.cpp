@@ -1558,8 +1558,7 @@ mastermidibus::get_midi_event( event *a_in )
         return false;
     }
     a_in->set_timestamp( ev->time.tick );
-    a_in->set_record_status( buffer[0] ); // does not clear channel bit
-    //a_in->set_status( buffer[0] );
+    a_in->set_status( buffer[0], true );    // true =  do not clear channel bit
     a_in->set_size( bytes );
 
     /* we will only get EVENT_SYSEX on the first
@@ -1580,8 +1579,7 @@ mastermidibus::get_midi_event( event *a_in )
         if ( a_in->get_status() == EVENT_NOTE_ON &&
                 a_in->get_note_velocity() == 0x00 )
         {
-            a_in->set_record_status( EVENT_NOTE_OFF ); // does not clear channel bit
-            //a_in->set_status( EVENT_NOTE_OFF );
+            a_in->set_status( EVENT_NOTE_OFF, true ); // true = do not clear channel bit
         }
 
         sysex = false;

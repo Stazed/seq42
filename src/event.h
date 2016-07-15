@@ -54,7 +54,10 @@ private:
     /* timestamp in ticks */
     unsigned long m_timestamp;
 
-    /* status byte without channel     */
+    /* status byte with channel on record
+       until matching channel determined then
+       cleared for storage & pass through */
+
     /* channel will be appended on bus */
     /* high nibble = type of event*/
     /* low nibble = channel */
@@ -91,8 +94,7 @@ public:
     long get_timestamp();
     void mod_timestamp( unsigned long a_mod );
 
-    void set_status( const char status );  // clears the channel portion
-    void set_record_status( const unsigned char a_status ); // does not clear the channel portion
+    void set_status( const char status, bool a_record = false );  // clears the channel portion if false
     unsigned char get_status( );
     void set_data( const char D1 );
     void set_data( const char D1, const char D2 );

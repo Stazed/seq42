@@ -723,7 +723,7 @@ mastermidibus::get_midi_event( event *a_in )
         return false;
     }
 
-    a_in->set_status( Pm_MessageStatus(event.message));
+    a_in->set_status( Pm_MessageStatus(event.message),true); // true = do not clear channel bit
     a_in->set_size( 3 );
     a_in->set_data( Pm_MessageData1(event.message), Pm_MessageData2(event.message) );
 
@@ -731,7 +731,7 @@ mastermidibus::get_midi_event( event *a_in )
     if ( a_in->get_status() == EVENT_NOTE_ON &&
             a_in->get_note_velocity() == 0x00 )
     {
-        a_in->set_status( EVENT_NOTE_OFF );
+        a_in->set_status( EVENT_NOTE_OFF, true );  // true = do not clear channel bit
     }
 
     unlock();

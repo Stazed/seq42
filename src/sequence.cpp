@@ -2070,7 +2070,6 @@ sequence::stream_event(  event *a_ev  )
     /* status comes in with the channel bit - only record matching channel of sequence */
     if(get_midi_channel() == (a_ev->m_status & 0x0F))
     {
-        //printf("Get_channel [%d] m_status [%d]\n", get_midi_channel(),(a_ev->m_status & 0x0F));
         /*
             This clears the channel bit now that we have a match.
             Channel will be appended on bus by midibus::play().
