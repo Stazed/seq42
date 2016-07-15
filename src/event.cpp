@@ -55,11 +55,28 @@ event::mod_timestamp( unsigned long a_mod )
 void
 event::set_status( const char a_status  )
 {
-    /* bitwise AND to clear the channel portion of the status */
+    /*
+        Bitwise AND to clear the channel portion of the status.
+        This is necessary since the channel is appended by
+        midibus::play() based on the track.
+    */
     if ( (unsigned char) a_status >= 0xF0 )
         m_status = (char) a_status;
     else
         m_status = (char) (a_status & EVENT_CLEAR_CHAN_MASK);
+}
+
+void
+event::set_record_status( const unsigned char a_status  )
+{
+    /*
+        Does not clear channel portion on record
+        for channel specific recording. The channel
+        portion is cleared in sequence::stream_event()
+        by calling set_status() after the matching
+        channel is determined.
+    */
+    m_status =  a_status;
 }
 
 void

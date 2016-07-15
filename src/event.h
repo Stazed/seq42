@@ -91,7 +91,8 @@ public:
     long get_timestamp();
     void mod_timestamp( unsigned long a_mod );
 
-    void set_status( const char status  );
+    void set_status( const char status );  // clears the channel portion
+    void set_record_status( const unsigned char a_status ); // does not clear the channel portion
     unsigned char get_status( );
     void set_data( const char D1 );
     void set_data( const char D1, const char D2 );

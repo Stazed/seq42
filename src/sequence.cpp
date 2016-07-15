@@ -2067,57 +2067,67 @@ sequence::stream_event(  event *a_ev  )
 {
     lock();
 
-    /* adjust tick */
-
-    a_ev->mod_timestamp( m_length );
-
-    if ( m_recording )
+    /* status comes in with the channel bit - only record matching channel of sequence */
+    if(get_midi_channel() == (a_ev->m_status & 0x0F))
     {
-        if ( global_is_running ) // This and below are the reason we need a global, no perform access
+        //printf("Get_channel [%d] m_status [%d]\n", get_midi_channel(),(a_ev->m_status & 0x0F));
+        /*
+            This clears the channel bit now that we have a match.
+            Channel will be appended on bus by midibus::play().
+        */
+        a_ev->set_status(a_ev->m_status); // clear channel bit
+
+        /* adjust tick */
+
+        a_ev->mod_timestamp( m_length );
+
+        if ( m_recording )
         {
-            if((int)get_track()->get_default_velocity() != c_note_on_velocity_default)
+            if ( global_is_running ) // This and below are the reason we need a global, no perform access
             {
-                if ( a_ev->is_note_on())
+                if((int)get_track()->get_default_velocity() != c_note_on_velocity_default)
                 {
-                    a_ev->set_note_velocity((int)get_track()->get_default_velocity());
+                    if ( a_ev->is_note_on())
+                    {
+                        a_ev->set_note_velocity((int)get_track()->get_default_velocity());
+                    }
                 }
-            }
 
-            add_event( a_ev );
-            set_dirty();
-        }
-        else        // this would be step edit, so set generic default note length, vol, to snap
-        {
-            if ( a_ev->is_note_on() )
-            {
-                push_undo();
-                add_note( m_last_tick % m_length, m_snap_tick - 2, a_ev->get_note(), false );
+                add_event( a_ev );
                 set_dirty();
-                m_notes_on++;
             }
-            if (a_ev->is_note_off()) m_notes_on--;
-            if (m_notes_on <= 0) m_last_tick += m_snap_tick;
+            else        // this would be step edit, so set generic default note length, vol, to snap
+            {
+                if ( a_ev->is_note_on() )
+                {
+                    push_undo();
+                    add_note( m_last_tick % m_length, m_snap_tick - 2, a_ev->get_note(), false );
+                    set_dirty();
+                    m_notes_on++;
+                }
+                if (a_ev->is_note_off()) m_notes_on--;
+                if (m_notes_on <= 0) m_last_tick += m_snap_tick;
+            }
         }
-    }
 
-    if ( m_thru )
-    {
-        put_event_on_bus( a_ev );
-    }
-
-    link_new();
-
-    if ( m_quanized_rec && global_is_running )  // need global here since we don't have perform access
-    {
-        if (a_ev->is_note_off())
+        if ( m_thru )
         {
-            select_note_events( a_ev->get_timestamp(), a_ev->get_note(),
-                                a_ev->get_timestamp(), a_ev->get_note(), e_select);
-            quanize_events( EVENT_NOTE_ON, 0, m_snap_tick, 1, true );
+            put_event_on_bus( a_ev );
         }
-    }
-    /* update view */
 
+        link_new();
+
+        if ( m_quanized_rec && global_is_running )  // need global here since we don't have perform access
+        {
+            if (a_ev->is_note_off())
+            {
+                select_note_events( a_ev->get_timestamp(), a_ev->get_note(),
+                                    a_ev->get_timestamp(), a_ev->get_note(), e_select);
+                quanize_events( EVENT_NOTE_ON, 0, m_snap_tick, 1, true );
+            }
+        }
+        /* update view */
+    }
     unlock();
 }
 
