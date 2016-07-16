@@ -1417,11 +1417,19 @@ seqedit::play_change_callback()
     m_seq->set_playing( m_toggle_play->get_active() );
 }
 
-void    // FIXME this does not check if checked or un-checked
+void
 seqedit::record_change_callback()
 {
-    //m_mainperf->get_master_midi_bus()->set_sequence_input( true, m_seq );
-    m_mainperf->get_master_midi_bus()->set_sequence_input( m_toggle_record->get_active(), m_seq );
+    /*
+        Both record_change_callback() and thru_change_callback() will call
+        set_sequence_input() for the same sequence. We only need to call
+        it if it is not already set, if setting. And, we should not unset
+        it if the m_toggle_thru->get_active() is true.
+    */
+
+    if(!m_toggle_thru->get_active())    // only change if thru is not active
+        m_mainperf->get_master_midi_bus()->set_sequence_input( m_toggle_record->get_active(), m_seq );
+
     m_seq->set_recording( m_toggle_record->get_active() );
 }
 
@@ -1455,11 +1463,19 @@ seqedit::redo_callback()
     m_seq->set_dirty();
 }
 
-void    // FIXME this does not check if checked or un-checked
+void
 seqedit::thru_change_callback()
 {
-    m_mainperf->get_master_midi_bus()->set_sequence_input( m_toggle_thru->get_active(), m_seq );
-    //m_mainperf->get_master_midi_bus()->set_sequence_input( true, m_seq );
+    /*
+        Both thru_change_callback() and record_change_callback() will call
+        set_sequence_input() for the same sequence. We only need to call
+        it if it is not already set, if setting. And, we should not unset
+        it if the m_toggle_record->get_active() is true.
+    */
+
+    if(!m_toggle_record->get_active())  // only change if record is not active
+        m_mainperf->get_master_midi_bus()->set_sequence_input( m_toggle_thru->get_active(), m_seq );
+
     m_seq->set_thru( m_toggle_thru->get_active() );
 }
 

@@ -2337,14 +2337,13 @@ void perform::input_func()
                         if( global_showmidi)
                             ev.print();
 
-                        /* is there a sequence set ? */
+                        /* is there at least one sequence set ? */
                         if (m_master_bus.is_dumping())
                         {
                             ev.set_timestamp(m_tick);
 
-                            /* dump to it */
-                            m_master_bus.dump_midi_incoming(&ev);
-                            //(m_master_bus.get_sequence())->stream_event(&ev);
+                            /* dump to it - possibly multiple sequences set */
+                            m_master_bus.dump_midi_input(&ev);
                         }
                     }
 

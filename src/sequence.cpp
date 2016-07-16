@@ -2063,9 +2063,8 @@ sequence::add_event( long a_tick,
 
 
 void
-sequence::stream_event(  event *a_ev  )
+sequence::stream_event( event *a_ev )
 {
-    //event a_in = *a_ev;
     lock();
 
     event a_in = *a_ev;
