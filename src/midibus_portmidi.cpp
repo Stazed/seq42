@@ -739,7 +739,7 @@ mastermidibus::get_midi_event( event *a_in )
     return true;
 }
 
-void
+void    // FIXME for multiple sequences
 mastermidibus::set_sequence_input( bool a_state, sequence *a_seq )
 {
     lock();

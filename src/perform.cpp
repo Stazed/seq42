@@ -2343,7 +2343,8 @@ void perform::input_func()
                             ev.set_timestamp(m_tick);
 
                             /* dump to it */
-                            (m_master_bus.get_sequence())->stream_event(&ev);
+                            m_master_bus.dump_midi_incoming(&ev);
+                            //(m_master_bus.get_sequence())->stream_event(&ev);
                         }
                     }
 

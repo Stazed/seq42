@@ -1606,13 +1606,52 @@ mastermidibus::get_midi_event( event *a_in )
     return true;
 }
 
-void
+void    // FIXME for multiple sequences
 mastermidibus::set_sequence_input( bool a_state, sequence *a_seq )
 {
     lock();
 
-    m_seq = a_seq;
-    m_dumping_input = a_state;
+    if(!a_state && a_seq == NULL)   // no sequence and false state - we don't want to record
+        m_vector_sequence.clear();
+
+    if(!a_state && a_seq != NULL)   // have a sequence with false - remove the sequence
+    {
+        for(unsigned i = 0; i < m_vector_sequence.size(); i++)
+        {
+            if(m_vector_sequence[i]== a_seq)
+                m_vector_sequence.erase(m_vector_sequence.begin() + i);
+        }
+
+    }
+
+    if(a_state && a_seq != NULL)    // have a sequence with true - add the sequence if not already set
+    {
+        bool have_seq_already = false;
+        for(unsigned i = 0; i < m_vector_sequence.size(); i++)
+        {
+            if(m_vector_sequence[i]== a_seq)
+                have_seq_already = true;
+        }
+
+        if(!have_seq_already)
+            m_vector_sequence.push_back(a_seq);
+    }
+
+    unsigned v_size = m_vector_sequence.size();
+
+    //m_seq = a_seq;
+    //m_dumping_input = a_state;
+    if(v_size > 0)
+        m_dumping_input = true;
 
     unlock();
+}
+
+void
+mastermidibus::dump_midi_incoming(event *a_in)
+{
+    for(unsigned i = 0; i < m_vector_sequence.size(); i++)
+    {
+        m_vector_sequence[i]->stream_event(a_in);
+    }
 }

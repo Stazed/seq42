@@ -1417,7 +1417,7 @@ seqedit::play_change_callback()
     m_seq->set_playing( m_toggle_play->get_active() );
 }
 
-void
+void    // FIXME this does not check if checked or un-checked
 seqedit::record_change_callback()
 {
     m_mainperf->get_master_midi_bus()->set_sequence_input( true, m_seq );
@@ -1454,7 +1454,7 @@ seqedit::redo_callback()
     m_seq->set_dirty();
 }
 
-void
+void    // FIXME this does not check if checked or un-checked
 seqedit::thru_change_callback()
 {
     m_mainperf->get_master_midi_bus()->set_sequence_input( true, m_seq );
@@ -1571,7 +1571,8 @@ seqedit::on_delete_event(GdkEventAny *a_event)
 {
     //printf( "seqedit::on_delete_event()\n" );
     m_seq->set_recording( false );
-    m_mainperf->get_master_midi_bus()->set_sequence_input( false, NULL );
+    m_mainperf->get_master_midi_bus()->set_sequence_input( false, m_seq );
+    //m_mainperf->get_master_midi_bus()->set_sequence_input( false, NULL );
     m_seq->set_editing( false );
 
     delete m_lfo_wnd;
