@@ -1618,7 +1618,7 @@ mastermidibus::set_sequence_input( bool a_state, sequence *a_seq )
     {
         for(unsigned i = 0; i < m_vector_sequence.size(); i++)
         {
-            if(m_vector_sequence[i]== a_seq)
+            if(m_vector_sequence[i] == a_seq)
                 m_vector_sequence.erase(m_vector_sequence.begin() + i);
         }
 
@@ -1639,6 +1639,7 @@ mastermidibus::set_sequence_input( bool a_state, sequence *a_seq )
 
     unsigned v_size = m_vector_sequence.size();
 
+    printf("vector size [%d]\n", v_size);
     //m_seq = a_seq;
     //m_dumping_input = a_state;
     if(v_size > 0)
@@ -1650,8 +1651,10 @@ mastermidibus::set_sequence_input( bool a_state, sequence *a_seq )
 void
 mastermidibus::dump_midi_incoming(event *a_in)
 {
+    event a_ev = *a_in;
     for(unsigned i = 0; i < m_vector_sequence.size(); i++)
     {
-        m_vector_sequence[i]->stream_event(a_in);
+        m_vector_sequence[i]->stream_event( &a_ev);
     }
+
 }

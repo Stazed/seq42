@@ -2065,20 +2065,23 @@ sequence::add_event( long a_tick,
 void
 sequence::stream_event(  event *a_ev  )
 {
+    //event a_in = *a_ev;
     lock();
 
+    event a_in = *a_ev;
+
     /* status comes in with the channel bit - only record matching channel of sequence */
-    if(get_midi_channel() == (a_ev->m_status & 0x0F))
+    if(get_midi_channel() == (a_in.m_status & 0x0F))
     {
         /*
             This clears the channel bit now that we have a match.
             Channel will be appended on bus by midibus::play().
         */
-        a_ev->set_status(a_ev->m_status); // clear channel bit
+        a_in.set_status(a_in.m_status); // clear channel bit
 
         /* adjust tick */
 
-        a_ev->mod_timestamp( m_length );
+        a_in.mod_timestamp( m_length );
 
         if ( m_recording )
         {
@@ -2086,42 +2089,42 @@ sequence::stream_event(  event *a_ev  )
             {
                 if((int)get_track()->get_default_velocity() != c_note_on_velocity_default)
                 {
-                    if ( a_ev->is_note_on())
+                    if ( a_in.is_note_on())
                     {
-                        a_ev->set_note_velocity((int)get_track()->get_default_velocity());
+                        a_in.set_note_velocity((int)get_track()->get_default_velocity());
                     }
                 }
 
-                add_event( a_ev );
+                add_event( &a_in );
                 set_dirty();
             }
             else        // this would be step edit, so set generic default note length, vol, to snap
             {
-                if ( a_ev->is_note_on() )
+                if ( a_in.is_note_on() )
                 {
                     push_undo();
-                    add_note( m_last_tick % m_length, m_snap_tick - 2, a_ev->get_note(), false );
+                    add_note( m_last_tick % m_length, m_snap_tick - 2, a_in.get_note(), false );
                     set_dirty();
                     m_notes_on++;
                 }
-                if (a_ev->is_note_off()) m_notes_on--;
+                if (a_in.is_note_off()) m_notes_on--;
                 if (m_notes_on <= 0) m_last_tick += m_snap_tick;
             }
         }
 
         if ( m_thru )
         {
-            put_event_on_bus( a_ev );
+            put_event_on_bus( &a_in );
         }
 
         link_new();
 
         if ( m_quanized_rec && global_is_running )  // need global here since we don't have perform access
         {
-            if (a_ev->is_note_off())
+            if (a_in.is_note_off())
             {
-                select_note_events( a_ev->get_timestamp(), a_ev->get_note(),
-                                    a_ev->get_timestamp(), a_ev->get_note(), e_select);
+                select_note_events( a_in.get_timestamp(), a_in.get_note(),
+                                    a_in.get_timestamp(), a_in.get_note(), e_select);
                 quanize_events( EVENT_NOTE_ON, 0, m_snap_tick, 1, true );
             }
         }

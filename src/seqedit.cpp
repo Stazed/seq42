@@ -1420,7 +1420,8 @@ seqedit::play_change_callback()
 void    // FIXME this does not check if checked or un-checked
 seqedit::record_change_callback()
 {
-    m_mainperf->get_master_midi_bus()->set_sequence_input( true, m_seq );
+    //m_mainperf->get_master_midi_bus()->set_sequence_input( true, m_seq );
+    m_mainperf->get_master_midi_bus()->set_sequence_input( m_toggle_record->get_active(), m_seq );
     m_seq->set_recording( m_toggle_record->get_active() );
 }
 
@@ -1457,7 +1458,8 @@ seqedit::redo_callback()
 void    // FIXME this does not check if checked or un-checked
 seqedit::thru_change_callback()
 {
-    m_mainperf->get_master_midi_bus()->set_sequence_input( true, m_seq );
+    m_mainperf->get_master_midi_bus()->set_sequence_input( m_toggle_thru->get_active(), m_seq );
+    //m_mainperf->get_master_midi_bus()->set_sequence_input( true, m_seq );
     m_seq->set_thru( m_toggle_thru->get_active() );
 }
 
