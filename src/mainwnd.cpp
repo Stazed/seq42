@@ -972,12 +972,18 @@ mainwnd::delete_unused_seq()
 void
 mainwnd::create_triggers()
 {
+    if(global_is_running)
+        return;
+
     m_mainperf->create_triggers();
 }
 
 void
 mainwnd::apply_song_transpose()
 {
+    if(global_is_running)
+        return;
+
     if(m_mainperf->get_master_midi_bus()->get_transpose() != 0)
     {
         m_mainperf->apply_song_transpose();

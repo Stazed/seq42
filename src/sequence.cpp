@@ -2094,7 +2094,7 @@ sequence::stream_event( event *a_ev )
                     }
                 }
 
-                add_event( &a_in );
+                add_event( &a_in ); // locks
                 set_dirty();
             }
             else        // this would be step edit, so set generic default note length, vol, to snap
@@ -2102,7 +2102,7 @@ sequence::stream_event( event *a_ev )
                 if ( a_in.is_note_on() )
                 {
                     push_undo();
-                    add_note( m_last_tick % m_length, m_snap_tick - 2, a_in.get_note(), false );
+                    add_note( m_last_tick % m_length, m_snap_tick - 2, a_in.get_note(), false ); // locks
                     set_dirty();
                     m_notes_on++;
                 }
@@ -2113,18 +2113,18 @@ sequence::stream_event( event *a_ev )
 
         if ( m_thru )
         {
-            put_event_on_bus( &a_in );
+            put_event_on_bus( &a_in ); // locks
         }
 
-        link_new();
+        link_new();  // locks
 
         if ( m_quanized_rec && global_is_running )  // need global here since we don't have perform access
         {
             if (a_in.is_note_off())
             {
                 select_note_events( a_in.get_timestamp(), a_in.get_note(),
-                                    a_in.get_timestamp(), a_in.get_note(), e_select);
-                quanize_events( EVENT_NOTE_ON, 0, m_snap_tick, 1, true );
+                                    a_in.get_timestamp(), a_in.get_note(), e_select); // locks
+                quanize_events( EVENT_NOTE_ON, 0, m_snap_tick, 1, true );   // locks
             }
         }
         /* update view */
