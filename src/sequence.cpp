@@ -2062,9 +2062,11 @@ sequence::add_event( long a_tick,
 }
 
 
-void
+bool
 sequence::stream_event( event *a_ev )
 {
+    bool channel_match = false;
+
     lock();
 
     event a_in = *a_ev;
@@ -2128,8 +2130,11 @@ sequence::stream_event( event *a_ev )
             }
         }
         /* update view */
+        channel_match = true;
     }
     unlock();
+
+    return channel_match;
 }
 
 void

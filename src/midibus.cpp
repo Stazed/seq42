@@ -1638,8 +1638,6 @@ mastermidibus::set_sequence_input( bool a_state, sequence *a_seq )
 
     unsigned v_size = m_vector_sequence.size();
 
-    //printf("vector size [%d]\n", v_size);
-
     if(v_size > 0)
         m_dumping_input = true;
 
@@ -1653,6 +1651,7 @@ mastermidibus::dump_midi_input(event *a_in)
 
     for(unsigned i = 0; i < m_vector_sequence.size(); i++)
     {
-        m_vector_sequence[i]->stream_event( &a_ev);
+        if(m_vector_sequence[i]->stream_event( &a_ev)) // did we find a match to sequence channel
+            break;                                     // yes, so don't bother with remaining sequences
     }
 }

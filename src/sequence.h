@@ -314,7 +314,7 @@ public:
                     unsigned char a_status,
                     unsigned char a_d0, unsigned char a_d1, bool a_paint = false);
 
-    void stream_event (event * a_ev);
+    bool stream_event (event * a_ev);
 
     /* changes velocities in a ramping way from vel_s to vel_f  */
     void change_event_data_range (long a_tick_s, long a_tick_f,
