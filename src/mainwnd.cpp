@@ -1029,19 +1029,34 @@ void mainwnd::file_new()
 
 void mainwnd::new_file()
 {
-    m_mainperf->clear_all();
-    set_bp_measure(4);
-    set_bw(4);
-    set_xpose(0);
-    m_mainperf->set_bpm(120);
-    m_mainperf->undo_vect.clear();
-    m_mainperf->redo_vect.clear();
-    m_mainperf->set_have_undo();
-    m_mainperf->set_have_redo();
+    if(m_mainperf->clear_all())
+    {
+        set_bp_measure(4);
+        set_bw(4);
+        set_xpose(0);
+        m_mainperf->set_bpm(120);
+        m_mainperf->undo_vect.clear();
+        m_mainperf->redo_vect.clear();
+        m_mainperf->set_have_undo();
+        m_mainperf->set_have_redo();
 
-    global_filename = "";
-    update_window_title();
-    global_is_modified = false;
+        global_filename = "";
+        update_window_title();
+        global_is_modified = false;
+    }
+    else
+    {
+        Gtk::MessageDialog errdialog
+        (
+            *this,
+            "All track edit and sequence edit\nwindows must be closed\nbefore starting a new file.",
+            false,
+            Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK,
+            true
+        );
+        errdialog.run();
+        return;
+    }
 }
 
 /* callback function */
@@ -1186,24 +1201,47 @@ void mainwnd::open_file(const Glib::ustring& fn)
 {
     bool result;
 
-    m_mainperf->clear_all();
+    if(m_mainperf->clear_all())
+    {
+        set_xpose(0);
+        m_mainperf->undo_vect.clear();
+        m_mainperf->redo_vect.clear();
+        m_mainperf->set_have_undo();
+        m_mainperf->set_have_redo();
 
-    set_xpose(0);
-    m_mainperf->undo_vect.clear();
-    m_mainperf->redo_vect.clear();
-    m_mainperf->set_have_undo();
-    m_mainperf->set_have_redo();
+        result = m_mainperf->load(fn);
 
-    result = m_mainperf->load(fn);
+        global_is_modified = !result;
 
-    global_is_modified = !result;
+        if (!result)
+        {
+            Gtk::MessageDialog errdialog
+            (
+                *this,
+                "Error reading file: " + fn,
+                false,
+                Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK,
+                true
+            );
+            errdialog.run();
+            return;
+        }
 
-    if (!result)
+        last_used_dir = fn.substr(0, fn.rfind("/") + 1);
+        global_filename = fn;
+        update_window_title();
+
+        m_adjust_bpm->set_value( m_mainperf->get_bpm());
+
+        m_adjust_swing_amount8->set_value( m_mainperf->get_swing_amount8());
+        m_adjust_swing_amount16->set_value( m_mainperf->get_swing_amount16());
+    }
+    else
     {
         Gtk::MessageDialog errdialog
         (
             *this,
-            "Error reading file: " + fn,
+            "All track edit and sequence edit\nwindows must be closed\nbefore opening a new file.",
             false,
             Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK,
             true
@@ -1211,15 +1249,6 @@ void mainwnd::open_file(const Glib::ustring& fn)
         errdialog.run();
         return;
     }
-
-    last_used_dir = fn.substr(0, fn.rfind("/") + 1);
-    global_filename = fn;
-    update_window_title();
-
-    m_adjust_bpm->set_value( m_mainperf->get_bpm());
-
-    m_adjust_swing_amount8->set_value( m_mainperf->get_swing_amount8());
-    m_adjust_swing_amount16->set_value( m_mainperf->get_swing_amount16());
 }
 
 /*callback function*/

@@ -236,8 +236,19 @@ void perform::deinit_jack()
 #endif // JACK_SUPPORT
 }
 
-void perform::clear_all()
+bool perform::clear_all()
 {
+    for (int i=0; i< c_max_track; i++ )
+    {
+        if ( is_active_track(i) )
+        {
+            if ( m_tracks[i] != NULL && is_track_in_edit(i) )
+            {
+                return false;
+            }
+        }
+    }
+
     reset_sequences();
 
     for (int i=0; i< c_max_track; i++ )
@@ -245,6 +256,8 @@ void perform::clear_all()
         if ( is_active_track(i) )
             delete_track( i );
     }
+
+    return true;
 }
 
 track* perform::get_track( int a_trk )
