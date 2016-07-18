@@ -155,6 +155,7 @@ private:
     void fast_forward(bool a_press);
     void update_window_title();
     void toLower(basic_string<char>&);
+    void new_open_error_dialog();
     void file_new();
     void file_open();
     void file_save();

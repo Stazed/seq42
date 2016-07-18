@@ -257,6 +257,11 @@ bool perform::clear_all()
             delete_track( i );
     }
 
+    undo_vect.clear();
+    redo_vect.clear();
+    set_have_undo();
+    set_have_redo();
+
     return true;
 }
 

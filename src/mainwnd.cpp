@@ -1035,10 +1035,6 @@ void mainwnd::new_file()
         set_bw(4);
         set_xpose(0);
         m_mainperf->set_bpm(120);
-        m_mainperf->undo_vect.clear();
-        m_mainperf->redo_vect.clear();
-        m_mainperf->set_have_undo();
-        m_mainperf->set_have_redo();
 
         global_filename = "";
         update_window_title();
@@ -1046,15 +1042,7 @@ void mainwnd::new_file()
     }
     else
     {
-        Gtk::MessageDialog errdialog
-        (
-            *this,
-            "All track edit and sequence edit\nwindows must be closed\nbefore starting a new file.",
-            false,
-            Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK,
-            true
-        );
-        errdialog.run();
+        new_open_error_dialog();
         return;
     }
 }
@@ -1197,6 +1185,19 @@ void mainwnd::export_midi(const Glib::ustring& fn, int type)
         last_midi_dir = fn.substr(0, fn.rfind("/") + 1);
 }
 
+void mainwnd::new_open_error_dialog()
+{
+    Gtk::MessageDialog errdialog
+    (
+        *this,
+        "All track edit and sequence edit\nwindows must be closed\nbefore opening a new file.",
+        false,
+        Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK,
+        true
+    );
+    errdialog.run();
+}
+
 void mainwnd::open_file(const Glib::ustring& fn)
 {
     bool result;
@@ -1204,10 +1205,6 @@ void mainwnd::open_file(const Glib::ustring& fn)
     if(m_mainperf->clear_all())
     {
         set_xpose(0);
-        m_mainperf->undo_vect.clear();
-        m_mainperf->redo_vect.clear();
-        m_mainperf->set_have_undo();
-        m_mainperf->set_have_redo();
 
         result = m_mainperf->load(fn);
 
@@ -1238,15 +1235,7 @@ void mainwnd::open_file(const Glib::ustring& fn)
     }
     else
     {
-        Gtk::MessageDialog errdialog
-        (
-            *this,
-            "All track edit and sequence edit\nwindows must be closed\nbefore opening a new file.",
-            false,
-            Gtk::MESSAGE_ERROR, Gtk::BUTTONS_OK,
-            true
-        );
-        errdialog.run();
+        new_open_error_dialog();
         return;
     }
 }
