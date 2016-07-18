@@ -1651,7 +1651,9 @@ mastermidibus::dump_midi_input(event *a_in)
 
     for(unsigned i = 0; i < m_vector_sequence.size(); i++)
     {
-        if(m_vector_sequence[i]->stream_event( &a_ev)) // did we find a match to sequence channel
-            break;                                     // yes, so don't bother with remaining sequences
+        if((m_vector_sequence[i] == NULL) ||            // error check.
+            m_vector_sequence[i]->stream_event( &a_ev)) // did we find a match to sequence channel?
+            break;                                      // yes, so don't bother with remaining sequences.
     }
 }
+

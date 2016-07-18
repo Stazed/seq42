@@ -165,6 +165,7 @@ private:
     /* for dumping midi input to sequence for recording */
     bool m_dumping_input;
     sequence *m_seq;
+    vector < sequence *> m_vector_sequence;
 
     /* locking */
     mutex m_mutex;

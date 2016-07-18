@@ -1590,7 +1590,6 @@ seqedit::on_delete_event(GdkEventAny *a_event)
     //printf( "seqedit::on_delete_event()\n" );
     m_seq->set_recording( false );
     m_mainperf->get_master_midi_bus()->set_sequence_input( false, m_seq );
-    //m_mainperf->get_master_midi_bus()->set_sequence_input( false, NULL );
     m_seq->set_editing( false );
 
     delete m_lfo_wnd;
