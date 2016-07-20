@@ -643,28 +643,6 @@ bool midifile::parse (perform * a_perf, int screen_set)
         }
     }
 
-    if ((file_size - m_pos) > (int) sizeof (unsigned int))
-    {
-        /* Get ID + Length */
-        ID = read_long ();
-        if (ID == c_bp_measure)
-        {
-            long bp_mes = read_long ();
-            a_perf->set_bp_measure(bp_mes);
-        }
-    }
-
-    if ((file_size - m_pos) > (int) sizeof (unsigned int))
-    {
-        /* Get ID + Length */
-        ID = read_long ();
-        if (ID == c_beat_width)
-        {
-            long bw = read_long ();
-            a_perf->set_bw(bw);
-        }
-    }
-
     // *** ADD NEW TAGS AT END **************/
     return true;
 }
