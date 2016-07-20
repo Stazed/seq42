@@ -894,6 +894,9 @@ void mainwnd::bp_measure_button_callback(int a_beats_per_measure)
 
 void mainwnd::set_bp_measure( int a_beats_per_measure )
 {
+    if(a_beats_per_measure < 1 || a_beats_per_measure > 16)
+        a_beats_per_measure = 4;
+
     m_mainperf->set_bp_measure(a_beats_per_measure);
 
     if(a_beats_per_measure <= 7)
@@ -920,6 +923,9 @@ void mainwnd::bw_button_callback(int a_beat_width)
 
 void mainwnd::set_bw( int a_beat_width )
 {
+    if(a_beat_width < 1 || a_beat_width > 16)
+        a_beat_width = 4;
+
     m_mainperf->set_bw(a_beat_width);
     char b[10];
     snprintf(b, sizeof(b), "%d", a_beat_width );
