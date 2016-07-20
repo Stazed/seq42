@@ -50,6 +50,8 @@ private:
     void write_byte( unsigned char );
 
     void write_header( int numtracks);
+    void write_tempo(perform * a_perf);
+    void write_time_sig(perform * a_perf);
     int pow2 (int logbase2);
     Glib::ustring Ulong_To_String_Hex( unsigned long Number );
     void error_message_gtk( Glib::ustring message);
