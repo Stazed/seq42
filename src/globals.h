@@ -138,9 +138,10 @@ const unsigned long c_bpmtag =     0x24240007;
 const unsigned long c_triggers_new =   0x24240008;
 const unsigned long c_midictrl =   0x24240010;
 const unsigned long c_mutegroups = 0x24240009; // not sure why we went to 10 above, this might need a different value
-const unsigned long c_bp_measure = 0x24240011;
-const unsigned long c_beat_width = 0x24240012;
-const unsigned long c_transpose =  0x24240013;
+//const unsigned long c_bp_measure = 0x24240011;    // dropped ca 7/20/16 for SMF
+//const unsigned long c_beat_width = 0x24240012;    // dropped ca 7/20/16 for SMF
+//const unsigned long c_transpose =  0x24240013;    // changed ca 7/20/16 to 0x24240014 for consistency to seq64
+const unsigned long c_transpose =  0x24240014;      // 7/20/16
 
 const char c_font_6_12[] = "-*-fixed-medium-r-*--12-*-*-*-*-*-*";
 const char c_font_8_13[] = "-*-fixed-medium-r-*--13-*-*-*-*-*-*";
