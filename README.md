@@ -76,11 +76,11 @@ the track edit items (name,channel,bus,transpose,mute)... except when undo/redo 
 * NEW - Add support for transposable flag on seq32 import.
 * NEW - Add pause to follow transport when editing with button press on song editor and sequence editor.
 * NEW - Added additional music scale items in sequence editor (Thanks to Chris Ahlstrom - sequencer64).
-* NEW - Add key binding to FF/Rewind (keys f,r) - configurable, also made key-p move to mouse position configurable.
+* NEW - Add key binding to FF/Rewind (keys f,r -- works best without key repeat) - configurable, also made key-p move to mouse position configurable.
 * NEW - Fixed midi song position to work when not starting from beginning of song. Play conditional upon song button.
 * NEW - Moved to jack_process_callback() - seq42 is not slow sync.
 * NEW - File version 5 - portable, file ID, date and time timestamp, program version added.
-* NEW - Midi record is now channel specific.
+* NEW - Midi record now supports simultaneous multi-sequence record, channel specific, up to 16 channels at once.
 
 What to do with a fresh repository checkout?
 --------------------------------------------
