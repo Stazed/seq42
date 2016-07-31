@@ -76,7 +76,7 @@ private:
     bool m_dirty_perf;
     bool m_dirty_names;
 
-    mutex m_mutex;
+    seq42_mutex m_mutex;
 
     void lock ();
     void unlock ();

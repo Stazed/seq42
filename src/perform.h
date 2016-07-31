@@ -120,7 +120,7 @@ private:
     void set_playback_mode( bool a_playback_mode );
 
     condition_var m_condition_var;
-    mutex m_mutex;
+    seq42_mutex m_mutex;
 
 #ifdef JACK_SUPPORT
 

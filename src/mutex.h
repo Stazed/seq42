@@ -24,7 +24,7 @@
 
 #include <pthread.h>
 
-class mutex
+class seq42_mutex
 {
 
 private:
@@ -38,13 +38,13 @@ protected:
 
 public:
 
-    mutex();
+    seq42_mutex();
 
     void lock();
     void unlock();
 };
 
-class condition_var : public mutex
+class condition_var : public seq42_mutex
 {
 
 private:
