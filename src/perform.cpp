@@ -2361,7 +2361,7 @@ void perform::input_func()
                             ev.set_timestamp(m_tick);
 
                             /* dump to it - possibly multiple sequences set */
-                            m_master_bus.dump_midi_input(&ev);
+                            m_master_bus.dump_midi_input(ev);
                         }
                     }
 
@@ -2573,6 +2573,18 @@ int main ()
 
 
 #endif // JACK_SUPPORT
+
+bool
+perform::track_is_song_exportable(int a_track)
+{
+    if (is_active_track(a_track) && get_track(a_track)->get_track_trigger_count() > 0 &&
+                !get_track(a_track)->get_song_mute()) // don't count tracks with NO triggers or muted
+        {
+            if(get_track(a_track)->get_number_of_sequences() > 0) // don't count tracks with NO sequences(even if they have a trigger)
+                return true;
+        }
+    return false;
+}
 
 
 std::string

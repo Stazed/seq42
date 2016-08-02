@@ -314,6 +314,8 @@ public:
 
     long get_max_trigger();
 
+    bool track_is_song_exportable(int a_track);
+
     std::string current_date_time();
     bool save( const Glib::ustring& a_filename );
     bool load( const Glib::ustring& a_filename );
