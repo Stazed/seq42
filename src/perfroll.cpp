@@ -924,50 +924,18 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                         m_mainperf->get_track(t)->unset_trigger_copied(); // clear previous copies
                     }
                     m_mainperf->get_track( m_drop_track )->copy_selected_trigger();
-                    cross_track_paste = false;
+                    cross_track_paste = false;                            // clear previous on new copy
                     ret = true;
                 }
 
                 /* paste */
                 if ( a_p0->keyval == GDK_v || a_p0->keyval == GDK_V )
                 {
-                    bool cross_track = false;
-                    for ( int t=0; t<c_max_track; ++t )
+                    if (m_mainperf->get_track(m_drop_track)->get_trigger_clipboard()->m_sequence >= 0)
                     {
-                        if (! m_mainperf->is_active_track( t ))
-                        {
-                            continue;
-                        }
-
-                        if(m_mainperf->get_track(t)->get_trigger_copied() &&    // do we have a copy to clipboard
-                                m_mainperf->get_track( m_drop_track)->get_trigger_paste_tick() >= 0 &&  // do we have a paste
-                                !cross_track_paste) // has cross track paste NOT been done for this copy
-                        {
-                            if(t != m_drop_track) // If clipboard and paste are on diff tracks - then cross track paste
-                            {
-                                paste_trigger_sequence
-                                (
-                                    m_mainperf->get_track( m_drop_track ),
-                                    m_mainperf->get_track(t)->get_sequence(m_mainperf->get_track(t)
-                                            ->get_trigger_clipboard()->m_sequence )
-                                );
-                                ret = true;
-                                cross_track_paste = true;
-                                cross_track = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if(!cross_track)
-                    {
-                        if (m_mainperf->get_track(m_drop_track)->get_trigger_clipboard()->m_sequence >= 0)
-                        {
-                            m_mainperf->push_trigger_undo(m_drop_track);
-                            m_mainperf->get_track( m_drop_track )->paste_trigger();
-                            cross_track = false;
-                            ret = true;
-                        }
+                        m_mainperf->push_trigger_undo(m_drop_track);
+                        m_mainperf->get_track( m_drop_track )->paste_trigger();
+                        ret = true;
                     }
                 }
             }
@@ -1120,7 +1088,48 @@ perfroll::del_trigger( track *a_track, long a_tick )
 }
 
 void
-perfroll::paste_trigger_sequence( track *p_track, sequence *a_sequence )
+perfroll::paste_trigger_mouse(long a_tick)
+{
+    bool cross_track = false;
+    for ( int t=0; t<c_max_track; ++t )
+    {
+        if (! m_mainperf->is_active_track( t ))
+        {
+            continue;
+        }
+
+        if(m_mainperf->get_track(t)->get_trigger_copied() &&    // do we have a copy to clipboard
+                !cross_track_paste)                             // has cross track paste NOT been done for this ctrl-c copy
+        {
+            if(t != m_drop_track)                               // If clipboard and paste are on diff tracks - then cross track paste
+            {
+                paste_trigger_sequence
+                (
+                    m_mainperf->get_track( m_drop_track ),
+                    m_mainperf->get_track(t)->get_sequence(m_mainperf->get_track(t)
+                            ->get_trigger_clipboard()->m_sequence),
+                    a_tick
+                );
+                cross_track_paste = true;
+                cross_track = true;
+                break;
+            }
+        }
+    }
+
+    if(!cross_track)
+    {
+        if (m_mainperf->get_track(m_drop_track)->get_trigger_clipboard()->m_sequence >= 0)
+        {
+            m_mainperf->push_trigger_undo(m_drop_track);
+            m_mainperf->get_track( m_drop_track )->paste_trigger(a_tick);
+        }
+   }
+}
+
+
+void
+perfroll::paste_trigger_sequence( track *p_track, sequence *a_sequence, long a_tick )
 {
     // empty trigger = segfault via get_length - don't allow w/o sequence
     if (a_sequence == NULL)
@@ -1150,13 +1159,12 @@ perfroll::paste_trigger_sequence( track *p_track, sequence *a_sequence )
 
             long length =  p_track->get_trigger_clipboard()->m_tick_end - p_track->get_trigger_clipboard()->m_tick_start + 1;
 
-            long offset_adjust = p_track->get_trigger_paste_tick() - p_track->get_trigger_clipboard()->m_tick_start;
-            p_track->add_trigger(p_track->get_trigger_paste_tick(),
-                                 length,
+            long offset_adjust = a_tick - p_track->get_trigger_clipboard()->m_tick_start;
+            p_track->add_trigger(a_tick, length,
                                  p_track->get_trigger_clipboard()->m_offset + offset_adjust,
                                  p_track->get_trigger_clipboard()->m_sequence); // +/- distance to paste tick from start
 
-            p_track->get_trigger_clipboard()->m_tick_start = p_track->get_trigger_paste_tick();
+            p_track->get_trigger_clipboard()->m_tick_start = a_tick;
             p_track->get_trigger_clipboard()->m_tick_end = p_track->get_trigger_clipboard()->m_tick_start + length - 1;
             p_track->get_trigger_clipboard()->m_offset += offset_adjust;
 
@@ -1166,7 +1174,6 @@ perfroll::paste_trigger_sequence( track *p_track, sequence *a_sequence )
             //printf("p-m_offset[%ld]\np-m_tick_start[%ld]\np-m_tick_end[%ld]\n",p_track->get_trigger_clipboard()->m_offset,
             //       p_track->get_trigger_clipboard()->m_tick_start,p_track->get_trigger_clipboard()->m_tick_end);
 
-            p_track->set_trigger_paste_tick(-1); // reset to default
             p_track->set_trigger_copied();  // change to paste track
             a_sequence->get_track()->unset_trigger_copied(); // undo original
         }

@@ -163,7 +163,8 @@ public:
     void play_sequence( track *a_track, trigger *a_trigger);
     void set_trigger_sequence( track *a_track, trigger *a_trigger, int a_sequence );
     void del_trigger( track *a_track, long a_tick );
-    void paste_trigger_sequence( track *p_track, sequence *a_sequence );
+    void paste_trigger_mouse(long a_tick);
+    void paste_trigger_sequence( track *p_track, sequence *a_sequence, long a_tick );
     void copy_sequence( track *a_track, trigger *a_trigger, sequence *a_seq );
     long get_default_trigger_length( perfroll& ths );
 

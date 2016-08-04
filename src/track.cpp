@@ -32,7 +32,6 @@ track::track()
     m_song_mute = false;
     m_transposable = true;
     m_trigger_copied = false;
-    m_paste_tick = -1;
 
     m_dirty_perf = true;
     m_dirty_names = true;
@@ -1248,7 +1247,6 @@ track::cut_selected_trigger()
 void
 track::copy_selected_trigger()
 {
-    set_trigger_paste_tick(-1); // reset to default for any carryover of unpasted click on track
     lock();
 
     list<trigger>::iterator i;
@@ -1267,7 +1265,7 @@ track::copy_selected_trigger()
 }
 
 void
-track::paste_trigger()
+track::paste_trigger(long a_tick)
 {
     // empty trigger = segfault via get_length - don't allow w/o sequence
     if (m_trigger_clipboard.m_sequence < 0)
@@ -1277,8 +1275,8 @@ track::paste_trigger()
     {
         long length =  m_trigger_clipboard.m_tick_end -
                        m_trigger_clipboard.m_tick_start + 1;
-        // paste at copy end or get_trigger_paste_tick
-        if(get_trigger_paste_tick() < 0)    // < 0 means no paste tick set so use default
+        // paste at copy end or a_tick
+        if(a_tick < 0)    // < 0 means no paste tick set so use default
         {
             add_trigger( m_trigger_clipboard.m_tick_end + 1,
                          length,
@@ -1296,33 +1294,19 @@ track::paste_trigger()
         }
         else
         {
-            long offset_adjust = get_trigger_paste_tick() - m_trigger_clipboard.m_tick_start;
-            add_trigger(get_trigger_paste_tick(),
-                        length,
+            long offset_adjust = a_tick - m_trigger_clipboard.m_tick_start;
+            add_trigger(a_tick, length,
                         m_trigger_clipboard.m_offset + offset_adjust,
                         m_trigger_clipboard.m_sequence); // +/- distance to paste tick from start
 
-            m_trigger_clipboard.m_tick_start = get_trigger_paste_tick();
+            m_trigger_clipboard.m_tick_start = a_tick;
             m_trigger_clipboard.m_tick_end = m_trigger_clipboard.m_tick_start + length - 1;
             m_trigger_clipboard.m_offset += offset_adjust;
 
             long a_length = get_sequence(m_trigger_clipboard.m_sequence)->get_length();
             m_trigger_clipboard.m_offset = adjust_offset(m_trigger_clipboard.m_offset,a_length);
-            set_trigger_paste_tick(-1); // reset to default
         }
     }
-}
-
-void
-track::set_trigger_paste_tick(long a_tick)
-{
-    m_paste_tick = a_tick;
-}
-
-long
-track::get_trigger_paste_tick()
-{
-    return m_paste_tick;
 }
 
 void

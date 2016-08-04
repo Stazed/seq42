@@ -87,7 +87,7 @@ bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
             bool state = ths.m_mainperf->get_track( ths.m_drop_track )->get_trigger_state(tick);
 
             if ( !state )    // clicked on track (off trigger) - paste
-                ths.m_mainperf->get_track( ths.m_drop_track )->set_trigger_paste_tick(tick);
+                ths.paste_trigger_mouse(tick);
         }
     }
 
@@ -114,7 +114,7 @@ void FruityPerfInput::on_left_button_pressed(GdkEventButton* a_ev, perfroll& ths
             }
             else // clicked off trigger for paste
             {
-                ths.m_mainperf->get_track( ths.m_drop_track )->set_trigger_paste_tick(tick);
+                ths.paste_trigger_mouse(tick);
             }
         }
     }
@@ -461,7 +461,7 @@ bool Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
             }
             else    // clicked off trigger for paste
             {
-                ths.m_mainperf->get_track( ths.m_drop_track )->set_trigger_paste_tick(tick);
+                ths.paste_trigger_mouse(tick);
             }
         }
     }

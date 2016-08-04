@@ -71,8 +71,6 @@ private:
 
     bool m_trigger_copied;
 
-    long m_paste_tick;
-
     bool m_dirty_perf;
     bool m_dirty_names;
 
@@ -166,9 +164,7 @@ public:
     void del_selected_trigger();
     void cut_selected_trigger();
     void copy_selected_trigger();
-    void paste_trigger();
-    void set_trigger_paste_tick(long a_tick);
-    long get_trigger_paste_tick();
+    void paste_trigger(long a_tick = -1);
     void move_selected_triggers_to(long a_tick, bool a_adjust_offset, int a_which=2);
     long adjust_offset( long a_offset, long a_length );
     void adjust_trigger_offsets_to_length( sequence *a_seq, long a_new_len );

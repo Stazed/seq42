@@ -830,8 +830,8 @@ bool midifile::write_song (perform * a_perf)
 
     if(numtracks == 0)
     {
-        printf("There are NO exportable tracks to export!\nDo any have triggers?\nAre all tracks muted?\nAny sequences?\n");
-        return false;
+        error_message_gtk("There are NO exportable tracks!\nDo any have triggers?\nAre all tracks muted?\nAny sequences?");
+        return true;    // true so we don't generate a second error about "Error writing file".
     }
 
     write_header(numtracks);
