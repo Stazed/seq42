@@ -924,7 +924,7 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                         m_mainperf->get_track(t)->unset_trigger_copied(); // clear previous copies
                     }
                     m_mainperf->get_track( m_drop_track )->copy_selected_trigger();
-                    cross_track_paste = false;                            // clear previous on new copy
+                    cross_track_paste = false;                            // clear for new cross track - one per copy to avoid unwanted duplication
                     ret = true;
                 }
 
@@ -1090,7 +1090,6 @@ perfroll::del_trigger( track *a_track, long a_tick )
 void
 perfroll::paste_trigger_mouse(long a_tick)
 {
-    bool cross_track = false;
     for ( int t=0; t<c_max_track; ++t )
     {
         if (! m_mainperf->is_active_track( t ))
@@ -1103,6 +1102,7 @@ perfroll::paste_trigger_mouse(long a_tick)
         {
             if(t != m_drop_track)                               // If clipboard and paste are on diff tracks - then cross track paste
             {
+                cross_track_paste = true;
                 paste_trigger_sequence
                 (
                     m_mainperf->get_track( m_drop_track ),
@@ -1110,14 +1110,12 @@ perfroll::paste_trigger_mouse(long a_tick)
                             ->get_trigger_clipboard()->m_sequence),
                     a_tick
                 );
-                cross_track_paste = true;
-                cross_track = true;
                 break;
             }
         }
     }
 
-    if(!cross_track)
+    if(!cross_track_paste) // then regular on track paste
     {
         if (m_mainperf->get_track(m_drop_track)->get_trigger_clipboard()->m_sequence >= 0)
         {
@@ -1125,6 +1123,8 @@ perfroll::paste_trigger_mouse(long a_tick)
             m_mainperf->get_track( m_drop_track )->paste_trigger(a_tick);
         }
    }
+   //cross_track_paste = false; - should not do this. If user is not careful they will duplicate sequences everywhere!
+   // we require the user to ctrl-c again after every cross track paste to avoid unnoticed duplication of sequences.
 }
 
 
