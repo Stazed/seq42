@@ -128,20 +128,25 @@ const std::string c_dummy( "Untitled" );
 const int c_maxbeats     = 0xFFFF;   /* max number of beats in a sequence */
 
 /* midifile tags */
-const unsigned long c_midibus =    0x24240001;
-const unsigned long c_midich =     0x24240002;
-const unsigned long c_midiclocks = 0x24240003;
-const unsigned long c_triggers =   0x24240004;
-const unsigned long c_notes =      0x24240005;
-const unsigned long c_timesig =    0x24240006;
-const unsigned long c_bpmtag =     0x24240007;
-const unsigned long c_triggers_new =   0x24240008;
-const unsigned long c_midictrl =   0x24240010;
-const unsigned long c_mutegroups = 0x24240009; // not sure why we went to 10 above, this might need a different value
-//const unsigned long c_bp_measure = 0x24240011;    // dropped ca 7/20/16 for SMF
-//const unsigned long c_beat_width = 0x24240012;    // dropped ca 7/20/16 for SMF
-//const unsigned long c_transpose =  0x24240013;    // changed ca 7/20/16 to 0x24240014 for consistency to seq64
-const unsigned long c_transpose =  0x24240014;      // 7/20/16
+const unsigned long c_midibus      = 0x24240001;
+const unsigned long c_midich       = 0x24240002;
+const unsigned long c_midiclocks   = 0x24240003;
+const unsigned long c_triggers     = 0x24240004;
+const unsigned long c_notes        = 0x24240005;
+const unsigned long c_timesig      = 0x24240006;
+const unsigned long c_bpmtag       = 0x24240007;
+const unsigned long c_triggers_new = 0x24240008;
+const unsigned long c_mutegroups   = 0x24240009;
+const unsigned long c_midictrl     = 0x24240010;
+
+/* From sequencer64 */
+//const midilong c_musickey =     0x24240011; /**< The track's key.           */
+//const midilong c_musicscale =   0x24240012; /**< The track's scale.         */
+//const midilong c_backsequence = 0x24240013; /**< Track background sequence. */
+
+const unsigned long c_transpose    = 0x24240014;  // 7/20/16
+const unsigned long c_perf_bp_mes  = 0x24240015;  // perfedit beats per measure
+const unsigned long c_perf_bw      = 0x24240016;  // perfedit beat width
 
 const char c_font_6_12[] = "-*-fixed-medium-r-*--12-*-*-*-*-*-*";
 const char c_font_8_13[] = "-*-fixed-medium-r-*--13-*-*-*-*-*-*";

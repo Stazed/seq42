@@ -643,6 +643,28 @@ bool midifile::parse (perform * a_perf, int screen_set)
         }
     }
 
+    if ((file_size - m_pos) > (int) sizeof (unsigned int))
+    {
+        /* Get ID + Length */
+        ID = read_long ();
+        if (ID == c_perf_bp_mes)
+        {
+            long bp_mes = read_long ();
+            a_perf->set_bp_measure(bp_mes);
+        }
+    }
+
+    if ((file_size - m_pos) > (int) sizeof (unsigned int))
+    {
+        /* Get ID + Length */
+        ID = read_long ();
+        if (ID == c_perf_bw)
+        {
+            long bw = read_long ();
+            a_perf->set_bw(bw);
+        }
+    }
+
     // *** ADD NEW TAGS AT END **************/
     return true;
 }
@@ -794,6 +816,14 @@ bool midifile::write_sequences (perform * a_perf)
     /* write out the mute groups */
     write_long(c_mutegroups);
     write_long(0);
+
+     /* write out the beats per measure */
+    write_long(c_perf_bp_mes);
+    write_long(a_perf->get_bp_measure());
+
+    /* write out the beat width */
+    write_long(c_perf_bw);
+    write_long(a_perf->get_bw());
 
     /* open binary file */
     ofstream file (m_name.c_str (), ios::out | ios::binary | ios::trunc);
