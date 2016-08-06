@@ -79,11 +79,11 @@ bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
     /* middle: paste */
     if ( a_ev->button == 2 )
     {
-        long tick = ths.m_drop_tick;
-        tick = tick - tick % ths.m_snap; // grid snap
-
         if ( ths.m_mainperf->is_active_track( ths.m_drop_track ))
         {
+            long tick = ths.m_drop_tick;
+            tick = tick - tick % ths.m_snap; // grid snap
+
             bool state = ths.m_mainperf->get_track( ths.m_drop_track )->get_trigger_state(tick);
 
             if ( !state )    // clicked on track (off trigger) - paste
@@ -100,11 +100,11 @@ void FruityPerfInput::on_left_button_pressed(GdkEventButton* a_ev, perfroll& ths
     /* left-ctrl: split or paste */
     if ( a_ev->state & GDK_CONTROL_MASK )
     {
-        long tick = ths.m_drop_tick;
-        tick = tick - tick % ths.m_snap; // grid snap
-
         if ( ths.m_mainperf->is_active_track( ths.m_drop_track ))
         {
+            long tick = ths.m_drop_tick;
+            tick = tick - tick % ths.m_snap; // grid snap
+
             bool state = ths.m_mainperf->get_track( ths.m_drop_track )->get_trigger_state(tick);
 
             if ( state )    // clicked on trigger - split
@@ -290,10 +290,10 @@ bool FruityPerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths
             {
                 if ( ths.m_grow_direction )
                     ths.m_mainperf->get_track( ths.m_drop_track )
-                    ->move_selected_triggers_to( tick, false, 0 );
+                    ->move_selected_triggers_to( tick, false, GROW_START );
                 else
                     ths.m_mainperf->get_track( ths.m_drop_track )
-                    ->move_selected_triggers_to( tick-1, false, 1 );
+                    ->move_selected_triggers_to( tick-1, false, GROW_END );
             }
 
             ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
@@ -442,11 +442,11 @@ bool Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
     /* middle, split or paste*/
     if ( a_ev->button == 2 )
     {
-        long tick = ths.m_drop_tick;
-        tick = tick - tick % ths.m_snap; // grid snap
-
         if ( ths.m_mainperf->is_active_track( ths.m_drop_track ))
         {
+            long tick = ths.m_drop_tick;
+            tick = tick - tick % ths.m_snap; // grid snap
+
             bool state = ths.m_mainperf->get_track( ths.m_drop_track )->get_trigger_state( tick );
 
             if ( state )    // clicked on trigger for split
@@ -554,10 +554,10 @@ bool Seq42PerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths)
             {
                 if ( ths.m_grow_direction )
                     ths.m_mainperf->get_track( ths.m_drop_track )
-                    ->move_selected_triggers_to( tick, false, 0 );
+                    ->move_selected_triggers_to( tick, false, GROW_START );
                 else
                     ths.m_mainperf->get_track( ths.m_drop_track )
-                    ->move_selected_triggers_to( tick-1, false, 1 );
+                    ->move_selected_triggers_to( tick-1, false, GROW_END );
             }
 
             ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );

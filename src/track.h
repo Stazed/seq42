@@ -28,6 +28,14 @@ class track;
 #include "mutex.h"
 #include <vector>
 
+enum trigger_edit
+{
+    GROW_START = 0, //grow the start of the trigger
+    GROW_END = 1, //grow the end of the trigger
+    MOVE = 2 //move the entire trigger block
+};
+
+
 class track
 {
 
@@ -165,7 +173,7 @@ public:
     void cut_selected_trigger();
     void copy_selected_trigger();
     void paste_trigger(long a_tick = -1);
-    void move_selected_triggers_to(long a_tick, bool a_adjust_offset, int a_which=2);
+    void move_selected_triggers_to(long a_tick, bool a_adjust_offset, trigger_edit editMode = MOVE);
     long adjust_offset( long a_offset, long a_length );
     void adjust_trigger_offsets_to_length( sequence *a_seq, long a_new_len );
     long get_selected_trigger_start_tick();

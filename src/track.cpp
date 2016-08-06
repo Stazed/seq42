@@ -948,7 +948,7 @@ track::get_selected_trigger_end_tick()
 }
 
 void
-track::move_selected_triggers_to( long a_tick, bool a_adjust_offset, int a_which )
+track::move_selected_triggers_to( long a_tick, bool a_adjust_offset, trigger_edit editMode )
 {
     lock();
 
@@ -979,7 +979,7 @@ track::move_selected_triggers_to( long a_tick, bool a_adjust_offset, int a_which
 
             long a_delta_tick = 0;
 
-            if ( a_which == 1 )
+            if ( editMode == GROW_END )
             {
                 a_delta_tick = a_tick - s->m_tick_end;
 
@@ -997,7 +997,7 @@ track::move_selected_triggers_to( long a_tick, bool a_adjust_offset, int a_which
                 }
             }
 
-            if ( a_which == 0 )
+            if ( editMode == GROW_START )
             {
                 a_delta_tick = a_tick - s->m_tick_start;
 
@@ -1015,7 +1015,7 @@ track::move_selected_triggers_to( long a_tick, bool a_adjust_offset, int a_which
                 }
             }
 
-            if ( a_which == 2 )
+            if ( editMode == MOVE )
             {
                 a_delta_tick = a_tick - s->m_tick_start;
 
@@ -1032,10 +1032,10 @@ track::move_selected_triggers_to( long a_tick, bool a_adjust_offset, int a_which
                 }
             }
 
-            if ( a_which == 0 || a_which == 2 )
+            if ( editMode == GROW_START || editMode == MOVE )
                 s->m_tick_start += a_delta_tick;
 
-            if ( a_which == 1 || a_which == 2 )
+            if ( editMode == GROW_END || editMode == MOVE )
                 s->m_tick_end   += a_delta_tick;
 
             if ( a_adjust_offset )
