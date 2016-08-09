@@ -48,7 +48,15 @@ using namespace Gtk;
 
 #include "perfroll_input.h"
 
-const int c_perfroll_background_x = (c_ppqn * 4 * 16) / c_perf_scale_x;
+/*
+    FIXME the 1200 added to background_x is necessary for proper display of zoomed grid on
+    high bp_measure (5 and above) with low bw (1) - the amount should probably be :
+    c_perf_scale_x / m_perf_scale_x
+    The 1200 is the max needed for full zoom of 8 with 16 bp_mes and 1 bw.
+    Without the adjustment the grid display gets truncated on zoom.
+    Figure this out when you are really bored!
+*/
+const int c_perfroll_background_x = ((c_ppqn * 4 * 16) / c_perf_scale_x) + 1200 ;
 const int c_perfroll_size_box_w = 3;
 const int c_perfroll_size_box_click_w = c_perfroll_size_box_w+1 ;
 

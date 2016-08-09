@@ -233,6 +233,8 @@ perfroll::fill_background_pixmap()
 
     int beats = m_measure_length / m_beat_length;
 
+    //printf("m_perf_scale_x[%d]\n",m_perf_scale_x);
+
     /* draw vert lines */
     for ( int i=0; i< beats ; )
     {
@@ -385,26 +387,27 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
                     else
                         m_gc->set_foreground(m_white);
 
+                    /* trigger background */
                     a_draw->draw_rectangle(m_gc,true,
                                            x,
                                            y,
                                            w,
                                            h );
-
-                    m_gc->set_foreground(m_black); // trigger outline
+                    /* trigger outline */
+                    m_gc->set_foreground(m_black);
                     a_draw->draw_rectangle(m_gc,false,
                                            x,
                                            y,
                                            w,
                                            h );
-
-                    m_gc->set_foreground(m_black); // resize handle - top left
+                    /* resize handle - top left */
+                    m_gc->set_foreground(m_black);
                     a_draw->draw_rectangle(m_gc,false,
                                            x,
                                            y,
                                            c_perfroll_size_box_w,
                                            c_perfroll_size_box_w );
-                    // resize handle - bottom right
+                    /* resize handle - bottom right */
                     a_draw->draw_rectangle(m_gc,false,
                                            x+w-c_perfroll_size_box_w,
                                            y+h-c_perfroll_size_box_w,
@@ -535,6 +538,7 @@ void perfroll::draw_background_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_tra
     int y = c_names_y * a_track;
     int h = c_names_y;
 
+    //printf("m_window_x [%d] c_perfroll_background_x [%d]\n", m_window_x,c_perfroll_background_x );
     m_gc->set_foreground(m_white);
     a_draw->draw_rectangle(m_gc,true,
                            0,
@@ -543,12 +547,9 @@ void perfroll::draw_background_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_tra
                            h );
 
     m_gc->set_foreground(m_black);
-    for ( int i = first_measure;
-            i < first_measure +
-            (m_window_x * m_perf_scale_x /
-             (m_measure_length)) + 1;
 
-            i++ )
+    for ( int i = first_measure;
+            i < first_measure + (m_window_x * m_perf_scale_x / (m_measure_length)) + 1; i++ )
     {
         int x_pos = ((i * m_measure_length) - tick_offset) / m_perf_scale_x;
 
@@ -558,7 +559,7 @@ void perfroll::draw_background_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_tra
                               x_pos,
                               y,
                               c_perfroll_background_x,
-                              c_names_y );
+                              c_names_y);
     }
 }
 
@@ -628,6 +629,7 @@ perfroll::draw_drawable_row( Glib::RefPtr<Gdk::Drawable> a_dest, Glib::RefPtr<Gd
         return;
 
     int s = a_y / c_names_y;
+
     a_dest->draw_drawable
     (
         m_gc,
