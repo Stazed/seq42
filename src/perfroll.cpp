@@ -131,6 +131,16 @@ perfroll::on_realize()
     m_hadjust->signal_value_changed().connect( mem_fun( *this, &perfroll::change_horz ));
     m_vadjust->signal_value_changed().connect( mem_fun( *this, &perfroll::change_vert ));
 
+    /*
+        This creation of m_background needs to be set to the max width for proper drawing of zoomed
+        measures or they will get truncated with high beats per measure and low beat width. Since this
+        is a constant size, it cannot be adjusted later for zoom. The constant c_perfroll_background_x
+        is set to the max amount by default for use here. The drawing functions fill_background_pixmap()
+        and draw_background_on() which use c_perfroll_background_x also, could be adjusted by zoom with
+        a substituted variable. Not sure if there is any benefit to doing the adjustment...
+        Perhaps a small benefit in speed? Maybe FIXME if really, really bored...
+    */
+
     m_background = Gdk::Pixmap::create( m_window,
                                         c_perfroll_background_x,
                                         c_names_y, -1 );
