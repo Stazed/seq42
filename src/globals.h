@@ -174,7 +174,7 @@ const int c_redraw_ms = 40;
 const int c_names_x = 114;
 const int c_names_y = 22;
 const int c_perf_scale_x = 32; /*ticks per pixel */
-const int c_perf_max_zoom = 4;
+const int c_perf_max_zoom = 8;
 
 extern bool global_showmidi;
 extern bool global_priority;

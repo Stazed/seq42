@@ -243,8 +243,6 @@ perfroll::fill_background_pixmap()
 
     int beats = m_measure_length / m_beat_length;
 
-    //printf("m_perf_scale_x[%d]\n",m_perf_scale_x);
-
     /* draw vert lines */
     for ( int i=0; i< beats ; )
     {
@@ -548,7 +546,6 @@ void perfroll::draw_background_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_tra
     int y = c_names_y * a_track;
     int h = c_names_y;
 
-    //printf("m_window_x [%d] c_perfroll_background_x [%d]\n", m_window_x,c_perfroll_background_x );
     m_gc->set_foreground(m_white);
     a_draw->draw_rectangle(m_gc,true,
                            0,
@@ -751,6 +748,9 @@ perfroll::auto_scroll_horz()
 
         switch(m_zoom)
         {
+//        case 4:
+//            m_hadjust->set_value(left_tick / 8);
+//            break;
         case 8:
             m_hadjust->set_value(left_tick / 4);
             break;

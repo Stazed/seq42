@@ -42,8 +42,8 @@ perftime::perftime( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
     add_events( Gdk::BUTTON_PRESS_MASK |
                 Gdk::BUTTON_RELEASE_MASK );
 
-    // in the construor you can only allocate colors,
-    // get_window() returns 0 because we have not be realized
+    // in the constructor you can only allocate colors,
+    // get_window() returns 0 because we have not been realized
     Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
     colormap->alloc_color( m_black );
     colormap->alloc_color( m_white );
@@ -158,6 +158,21 @@ perftime::draw_background()
     long tick_offset = (m_4bar_offset * 16 * c_ppqn);
     long first_measure = tick_offset / m_measure_length;
 
+    float bar_draw = m_measure_length / (float) m_perf_scale_x;
+
+    int bar_skip = 1;
+
+    if(bar_draw < 24)
+        bar_skip = 4;
+    if(bar_draw < 12)
+        bar_skip = 8;
+    if(bar_draw < 6)
+        bar_skip = 16;
+    if(bar_draw < 3)
+        bar_skip = 32;
+    if(bar_draw < .75)
+        bar_skip = 64;
+
 #if 0
 
     0   1   2   3   4   5   6
@@ -168,7 +183,7 @@ perftime::draw_background()
 #endif
 
     for ( int i=first_measure;
-            i<first_measure+(m_window_x * m_perf_scale_x / (m_measure_length)) + 1; i++ )
+            i<first_measure+(m_window_x * m_perf_scale_x / (m_measure_length)) + 1; i += bar_skip  )
     {
         int x_pos = ((i * m_measure_length) - tick_offset) / m_perf_scale_x;
 
@@ -180,7 +195,7 @@ perftime::draw_background()
                             m_window_y );
 
         char bar[5];
-        snprintf( bar, sizeof(bar), "%d", i + 1 );
+        snprintf( bar, sizeof(bar), "%d", i + 1 ); // bar numbers
 
         m_gc->set_foreground(m_black);
 
