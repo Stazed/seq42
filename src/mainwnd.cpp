@@ -1535,15 +1535,21 @@ mainwnd::adj_callback_bpm( )
 void
 mainwnd::adj_callback_swing_amount8( )
 {
-    m_mainperf->set_swing_amount8( (int) m_adjust_swing_amount8->get_value());
-    global_is_modified = true;
+    if(m_mainperf->get_swing_amount8() != (int) m_adjust_swing_amount8->get_value())
+    {
+        m_mainperf->set_swing_amount8( (int) m_adjust_swing_amount8->get_value());
+        global_is_modified = true;
+    }
 }
 
 void
 mainwnd::adj_callback_swing_amount16( )
 {
-    m_mainperf->set_swing_amount16( (int) m_adjust_swing_amount16->get_value());
-    global_is_modified = true;
+    if(m_mainperf->get_swing_amount16() != (int) m_adjust_swing_amount16->get_value())
+    {
+        m_mainperf->set_swing_amount16( (int) m_adjust_swing_amount16->get_value());
+        global_is_modified = true;
+    }
 }
 
 bool
