@@ -11,3 +11,10 @@
 /src/config.h
 /src/seq42
 /src/pixmaps/Makefile
+Makefile.in
+aclocal.m4
+configure
+/man/Makefile.in
+/src/Makefile.in
+/src/pixmaps/Makefile.in
+
