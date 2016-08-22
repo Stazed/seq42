@@ -470,8 +470,12 @@ seqdata::on_motion_notify_event(GdkEventMotion* a_p0)
         m_current_y = (int) a_p0->y - 3;
 
         m_current_y = c_dataarea_y - m_current_y;
+
         if(m_current_y < 0 )
             m_current_y = 0;
+
+        if(m_current_y > 127 )
+            m_current_y = 127;
 
         m_seq->adjust_data_handle(m_status, m_current_y );
 

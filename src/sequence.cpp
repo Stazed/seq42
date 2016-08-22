@@ -1558,7 +1558,7 @@ sequence::randomize_selected( unsigned char a_status, unsigned char a_control, i
 {
     int random;
     unsigned char data[2];
-    unsigned char data_item;
+    int data_item;
     int data_idx = 0;
 
     lock();
@@ -1591,6 +1591,7 @@ sequence::randomize_selected( unsigned char a_status, unsigned char a_control, i
 
             // See http://c-faq.com/lib/randrange.html
             random = (rand() / (RAND_MAX / ((2 * a_plus_minus) + 1) + 1)) - a_plus_minus;
+
             data_item += random;
 
             if(data_item > 127)
@@ -1645,15 +1646,6 @@ sequence::adjust_data_handle( unsigned char a_status, int a_data )
             }
 
             data_item = a_data;
-
-            if(data_item > 127)
-            {
-                data_item = 127;
-            }
-            else if(data_item < 0)
-            {
-                data_item = 0;
-            }
 
             data[data_idx] = data_item;
 
