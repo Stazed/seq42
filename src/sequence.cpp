@@ -3052,8 +3052,6 @@ void
 sequence::reverse_pattern()
 {
     lock();
-
-    long seq_length = get_length();
     event e1,e2;
 
     list<event>::iterator i;
@@ -3061,78 +3059,39 @@ sequence::reverse_pattern()
 
     for ( i = m_list_event.begin(); i != m_list_event.end(); i++ )
     {
-        /* only do for note ons and offs */
-        if((*i).get_status() !=  EVENT_NOTE_OFF && (*i).get_status() !=  EVENT_NOTE_ON)
+        /* only do for note ONs and OFFs */
+        if((*i).get_status() !=  EVENT_NOTE_ON && (*i).get_status() !=  EVENT_NOTE_OFF)
             continue;
 
-        if((*i).is_marked())    // we mark then as we go so don't duplicate
+        if((*i).is_marked())                                // we mark then as we go so don't duplicate
             continue;
 
         /* copy event */
         e1 = (*i);
 
-        (*i).mark();                            // for later deletion
+        (*i).mark();                                        // for later deletion
 
-        long timestamp1 = e1.get_timestamp();
-
-        /* note OFFs become note ONs & note ONs become note OFFs */
-        if ( e1.get_status() ==  EVENT_NOTE_OFF)
-        {
-            timestamp1 += c_note_off_margin;    // fix the ending
-            e1.set_status( EVENT_NOTE_ON);
-        }
-        else
-            e1.set_status( EVENT_NOTE_OFF);
-
-        double note_ratio = 1.0;
-        note_ratio -= (double)timestamp1 / seq_length;
-
-        printf("note_ratio 1 [%f]: timestamp1 [%ld]\n", note_ratio, timestamp1);
-
-        timestamp1 = seq_length * note_ratio;    // the new location
-
-        if ( e1.get_status() ==  EVENT_NOTE_OFF)
-        {
-            timestamp1 -= c_note_off_margin;
-        }
-
-        e1.set_timestamp(timestamp1);
-        reversed_events.push_front(e1);
+        calulate_reverse(e1);
 
         /* get the linked event and switch it also */
 
-        if ( (*i).is_linked() ) // should all be linked!
+        if ( (*i).is_linked() )                             // should all be linked!
         {
             e2 = *(*i).get_linked();
 
-            (*i).get_linked()->mark();          // so we don't duplicate and for later remove
+            (*i).get_linked()->mark();                      // so we don't duplicate and for later remove
 
-            long timestamp2 = e2.get_timestamp();
-
-            if ( e2.get_status() ==  EVENT_NOTE_OFF)
-            {
-                timestamp2 += c_note_off_margin;            // fix the ending
-                e2.set_status( EVENT_NOTE_ON);
-            }
-            else
-                e2.set_status( EVENT_NOTE_OFF);
-
-            note_ratio = 1.0;                               // reset
-            note_ratio -= (double)timestamp2 / seq_length;
-            printf("timestamp2 [%ld]\n",timestamp2);
-
-            timestamp2 = seq_length * note_ratio;           // the new location
-
-            if ( e2.get_status() ==  EVENT_NOTE_OFF)
-            {
-                timestamp2 -= c_note_off_margin;
-            }
-
-            e2.set_timestamp( timestamp2 );
-
-            reversed_events.push_front(e2);
-            printf("note_ratio 2 [%f]\n", note_ratio);
+            calulate_reverse(e2);
         }
+
+        /* reverse the velocities also */
+        unsigned char a_vel = e1.get_note_velocity();
+
+        e1.set_note_velocity(e2.get_note_velocity());
+        e2.set_note_velocity(a_vel);
+
+        reversed_events.push_front(e1);
+        reversed_events.push_front(e2);
     }
 
     remove_marked();
@@ -3140,6 +3099,35 @@ sequence::reverse_pattern()
     m_list_event.merge(reversed_events);
     verify_and_link();
     unlock();
+}
+
+void
+sequence::calulate_reverse(event &a_e)
+{
+    long seq_length = get_length();
+    long timestamp = a_e.get_timestamp();
+
+    /* note OFFs become note ONs & note ONs become note OFFs */
+    if ( a_e.get_status() ==  EVENT_NOTE_OFF)
+    {
+        timestamp += c_note_off_margin;     // add back the trim ending if it was a note OFF
+        a_e.set_status( EVENT_NOTE_ON);     // change it to a note ON
+    }
+    else
+        a_e.set_status( EVENT_NOTE_OFF);    // change note ONs to OFFs
+
+    /* calculate the reverse location */
+    double note_ratio = 1.0;
+    note_ratio -= (double)timestamp / seq_length;
+
+    timestamp = seq_length * note_ratio;    // the new location
+
+    if ( a_e.get_status() ==  EVENT_NOTE_OFF)
+    {
+        timestamp -= c_note_off_margin;     // trim the new note OFF
+    }
+
+    a_e.set_timestamp(timestamp);
 }
 
 

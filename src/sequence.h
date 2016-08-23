@@ -412,6 +412,7 @@ public:
     void shift_notes (int a_ticks);  // move selected notes later/earlier in time
     void multiply_pattern( float a_multiplier );
     void reverse_pattern();
+    void calulate_reverse(event &a_e);
 
     bool save( ofstream *file );
     bool load( ifstream *file, int version );
