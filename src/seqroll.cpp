@@ -209,7 +209,7 @@ seqroll::update_sizes()
         m_vadjust->set_value(v_max_value);
     }
 
-    /* create pixmaps with window dimentions */
+    /* create pixmaps with window dimensions */
     if( is_realized() )
     {
         m_pixmap = Gdk::Pixmap::create( m_window,
@@ -602,9 +602,9 @@ void seqroll::draw_events_on( Glib::RefPtr<Gdk::Drawable> a_draw )
                 note_y = c_rollarea_y -(note * c_key_y) - c_key_y - 1 + 2;
                 note_height = c_key_y - 3;
 
-                //				printf( "DEBUG: drawing note[%d] tick_s[%d] tick_f[%d] start_tick[%d] end_tick[%d]\n",
-                //				note, tick_s, tick_f, start_tick, end_tick );
-                //				printf( "DEBUG: seq.get_lenght() = %d\n",  m_seq->get_length());
+                				printf( "DEBUG: drawing note[%d] tick_s[%ld] tick_f[%ld] start_tick[%d] end_tick[%d]\n",
+                				note, tick_s, tick_f, start_tick, end_tick );
+                				printf( "DEBUG: seq.get_length() = %ld\n",  m_seq->get_length());
 
                 int in_shift = 0;
                 int length_add = 0;

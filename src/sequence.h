@@ -411,6 +411,7 @@ public:
     void transpose_notes (int a_steps, int a_scale);
     void shift_notes (int a_ticks);  // move selected notes later/earlier in time
     void multiply_pattern( float a_multiplier );
+    void reverse_pattern();
 
     bool save( ofstream *file );
     bool load( ifstream *file, int version );

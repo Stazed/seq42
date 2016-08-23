@@ -86,6 +86,8 @@ const int compress_pattern = 14;
 const int select_even_notes = 15;
 const int select_odd_notes  = 16;
 
+const int reverse_pattern = 17;
+
 /* connects to a menu item, tells the performance
    to launch the timer thread */
 void
@@ -672,6 +674,10 @@ seqedit::popup_tool_menu()
     }
     m_menu_tools->items().push_back( MenuElem( "Randomize Event Values", *holder ));
 
+    m_menu_tools->items().push_back( MenuElem( "Reverse pattern",
+                                              sigc::bind(mem_fun(*this,&seqedit::do_action),
+                                                         reverse_pattern, 0)));
+
     m_menu_tools->popup(0,0);
 }
 
@@ -750,6 +756,11 @@ seqedit::do_action( int a_action, int a_var )
     case compress_pattern:
         m_seq->push_undo();
         m_seq->multiply_pattern(0.5);
+        break;
+
+    case reverse_pattern:
+        m_seq->push_undo();
+        m_seq->reverse_pattern();
         break;
 
     default:
