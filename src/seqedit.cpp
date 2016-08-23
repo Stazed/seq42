@@ -861,7 +861,7 @@ seqedit::fill_top_bar()
     m_entry_track->set_max_length(50);
     m_entry_track->set_width_chars(22);
     m_entry_track->set_editable( false );
-    m_hbox->pack_start( *m_entry_track, false, false );
+    m_hbox->pack_start( *m_entry_track, true, true );
     m_label_bus = manage (new Label( "Bus" ));
     m_hbox->pack_start( *m_label_bus, false, false );
     m_entry_bus = manage( new Entry());
