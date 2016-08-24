@@ -3083,6 +3083,8 @@ sequence::reverse_pattern()
 
             calulate_reverse(e2);
         }
+        else
+            continue;                                       // ignore any unlinked
 
         /* reverse the velocities also */
         unsigned char a_vel = e1.get_note_velocity();
