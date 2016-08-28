@@ -422,15 +422,14 @@ sequence::verify_and_link()
            note off */
         if ( (*on).is_note_on() )
         {
-            /* get next possible off node */
+            /* get next possible off note */
             off = on;
             off++;
             end_found = false;
 
             while ( off != m_list_event.end() )
             {
-                /* is a off event, == notes, and isnt
-                   markeded  */
+                /* is a off event, == notes, and is not marked  */
                 if ( (*off).is_note_off()                  &&
                         (*off).get_note() == (*on).get_note() &&
                         ! (*off).is_marked()                  )
@@ -1314,7 +1313,7 @@ sequence::move_selected_notes( long a_delta_tick, int a_delta_note )
                 noteon = e.is_note_on();
                 timestamp = e.get_timestamp() + a_delta_tick;
 
-                if (timestamp > m_length)
+                if (timestamp >= m_length)
                 {
                     timestamp = timestamp - m_length;
                 }
@@ -1445,7 +1444,7 @@ sequence::grow_selected( long a_delta_tick )
                 a_delta_tick;
 
             //If timestamp + delta is greater that m_length we do round robbin magic
-            if (length > m_length)
+            if (length >= m_length)
             {
                 length = length - m_length;
             }
@@ -2355,6 +2354,7 @@ sequence::get_next_note_event( long *a_tick_s,
         /* keep going until we hit null or find a NoteOn */
         m_iterator_draw++;
     }
+
     return DRAW_FIN;
 }
 
@@ -2993,6 +2993,18 @@ sequence::quanize_events( unsigned char a_status, unsigned char a_cc,
                 (*i).get_linked()->select();
 
                 f.set_timestamp( f.get_timestamp() + timestamp_delta );
+
+                /* if past the end then wrap it to the front */
+                if(f.get_timestamp() > m_length)
+                {
+                    f.set_timestamp(f.get_timestamp() - m_length);
+                }
+                /* if equal to end then trim it */
+                if(f.get_timestamp() == m_length)
+                {
+                    f.set_timestamp(m_length - c_note_off_margin);
+                }
+
                 quantized_events.push_front(f);
             }
         }
