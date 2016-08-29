@@ -2997,11 +2997,19 @@ sequence::quanize_events( unsigned char a_status, unsigned char a_cc,
 
                 long ts = f.get_timestamp() + timestamp_delta;
 
+                /* wrapped note OFF before being adjusted */
                 if(ts < 0 && (f.get_status() == EVENT_NOTE_OFF))
                     ts += m_length;
 
+                /* note OFF equal sequence length after adjustment so trim */
+                if(ts == m_length && (f.get_status() == EVENT_NOTE_OFF))
+                    ts -= c_note_off_margin;
+
+                /* note OFF is past end of sequence after adjustment so wrap it around */
+                if(ts > m_length && (f.get_status() == EVENT_NOTE_OFF))
+                    ts -= m_length;
+
                 f.set_timestamp( ts );
-                //f.set_timestamp( f.get_timestamp() + timestamp_delta );
 
                 quantized_events.push_front(f);
             }
