@@ -556,6 +556,7 @@ void seqroll::draw_events_on( Glib::RefPtr<Gdk::Drawable> a_draw )
 
     int note_x;
     int note_width;
+    int note_off_width = 0;
     int note_y;
     int note_height;
 
@@ -616,9 +617,10 @@ void seqroll::draw_events_on( Glib::RefPtr<Gdk::Drawable> a_draw )
                         note_width = (tick_f - tick_s) / m_zoom;
                         if ( note_width < 1 ) note_width = 1;
                     }
-                    else
+                    else    // this is wrap around
                     {
-                        note_width = (m_seq->get_length() - tick_s) / m_zoom;
+                        note_width = (m_seq->get_length() - tick_s) / m_zoom; // this is note ON width
+                        note_off_width = tick_f / m_zoom;
                     }
                 }
                 else
@@ -666,7 +668,7 @@ void seqroll::draw_events_on( Glib::RefPtr<Gdk::Drawable> a_draw )
                 }
 
                 /* draw inside box if there is room */
-                if ( note_width > 3 )
+                if ( note_width > 3  || note_off_width > 3)
                 {
                     if ( selected )
                         m_gc->set_foreground(m_red);
@@ -675,7 +677,8 @@ void seqroll::draw_events_on( Glib::RefPtr<Gdk::Drawable> a_draw )
 
                     if ( method == 1 )
                     {
-                        if (tick_f >= tick_s)
+                        //printf("tick_f [%ld]: tick_s [%ld]: m_zoom [%d]:note_width [%d]\n", tick_f, tick_s, m_zoom, note_width);
+                        if (tick_f >= tick_s)   // note is not wrapped
                         {
                             a_draw->draw_rectangle(	m_gc,true,
                                                     note_x + 1 + in_shift,
@@ -683,14 +686,21 @@ void seqroll::draw_events_on( Glib::RefPtr<Gdk::Drawable> a_draw )
                                                     note_width - 3 + length_add,
                                                     note_height - 3);
                         }
-                        else
+                        else    // note is wrapped
                         {
+                            /* note ON */
                             a_draw->draw_rectangle(	m_gc,true,
                                                     note_x + 1 + in_shift,
                                                     note_y + 1,
                                                     note_width,
                                                     note_height - 3);
-                            a_draw->draw_rectangle(	m_gc,true,
+
+                            /* note OFF - wrapped */
+                            long nw = (tick_f/m_zoom) - 3 + length_add;
+                            //printf("nw [%ld] \n", nw);
+
+                            if(nw > 0 )
+                                a_draw->draw_rectangle(	m_gc,true,
                                                     0,
                                                     note_y + 1,
                                                     (tick_f/m_zoom) - 3 + length_add,

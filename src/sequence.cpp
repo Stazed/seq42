@@ -2978,7 +2978,7 @@ sequence::quanize_events( unsigned char a_status, unsigned char a_cc,
                 timestamp_delta = (a_snap_tick - timestamp_remander) / a_divide;
             }
 
-            if ((timestamp_delta + timestamp) >= m_length)
+            if ((timestamp_delta + timestamp) >= m_length) // wrap around note ON to the front
             {
                 timestamp_delta = - e.get_timestamp() ;
             }
@@ -2986,24 +2986,22 @@ sequence::quanize_events( unsigned char a_status, unsigned char a_cc,
             e.set_timestamp( e.get_timestamp() + timestamp_delta );
             quantized_events.push_front(e);
 
+            /* linked note OFFs */
             if ( (*i).is_linked() && a_linked )
             {
                 f = *(*i).get_linked();
                 f.unmark();
                 (*i).get_linked()->select();
 
-                f.set_timestamp( f.get_timestamp() + timestamp_delta );
+                //printf("timestamp before [%ld]: timestamp_delta [%ld]: m_length [%ld]\n", f.get_timestamp(), timestamp_delta, m_length);
 
-                /* if past the end then wrap it to the front */
-                if(f.get_timestamp() > m_length)
-                {
-                    f.set_timestamp(f.get_timestamp() - m_length);
-                }
-                /* if equal to end then trim it */
-                if(f.get_timestamp() == m_length)
-                {
-                    f.set_timestamp(m_length - c_note_off_margin);
-                }
+                long ts = f.get_timestamp() + timestamp_delta;
+
+                if(ts < 0 && (f.get_status() == EVENT_NOTE_OFF))
+                    ts += m_length;
+
+                f.set_timestamp( ts );
+                //f.set_timestamp( f.get_timestamp() + timestamp_delta );
 
                 quantized_events.push_front(f);
             }
