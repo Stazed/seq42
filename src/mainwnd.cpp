@@ -802,6 +802,21 @@ void
 mainwnd::set_song_mode()
 {
     global_song_start_mode = m_button_mode->get_active();
+    
+    bool is_active = m_button_mode->get_active();
+    
+    /*
+     * spaces with 'Live' are to keep button width close
+     * to the same when changed for cosmetic purposes.
+     */
+    
+    std::string label = is_active ? "Song" : " Live ";
+    Gtk::Label * lblptr(dynamic_cast<Gtk::Label *>
+    (
+         m_button_mode->get_child())
+    );
+    if (lblptr != NULL)
+        lblptr->set_text(label);
 }
 
 void
