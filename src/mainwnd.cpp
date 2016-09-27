@@ -191,7 +191,7 @@ mainwnd::mainwnd(perform *a_p):
     m_button_loop->signal_toggled().connect(  mem_fun( *this, &mainwnd::set_looped ));
     add_tooltip( m_button_loop, "Play looped between L and R." );
 
-    m_button_mode = manage( new ToggleButton( "song mode" ) );
+    m_button_mode = manage( new ToggleButton( "Song" ) );
     m_button_mode->signal_toggled().connect(  mem_fun( *this, &mainwnd::set_song_mode ));
     add_tooltip( m_button_mode, "Toggle song mode (or live/sequence mode)." );
     if(global_song_start_mode)
