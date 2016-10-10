@@ -1,0 +1,38 @@
+# Maintainer: stazed<stazed@mapson.com>
+_pkgbasename=seq42
+pkgname=${_pkgbasename}-git
+pkgver=Release.1.0.6.r0.gcee3c34
+pkgrel=1
+pkgdesc="A MIDI sequencer"
+arch=('i686' 'x86_64')
+url="http//github.com/Stazed/seq42.git"
+license=('GPL')
+depends=('gtkmm' 'jack')
+makedepends=('git')
+provides=("${_pkgbasename}")
+conflicts=("${_pkgbasename}")
+source=("${_pkgbasename}::git://github.com/Stazed/seq42.git")
+sha256sums=('SKIP')
+
+pkgver() {
+    cd "${srcdir}/${_pkgbasename}"
+
+    git describe --long | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
+}
+
+build() {
+    cd "${srcdir}/${_pkgbasename}"
+
+    autoreconf -i
+    ./configure --prefix=/usr --disable-lash
+    make
+}
+
+package() {
+    cd "${srcdir}/${_pkgbasename}"
+
+    make DESTDIR="${pkgdir}" install
+
+    install -v -D -m 0644 "icons/32/${_pkgbasename}_32.png" "${pkgdir}/usr/share/pixmaps/${_pkgbasename}_32.png"
+    install -v -D -m 0644 "icons/${_pkgbasename}.desktop" "${pkgdir}/usr/share/applications/${_pkgbasename}.desktop"
+}
