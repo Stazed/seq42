@@ -33,6 +33,6 @@ package() {
 
     make DESTDIR="${pkgdir}" install
 
-    install -v -D -m 0644 "icons/32/${_pkgbasename}_32.png" "${pkgdir}/usr/share/pixmaps/${_pkgbasename}_32.png"
+    install -v -D -m 0644 "icons/scalable/${_pkgbasename}.svg" "${pkgdir}/usr/share/pixmaps/${_pkgbasename}.svg"
     install -v -D -m 0644 "icons/${_pkgbasename}.desktop" "${pkgdir}/usr/share/applications/${_pkgbasename}.desktop"
 }

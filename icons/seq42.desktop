@@ -2,10 +2,8 @@
 Name=Seq42
 GenericName=
 Comment=MIDI Sequencer
-Icon=/usr/share/pixmaps/seq42_32.png
-
+Icon=/usr/share/pixmaps/seq42.svg
 Type=Application
 Categories=AudioVideo;Audio;
-
 Exec=seq42
 Terminal=false
