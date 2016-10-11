@@ -17,4 +17,5 @@ configure
 /man/Makefile.in
 /src/Makefile.in
 /src/pixmaps/Makefile.in
+missing
 
