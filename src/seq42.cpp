@@ -166,7 +166,7 @@ main (int argc, char *argv[])
             printf( "   -M, --song_start_mode <mode>: The following play\n" );
             printf( "                          modes are available (0 = live mode)\n");
             printf( "                                              (1 = song mode) (default)\n" );
-            printf( "   -n, --client_name <name>: Set alsa client name - default = seq42");
+            printf( "   -n, --client_name <name>: Set alsa client name: Default = seq42\n");
             printf( "   -S, --stats: show statistics\n" );
             printf( "   -U, --jack_session_uuid <uuid>: set uuid for jack session\n" );
             printf( "\n\n\n" );
@@ -287,7 +287,7 @@ main (int argc, char *argv[])
     }
     else
         printf( "Error calling getenv( \"%s\" )\n", HOME );
-    
+
     p.init();
 
     p.launch_input_thread();
