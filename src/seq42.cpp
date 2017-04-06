@@ -57,6 +57,7 @@ static struct
     {"manual_alsa_ports", 0, 0, 'm' },
     {"pass_sysex", 0, 0, 'P'},
     {"version", 0, 0, 'v'},
+    {"client_name", required_argument, 0, 'n'},
     {0, 0, 0, 0}
 };
 
@@ -74,6 +75,7 @@ Glib::ustring last_used_dir ="/";
 Glib::ustring last_midi_dir ="/";
 std::string config_filename = ".seq42rc";
 std::string user_filename = ".seq42usr";
+Glib::ustring global_client_name = "seq42"; // default
 bool global_print_keys = false;
 interaction_method_e global_interactionmethod = e_seq42_interaction;
 
@@ -123,49 +125,11 @@ main (int argc, char *argv[])
 
     /* Init the lash driver (strip lash specific command line
      * arguments and connect to daemon) */
+    /* lash must be initialized here because mastermidibus uses the global
+    * lash_driver variable*/
 #ifdef LASH_SUPPORT
     lash_driver = new lash(&argc, &argv);
 #endif
-
-    /* the main performance object */
-    /* lash must be initialized here because mastermidibus uses the global
-    * lash_driver variable*/
-    perform p;
-
-    /* read user preferences files */
-    if ( getenv( HOME ) != NULL )
-    {
-        Glib::ustring home( getenv( HOME ));
-        last_used_dir = home;
-        Glib::ustring total_file = home + SLASH + config_filename;
-
-        if (Glib::file_test(total_file, Glib::FILE_TEST_EXISTS))
-        {
-            printf( "Reading [%s]\n", total_file.c_str());
-
-            optionsfile options( total_file );
-
-            if ( !options.parse( &p ) )
-            {
-                printf( "Error Reading [%s]\n", total_file.c_str());
-            }
-        }
-
-        total_file = home + SLASH + user_filename;
-        if (Glib::file_test(total_file, Glib::FILE_TEST_EXISTS))
-        {
-            printf( "Reading [%s]\n", total_file.c_str());
-
-            userfile user( total_file );
-
-            if ( !user.parse( &p ) )
-            {
-                printf( "Error Reading [%s]\n", total_file.c_str());
-            }
-        }
-    }
-    else
-        printf( "Error calling getenv( \"%s\" )\n", HOME );
 
     /* parse parameters */
     int c;
@@ -175,7 +139,7 @@ main (int argc, char *argv[])
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long (argc, argv, "Chi:jJkmM:pPsSU:vx:", long_options, &option_index);
+        c = getopt_long (argc, argv, "Chi:jJkmM:pPsSU:vx:n:", long_options, &option_index);
 
         /* Detect the end of the options. */
         if (c == -1)
@@ -202,6 +166,7 @@ main (int argc, char *argv[])
             printf( "   -M, --song_start_mode <mode>: The following play\n" );
             printf( "                          modes are available (0 = live mode)\n");
             printf( "                                              (1 = song mode) (default)\n" );
+            printf( "   -n, --client_name <name>: Set alsa client name - default = seq42");
             printf( "   -S, --stats: show statistics\n" );
             printf( "   -U, --jack_session_uuid <uuid>: set uuid for jack session\n" );
             printf( "\n\n\n" );
@@ -256,6 +221,10 @@ main (int argc, char *argv[])
             global_manual_alsa_ports = true;
             break;
 
+        case 'n':
+            global_client_name = Glib::ustring( optarg );
+            break;
+
         case 'i':
             /* ignore alsa device */
             global_device_ignore = true;
@@ -281,6 +250,44 @@ main (int argc, char *argv[])
         }
     } /* end while */
 
+    /* the main performance object */
+    perform p;
+
+    /* read user preferences files */
+    if ( getenv( HOME ) != NULL )
+    {
+        Glib::ustring home( getenv( HOME ));
+        last_used_dir = home;
+        Glib::ustring total_file = home + SLASH + config_filename;
+
+        if (Glib::file_test(total_file, Glib::FILE_TEST_EXISTS))
+        {
+            printf( "Reading [%s]\n", total_file.c_str());
+
+            optionsfile options( total_file );
+
+            if ( !options.parse( &p ) )
+            {
+                printf( "Error Reading [%s]\n", total_file.c_str());
+            }
+        }
+
+        total_file = home + SLASH + user_filename;
+        if (Glib::file_test(total_file, Glib::FILE_TEST_EXISTS))
+        {
+            printf( "Reading [%s]\n", total_file.c_str());
+
+            userfile user( total_file );
+
+            if ( !user.parse( &p ) )
+            {
+                printf( "Error Reading [%s]\n", total_file.c_str());
+            }
+        }
+    }
+    else
+        printf( "Error calling getenv( \"%s\" )\n", HOME );
+    
     p.init();
 
     p.launch_input_thread();

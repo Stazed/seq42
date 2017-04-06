@@ -41,7 +41,7 @@ const int c_file_version = 5;  // Version of our save file format.  Increment th
 2 - added swing amount to perform and swing_mode to sequence
 3 - added track mute, track index
 4 - added beats per measure, beat width
-5 - Use int32_t for 32 bit 64 bit compatibility
+5 - Use int32_t for 32 bit 64 bit compatibility, add file identification, add date & time stamp
 */
 
 /* for 32 bit & 64 bit compatible - file version 5 */
@@ -203,6 +203,8 @@ extern Glib::ustring last_used_dir;
 extern Glib::ustring last_midi_dir;
 
 extern bool global_print_keys;
+
+extern Glib::ustring global_client_name;
 
 const int c_max_instruments = 64;
 
