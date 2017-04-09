@@ -445,9 +445,10 @@ bool midifile::parse (perform * a_perf, int screen_set)
                                     break;                               /* If not first track don't use because we
                                                                             don't support tempo change */
 
-                                int bpm = (double) 60000000.0 / tempo;
+                                double bpm = (double) 60000000.0 / tempo;
                                 a_perf->set_bpm(bpm);
-                                //printf("BPM set to %d\n", bpm);
+                                printf("BPM set to %f\n", bpm);
+                                printf("tempo %d\n",tempo);
                             }
                             else
                                 m_pos += len;           /* eat it           */
@@ -608,10 +609,18 @@ bool midifile::parse (perform * a_perf, int screen_set)
     if ((file_size - m_pos) > (int) sizeof (unsigned int))
     {
         /* Get ID + Length */
+        
+        /*   long bpm = read_long();
+            midibpm bpm = midibpm(read_long());
+            if (bpm > (SEQ64_BPM_SCALE_FACTOR - 1.0))
+                bpm /= SEQ64_BPM_SCALE_FACTOR;
+         */
+        
         ID = read_long ();
         if (ID == c_bpmtag)
         {
-            long bpm = read_long ();
+            double bpm = (double) read_long (); // FIXME
+            printf("bpm long %f\n",bpm);
             a_perf->set_bpm (bpm);
         }
     }
@@ -810,7 +819,24 @@ bool midifile::write_sequences (perform * a_perf)
     write_short (0);
 
     /* bpm */
-    write_long (c_bpmtag);
+
+#if 0
++#ifdef USE_DOUBLE_BEATS_PER_MINUTE
++
++    /*
++     *  We now encode the Sequencer64-specific BPM value by multiplying it
++     *  by 1000.0 first, to get more implicit precision in the number.
++     *  We should probably sanity-check the BPM at some point.
++     */
++
++    long scaled_bpm = long(p.get_beats_per_minute() * SEQ64_BPM_SCALE_FACTOR);
++    write_long(scaled_bpm);                     /* 4 bytes                  */
++#else
+     write_long(p.get_beats_per_minute());       /* 4 bytes                  */
++#endif
+#endif
+
+    write_long (c_bpmtag); // FIXME 
     write_long (a_perf->get_bpm ());
 
     /* write out the mute groups */

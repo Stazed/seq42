@@ -34,7 +34,7 @@
 
 using namespace std;
 
-const int c_file_version = 5;  // Version of our save file format.  Increment this whenever the format of the save file changes.
+const int c_file_version = 6;  // Version of our save file format.  Increment this whenever the format of the save file changes.
 /* Version history:
 0 - initial seq42 file format
 1 - added transposable to track
@@ -42,6 +42,7 @@ const int c_file_version = 5;  // Version of our save file format.  Increment th
 3 - added track mute, track index
 4 - added beats per measure, beat width
 5 - Use int32_t for 32 bit 64 bit compatibility, add file identification, add date & time stamp
+6 - Use double for BPM
 */
 
 /* for 32 bit & 64 bit compatible - file version 5 */
@@ -69,7 +70,7 @@ const long c_note_off_velocity_default = 64;
 const int c_default_trigger_length_in_bars = 1; /* used when adding a new trigger */
 const long c_default_trigger_length = c_default_trigger_length_in_bars * 4 * c_ppqn;
 
-const int c_bpm          = 120;  /* default */
+const double c_bpm          = 120.0;  /* default */
 const int c_maxBuses = 32;
 
 const int c_max_swing_amount = 24;

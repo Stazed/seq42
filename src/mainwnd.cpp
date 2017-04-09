@@ -371,11 +371,14 @@ mainwnd::mainwnd(perform *a_p):
     }
 
     /* bpm spin button */
-    m_adjust_bpm = manage(new Adjustment(m_mainperf->get_bpm(), 20, 500, 1));
+    m_adjust_bpm = manage(new Adjustment(m_mainperf->get_bpm(), 5, 600, 1));
     m_spinbutton_bpm = manage( new SpinButton( *m_adjust_bpm ));
-    m_spinbutton_bpm->set_editable( false );
+    m_spinbutton_bpm->set_editable( true );
+    m_spinbutton_bpm->set_digits(2); // FIXME  m_spinbutton_bpm->set_digits(usr().bpm_precision());
     m_adjust_bpm->signal_value_changed().connect(
         mem_fun(*this, &mainwnd::adj_callback_bpm ));
+    m_adjust_bpm->set_step_increment(1); // FIXME m_adjust_bpm->set_step_increment(usr().bpm_increment());
+    m_adjust_bpm->set_page_increment(10.0 * 1); // FIXME m_adjust_bpm->set_page_increment(10.0 * usr().bpm_increment()); 
     add_tooltip( m_spinbutton_bpm, "Adjust beats per minute (BPM) value" );
 
     /* beats per measure */
@@ -1060,7 +1063,7 @@ void mainwnd::new_file()
         set_bp_measure(4);
         set_bw(4);
         set_xpose(0);
-        m_mainperf->set_bpm(120);
+        m_mainperf->set_bpm(120.0);
 
         global_filename = "";
         update_window_title();
@@ -1540,9 +1543,9 @@ mainwnd::about_dialog()
 void
 mainwnd::adj_callback_bpm( )
 {
-    if(m_mainperf->get_bpm() != (int) m_adjust_bpm->get_value())
+    if(m_mainperf->get_bpm() !=  m_adjust_bpm->get_value())
     {
-        m_mainperf->set_bpm( (int) m_adjust_bpm->get_value());
+        m_mainperf->set_bpm(  m_adjust_bpm->get_value());
         global_is_modified = true;
     }
 }
@@ -1597,14 +1600,14 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
 
         if ( a_ev->keyval == m_mainperf->m_key_bpm_dn )
         {
-            m_mainperf->set_bpm( m_mainperf->get_bpm() - 1 );
+            m_mainperf->set_bpm( m_mainperf->get_bpm() - 1 ); // FIXME precision
             m_adjust_bpm->set_value(  m_mainperf->get_bpm() );
             return true;
         }
 
         if ( a_ev->keyval ==  m_mainperf->m_key_bpm_up )
         {
-            m_mainperf->set_bpm( m_mainperf->get_bpm() + 1 );
+            m_mainperf->set_bpm( m_mainperf->get_bpm() + 1 ); // FIXME precision
             m_adjust_bpm->set_value(  m_mainperf->get_bpm() );
             return true;
         }

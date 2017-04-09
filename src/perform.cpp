@@ -620,10 +620,10 @@ mastermidibus* perform::get_master_midi_bus( )
     return &m_master_bus;
 }
 
-void perform::set_bpm(int a_bpm)
+void perform::set_bpm(double a_bpm)
 {
-    if ( a_bpm < 20 )  a_bpm = 20;
-    if ( a_bpm > 500 ) a_bpm = 500;
+    if ( a_bpm < 5.0 )  a_bpm = 5.0;
+    if ( a_bpm > 600.0 ) a_bpm = 600.0;
 
     if ( ! (m_jack_running && global_is_running ))
     {
@@ -631,7 +631,7 @@ void perform::set_bpm(int a_bpm)
     }
 }
 
-int  perform::get_bpm( )
+double  perform::get_bpm( )
 {
     return  m_master_bus.get_bpm( );
 }
@@ -705,7 +705,7 @@ void perform::new_track( int a_track )
 void perform::print()
 {
     printf( "Dumping track data...\n");
-    printf("bpm[%d]\n", get_bpm());
+    printf("bpm[%f]\n", get_bpm());
     printf("swing8[%d]\n", get_swing_amount8());
     printf("swing16[%d]\n", get_swing_amount16());
     for (int i = 0; i < c_max_track; i++)
@@ -1298,7 +1298,7 @@ void perform::position_jack( bool a_state, long a_tick )
     */
 
     int ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
-    int beats_per_minute =  m_master_bus.get_bpm();
+    double beats_per_minute =  m_master_bus.get_bpm();
 
     uint64_t tick_rate = ((uint64_t)m_jack_frame_rate * current_tick * 60.0);
     long tpb_bpm = ticks_per_beat * beats_per_minute / (m_bw / 4.0 );
@@ -1816,7 +1816,7 @@ void perform::output_func()
 
             /* delta time to ticks */
             /* bpm */
-            int bpm = m_master_bus.get_bpm() * ( 4.0 / m_bw);
+            double bpm = m_master_bus.get_bpm() * ( 4.0 / m_bw);
 
             /* get delta ticks, delta_ticks_f is in 1000th of a tick */
             long long delta_tick_num = bpm * ppqn * delta_us + delta_tick_frac;
@@ -2194,9 +2194,9 @@ void perform::output_func()
                 printf( "[%3d][%8ld]\n", i * 100, stats_all[i] );
             }
             printf("\n\n-- clock width --\n" );
-            int bpm  = m_master_bus.get_bpm();
+            double bpm  = m_master_bus.get_bpm();
 
-            printf("optimal: [%d]us\n", ((c_ppqn / 24)* 60000000 / c_ppqn / bpm));
+            printf("optimal: [%f]us\n", ((c_ppqn / 24)* 60000000 / c_ppqn / bpm));
 
             for ( int i=0; i<100; i++ )
             {
@@ -2632,8 +2632,8 @@ perform::save( const Glib::ustring& a_filename )
 
     file.write((const char *) &c_file_version, global_file_int_size);
 
-    int bpm = get_bpm();
-    file.write((const char *) &bpm, global_file_int_size);
+    double bpm = get_bpm();
+    file.write((const char *) &bpm, sizeof(bpm));  // version 6 use double vs global_file_int_size FIXME check..
 
     int bp_measure = get_bp_measure(); // version 4
     file.write((const char *) &bp_measure, global_file_int_size);
@@ -2722,10 +2722,20 @@ perform::load( const Glib::ustring& a_filename )
         return false;
     }
 
-    int bpm;
-    file.read((char *) &bpm, global_file_int_size);
-    set_bpm(bpm);
-
+    if(version > 5)
+    {
+        double bpm;
+        file.read((char *) &bpm, sizeof(bpm)); // file version 6
+        printf("bpm double %f\n", bpm);
+        set_bpm(bpm);
+    }else
+    {
+        int bpm;
+        file.read((char *) &bpm, global_file_int_size);
+        printf("bpm int %d\n", bpm);
+        set_bpm(bpm);
+    }
+    
     int bp_measure = 4;
     if(version > 3)
     {

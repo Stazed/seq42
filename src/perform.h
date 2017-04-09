@@ -283,8 +283,8 @@ public:
 
     void reset_sequences();
 
-    void set_bpm(int a_bpm);
-    int  get_bpm( );
+    void set_bpm(double a_bpm);
+    double  get_bpm( );
 
     void set_bp_measure(int a_bp_mes);
     int get_bp_measure( );
