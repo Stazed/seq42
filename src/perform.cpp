@@ -622,8 +622,8 @@ mastermidibus* perform::get_master_midi_bus( )
 
 void perform::set_bpm(double a_bpm)
 {
-    if ( a_bpm < 5.0 )  a_bpm = 5.0;
-    if ( a_bpm > 600.0 ) a_bpm = 600.0;
+    if ( a_bpm < c_bpm_minimum ) a_bpm = c_bpm_minimum;
+    if ( a_bpm > c_bpm_maximum ) a_bpm = c_bpm_maximum;
 
     if ( ! (m_jack_running && global_is_running ))
     {
@@ -2633,7 +2633,7 @@ perform::save( const Glib::ustring& a_filename )
     file.write((const char *) &c_file_version, global_file_int_size);
 
     double bpm = get_bpm();
-    file.write((const char *) &bpm, sizeof(bpm));  // version 6 use double vs global_file_int_size FIXME check..
+    file.write((const char *) &bpm, sizeof(bpm));  // version 6 use double
 
     int bp_measure = get_bp_measure(); // version 4
     file.write((const char *) &bp_measure, global_file_int_size);
@@ -2724,15 +2724,15 @@ perform::load( const Glib::ustring& a_filename )
 
     if(version > 5)
     {
-        double bpm;
-        file.read((char *) &bpm, sizeof(bpm)); // file version 6
+        double bpm; // file version 6 uses double
+        file.read((char *) &bpm, sizeof(bpm));
         printf("bpm double %f\n", bpm);
         set_bpm(bpm);
     }else
     {
-        int bpm;
+        int bpm;    // prior to version 6 uses int
         file.read((char *) &bpm, global_file_int_size);
-        printf("bpm int %d\n", bpm);
+        //printf("bpm int %d\n", bpm);
         set_bpm(bpm);
     }
     

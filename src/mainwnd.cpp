@@ -371,14 +371,13 @@ mainwnd::mainwnd(perform *a_p):
     }
 
     /* bpm spin button */
-    m_adjust_bpm = manage(new Adjustment(m_mainperf->get_bpm(), 5, 600, 1));
+    m_adjust_bpm = manage(new Adjustment(m_mainperf->get_bpm(), c_bpm_minimum, c_bpm_maximum, 1));
     m_spinbutton_bpm = manage( new SpinButton( *m_adjust_bpm ));
     m_spinbutton_bpm->set_editable( true );
-    m_spinbutton_bpm->set_digits(2); // FIXME  m_spinbutton_bpm->set_digits(usr().bpm_precision());
+    m_spinbutton_bpm->set_digits(2);                    // 2 = two decimal precision
     m_adjust_bpm->signal_value_changed().connect(
         mem_fun(*this, &mainwnd::adj_callback_bpm ));
-    m_adjust_bpm->set_step_increment(1); // FIXME m_adjust_bpm->set_step_increment(usr().bpm_increment());
-    m_adjust_bpm->set_page_increment(10.0 * 1); // FIXME m_adjust_bpm->set_page_increment(10.0 * usr().bpm_increment()); 
+
     add_tooltip( m_spinbutton_bpm, "Adjust beats per minute (BPM) value" );
 
     /* beats per measure */

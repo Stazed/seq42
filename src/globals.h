@@ -70,7 +70,11 @@ const long c_note_off_velocity_default = 64;
 const int c_default_trigger_length_in_bars = 1; /* used when adding a new trigger */
 const long c_default_trigger_length = c_default_trigger_length_in_bars * 4 * c_ppqn;
 
-const double c_bpm          = 120.0;  /* default */
+const double c_bpm                       = 120.0;   /* default */
+const double c_bpm_scale_factor          = 1000.0;  /* used in midifile for doubles */
+const double c_bpm_minimum               = 1.0;
+const double c_bpm_maximum               = 600.0;
+
 const int c_maxBuses = 32;
 
 const int c_max_swing_amount = 24;
