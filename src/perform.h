@@ -162,6 +162,7 @@ public:
 
     unsigned int m_key_bpm_up;
     unsigned int m_key_bpm_dn;
+    unsigned int m_key_tap_bpm;
 
     unsigned int m_key_start;
     unsigned int m_key_stop;

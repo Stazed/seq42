@@ -380,6 +380,17 @@ mainwnd::mainwnd(perform *a_p):
 
     add_tooltip( m_spinbutton_bpm, "Adjust beats per minute (BPM) value" );
 
+    /* bpm tap tempo button - sequencer64 */
+    m_button_tap = manage(new Button("0"));
+    m_button_tap->signal_clicked().connect(mem_fun(*this, &mainwnd::tap));
+    add_tooltip
+    (
+        m_button_tap,
+        "Tap in time to set the beats per minute (BPM) value. "
+        "After 5 seconds of no taps, the tap-counter will reset to 0. "
+        "Also see the File / Options / Ext Keys / Tap BPM key assignment."
+    );
+    
     /* beats per measure */
     m_button_bp_measure = manage( new Button());
     m_button_bp_measure->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( down_xpm  ))));
@@ -449,8 +460,10 @@ mainwnd::mainwnd(perform *a_p):
     m_hlbox->pack_end( *m_button_redo, false, false );
     m_hlbox->pack_end( *m_button_undo, false, false );
 
-    m_hlbox->pack_start(*m_spinbutton_bpm, false, false );
-    m_hlbox->pack_start(*(manage( new Label( "bpm" ))), false, false, 4);
+    m_hlbox->pack_start( *m_spinbutton_bpm, false, false );
+    m_hlbox->pack_start( *(manage( new Label( "bpm" ))), false, false, 4);
+    
+    m_hlbox->pack_start( *m_button_tap, false, false );
 
     m_hlbox->pack_start( *m_button_bp_measure, false, false );
     m_hlbox->pack_start( *m_entry_bp_measure, false, false );
@@ -494,6 +507,12 @@ mainwnd::mainwnd(perform *a_p):
     set_snap( 4 );
     set_bp_measure( 4 );
     set_xpose( 0 );
+
+// FIXME
+    /* tap button sequencer64  */
+//    m_current_beats (0.0);
+//    m_base_time_ms  (0);
+//   m_last_time_ms  (0);
 
     m_perfroll->init_before_show();
 
@@ -613,6 +632,23 @@ mainwnd::timer_callback(  )
         m_button_redo->set_sensitive(false);
     }
 
+    /* Tap button - sequencer64 */
+    if (m_current_beats > 0)
+    {
+        if (m_last_time_ms > 0)
+        {
+            struct timespec spec;
+            clock_gettime(CLOCK_REALTIME, &spec);
+            long ms = long(spec.tv_sec) * 1000;     /* seconds to ms        */
+            ms += round(spec.tv_nsec * 1.0e-6);     /* nanoseconds to ms    */
+            long difference = ms - m_last_time_ms;
+            if (difference > 5000L)                 /* 5 second wait        */
+            {
+                m_current_beats = m_base_time_ms = m_last_time_ms = 0;
+                set_tap_button(0);
+            }
+        }
+    }
     return true;
 }
 
@@ -982,6 +1018,69 @@ mainwnd::set_xpose( int a_xpose  )
 
     m_mainperf->all_notes_off();
     m_mainperf->get_master_midi_bus()->set_transpose(a_xpose);
+}
+
+
+/**
+ *  Implements the Tap button or Tap keystroke (currently hard-wired as F9).
+ */
+
+void
+mainwnd::tap ()
+{
+    double bpm = update_bpm();
+    set_tap_button(m_current_beats);
+    if (m_current_beats > 1)                    /* first one is useless */
+        m_adjust_bpm->set_value(double(bpm));
+}
+
+/**
+ *  Sets the label in the Tap button to the given number of taps.
+ *
+ * \param beats
+ *      The current number of times the user has clicked the Tap button/key.
+ */
+
+void
+mainwnd::set_tap_button (int beats)
+{
+    Gtk::Label * tapptr(dynamic_cast<Gtk::Label *>(m_button_tap->get_child()));
+//    if (not_nullptr(tapptr))  // FIXME
+//    {
+        char temp[8];
+        snprintf(temp, sizeof(temp), "%d", beats);
+        tapptr->set_text(temp);
+//    }
+}
+
+/**
+ *  Calculates the running BPM value from the user's sequences of taps.
+ *
+ * \return
+ *      Returns the current BPM value.
+ */
+
+double
+mainwnd::update_bpm ()
+{
+    double bpm = 0.0;
+    struct timespec spec;
+    clock_gettime(CLOCK_REALTIME, &spec);
+    long ms = long(spec.tv_sec) * 1000;     /* seconds to milliseconds      */
+    ms += round(spec.tv_nsec * 1.0e-6);     /* nanoseconds to milliseconds  */
+    if (m_current_beats == 0)
+    {
+        m_base_time_ms = ms;
+        m_last_time_ms = 0;
+    }
+    else if (m_current_beats >= 1)
+    {
+        int diffms = ms - m_base_time_ms;
+        bpm = m_current_beats * 60000.0 / diffms;
+        m_last_time_ms = ms;
+    }
+    ++m_current_beats;
+    return bpm;
 }
 
 void
@@ -1599,16 +1698,21 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
 
         if ( a_ev->keyval == m_mainperf->m_key_bpm_dn )
         {
-            m_mainperf->set_bpm( m_mainperf->get_bpm() - 1 ); // FIXME precision
+            m_mainperf->set_bpm( m_mainperf->get_bpm() - 1 );
             m_adjust_bpm->set_value(  m_mainperf->get_bpm() );
             return true;
         }
 
         if ( a_ev->keyval ==  m_mainperf->m_key_bpm_up )
         {
-            m_mainperf->set_bpm( m_mainperf->get_bpm() + 1 ); // FIXME precision
+            m_mainperf->set_bpm( m_mainperf->get_bpm() + 1 );
             m_adjust_bpm->set_value(  m_mainperf->get_bpm() );
             return true;
+        }
+
+        if (a_ev->keyval  == m_mainperf->m_key_tap_bpm )
+        {
+            tap();
         }
 
         if ( a_ev->keyval ==  m_mainperf->m_key_seqlist )

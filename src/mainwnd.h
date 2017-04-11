@@ -71,6 +71,7 @@ private:
 
     SpinButton  *m_spinbutton_bpm;
     Adjustment  *m_adjust_bpm;
+    Button      *m_button_tap;
 
     SpinButton  *m_spinbutton_swing_amount8;
     Adjustment  *m_adjust_swing_amount8;
@@ -135,6 +136,11 @@ private:
     int m_bp_measure;
     int m_bw;
     /* End variables that used to be in perfedit */
+    
+    /* tap button - From sequencer64 */
+    int m_current_beats; // value is displayed in the button.
+    long m_base_time_ms; // Indicates the first time the tap button was ... tapped.
+    long m_last_time_ms; // Indicates the last time the tap button was tapped.
 
     void file_import_dialog();
     void options_dialog();
@@ -218,6 +224,11 @@ private:
     /* End method that used to be in perfedit */
 
     void set_xpose (int a_xpose);
+    
+    /* From  sequencer64 tap button */
+    void tap ();
+    void set_tap_button (int beats);
+    double update_bpm ();
 
 public:
 
