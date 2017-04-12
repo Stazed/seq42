@@ -95,6 +95,10 @@ optionsfile::parse( perform *a_perf )
     next_data_line( &file );
     sscanf( m_line, "%u", &a_perf->m_key_jack );
 #endif // JACK_SUPPORT
+    
+    next_data_line( &file );
+    sscanf( m_line, "%u", &a_perf->m_key_tap_bpm );
+    
 
     line_after( &file, "[jack-transport]" );
     long flag = 0;
@@ -271,6 +275,10 @@ optionsfile::write( perform *a_perf  )
          << gdk_keyval_name( a_perf->m_key_jack )
          << " jack sync\n";
 #endif // JACK_SUPPORT
+
+    file << a_perf->m_key_tap_bpm << "        # "
+         << gdk_keyval_name( a_perf->m_key_tap_bpm )
+         << " tap BPM key\n";
 
     file << "\n\n\n[jack-transport]\n\n"
 
