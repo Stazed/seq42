@@ -80,7 +80,7 @@ mainwnd::mainwnd(perform *a_p):
 
     /* main window */
     update_window_title();
-    set_size_request(850, 322);
+    set_size_request(860, 322);
 
 #if GTK_MINOR_VERSION < 12
     m_tooltips = manage( new Tooltips() );
@@ -388,7 +388,7 @@ mainwnd::mainwnd(perform *a_p):
         m_button_tap,
         "Tap in time to set the beats per minute (BPM) value. "
         "After 5 seconds of no taps, the tap-counter will reset to 0. "
-        "Also see the File / Options / Ext Keys / Tap BPM key assignment."
+        "Also see the File / Options / Keyboard / Tap BPM key assignment."
     );
     
     /* beats per measure */
@@ -460,10 +460,12 @@ mainwnd::mainwnd(perform *a_p):
     m_hlbox->pack_end( *m_button_redo, false, false );
     m_hlbox->pack_end( *m_button_undo, false, false );
 
+    m_hlbox->pack_start( *(manage( new Label( "BPM" ))), false, false, 0);
     m_hlbox->pack_start( *m_spinbutton_bpm, false, false );
-    m_hlbox->pack_start( *(manage( new Label( "bpm" ))), false, false, 4);
-    
+
     m_hlbox->pack_start( *m_button_tap, false, false );
+    
+    m_hlbox->pack_start( *(manage(new VSeparator())), false, false, 4);
 
     m_hlbox->pack_start( *m_button_bp_measure, false, false );
     m_hlbox->pack_start( *m_entry_bp_measure, false, false );
@@ -473,7 +475,7 @@ mainwnd::mainwnd(perform *a_p):
     m_hlbox->pack_start( *m_button_bw, false, false );
     m_hlbox->pack_start( *m_entry_bw, false, false );
 
-    m_hlbox->pack_start( *(manage(new Label( "x" ))), false, false, 4);
+    m_hlbox->pack_start( *(manage(new VSeparator())), false, false, 4);
 
     m_hlbox->pack_start( *m_button_snap, false, false );
     m_hlbox->pack_start( *m_entry_snap, false, false );
@@ -508,11 +510,10 @@ mainwnd::mainwnd(perform *a_p):
     set_bp_measure( 4 );
     set_xpose( 0 );
 
-// FIXME
-    /* tap button sequencer64  */
-//    m_current_beats (0.0);
-//    m_base_time_ms  (0);
-//   m_last_time_ms  (0);
+    /* tap button  */
+    m_current_beats = 0;
+    m_base_time_ms  = 0;
+    m_last_time_ms  = 0;
 
     m_perfroll->init_before_show();
 
@@ -1020,11 +1021,6 @@ mainwnd::set_xpose( int a_xpose  )
     m_mainperf->get_master_midi_bus()->set_transpose(a_xpose);
 }
 
-
-/**
- *  Implements the Tap button or Tap keystroke (currently hard-wired as F9).
- */
-
 void
 mainwnd::tap ()
 {
@@ -1034,31 +1030,17 @@ mainwnd::tap ()
         m_adjust_bpm->set_value(double(bpm));
 }
 
-/**
- *  Sets the label in the Tap button to the given number of taps.
- *
- * \param beats
- *      The current number of times the user has clicked the Tap button/key.
- */
-
 void
 mainwnd::set_tap_button (int beats)
 {
     Gtk::Label * tapptr(dynamic_cast<Gtk::Label *>(m_button_tap->get_child()));
-//    if (not_nullptr(tapptr))  // FIXME
-//    {
+    if (tapptr != nullptr)
+    {
         char temp[8];
         snprintf(temp, sizeof(temp), "%d", beats);
         tapptr->set_text(temp);
-//    }
+    }
 }
-
-/**
- *  Calculates the running BPM value from the user's sequences of taps.
- *
- * \return
- *      Returns the current BPM value.
- */
 
 double
 mainwnd::update_bpm ()
