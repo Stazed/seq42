@@ -1670,7 +1670,7 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
         }
     }
 
-    if ( a_ev->type == GDK_KEY_PRESS )
+    if ( (a_ev->type == GDK_KEY_PRESS) && !(a_ev->state & GDK_MOD1_MASK) && !( a_ev->state & GDK_CONTROL_MASK ))
     {
         if ( global_print_keys )
         {
