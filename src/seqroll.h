@@ -163,6 +163,7 @@ private:
     bool m_drawing_background_seq;
 
     bool m_ignore_redraw;
+    bool m_expanded_recording;
 
     void on_realize();
     bool on_expose_event(GdkEventExpose* a_ev);
@@ -230,6 +231,8 @@ public:
 
     void start_paste();
     void follow_progress();
+    void set_expanded_recording(bool a_record);
+    bool get_expanded_record();
 
     void set_background_sequence( bool a_state, int a_trk, int a_seq );
 

@@ -28,6 +28,7 @@
 #include "pixmaps/play.xpm"
 #include "pixmaps/q_rec.xpm"
 #include "pixmaps/rec.xpm"
+#include "pixmaps/exp_rec.xpm"
 #include "pixmaps/thru.xpm"
 #include "pixmaps/midi.xpm"
 #include "pixmaps/snap.xpm"
@@ -117,7 +118,7 @@ seqedit::seqedit( sequence *a_seq,
     std::string title = "seq42 - sequence - ";
     title.append(m_seq->get_name());
     set_title(title);
-    set_size_request(700, 500);
+    set_size_request(860, 500);
 
     m_seq->set_editing( true );
 
@@ -259,6 +260,12 @@ seqedit::seqedit( sequence *a_seq,
     m_toggle_record->signal_clicked().connect(
         mem_fun( *this, &seqedit::record_change_callback));
     add_tooltip( m_toggle_record, "Records incoming midi data." );
+    
+    m_toggle_exp_record = manage( new ToggleButton(  ));
+    m_toggle_exp_record->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( exp_rec_xpm ))));
+    m_toggle_exp_record->signal_clicked().connect(
+        mem_fun( *this, &seqedit::exp_rec_change_callback));
+    add_tooltip( m_toggle_exp_record, "Expand sequence length when recording." );
 
     m_toggle_q_rec = manage( new ToggleButton(  ));
     m_toggle_q_rec->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( q_rec_xpm ))));
@@ -285,6 +292,7 @@ seqedit::seqedit( sequence *a_seq,
 
     dhbox->pack_end( *m_button_rec_vol, false, false, 4);
     dhbox->pack_end( *m_toggle_q_rec, false, false);
+    dhbox->pack_end( *m_toggle_exp_record, false, false);
     dhbox->pack_end( *m_toggle_record, false, false);
     dhbox->pack_end( *m_toggle_thru, false, false);
     dhbox->pack_end( *m_toggle_play, false, false);
@@ -315,6 +323,7 @@ seqedit::seqedit( sequence *a_seq,
 
     set_bp_measure( m_seq->get_bp_measure() );
     set_bw( m_seq->get_bw() );
+    m_seq->set_unit_measure(); /* need to set this before set_measures() */
     set_measures( get_measures(), false );
 
     set_data_type( EVENT_NOTE_ON );
@@ -1304,6 +1313,7 @@ void
 seqedit::apply_length( int a_bp_measure, int a_bw, int a_measures, bool a_adjust_triggers )
 {
     m_seq->set_length( a_measures * a_bp_measure * ((c_ppqn * 4) / a_bw), a_adjust_triggers );
+    m_seq->set_unit_measure(); // for follow_progress , redraw, update progress
 
     m_seqroll_wid->reset();
     m_seqtime_wid->reset();
@@ -1315,7 +1325,7 @@ seqedit::apply_length( int a_bp_measure, int a_bw, int a_measures, bool a_adjust
 long
 seqedit::get_measures()
 {
-    long units = ((m_seq->get_bp_measure() * (c_ppqn * 4)) /  m_seq->get_bw() );
+    long units = m_seq->get_unit_measure();
 
     long measures = (m_seq->get_length() / units);
 
@@ -1445,9 +1455,19 @@ seqedit::record_change_callback()
 }
 
 void
+seqedit::exp_rec_change_callback()
+{
+    m_seqroll_wid->set_expanded_recording(m_toggle_exp_record->get_active());
+    if(m_toggle_exp_record->get_active() != m_toggle_record->get_active()) // These two should be the same if using expanded
+        m_toggle_record->activate();
+}
+
+void
 seqedit::q_rec_change_callback()
 {
     m_seq->set_quanized_rec( m_toggle_q_rec->get_active() );
+    if(m_toggle_q_rec->get_active() != m_toggle_record->get_active()) // These two should be the same if using q
+        m_toggle_record->activate();
 }
 
 void
@@ -1560,20 +1580,27 @@ seqedit::timeout()
         raise();
     }
 
+    m_seqroll_wid->draw_progress_on_window();
+
+    if(m_seqroll_wid->get_expanded_record() && 
+            (m_seq->get_last_tick() >= ( m_seq->get_length() - ( m_seq->get_unit_measure()/4 ) )))
+    {
+        set_measures(get_measures() + 1,true);
+        m_seqroll_wid->follow_progress();
+    }
+
     if (m_seq->is_dirty_edit() )
     {
         m_seqroll_wid->redraw_events();
         m_seqevent_wid->redraw();
         m_seqdata_wid->redraw();
     }
-
-    m_seqroll_wid->draw_progress_on_window();
-
-    if(global_is_running && m_mainperf->get_follow_transport())
+    
+    if(global_is_running && m_mainperf->get_follow_transport() && !m_seqroll_wid->get_expanded_record())
     {
         m_seqroll_wid->follow_progress();
     }
-
+    
     // FIXME: ick
     set_track_info();
 

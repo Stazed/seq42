@@ -147,13 +147,14 @@ private:
     Button      *m_button_bw;
     Entry       *m_entry_bw;
 
-    Button	    *m_button_lfo;
+    Button      *m_button_lfo;
     lfownd      *m_lfo_wnd;
 
     Button	*m_button_rec_vol;
 
     ToggleButton *m_toggle_play;
     ToggleButton *m_toggle_record;
+    ToggleButton *m_toggle_exp_record;
     ToggleButton *m_toggle_q_rec;
     ToggleButton *m_toggle_thru;
 
@@ -190,7 +191,7 @@ private:
     int        m_bg_trk;
     static int m_initial_bg_trk;
 
-    long        m_measures;
+    long       m_measures;
 
     /* what is the data window currently editing ? */
     unsigned char m_editing_status;
@@ -221,6 +222,7 @@ private:
     void name_change_callback();
     void play_change_callback();
     void record_change_callback();
+    void exp_rec_change_callback();
     void q_rec_change_callback();
     void thru_change_callback();
     void undo_callback();

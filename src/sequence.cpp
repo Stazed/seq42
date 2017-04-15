@@ -162,6 +162,20 @@ sequence::set_have_redo()
 }
 
 void
+sequence::set_unit_measure()
+{
+    lock();
+    m_unit_measure = (get_bp_measure() * (c_ppqn * 4)) /  get_bw();
+    unlock();
+}
+
+long
+sequence::get_unit_measure()
+{
+    return m_unit_measure;
+}
+
+void
 sequence::set_bp_measure( long a_beats_per_measure )
 {
     lock();

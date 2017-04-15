@@ -100,6 +100,7 @@ private:
        should be powers of two in bars */
     long m_length;
     long m_snap_tick;
+    long m_unit_measure;
 
     /* these are just for the editor to mark things
        in correct time */
@@ -118,9 +119,6 @@ private:
     /* takes an event this sequence is holding and
        places it on our midibus */
     void put_event_on_bus (event * a_e);
-
-    /* resets the location counters */
-    void reset_loop ();
 
     void remove_all ();
 
@@ -172,8 +170,8 @@ public:
         return m_swing_mode;
     }
 
-    void set_measures (long a_length_measures);
-    long get_measures ();
+    void set_unit_measure ();
+    long get_unit_measure ();
 
     void set_bp_measure (long a_beats_per_measure);
     long get_bp_measure ();
