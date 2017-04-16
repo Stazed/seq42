@@ -536,7 +536,14 @@ seqroll::draw_progress_on_window()
                             1,
                             m_window_y );
 
+    long last_progress = m_old_progress_x;
     m_old_progress_x = (m_seq->get_last_tick() / m_zoom) - m_scroll_offset_x;
+    
+    if(m_old_progress_x < last_progress)
+    {
+        m_seq->set_loop_reset( true ); // for overwrite recording
+    }
+    
 
     if ( m_old_progress_x != 0 )
     {

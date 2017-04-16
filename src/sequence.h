@@ -76,6 +76,10 @@ private:
     bool m_recording;
     bool m_quanized_rec;
     bool m_thru;
+    bool m_overwrite_recording;
+    
+    /* flag to indicate play marker has gone to beginning of sequence on looping */
+    bool m_loop_reset;
 
     /* flag indicates that contents has changed from
        a recording */
@@ -119,7 +123,8 @@ private:
     /* takes an event this sequence is holding and
        places it on our midibus */
     void put_event_on_bus (event * a_e);
-
+    
+    /* remove all events from sequence */
     void remove_all ();
 
     /* sets m_trigger_offset and wraps it to length */
@@ -218,6 +223,10 @@ public:
     void set_snap_tick( int a_st );
     void set_quanized_rec( bool a_qr );
     bool get_quanidez_rec( );
+    void set_overwrite_rec( bool a_ov );
+    bool get_overwrite_rec( );    
+    void set_loop_reset( bool a_reset);
+    bool get_loop_reset( );
 
     void set_thru (bool);
     bool get_thru ();

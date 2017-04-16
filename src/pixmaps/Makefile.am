@@ -7,7 +7,6 @@ EXTRA_DIST = \
 	copy.xpm \
 	down.xpm \
 	expand.xpm \
-	exp_rec.xpm \
 	font_b.xpm \
 	font_w.xpm \
 	jack.xpm\

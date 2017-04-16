@@ -28,7 +28,6 @@
 #include "pixmaps/play.xpm"
 #include "pixmaps/q_rec.xpm"
 #include "pixmaps/rec.xpm"
-#include "pixmaps/exp_rec.xpm"
 #include "pixmaps/thru.xpm"
 #include "pixmaps/midi.xpm"
 #include "pixmaps/snap.xpm"
@@ -172,6 +171,7 @@ seqedit::seqedit( sequence *a_seq,
     m_menu_bw = manage( new Menu() );
     m_menu_swing_mode = manage( new Menu());
     m_menu_rec_vol = manage( new Menu() );
+    m_menu_rec_type = NULL;
 
     m_menu_sequences = NULL;
 
@@ -261,17 +261,17 @@ seqedit::seqedit( sequence *a_seq,
         mem_fun( *this, &seqedit::record_change_callback));
     add_tooltip( m_toggle_record, "Records incoming midi data." );
     
-    m_toggle_exp_record = manage( new ToggleButton(  ));
-    m_toggle_exp_record->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( exp_rec_xpm ))));
-    m_toggle_exp_record->signal_clicked().connect(
-        mem_fun( *this, &seqedit::exp_rec_change_callback));
-    add_tooltip( m_toggle_exp_record, "Expand sequence length when recording." );
-
     m_toggle_q_rec = manage( new ToggleButton(  ));
     m_toggle_q_rec->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( q_rec_xpm ))));
     m_toggle_q_rec->signal_clicked().connect(
         mem_fun( *this, &seqedit::q_rec_change_callback));
     add_tooltip( m_toggle_q_rec, "Quantized Record." );
+
+    /* Record button */
+    m_button_rec_type = manage( new Button( "Rec" ));
+    m_button_rec_type->signal_clicked().connect(
+          mem_fun( *this, &seqedit::popup_record_menu));
+    add_tooltip( m_button_rec_type, "Select record type" );
 
     m_button_rec_vol = manage( new Button());
     m_button_rec_vol->add( *manage( new Label("Vol")));
@@ -291,8 +291,8 @@ seqedit::seqedit( sequence *a_seq,
     m_toggle_thru->set_active( m_seq->get_thru());
 
     dhbox->pack_end( *m_button_rec_vol, false, false, 4);
+    dhbox->pack_end( *m_button_rec_type, false, false, 4);    
     dhbox->pack_end( *m_toggle_q_rec, false, false);
-    dhbox->pack_end( *m_toggle_exp_record, false, false);
     dhbox->pack_end( *m_toggle_record, false, false);
     dhbox->pack_end( *m_toggle_thru, false, false);
     dhbox->pack_end( *m_toggle_play, false, false);
@@ -1209,7 +1209,31 @@ seqedit::popup_event_menu()
     m_menu_data->popup(0,0);
 }
 
-
+void
+seqedit::popup_record_menu()
+{
+    using namespace Menu_Helpers;
+    
+    m_menu_rec_type = manage( new Menu());
+    
+    bool legacy = true;
+    if(m_seq->get_overwrite_rec() == true || m_seqroll_wid->get_expanded_record() == true )
+        legacy = false;
+    
+    /* record type */
+    m_menu_rec_type->items().push_back( ImageMenuElem( "Legacy: Merge looped recording",
+                                    *create_menu_image( legacy ),
+                                    sigc::bind(mem_fun(*this, &seqedit::set_rec_type), 0 )));
+    
+    m_menu_rec_type->items().push_back(ImageMenuElem("Overwrite looped recording",
+                                    *create_menu_image( m_seq->get_overwrite_rec() ),
+                                    sigc::bind(mem_fun(*this, &seqedit::set_rec_type), 1)));
+    
+    m_menu_rec_type->items().push_back(ImageMenuElem("Expand sequence length to fit recording",
+                                    *create_menu_image( m_seqroll_wid->get_expanded_record() ),
+                                    sigc::bind(mem_fun(*this, &seqedit::set_rec_type), 2)));
+    m_menu_rec_type->popup(0,0);
+}
 //m_option_midich->set_history( m_seq->getMidiChannel() );
 //m_option_midibus->set_history( m_seq->getMidiBus()->getID() );
 
@@ -1454,13 +1478,6 @@ seqedit::record_change_callback()
     m_seq->set_recording( m_toggle_record->get_active() );
 }
 
-void
-seqedit::exp_rec_change_callback()
-{
-    m_seqroll_wid->set_expanded_recording(m_toggle_exp_record->get_active());
-    if(m_toggle_exp_record->get_active() != m_toggle_record->get_active()) // These two should be the same if using expanded
-        m_toggle_record->activate();
-}
 
 void
 seqedit::q_rec_change_callback()
@@ -1754,4 +1771,26 @@ void
 seqedit::set_rec_vol( int a_rec_vol  )
 {
     m_seq->get_track()->set_default_velocity( a_rec_vol );
+}
+
+void
+seqedit::set_rec_type( int a_rec_type )
+{
+    if(a_rec_type == 0)
+    {
+        m_seqroll_wid->set_expanded_recording(false);
+        m_seq->set_overwrite_rec(false); 
+        return;
+    }
+    if(a_rec_type == 1)
+    {
+        m_seq->set_overwrite_rec(true);
+        m_seqroll_wid->set_expanded_recording(false);
+    }
+    if(a_rec_type == 2)
+    {
+        m_seqroll_wid->set_expanded_recording(true);
+        m_seq->set_overwrite_rec(false); 
+        return;
+    }
 }

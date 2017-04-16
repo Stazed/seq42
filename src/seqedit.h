@@ -75,6 +75,8 @@ private:
     Menu       *m_menu_swing_mode;
 
     Menu       *m_menu_rec_vol;
+    
+    Menu       *m_menu_rec_type;
 
     int         m_pos;
 
@@ -151,10 +153,11 @@ private:
     lfownd      *m_lfo_wnd;
 
     Button	*m_button_rec_vol;
+    
+    Button      *m_button_rec_type;
 
     ToggleButton *m_toggle_play;
     ToggleButton *m_toggle_record;
-    ToggleButton *m_toggle_exp_record;
     ToggleButton *m_toggle_q_rec;
     ToggleButton *m_toggle_thru;
 
@@ -204,6 +207,7 @@ private:
     void set_bp_measure( int a_beats_per_measure );
     void set_bw( int a_beat_width );
     void set_rec_vol( int a_rec_vol );
+    void set_rec_type( int a_rec_type );
     void set_measures( int a_length_measures, bool a_adjust_triggers  );
     void apply_length( int a_bp_measure, int a_bw, int a_measures, bool a_adjust_triggers );
     long get_measures();
@@ -222,7 +226,6 @@ private:
     void name_change_callback();
     void play_change_callback();
     void record_change_callback();
-    void exp_rec_change_callback();
     void q_rec_change_callback();
     void thru_change_callback();
     void undo_callback();
@@ -238,6 +241,7 @@ private:
 
     void popup_menu( Menu *a_menu );
     void popup_event_menu();
+    void popup_record_menu();
     void popup_sequence_menu();
     void popup_tool_menu();
 
