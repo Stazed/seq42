@@ -1321,7 +1321,7 @@ seqroll::on_size_allocate(Gtk::Allocation& a_r )
 void
 seqroll::follow_progress ()
 {
-    if( m_expanded_recording)
+    if( m_expanded_recording && m_seq->get_recording())
     {
         double h_max_value = ( m_seq->get_length() - (m_window_x * m_zoom));
         m_hadjust->set_value(h_max_value);
