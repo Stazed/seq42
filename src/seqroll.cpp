@@ -527,6 +527,7 @@ seqroll::update_pixmap()
 void
 seqroll::draw_progress_on_window()
 {
+    static int last_scroll = 0;
     m_window->draw_drawable(m_gc,
                             m_pixmap,
                             m_old_progress_x,
@@ -537,11 +538,21 @@ seqroll::draw_progress_on_window()
                             m_window_y );
 
     long last_progress = m_old_progress_x;
+    if(last_scroll < m_scroll_offset_x)
+    {
+        last_progress -= m_scroll_offset_x;
+        last_scroll = m_scroll_offset_x;
+    }
+
     m_old_progress_x = (m_seq->get_last_tick() / m_zoom) - m_scroll_offset_x;
+    
+//    printf("last_scroll %d\n", last_scroll);
+//    printf("last_progress %ld: old_progress %d: scroll_offset %d\n", last_progress, m_old_progress_x, m_scroll_offset_x);
     
     if(m_old_progress_x < last_progress)
     {
         m_seq->set_loop_reset( true ); // for overwrite recording
+        last_scroll = 0;
     }
     
 
