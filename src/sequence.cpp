@@ -2088,11 +2088,6 @@ sequence::add_event( long a_tick,
 bool
 sequence::stream_event( event *a_ev )
 {
-    if(m_overwrite_recording && m_loop_reset)
-    {
-        m_loop_reset = false;
-        remove_all();
-    }
     bool channel_match = false;
 
     lock();

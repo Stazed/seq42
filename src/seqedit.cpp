@@ -1221,7 +1221,7 @@ seqedit::popup_record_menu()
         legacy = false;
     
     /* record type */
-    m_menu_rec_type->items().push_back( ImageMenuElem( "Legacy: Merge looped recording",
+    m_menu_rec_type->items().push_back( ImageMenuElem( "Legacy merge looped recording",
                                     *create_menu_image( legacy ),
                                     sigc::bind(mem_fun(*this, &seqedit::set_rec_type), 0 )));
     
@@ -1599,7 +1599,7 @@ seqedit::timeout()
 
     m_seqroll_wid->draw_progress_on_window();
 
-    if(m_seqroll_wid->get_expanded_record() && 
+    if(m_seq->get_recording() &&  m_seqroll_wid->get_expanded_record() && 
             (m_seq->get_last_tick() >= ( m_seq->get_length() - ( m_seq->get_unit_measure()/4 ) )))
     {
         set_measures(get_measures() + 1,true);
@@ -1613,7 +1613,8 @@ seqedit::timeout()
         m_seqdata_wid->redraw();
     }
     
-    if(global_is_running && m_mainperf->get_follow_transport() && !m_seqroll_wid->get_expanded_record())
+    if(global_is_running && m_mainperf->get_follow_transport() &&
+            !(m_seqroll_wid->get_expanded_record() && m_seq->get_recording()) )
     {
         m_seqroll_wid->follow_progress();
     }
