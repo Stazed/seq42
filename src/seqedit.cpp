@@ -290,8 +290,8 @@ seqedit::seqedit( sequence *a_seq,
     m_toggle_record->set_active( m_seq->get_recording());
     m_toggle_thru->set_active( m_seq->get_thru());
 
-    dhbox->pack_end( *m_button_rec_vol, false, false, 4);
-    dhbox->pack_end( *m_button_rec_type, false, false, 4);    
+    dhbox->pack_end( *m_button_rec_vol, false, false);
+    dhbox->pack_end( *m_button_rec_type, false, false);    
     dhbox->pack_end( *m_toggle_q_rec, false, false);
     dhbox->pack_end( *m_toggle_record, false, false);
     dhbox->pack_end( *m_toggle_thru, false, false);
