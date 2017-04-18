@@ -379,6 +379,9 @@ mainwnd::mainwnd(perform *a_p):
         mem_fun(*this, &mainwnd::adj_callback_bpm ));
 
     add_tooltip( m_spinbutton_bpm, "Adjust beats per minute (BPM) value" );
+    
+    Label* bpmlabel = manage(new Label("_BPM", true));
+    bpmlabel->set_mnemonic_widget(*m_spinbutton_bpm);
 
     /* bpm tap tempo button - sequencer64 */
     m_button_tap = manage(new Button("0"));
@@ -459,9 +462,10 @@ mainwnd::mainwnd(perform *a_p):
     m_hlbox->pack_end( *m_button_collapse, false, false );
     m_hlbox->pack_end( *m_button_redo, false, false );
     m_hlbox->pack_end( *m_button_undo, false, false );
+    
 
-    m_hlbox->pack_start( *(manage( new Label( "BPM" ))), false, false, 0);
-    m_hlbox->pack_start( *m_spinbutton_bpm, false, false );
+    m_hlbox->pack_start(*bpmlabel, Gtk::PACK_SHRINK);
+    m_hlbox->pack_start(*m_spinbutton_bpm, Gtk::PACK_SHRINK);
 
     m_hlbox->pack_start( *m_button_tap, false, false );
     
