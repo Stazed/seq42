@@ -152,8 +152,8 @@ private:
     Button      *m_button_lfo;
     lfownd      *m_lfo_wnd;
 
-    Button	*m_button_rec_vol;
-    
+    Button      *m_button_rec_vol;
+
     Button      *m_button_rec_type;
 
     ToggleButton *m_toggle_play;

@@ -1483,8 +1483,8 @@ void
 seqedit::q_rec_change_callback()
 {
     m_seq->set_quanized_rec( m_toggle_q_rec->get_active() );
-    if(m_toggle_q_rec->get_active() != m_toggle_record->get_active()) // These two should be the same if using q
-        m_toggle_record->activate();
+    if(m_toggle_q_rec->get_active() && !m_toggle_record->get_active()) // If we set Q then also set record
+        m_toggle_record->activate();                                   // but do not unset record if unset Q
 }
 
 void
