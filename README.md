@@ -81,6 +81,10 @@ the track edit items (name,channel,bus,transpose,mute)... except when undo/redo 
 * NEW - Moved to jack_process_callback() - seq42 is not slow sync.
 * NEW - File version 5 - portable, file ID, date and time timestamp, program version added.
 * NEW - Midi record now supports simultaneous multi-sequence record, channel specific, up to 16 channels at once.
+* NEW - Command line -n <client name> option added to support user changes to alsa client name.
+* NEW - BPM now supports two decimal precision - also added to import and export midi.
+* NEW - Added BPM tap button - sequencer64 type, thanks to Chris Ahlstrom.
+* NEW - Added additional midi recording types. New 'Rec' button in sequence editor to select type: Legacy merged looped (notes are added upon looping of sequence): Overwrite looped record (notes will be cleared upon looping after the first note played and overwrite previous pass): Expand sequence length to fit recording (sequence does not loop and will expand after reaching last 1/4 measure)
 
 What to do with a fresh repository checkout?
 --------------------------------------------
