@@ -2690,7 +2690,7 @@ perform::load( const Glib::ustring& a_filename )
     {
         file.clear();
         file.seekg(0, ios::beg);
-        /* since were are checking for the < version 5 files now, then reset int sizes to original */
+        /* since we are checking for the < version 5 files now, then reset int sizes to original */
         global_file_int_size = sizeof(int);
         global_file_long_int_size = sizeof(long);
     }
@@ -2727,13 +2727,11 @@ perform::load( const Glib::ustring& a_filename )
     {
         double bpm; // file version 6 uses double
         file.read((char *) &bpm, sizeof(bpm));
-        printf("bpm double %f\n", bpm);
         set_bpm(bpm);
     }else
     {
         int bpm;    // prior to version 6 uses int
         file.read((char *) &bpm, global_file_int_size);
-        //printf("bpm int %d\n", bpm);
         set_bpm(bpm);
     }
     
