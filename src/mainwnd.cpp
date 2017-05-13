@@ -786,7 +786,12 @@ void
 mainwnd::rewind(bool a_press)
 {
     if(a_press)
+    {
+        if(FF_RW_button_type == -1) // for key repeat, just ignore repeat
+            return;
+        
         FF_RW_button_type = -1;
+    }
     else
         FF_RW_button_type = 0;
 
@@ -797,7 +802,12 @@ void
 mainwnd::fast_forward(bool a_press)
 {
     if(a_press)
+    {
+        if(FF_RW_button_type == 1) // for key repeat, just ignore repeat
+            return;
+        
         FF_RW_button_type = 1;
+    }
     else
         FF_RW_button_type = 0;
 
