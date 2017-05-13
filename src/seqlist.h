@@ -25,6 +25,7 @@
 #include "globals.h"
 #include "track.h"
 #include "perform.h"
+#include "mainwnd.h"
 
 using namespace Gtk;
 
@@ -34,6 +35,7 @@ class seqlist : public Gtk::Window
 private:
 
     perform *m_perf;
+    mainwnd *m_main;
 
     class ModelColumns : public Gtk::TreeModel::ColumnRecord
     {
@@ -74,6 +76,7 @@ private:
     void update_model( );
     void edit_seq( sequence *a_seq );
     void copy_seq( sequence *a_seq );
+    void export_seq( sequence *a_seq );
     void del_seq( track *a_track, int a_seq );
 
     void start_playing();
@@ -92,6 +95,6 @@ private:
 
 public:
 
-    seqlist( perform *a_perf );
+    seqlist( perform *a_perf, mainwnd *a_main );
     ~seqlist();
 };

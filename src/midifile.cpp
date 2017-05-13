@@ -735,7 +735,7 @@ midifile::write_time_sig(perform * a_perf)
     write_short(0x1808);                            // cc bb
 }
 
-bool midifile::write_sequences (perform * a_perf)
+bool midifile::write_sequences (perform * a_perf) // FIXME - allow for solo sequence
 {
     int numtracks = 0;
 

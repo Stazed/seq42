@@ -492,9 +492,17 @@ extern bool global_interaction_method_change;
 template <typename T>
 string NumberToString ( T Number )
 {
-	stringstream ss;
-	ss << Number;
-	return ss.str();
+    stringstream ss;
+    ss << Number;
+    return ss.str();
 }
 
 #define SEQ24_SCREEN_SET_SIZE (32)
+
+enum file_type_e
+{
+    E_SEQ42_NATIVE_FILE,
+    E_MIDI_SEQ24_FORMAT,
+    E_MIDI_SONG_FORMAT,
+    E_MIDI_SOLO_SEQUENCE
+};

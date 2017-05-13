@@ -24,9 +24,10 @@
 #include "pixmaps/stop.xpm"
 #include "pixmaps/play2.xpm"
 
-seqlist::seqlist (perform *a_perf)
+seqlist::seqlist (perform *a_perf, mainwnd *a_main)
 {
     m_perf = a_perf;
+    m_main = a_main;
 
     /* main window */
     set_title("seq42 - sequence list");
@@ -144,6 +145,7 @@ seqlist::on_button_release_event(GdkEventButton* a_e)
             Menu *menu = manage( new Menu());
             menu->items().push_back(MenuElem("Edit", sigc::bind(mem_fun(*this,&seqlist::edit_seq), a_seq )));
             menu->items().push_back(MenuElem("Copy", sigc::bind(mem_fun(*this,&seqlist::copy_seq), a_seq )));
+            menu->items().push_back(MenuElem("Export", sigc::bind(mem_fun(*this,&seqlist::export_seq), a_seq )));
             menu->items().push_back(MenuElem("Delete", sigc::bind(mem_fun(*this,&seqlist::del_seq), a_track, a_track->get_sequence_index(a_seq) )));
             menu->popup(0,0);
         }
@@ -230,6 +232,12 @@ seqlist::copy_seq( sequence *a_seq )
     snprintf(new_name, sizeof(new_name), "%s copy", new_seq->get_name());
     new_seq->set_name( new_name );
     new seqedit( new_seq, m_perf );
+}
+
+void
+seqlist::export_seq( sequence *a_seq )
+{
+    m_main->export_sequence_midi(a_seq);
 }
 
 void

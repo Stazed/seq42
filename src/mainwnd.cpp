@@ -109,7 +109,7 @@ mainwnd::mainwnd(perform *a_p):
                                             Gtk::AccelKey("<control>S"),
                                             mem_fun(*this, &mainwnd::file_save)));
     m_menu_file->items().push_back(MenuElem("Save _as...",
-                                            sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 0)));
+                                            sigc::bind(mem_fun(*this, &mainwnd::file_save_as), E_SEQ42_NATIVE_FILE)));
 
     m_menu_file->items().push_back(SeparatorElem());
 
@@ -151,10 +151,10 @@ mainwnd::mainwnd(perform *a_p):
                                             mem_fun(*this, &mainwnd::file_import_dialog)));
 
     m_menu_edit->items().push_back(MenuElem("Midi e_xport (Seq 24/32/64)",
-                                            sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 1)));
+                                            sigc::bind(mem_fun(*this, &mainwnd::file_save_as), E_MIDI_SEQ24_FORMAT)));
 
     m_menu_edit->items().push_back(MenuElem("Midi export _song",
-                                            sigc::bind(mem_fun(*this, &mainwnd::file_save_as), 2)));
+                                            sigc::bind(mem_fun(*this, &mainwnd::file_save_as), E_MIDI_SONG_FORMAT)));
 
     /* help menu items */
     m_menu_help->items().push_back(MenuElem("_About...",
@@ -1123,7 +1123,7 @@ mainwnd::open_seqlist()
     }
     else
     {
-        new seqlist(m_mainperf);
+        new seqlist(m_mainperf, this);
     }
 }
 
@@ -1177,12 +1177,8 @@ void mainwnd::file_save()
 }
 
 /* callback function */
-void mainwnd::file_save_as(int type) // FIXME use unum
+void mainwnd::file_save_as(file_type_e type) // FIXME need to allow for sequence
 {
-    // default type 0 = .s42
-    //         type 1 = .mid .midi etc for Seq24 export
-    //         type 2 = .mid .midi etc for midi song export
-
     Gtk::FileChooserDialog dialog("Save file as",
                                   Gtk::FILE_CHOOSER_ACTION_SAVE);
     dialog.set_transient_for(*this);
@@ -1192,13 +1188,15 @@ void mainwnd::file_save_as(int type) // FIXME use unum
 
     Gtk::FileFilter filter_midi;
 
-    if(type == 0)
+    if(type == E_SEQ42_NATIVE_FILE)
     {
         filter_midi.set_name("Seq42 files");
         filter_midi.add_pattern("*.s42");
     }
 
-    if(type == 1 || type == 2)
+    if(type == E_MIDI_SEQ24_FORMAT ||
+       type == E_MIDI_SONG_FORMAT ||
+       type == E_MIDI_SOLO_SEQUENCE)
     {
         filter_midi.set_name("MIDI files");
         filter_midi.add_pattern("*.midi");
@@ -1214,12 +1212,16 @@ void mainwnd::file_save_as(int type) // FIXME use unum
     filter_any.add_pattern("*");
     dialog.add_filter(filter_any);
 
-    if(type == 0) // .s42
+    if(type == E_SEQ42_NATIVE_FILE) // .s42
         dialog.set_current_folder(last_used_dir);
 
-    if(type == 1 || type == 2) // .midi
+    if(type == E_MIDI_SEQ24_FORMAT ||
+       type == E_MIDI_SONG_FORMAT ||
+       type == E_MIDI_SOLO_SEQUENCE)
+    {
         dialog.set_current_folder(last_midi_dir);
-
+    }
+    
     int result = dialog.run();
 
     switch (result)
@@ -1263,7 +1265,7 @@ void mainwnd::file_save_as(int type) // FIXME use unum
                 return;
         }
 
-        if(type == 0)
+        if(type == E_SEQ42_NATIVE_FILE)
         {
             global_filename = fname;
             update_window_title();
@@ -1271,7 +1273,7 @@ void mainwnd::file_save_as(int type) // FIXME use unum
         }
         else
         {
-            export_midi(fname, type);
+            export_midi(fname, type); // FIXME need to allow for sequence
         }
 
         break;
@@ -1282,14 +1284,14 @@ void mainwnd::file_save_as(int type) // FIXME use unum
     }
 }
 
-void mainwnd::export_midi(const Glib::ustring& fn, int type)
+void mainwnd::export_midi(const Glib::ustring& fn, file_type_e type) // FIXME allow for sequence
 {
     bool result = false;
 
     midifile f(fn);
 
-    if(type == 1)
-        result = f.write_sequences(m_mainperf);
+    if(type == E_MIDI_SEQ24_FORMAT || type == E_MIDI_SOLO_SEQUENCE )
+        result = f.write_sequences(m_mainperf); // FIXME allow for sequence
     else
         result = f.write_song(m_mainperf);
 
@@ -1365,6 +1367,11 @@ void mainwnd::open_file(const Glib::ustring& fn)
     }
 }
 
+void mainwnd::export_sequence_midi(sequence *a_seq)
+{
+    file_save_as(E_MIDI_SOLO_SEQUENCE); // FIXME need to send sequence
+}
+
 /*callback function*/
 void mainwnd::file_open()
 {
@@ -1411,7 +1418,7 @@ bool mainwnd::save_file()
 
     if (global_filename == "")
     {
-        file_save_as(0);
+        file_save_as(E_SEQ42_NATIVE_FILE);
         return true;
     }
 
