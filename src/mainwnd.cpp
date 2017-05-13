@@ -1202,7 +1202,9 @@ void mainwnd::file_save_as(int type) // FIXME use unum
     {
         filter_midi.set_name("MIDI files");
         filter_midi.add_pattern("*.midi");
+        filter_midi.add_pattern("*.MIDI");
         filter_midi.add_pattern("*.mid");
+        filter_midi.add_pattern("*.MID");
     }
 
     dialog.add_filter(filter_midi);
