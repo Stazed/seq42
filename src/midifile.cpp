@@ -739,7 +739,7 @@ bool midifile::write_sequences (perform * a_perf, sequence *a_solo_seq)
 {
     int numtracks = 0;
     
-    file_type_e type = E_MIDI_SEQ24_FORMAT;
+    file_type_e type = E_MIDI_SEQ24_FORMAT; // default
     
     if(a_solo_seq != nullptr)
     {
@@ -747,7 +747,7 @@ bool midifile::write_sequences (perform * a_perf, sequence *a_solo_seq)
         numtracks = 1;
     }
     
-    if(E_MIDI_SEQ24_FORMAT) // if we have a solo, no need to count the tracks
+    if(type == E_MIDI_SEQ24_FORMAT) // no need to count when solo
     {
         /* get number of track sequences */
         for (int i = 0; i < c_max_track; i++)
@@ -817,16 +817,14 @@ bool midifile::write_sequences (perform * a_perf, sequence *a_solo_seq)
                 if(type == E_MIDI_SOLO_SEQUENCE)
                     break;
                 
-                printf("numtracks top %d\n", numtracks);
-                
                 numtracks++;
             }
         }
-        printf("numtracks bottom %d\n", numtracks);
         if(type == E_MIDI_SOLO_SEQUENCE)
             break;
     }
 
+    /* No need to send proprietary if solo sequence */
     if(type == E_MIDI_SEQ24_FORMAT)
     {
         /* midi control */
