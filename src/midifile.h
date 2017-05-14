@@ -63,7 +63,7 @@ public:
     ~midifile();
 
     bool parse( perform *a_perf, int screen_set );
-    bool write_sequences( perform *a_perf );
+    bool write_sequences( perform *a_perf, sequence *a_solo_seq = nullptr );
     bool write_song( perform *a_perf );
 
 };

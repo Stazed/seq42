@@ -165,8 +165,8 @@ private:
     void file_new();
     void file_open();
     void file_save();
-    void file_save_as(file_type_e type);
-    void export_midi(const Glib::ustring&, file_type_e type);
+    void file_save_as(file_type_e type, sequence *a_seq = nullptr);
+    void export_midi(const Glib::ustring&, file_type_e type, sequence *a_seq = nullptr);
 
     void file_exit();
     void new_file();

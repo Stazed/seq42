@@ -735,20 +735,30 @@ midifile::write_time_sig(perform * a_perf)
     write_short(0x1808);                            // cc bb
 }
 
-bool midifile::write_sequences (perform * a_perf) // FIXME - allow for solo sequence
+bool midifile::write_sequences (perform * a_perf, sequence *a_solo_seq)
 {
     int numtracks = 0;
-
-    /* get number of track sequences */
-    for (int i = 0; i < c_max_track; i++)
+    
+    file_type_e type = E_MIDI_SEQ24_FORMAT;
+    
+    if(a_solo_seq != nullptr)
     {
-        if (a_perf->is_active_track(i) && !a_perf->get_track(i)->get_song_mute())
+        type = E_MIDI_SOLO_SEQUENCE;
+        numtracks = 1;
+    }
+    
+    if(E_MIDI_SEQ24_FORMAT) // if we have a solo, no need to count the tracks
+    {
+        /* get number of track sequences */
+        for (int i = 0; i < c_max_track; i++)
         {
-            numtracks += a_perf->get_track(i)->get_number_of_sequences();
+            if (a_perf->is_active_track(i) && !a_perf->get_track(i)->get_song_mute())
+            {
+                numtracks += a_perf->get_track(i)->get_number_of_sequences();
+            }
         }
     }
-
-    write_header(numtracks);
+    write_header(numtracks); // numtracks will be 1 if solo sequence
 
     /* We should be good to load now   */
     /* for each Track Sequence in the midi file */
@@ -757,14 +767,23 @@ bool midifile::write_sequences (perform * a_perf) // FIXME - allow for solo sequ
 
     for (int curTrack = 0; curTrack < c_max_track; curTrack++)
     {
-        if (a_perf->is_active_track(curTrack) && !a_perf->get_track(curTrack)->get_song_mute())
+        if ((a_perf->is_active_track(curTrack) && !a_perf->get_track(curTrack)->get_song_mute()) ||
+            type == E_MIDI_SOLO_SEQUENCE)
         {
-            unsigned int num_seq = a_perf->get_track(curTrack)->get_number_of_sequences();
+            unsigned int num_seq = 0;
+            
+            if(type == E_MIDI_SOLO_SEQUENCE )
+                num_seq = 1;
+            else
+                num_seq = a_perf->get_track(curTrack)->get_number_of_sequences();
 
             /* sequence pointer */
             for (unsigned int a_seq = 0; a_seq < num_seq; a_seq++ )
             {
-                sequence * seq = a_perf->get_track(curTrack)->get_sequence(a_seq);
+                sequence * seq = a_solo_seq; // will be nullptr if not solo
+                        
+                if(type == E_MIDI_SEQ24_FORMAT)
+                    seq = a_perf->get_track(curTrack)->get_sequence(a_seq);
 
                 list<char> l;
                 seq->fill_list (&l, numtracks);
@@ -794,45 +813,55 @@ bool midifile::write_sequences (perform * a_perf) // FIXME - allow for solo sequ
                     write_byte (l.back ());
                     l.pop_back ();
                 }
-
+                
+                if(type == E_MIDI_SOLO_SEQUENCE)
+                    break;
+                
+                printf("numtracks top %d\n", numtracks);
+                
                 numtracks++;
             }
         }
+        printf("numtracks bottom %d\n", numtracks);
+        if(type == E_MIDI_SOLO_SEQUENCE)
+            break;
     }
 
-    /* midi control */
-    write_long (c_midictrl);
-    write_long (0);
+    if(type == E_MIDI_SEQ24_FORMAT)
+    {
+        /* midi control */
+        write_long (c_midictrl);
+        write_long (0);
 
-    /* bus mute/unmute data */
-    write_long (c_midiclocks);
-    write_long (0);
+        /* bus mute/unmute data */
+        write_long (c_midiclocks);
+        write_long (0);
 
-    /* notepad data */
-    write_long (c_notes);
-    write_short (0);
+        /* notepad data */
+        write_long (c_notes);
+        write_short (0);
 
-    /* bpm */
-    write_long (c_bpmtag);
-    /* From sequencer64 for consistency...
-     * We now encode the Sequencer64-specific BPM value by multiplying it
-     *  by 1000.0 first, to get more implicit precision in the number.
-     */
-    long scaled_bpm = long(a_perf->get_bpm() * c_bpm_scale_factor);
-    write_long (scaled_bpm);
+        /* bpm */
+        write_long (c_bpmtag);
+        /* From sequencer64 for consistency...
+         * We now encode the Sequencer64-specific BPM value by multiplying it
+         *  by 1000.0 first, to get more implicit precision in the number.
+         */
+        long scaled_bpm = long(a_perf->get_bpm() * c_bpm_scale_factor);
+        write_long (scaled_bpm);
 
-    /* write out the mute groups */
-    write_long(c_mutegroups);
-    write_long(0);
+        /* write out the mute groups */
+        write_long(c_mutegroups);
+        write_long(0);
 
-     /* write out the beats per measure */
-    write_long(c_perf_bp_mes);
-    write_long(a_perf->get_bp_measure());
+         /* write out the beats per measure */
+        write_long(c_perf_bp_mes);
+        write_long(a_perf->get_bp_measure());
 
-    /* write out the beat width */
-    write_long(c_perf_bw);
-    write_long(a_perf->get_bw());
-
+        /* write out the beat width */
+        write_long(c_perf_bw);
+        write_long(a_perf->get_bw());
+    }
     /* open binary file */
     ofstream file (m_name.c_str (), ios::out | ios::binary | ios::trunc);
 
