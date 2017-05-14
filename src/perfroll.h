@@ -160,6 +160,7 @@ public:
     /* Trigger menu callbacks */
     void new_sequence(track *a_track, trigger *a_trigger);
     void edit_sequence(track *a_track, trigger *a_trigger);
+    void export_sequence( track *a_track, trigger *a_trigger);
     void play_sequence( track *a_track, trigger *a_trigger);
     void set_trigger_sequence( track *a_track, trigger *a_trigger, int a_sequence );
     void del_trigger( track *a_track, long a_tick );
