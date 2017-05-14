@@ -669,6 +669,9 @@ bool midifile::parse (perform * a_perf, int screen_set)
         }
     }
 
+    /* round the bpm value to our precision so change comparison below will work */
+    bpm = round(bpm * 100.0)/100.0;
+ 
     bool is_changed = false;
     
     if(a_perf->get_bpm() != bpm || a_perf->get_bp_measure() != bp_measure || a_perf->get_bw() != bw)
@@ -1125,7 +1128,7 @@ midifile::verify_change_tempo_timesig(double tempo, long bp_measure, long bw)
     message += "\nBeat width:  "; message += str_number.c_str();
     
     message += "\n\nTempo or time signature is different from current project!\n\n";
-    message += "Do you want to change the current project tempo or time signature to the import values?";
+    message += "Do you want to change the current project tempo and time signature to the import values?";
 
     Gtk::MessageDialog warning(message,
                            false,
