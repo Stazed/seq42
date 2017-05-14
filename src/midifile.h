@@ -55,6 +55,7 @@ private:
     int pow2 (int logbase2);
     Glib::ustring Ulong_To_String_Hex( unsigned long Number );
     void error_message_gtk( Glib::ustring message);
+    bool verify_change_tempo_timesig(double tempo, long bp_measure, long bw);
 
 public:
 
