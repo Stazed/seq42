@@ -738,6 +738,7 @@ midifile::write_time_sig(perform * a_perf)
 bool midifile::write_sequences (perform * a_perf, sequence *a_solo_seq)
 {
     int numtracks = 0;
+    bool write_triggers = true;             // default normal seq24 format
     
     file_type_e type = E_MIDI_SEQ24_FORMAT; // default
     
@@ -745,9 +746,10 @@ bool midifile::write_sequences (perform * a_perf, sequence *a_solo_seq)
     {
         type = E_MIDI_SOLO_SEQUENCE;
         numtracks = 1;
+        write_triggers = false;             // solo sequence - don't write triggers
     }
     
-    if(type == E_MIDI_SEQ24_FORMAT) // no need to count when solo
+    if(type == E_MIDI_SEQ24_FORMAT)         // no need to count when solo
     {
         /* get number of track sequences */
         for (int i = 0; i < c_max_track; i++)
@@ -758,12 +760,12 @@ bool midifile::write_sequences (perform * a_perf, sequence *a_solo_seq)
             }
         }
     }
-    write_header(numtracks); // numtracks will be 1 if solo sequence
+    write_header(numtracks);                // numtracks will be 1 if solo sequence
 
     /* We should be good to load now   */
     /* for each Track Sequence in the midi file */
 
-    numtracks = 0; // reset for seq->fill_list position
+    numtracks = 0;                          // reset for seq->fill_list position
 
     for (int curTrack = 0; curTrack < c_max_track; curTrack++)
     {
@@ -786,7 +788,7 @@ bool midifile::write_sequences (perform * a_perf, sequence *a_solo_seq)
                     seq = a_perf->get_track(curTrack)->get_sequence(a_seq);
 
                 list<char> l;
-                seq->fill_list (&l, numtracks);
+                seq->fill_list (&l, numtracks, write_triggers);
 
                 /* magic number 'MTrk' */
                 write_long (0x4D54726B);

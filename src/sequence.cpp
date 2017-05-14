@@ -3345,7 +3345,7 @@ sequence::meta_track_end( list<char> *a_list, long delta_time)
 }
 
 void
-sequence::fill_list( list<char> *a_list, int a_pos )
+sequence::fill_list( list<char> *a_list, int a_pos, bool write_triggers )
 {
     seq_number_fill_list( a_list, a_pos ); // locks
 
@@ -3396,49 +3396,52 @@ sequence::fill_list( list<char> *a_list, int a_pos )
 
     /* triggers for this sequence */
 
-    track *a_track = get_track();
-    list < trigger > seq_list_trigger;
-    trigger *a_trig;
-
-    std::vector<trigger> trig_vect;
-    a_track->get_trak_triggers(trig_vect); // all triggers for the track
-
-    for(unsigned ii = 0; ii < trig_vect.size(); ii++)
+    if(write_triggers)  // default is true, only solo sequence export does not write triggers
     {
-        a_trig = &trig_vect[ii];
+        track *a_track = get_track();
+        list < trigger > seq_list_trigger;
+        trigger *a_trig;
 
-        if(a_trig->m_sequence == a_track->get_sequence_index(this)) // select only triggers for this sequence
+        std::vector<trigger> trig_vect;
+        a_track->get_trak_triggers(trig_vect); // all triggers for the track
+
+        for(unsigned ii = 0; ii < trig_vect.size(); ii++)
         {
-            seq_list_trigger.push_front( *a_trig );
+            a_trig = &trig_vect[ii];
+
+            if(a_trig->m_sequence == a_track->get_sequence_index(this)) // select only triggers for this sequence
+            {
+                seq_list_trigger.push_front( *a_trig );
+            }
+            a_trig = NULL;
         }
-        a_trig = NULL;
+
+        seq_list_trigger.sort();
+
+        int num_triggers = seq_list_trigger.size();
+        list<trigger>::iterator t = seq_list_trigger.begin();
+
+        addListVar( a_list, 0 );
+        a_list->push_front( 0xFF );
+        a_list->push_front( 0x7F );
+        addListVar( a_list, (num_triggers * 3 * 4) + 4);
+        addLongList( a_list, c_triggers_new );
+
+        //printf( "num_triggers[%d]\n", num_triggers );
+
+        for ( int i=0; i<num_triggers; i++ )
+        {
+            //printf( "> start[%d] end[%d] offset[%d]\n",
+            //        (*t).m_tick_start, (*t).m_tick_end, (*t).m_offset );
+
+            addLongList( a_list, (*t).m_tick_start );
+            addLongList( a_list, (*t).m_tick_end );
+            addLongList( a_list, (*t).m_offset );
+
+            t++;
+        }
     }
-
-    seq_list_trigger.sort();
-
-    int num_triggers = seq_list_trigger.size();
-    list<trigger>::iterator t = seq_list_trigger.begin();
-
-    addListVar( a_list, 0 );
-    a_list->push_front( 0xFF );
-    a_list->push_front( 0x7F );
-    addListVar( a_list, (num_triggers * 3 * 4) + 4);
-    addLongList( a_list, c_triggers_new );
-
-    //printf( "num_triggers[%d]\n", num_triggers );
-
-    for ( int i=0; i<num_triggers; i++ )
-    {
-        //printf( "> start[%d] end[%d] offset[%d]\n",
-        //        (*t).m_tick_start, (*t).m_tick_end, (*t).m_offset );
-
-        addLongList( a_list, (*t).m_tick_start );
-        addLongList( a_list, (*t).m_tick_end );
-        addLongList( a_list, (*t).m_offset );
-
-        t++;
-    }
-
+    
     fill_proprietary_list( a_list );
 
     delta_time = m_length - prev_timestamp;
