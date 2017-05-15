@@ -45,9 +45,16 @@ class perform;
 
 enum mute_op
 {
-    MUTE_TOGGLE = -1,
-    MUTE_OFF = 0,
-    MUTE_ON = 1
+    MUTE_TOGGLE     = -1,
+    MUTE_OFF        =  0,
+    MUTE_ON         =  1
+};
+
+enum ff_rw_type_e
+{
+    FF_RW_REWIND    = -1,
+    FF_RW_RELEASE   =  0,
+    FF_RW_FORWARD   =  1
 };
 
 struct undo_type
@@ -369,7 +376,7 @@ extern void *output_thread_func(void *a_p);
 extern void *input_thread_func(void *a_p);
 
 /* located in mainwnd.h */
-extern int FF_RW_button_type;
+extern ff_rw_type_e FF_RW_button_type;
 
 #ifdef JACK_SUPPORT
 
