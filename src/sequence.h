@@ -253,7 +253,7 @@ public:
     /* adds event to internal list */
     void add_event (const event * a_e);
     
-    /* for speed on midi import these are used to great benefit */
+    /* for speed on file loading & midi import these are used to great benefit */
     void add_event_no_sort( const event *a_e );     // all events are added first
     void sort_events();                             // called after all events added, once
     

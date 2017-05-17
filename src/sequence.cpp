@@ -228,7 +228,7 @@ sequence::add_event( const event *a_e )
     unlock();
 }
 
-/* adds event without sorting - used for import midi */
+/* adds event without sorting - used for file load & import midi */
 void
 sequence::add_event_no_sort( const event *a_e )
 {
@@ -239,7 +239,7 @@ sequence::add_event_no_sort( const event *a_e )
     unlock();
 }
 
-/* sorts events - used by import after all events added for speed */
+/* sorts events - used by file load and import after all events added for speed */
 void
 sequence::sort_events()
 {
@@ -3681,9 +3681,11 @@ sequence::load(ifstream *file, int version)
     {
         event e;
         e.load(file);
-        add_event(&e);
+        add_event_no_sort(&e);  // for speed don't sort here on each event
     }
 
+    sort_events();              // sort here after all events received, big speed improvements
+    
     return true;
 }
 
