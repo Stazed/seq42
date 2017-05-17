@@ -48,6 +48,7 @@ private:
     /* holds the triggers */
     list < trigger > m_list_trigger;
     trigger m_trigger_clipboard;
+    trigger m_trigger_export;
 
     stack < list < trigger > >m_list_trigger_undo;
     stack < list < trigger > >m_list_trigger_redo;
@@ -139,6 +140,9 @@ public:
     long get_default_velocity();
 
     void set_dirty();
+    
+    void set_trigger_export( trigger a_trig);
+    trigger get_trigger_export();
     /* signals that a redraw is needed from recording */
     /* resets flag on call */
     bool is_dirty_perf();

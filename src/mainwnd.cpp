@@ -1177,7 +1177,7 @@ void mainwnd::file_save()
 }
 
 /* callback function */
-void mainwnd::file_save_as(file_type_e type, sequence *a_seq)
+void mainwnd::file_save_as(file_type_e type, void *a_seq_or_track)
 {
     Gtk::FileChooserDialog dialog("Save file as",
                                   Gtk::FILE_CHOOSER_ACTION_SAVE);
@@ -1193,10 +1193,7 @@ void mainwnd::file_save_as(file_type_e type, sequence *a_seq)
         filter_midi.set_name("Seq42 files");
         filter_midi.add_pattern("*.s42");
     }
-
-    if(type == E_MIDI_SEQ24_FORMAT ||
-       type == E_MIDI_SONG_FORMAT ||
-       type == E_MIDI_SOLO_SEQUENCE)
+    else
     {
         filter_midi.set_name("MIDI files");
         filter_midi.add_pattern("*.midi");
@@ -1213,11 +1210,10 @@ void mainwnd::file_save_as(file_type_e type, sequence *a_seq)
     dialog.add_filter(filter_any);
 
     if(type == E_SEQ42_NATIVE_FILE) // .s42
+    {
         dialog.set_current_folder(last_used_dir);
-
-    if(type == E_MIDI_SEQ24_FORMAT ||
-       type == E_MIDI_SONG_FORMAT ||
-       type == E_MIDI_SOLO_SEQUENCE)
+    }
+    else                            // midi
     {
         dialog.set_current_folder(last_midi_dir);
     }
@@ -1273,7 +1269,7 @@ void mainwnd::file_save_as(file_type_e type, sequence *a_seq)
         }
         else
         {
-            export_midi(fname, type, a_seq); // a_seq will be nullptr unless type = E_MIDI_SOLO_SEQUENCE
+            export_midi(fname, type, a_seq_or_track); // will be nullptr unless type = E_MIDI_SOLO_SEQUENCE or E_MIDI_SOLO_TRIGGER
         }
 
         break;
@@ -1284,16 +1280,18 @@ void mainwnd::file_save_as(file_type_e type, sequence *a_seq)
     }
 }
 
-void mainwnd::export_midi(const Glib::ustring& fn, file_type_e type, sequence *a_seq)
+void mainwnd::export_midi(const Glib::ustring& fn, file_type_e type, void *a_seq_or_track)
 {
     bool result = false;
 
     midifile f(fn);
 
     if(type == E_MIDI_SEQ24_FORMAT || type == E_MIDI_SOLO_SEQUENCE )
-        result = f.write_sequences(m_mainperf, a_seq);
-    else
-        result = f.write_song(m_mainperf);
+        result = f.write_sequences(m_mainperf, (sequence*)a_seq_or_track);  // seq24 format will be nullptr
+    
+    if(type == E_MIDI_SONG_FORMAT || type == E_MIDI_SOLO_TRIGGER)
+        result = f.write_song(m_mainperf,(track*)a_seq_or_track);           // song format will be nullptr
+    
 
     if (!result)
     {
@@ -1372,6 +1370,11 @@ void mainwnd::export_sequence_midi(sequence *a_seq)
     file_save_as(E_MIDI_SOLO_SEQUENCE, a_seq);
 }
 
+void mainwnd::export_trigger_midi(track *a_track)
+{
+    file_save_as(E_MIDI_SOLO_TRIGGER, a_track);
+}
+
 /*callback function*/
 void mainwnd::file_open()
 {
@@ -1418,7 +1421,7 @@ bool mainwnd::save_file()
 
     if (global_filename == "")
     {
-        file_save_as(E_SEQ42_NATIVE_FILE);
+        file_save_as(E_SEQ42_NATIVE_FILE, nullptr);
         return true;
     }
 

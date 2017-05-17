@@ -165,8 +165,8 @@ private:
     void file_new();
     void file_open();
     void file_save();
-    void file_save_as(file_type_e type, sequence *a_seq = nullptr);
-    void export_midi(const Glib::ustring&, file_type_e type, sequence *a_seq = nullptr);
+    void file_save_as(file_type_e type, void *a_seq_or_track = nullptr);
+    void export_midi(const Glib::ustring&, file_type_e type, void *a_seq_or_track = nullptr);
 
     void file_exit();
     void new_file();
@@ -243,6 +243,7 @@ public:
     void set_zoom (int z);
     void open_file(const Glib::ustring&);
     void export_sequence_midi(sequence *a_seq);
+    void export_trigger_midi(track *a_track);
     bool on_delete_event(GdkEventAny *a_e);
     bool on_key_press_event(GdkEventKey* a_ev);
     bool on_key_release_event(GdkEventKey* a_ev);

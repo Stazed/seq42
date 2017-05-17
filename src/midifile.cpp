@@ -905,8 +905,11 @@ bool midifile::write_sequences (perform * a_perf, sequence *a_solo_seq)
     return true;
 }
 
-bool midifile::write_song (perform * a_perf)
+bool midifile::write_song (perform *a_perf, track *a_track)
 {
+    if(a_track != nullptr) // FIXME this will be solo trigger export
+        return true;
+    
     int numtracks = 0;
 
     /* get number of tracks  */

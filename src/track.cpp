@@ -1494,6 +1494,17 @@ track::get_default_velocity( )
 }
 
 void
+track::set_trigger_export( trigger a_trig)
+{
+    m_trigger_export = a_trig;
+}
+trigger
+track::get_trigger_export()
+{
+    return m_trigger_export;
+}
+
+void
 track::delete_unused_sequences()
 {
     for(unsigned int i=0; i<m_vector_sequence.size(); i++)
