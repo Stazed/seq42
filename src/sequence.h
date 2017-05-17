@@ -252,7 +252,11 @@ public:
 
     /* adds event to internal list */
     void add_event (const event * a_e);
-
+    
+    /* for speed on midi import these are used to great benefit */
+    void add_event_no_sort( const event *a_e );     // all events are added first
+    void sort_events();                             // called after all events added, once
+    
     bool intersectNotes( long position, long position_note, long& start, long& end, long& note );
     bool intersectEvents( long posstart, long posend, long status, long& start );
 

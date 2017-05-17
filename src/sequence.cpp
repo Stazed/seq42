@@ -228,6 +228,30 @@ sequence::add_event( const event *a_e )
     unlock();
 }
 
+/* adds event without sorting - used for import midi */
+void
+sequence::add_event_no_sort( const event *a_e )
+{
+    lock();
+
+    m_list_event.push_front( *a_e );
+ 
+    unlock();
+}
+
+/* sorts events - used by import after all events added for speed */
+void
+sequence::sort_events()
+{
+    lock();
+
+    m_list_event.sort();
+    reset_draw_marker();
+    set_dirty();
+    
+    unlock();
+}
+
 void
 sequence::set_orig_tick( long a_tick )
 {
