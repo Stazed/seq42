@@ -1181,6 +1181,19 @@ void mainwnd::file_save_as(file_type_e type, void *a_seq_or_track)
 {
     Gtk::FileChooserDialog dialog("Save file as",
                                   Gtk::FILE_CHOOSER_ACTION_SAVE);
+    
+    if(type == E_MIDI_SEQ24_FORMAT)
+        dialog.set_title("Midi export (Seq 24/32/64)");
+    
+    if(type == E_MIDI_SONG_FORMAT)
+        dialog.set_title("Midi export song triggers");
+    
+    if(type == E_MIDI_SOLO_SEQUENCE)
+        dialog.set_title("Midi export sequence");
+    
+    if(type == E_MIDI_SOLO_TRIGGER)
+        dialog.set_title("Midi export solo trigger");
+    
     dialog.set_transient_for(*this);
 
     dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);

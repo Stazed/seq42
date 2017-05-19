@@ -56,6 +56,7 @@ private:
     Glib::ustring Ulong_To_String_Hex( unsigned long Number );
     void error_message_gtk( Glib::ustring message);
     bool verify_change_tempo_timesig(double tempo, long bp_measure, long bw);
+    void adjust_sequence_measure_snap(long &length, sequence *a_seq);
 
 public:
 

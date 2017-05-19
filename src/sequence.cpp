@@ -3362,6 +3362,7 @@ sequence::fill_proprietary_list(list < char >*a_list)
 void
 sequence::meta_track_end( list<char> *a_list, long delta_time)
 {
+    //printf("meta end delta %ld\n", delta_time);
     addListVar( a_list, delta_time );
     a_list->push_front( 0xFF );
     a_list->push_front( 0x2F );
@@ -3476,28 +3477,52 @@ sequence::fill_list( list<char> *a_list, int a_pos, bool write_triggers )
 }
 
 long
-sequence::song_fill_list_seq_event( list<char> *a_list, trigger *a_trig, long prev_timestamp )
+sequence::song_fill_list_seq_event( list<char> *a_list, trigger *a_trig, long prev_timestamp, file_type_e type )
 {
     lock();
+    
+    /* these trigger values may be adjusted if solo trigger*/
+    long tick_end = a_trig->m_tick_end;
+    long tick_start = a_trig->m_tick_start;
+    long offset = a_trig->m_offset; 
 
-    long trigger_offset = (a_trig->m_offset % m_length);
-    long start_offset = (a_trig->m_tick_start % m_length);
-    long timestamp_adjust = a_trig->m_tick_start - start_offset + trigger_offset;
+    /* starting calculations */
+    long trigger_offset = (offset % m_length);
+    long start_offset = (tick_start % m_length);
+    long timestamp_adjust = tick_start - start_offset + trigger_offset;
+//    long total_offset = trigger_offset - start_offset;   // used for debugging
     int times_played = 1;
     int note_is_used[c_midi_notes];
+ 
+    /* For solo we essentially adjust the trigger as if it is pushed all the way
+       to the beginning of the track. Then the normal song export routine applies */
+    if(type == E_MIDI_SOLO_TRIGGER)
+    {
+        trigger_offset -= start_offset; // adjust to beginning of track
+        start_offset = 0;               // ditto
+    }
 
     /* initialize to off */
     for (int i=0; i< c_midi_notes; i++ )
         note_is_used[i] = 0;
 
-    times_played += (a_trig->m_tick_end - a_trig->m_tick_start)/ m_length;
-
+    times_played += (tick_end - tick_start)/ m_length;
+    
     if((trigger_offset - start_offset) > 0) // in this case the total offset is m_length too far
+    {
         timestamp_adjust -= m_length;
-
-    //long total_offset = trigger_offset - start_offset;
-    //printf("trigger_offset [%ld]: start_offset [%ld]: total_offset [%ld]: timestamp_adjust [%ld]\n",
-    //         trigger_offset,start_offset,total_offset,timestamp_adjust);
+    }
+    
+    /* adjust as if the trigger were pushed all the way to the track beginning */
+    if(type == E_MIDI_SOLO_TRIGGER)
+    {
+        timestamp_adjust -= a_trig->m_tick_start;   // if start is other than 0, then it must be subtracted
+        tick_end -= a_trig->m_tick_start;           // ditto
+        tick_start = 0;                             // now set the start to 0 if not already there
+    } 
+      
+    //printf("trigger_offset [%ld]: start_offset [%ld]: total_offset [%ld]: timestamp_adjust [%ld]:length [%ld]\n",
+    //         trigger_offset,start_offset,total_offset,timestamp_adjust, m_length);
     //printf("times_played [%d]\n",times_played);
 
     for(int ii = 0; ii <= times_played; ii++ )
@@ -3515,14 +3540,14 @@ sequence::song_fill_list_seq_event( list<char> *a_list, trigger *a_trig, long pr
             timestamp += timestamp_adjust;
 
             /* if the event is after the trigger start */
-            if(timestamp >= a_trig->m_tick_start )
+            if(timestamp >= tick_start )
             {
                 // need to save the event note if note_on, then eliminate the note_off if the note_on is NOT used
                 unsigned char note = e.get_note();
 
                 if ( e.is_note_on() )
                 {
-                    if(timestamp > a_trig->m_tick_end)
+                    if(timestamp > tick_end)
                     {
                         continue;                   // skip
                     }
@@ -3538,10 +3563,10 @@ sequence::song_fill_list_seq_event( list<char> *a_list, trigger *a_trig, long pr
                     }
                     else                            // we have a note_on
                     {
-                        if(timestamp >= a_trig->m_tick_end) // if past the end of trigger then use trigger end
+                        if(timestamp >= tick_end)           // if past the end of trigger then use trigger end
                         {
                             note_is_used[note]--;           // turn off the note_on
-                            timestamp = a_trig->m_tick_end;
+                            timestamp = tick_end;
                         }
                         else                                // not past end so just use it
                             note_is_used[note]--;
@@ -3552,7 +3577,7 @@ sequence::song_fill_list_seq_event( list<char> *a_list, trigger *a_trig, long pr
                 continue;
 
             /* if the event is past the trigger end - for non notes - skip */
-            if(timestamp >= a_trig->m_tick_end )
+            if(timestamp >= tick_end )
             {
                 if ( !e.is_note_on() && !e.is_note_off() ) // these were already taken care of...
                     continue;

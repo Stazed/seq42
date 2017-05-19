@@ -905,20 +905,28 @@ bool midifile::write_sequences (perform * a_perf, sequence *a_solo_seq)
     return true;
 }
 
-bool midifile::write_song (perform *a_perf, track *a_track)
+bool midifile::write_song (perform *a_perf, track *a_solo_track)
 {
-    if(a_track != nullptr) // FIXME this will be solo trigger export
-        return true;
-    
     int numtracks = 0;
 
-    /* get number of tracks  */
-    for (int i = 0; i < c_max_track; i++)
+    file_type_e type = E_MIDI_SONG_FORMAT;  // default
+    
+    if(a_solo_track != nullptr)
     {
-        if(a_perf->track_is_song_exportable(i))
-            numtracks++;
+        type = E_MIDI_SOLO_TRIGGER;
+        numtracks = 1;
     }
-
+    
+    if(type == E_MIDI_SONG_FORMAT)          // no need to count when solo trigger
+    {
+        /* get number of tracks  */
+        for (int i = 0; i < c_max_track; i++)
+        {
+            if(a_perf->track_is_song_exportable(i))
+                numtracks++;
+        }
+    }
+    
     if(numtracks == 0)
     {
         error_message_gtk("There are NO exportable tracks!\nDo any have triggers?\nAre all tracks muted?\nAny sequences?");
@@ -934,82 +942,106 @@ bool midifile::write_song (perform *a_perf, track *a_track)
 
     for (int curTrack = 0; curTrack < c_max_track; curTrack++)
     {
-        if(a_perf->track_is_song_exportable(curTrack))
+        if(a_perf->track_is_song_exportable(curTrack) || type == E_MIDI_SOLO_TRIGGER)
         {
-            /* all track triggers */
-            track *a_track = a_perf->get_track(curTrack);
+            /* Tracks */
+            track *a_track = a_solo_track;          // will be nullptr if not solo
+                    
+            if(type == E_MIDI_SONG_FORMAT)
+                a_track = a_perf->get_track(curTrack);
+            
             trigger *a_trig = NULL;
-
             std::vector<trigger> trig_vect;
-            a_track->get_trak_triggers(trig_vect); // all triggers for the track
-
-            int vect_size = trig_vect.size();
-
             list<char> l;
             sequence * seq = NULL;
-
-            /*  sequence name - this will assume the first sequence used is the name for the whole track */
-            for (int i = 0; i < vect_size; i++)
+            int vect_size = 1;                          // for solo trigger
+            
+            if(type == E_MIDI_SONG_FORMAT)
             {
-                a_trig = &trig_vect[i]; // get the trigger
-                seq = a_perf->get_track(curTrack)->get_sequence(a_trig->m_sequence); // get trigger sequence
+                a_track->get_trak_triggers(trig_vect);  // all triggers for the track
+                vect_size = trig_vect.size();
+                
+                /*  sequence name - this will assume the first sequence used is the name for the whole track */
+                for (int i = 0; i < vect_size; i++)
+                {
+                    a_trig = &trig_vect[i]; // get the trigger
+                    seq = a_perf->get_track(curTrack)->get_sequence(a_trig->m_sequence); // get trigger sequence
 
-                if(seq == NULL)
-                    continue;  		   // keep checking until we find one
+                    if(seq == NULL)
+                        continue;  		   // keep checking until we find one
 
-                seq->seq_number_fill_list( &l, numtracks );
-                seq->seq_name_fill_list( &l );
+                    seq->seq_number_fill_list( &l, numtracks );
+                    seq->seq_name_fill_list( &l );
 
-                break;                // we found one so get out
+                    break;                // we found one so get out
+                }
+
+                if(seq == NULL) // this is the case of a track has only empty triggers(but has sequences!)
+                {
+                    seq = a_perf->get_track(curTrack)->get_sequence(0); // so just use the first one
+
+                    seq->seq_number_fill_list( &l, numtracks );
+                    seq->seq_name_fill_list( &l );
+                }
+
+                // now for each trigger get sequence and add events to list char below - fill_list one by one in order,
+                // essentially creating a single long sequence.
+                // then set a single trigger for the big sequence - start at zero, end at last trigger end + snap.
+
+                long total_seq_length = 0;
+                long prev_timestamp = 0;
+
+                for (int i = 0; i < vect_size; i++)
+                {
+                    a_trig = &trig_vect[i]; // get the trigger
+                    sequence * trigger_seq = a_perf->get_track(curTrack)->get_sequence(a_trig->m_sequence); // get trigger sequence
+
+                    if(trigger_seq == NULL) // skip empty triggers
+                        continue;
+
+                    prev_timestamp = trigger_seq->song_fill_list_seq_event(&l,a_trig,prev_timestamp, E_MIDI_SONG_FORMAT); // put events on list
+                }
+
+                /* calculate sequence length */
+                total_seq_length = trig_vect[vect_size-1].m_tick_end;
+                adjust_sequence_measure_snap(total_seq_length, seq);
+                
+                /*
+                    The sequence trigger is NOT part of the standard midi format and is proprietary to seq24.
+                    It is added here because the trigger combining has an alternative benefit for editing.
+                    The user can split, slice and rearrange triggers to form a new sequence. Then mute all
+                    other tracks and export to a temporary midi file. Now they can import the combined
+                    triggers/sequence as a new item. This makes editing of long improvised sequences into
+                    smaller or modified sequences as well as combining several sequence parts painless. Also,
+                    if the user has a variety of common items such as drum beats, control codes, etc that
+                    can be used in other projects, this method is very convenient. The common items can
+                    be kept in one file and exported all, individually, or in part by creating triggers and muting.
+                */
+                seq->song_fill_list_seq_trigger(&l,a_trig,total_seq_length,prev_timestamp); // the big sequence trigger
             }
-
-            if(seq == NULL) // this is the case of a track has only empty triggers(but has sequences!)
+            else                                                                // solo trigger export
             {
-                seq = a_perf->get_track(curTrack)->get_sequence(0); // so just use the first one
-
-                seq->seq_number_fill_list( &l, numtracks );
-                seq->seq_name_fill_list( &l );
+                a_trig = a_track->get_trigger_export();                         // the trigger we chose to export
+                seq = a_track->get_sequence(a_trig->m_sequence);                // get trigger sequence
+                
+                seq->seq_number_fill_list( &l, numtracks );                     // write sequence number (will be 0)
+                seq->seq_name_fill_list( &l );                                  // write sequence name
+                
+                long time_stamp = seq->song_fill_list_seq_event(&l,a_trig,0, E_MIDI_SOLO_TRIGGER);   // put events on list (last zero is previous timestamp)
+                
+                /* find the total new sequence length of export */
+                long total_seq_length = a_trig->m_tick_end - a_trig->m_tick_start;
+                adjust_sequence_measure_snap(total_seq_length, seq);
+                total_seq_length -= time_stamp;
+ 
+                /* proprietary triggers will not be exported */
+                
+                //printf("tri start %ld: end %ld: offset %ld\n", a_trig->m_tick_start, a_trig->m_tick_end, a_trig->m_offset);
+                //printf("trigger_length: %ld  time_stamp: %ld\n",total_seq_length, time_stamp);
+                
+                seq->meta_track_end(&l, total_seq_length);                      // write end track
             }
-
-            // now for each trigger get sequence and add events to list char below - fill_list one by one in order,
-            // essentially creating a single long sequence.
-            // then set a single trigger for the big sequence - start at zero, end at last trigger end + snap.
-
-            long total_seq_length = 0;
-            long prev_timestamp = 0;
-
-            for (int i = 0; i < vect_size; i++)
-            {
-                a_trig = &trig_vect[i]; // get the trigger
-                sequence * trigger_seq = a_perf->get_track(curTrack)->get_sequence(a_trig->m_sequence); // get trigger sequence
-
-                if(trigger_seq == NULL) // skip empty triggers
-                    continue;
-
-                prev_timestamp = trigger_seq->song_fill_list_seq_event(&l,a_trig,prev_timestamp); // put events on list
-            }
-
-            total_seq_length = trig_vect[vect_size-1].m_tick_end;
-
-            /* adjust sequence length to snap nearest measure past end */
-            long measure_ticks = (c_ppqn * 4) * seq->get_bp_measure() / seq->get_bw();
-            long remainder = total_seq_length % measure_ticks;
-            if(remainder != measure_ticks -1)
-                total_seq_length += (measure_ticks - remainder - 1);
-
-            /*
-                The sequence trigger is NOT part of the standard midi format and is proprietary to seq24.
-                It is added here because the trigger combining has an alternative benefit for editing.
-                The user can split, slice and rearrange triggers to form a new sequence. Then mute all
-                other tracks and export to a temporary midi file. Now they can import the combined
-                triggers/sequence as a new item. This makes editing of long improvised sequences into
-                smaller or modified sequences as well as combining several sequence parts painless. Also,
-                if the user has a variety of common items such as drum beats, control codes, etc that
-                can be used in other projects, this method is very convenient. The common items can
-                be kept in one file and exported all, individually, or in part by creating triggers and muting.
-            */
-            seq->song_fill_list_seq_trigger(&l,a_trig,total_seq_length,prev_timestamp); // the big sequence trigger
-
+            
             /* magic number 'MTrk' */
             write_long (0x4D54726B);
 
@@ -1037,8 +1069,14 @@ bool midifile::write_song (perform *a_perf, track *a_track)
                 write_byte (l.back ());
                 l.pop_back ();
             }
+            
+            if(type == E_MIDI_SOLO_TRIGGER)
+                break;
+            
             numtracks++;
         }
+        if(type == E_MIDI_SOLO_TRIGGER)
+            break;
     }
 
     /* open binary file */
@@ -1147,3 +1185,14 @@ midifile::verify_change_tempo_timesig(double tempo, long bp_measure, long bw)
     }
     return true;
 }
+
+void
+midifile::adjust_sequence_measure_snap(long &length, sequence *a_seq)
+{
+    /* adjust sequence length to snap nearest measure past end */
+    long measure_ticks = (c_ppqn * 4) * a_seq->get_bp_measure() / a_seq->get_bw();
+    long remainder = length % measure_ticks;
+    if(remainder != measure_ticks -1)
+        length += (measure_ticks - remainder - 1);
+}
+

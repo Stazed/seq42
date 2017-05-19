@@ -1089,7 +1089,7 @@ perfroll::export_sequence( track *a_track, trigger *a_trigger)
 void
 perfroll::export_trigger( track *a_track, trigger *a_trigger)
 {
-    a_track->set_trigger_export(*a_trigger);
+    a_track->set_trigger_export(a_trigger);
     m_mainwnd->export_trigger_midi(a_track);
 }
 

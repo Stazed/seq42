@@ -1494,11 +1494,11 @@ track::get_default_velocity( )
 }
 
 void
-track::set_trigger_export( trigger a_trig)
+track::set_trigger_export( trigger *a_trig)
 {
     m_trigger_export = a_trig;
 }
-trigger
+trigger *
 track::get_trigger_export()
 {
     return m_trigger_export;

@@ -411,7 +411,7 @@ public:
     void meta_track_end( list<char> *a_list, long delta_time);
     void fill_list(list < char >*a_list, int a_pos, bool write_triggers = true);
 
-    long song_fill_list_seq_event( list<char> *a_list, trigger *a_trig, long prev_timestamp );
+    long song_fill_list_seq_event( list<char> *a_list, trigger *a_trig, long prev_timestamp, file_type_e type );
     void song_fill_list_seq_trigger( list<char> *a_list, trigger *a_trig, long a_length, long prev_timestamp );
 
     void select_events (unsigned char a_status, unsigned char a_cc,
