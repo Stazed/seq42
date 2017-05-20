@@ -2416,12 +2416,81 @@ void perform::parse_sysex(event a_e)
  *  more than one of the same instruments can be on a network but not 
  *  necessarily respond to a patch dump not intended for it.
  */
+
+    enum sysex_YPT
+    {
+        SYS_YPT300_START,
+        SYS_YPT300_STOP,
+        SYS_YPT300_TOP,             //  Beginning of song
+        SYS_YPT300_FAST_FORWARD,
+        SYS_YPT300_REWIND,
+        SYS_YPT300_METRONOME        //  or anything else 
+    };
+    
+    const unsigned char c_yamaha_ID = 0x43;
+    
     unsigned char *data = a_e.get_sysex();
     long data_size =  a_e.get_size();
     
-    for(int i = 0; i < data_size; i++)
+    if(data_size < 1)               // sanity check
+        return; 
+    
+/*    for(int i = 0; i < data_size; i++)
     {
-        printf( "%02X ", data[i]);
+        printf( "%02X \n", data[i]);
+    }
+ */
+    
+    if(data[1] == c_yamaha_ID)                      // could use others here
+    {   
+        switch(data[7])
+        {
+        case SYS_YPT300_START:
+            start_playing();
+            break;
+            
+        case SYS_YPT300_STOP:
+            stop_playing();
+            break;
+            
+        case SYS_YPT300_TOP:                        // beginning of song
+            if(global_song_start_mode)              // don't bother reposition in 'Live' mode
+            {
+                if(is_jack_running())
+                {
+                    set_reposition();
+                    set_starting_tick(0);
+                    position_jack(true, 0);
+                }
+                else
+                {
+                    set_reposition();
+                    set_starting_tick(0);
+                }
+            }
+            break;
+            
+        case SYS_YPT300_FAST_FORWARD:
+            if(FF_RW_button_type == FF_RW_RELEASE)  // if we are not already fast forwarding
+                FF_RW_button_type = FF_RW_FORWARD;  // then set it
+            else                                    // we're already fast forwarding
+                FF_RW_button_type = FF_RW_RELEASE;  // so unset it
+            
+            gtk_timeout_add(120,FF_RW_timeout,this);
+            break;
+            
+        case SYS_YPT300_REWIND:
+            if(FF_RW_button_type == FF_RW_REWIND)   // if we are not already rewinding
+                FF_RW_button_type = FF_RW_REWIND;   // then set it
+            else                                    // we're already rewinding
+                FF_RW_button_type = FF_RW_RELEASE;  // so unset it
+            
+            gtk_timeout_add(120,FF_RW_timeout,this);
+            break;
+            
+        default:
+            break;
+        }
     }
 }
 

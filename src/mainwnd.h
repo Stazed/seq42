@@ -250,4 +250,3 @@ public:
     friend int FF_RW_timeout(void *arg);
 };
 
-int FF_RW_timeout(void *arg);

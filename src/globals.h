@@ -507,3 +507,5 @@ enum file_type_e
     E_MIDI_SOLO_SEQUENCE,
     E_MIDI_SOLO_TRIGGER
 };
+
+int FF_RW_timeout(void *arg);
