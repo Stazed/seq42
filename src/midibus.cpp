@@ -1571,8 +1571,8 @@ mastermidibus::get_midi_event( event *a_in )
     /* we will only get EVENT_SYSEX on the first
        packet of midi data, the rest we have
        to poll for */
-    //if ( buffer[0] == EVENT_SYSEX ){
-    if (0)
+    if ( buffer[0] == EVENT_SYSEX )
+    //if (0)
     {
         /* set up for sysex if needed */
         a_in->start_sysex( );

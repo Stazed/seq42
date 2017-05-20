@@ -2368,6 +2368,7 @@ void perform::input_func()
 
                     if (ev.get_status() == EVENT_SYSEX)
                     {
+                        parse_sysex(ev);
                         if (global_showmidi)
                             ev.print();
 
@@ -2399,6 +2400,29 @@ unsigned short perform::combine_bytes(unsigned char First, unsigned char Second)
    _14bit <<= 7;
    _14bit |= (unsigned short)First;
    return(_14bit);
+}
+
+void perform::parse_sysex(event a_e)
+{
+/*  http://www.indiana.edu/~emusic/etext/MIDI/chapter3_MIDI9.shtml 
+ *  A System Exclusive code set begins with 11110000 (240 decimal or F0 hex),
+ *  followed by the manufacturer ID#, then by an unspecified number of
+ *  data bytes of any ranges from 0-127) and ends with 11110111
+ *  (decimal 247 or F7 hex), meaning End of SysEx message. No other coded
+ *  are to be transmitted during a SysEx message (except a system real time
+ *  message). Normally, after the manufacturer ID, each maker will have its
+ *  own instrument model subcode, so a Yamaha DX7 will ignore a Yamaha SY77's
+ *  patch dump. In addition, most instruments have a SysEx ID # setting so
+ *  more than one of the same instruments can be on a network but not 
+ *  necessarily respond to a patch dump not intended for it.
+ */
+    unsigned char *data = a_e.get_sysex();
+    long data_size =  a_e.get_size();
+    
+    for(int i = 0; i < data_size; i++)
+    {
+        printf( "%02X ", data[i]);
+    }
 }
 
 #ifdef JACK_SUPPORT

@@ -319,6 +319,7 @@ public:
     void input_func();
 
     unsigned short combine_bytes(unsigned char First, unsigned char Second);
+    void parse_sysex(event a_e);
 
     long get_max_trigger();
 
