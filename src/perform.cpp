@@ -393,7 +393,14 @@ perform::FF_rewind()
         {
             a_tick = m_tick - measure_ticks;
             if(a_tick < 0)
+            {
                 a_tick = 0;
+                FF_RW_button_type = FF_RW_RELEASE;  // in the case of sysex control
+                                                    // user may forget to send second (release)
+                                                    // sysex because it's all the way to beginning 
+                                                    // already. So the timeout keeps running.
+                                                    // So we shut it off for them (by them I mean me).
+            }
         }
         else                                    // Fast Forward
             a_tick = m_tick + measure_ticks;
@@ -2426,6 +2433,12 @@ void perform::parse_sysex(event a_e)
         SYS_YPT300_REWIND,
         SYS_YPT300_METRONOME        //  or anything else 
     };
+
+/*  For FF and rewind the sysex is only sent on key press.
+ *  So to shut it off a second key press is used as the 
+ *  button release. Not real convenient, but personally I
+ *  only really care about start and stop.
+ */
     
     const unsigned char c_yamaha_ID = 0x43;
     
@@ -2480,7 +2493,7 @@ void perform::parse_sysex(event a_e)
             break;
             
         case SYS_YPT300_REWIND:
-            if(FF_RW_button_type == FF_RW_REWIND)   // if we are not already rewinding
+            if(FF_RW_button_type == FF_RW_RELEASE)  // if we are not already rewinding
                 FF_RW_button_type = FF_RW_REWIND;   // then set it
             else                                    // we're already rewinding
                 FF_RW_button_type = FF_RW_RELEASE;  // so unset it
