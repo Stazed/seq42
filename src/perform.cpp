@@ -2375,7 +2375,9 @@ void perform::input_func()
 
                     if (ev.get_status() == EVENT_SYSEX)
                     {
-                        parse_sysex(ev);
+                        if (global_use_sysex)
+                            parse_sysex(ev);
+                        
                         if (global_showmidi)
                             ev.print();
 
@@ -2440,70 +2442,90 @@ void perform::parse_sysex(event a_e)
  *  only really care about start and stop.
  */
     
-    const unsigned char c_yamaha_ID = 0x43;
+    /* layout of YPT-300 sysex messages */
+    //  EVENT_SYSEX                                         // byte 0 0xF0
+    const unsigned char c_yamaha_ID         = 0x43;         // byte 1 
+    const unsigned long c_YPT_model_subcode = 0x73015015;   // bytes 2 - 5
+    // 0x00                                                 // byte 6
+    // the message we are looking for - enum 0 to 5         // byte 7
+    // 0x00                                                 // byte 8
+    // end sysex 0xF7                                       // byte 9
     
     unsigned char *data = a_e.get_sysex();
     long data_size =  a_e.get_size();
     
-    if(data_size < 1)               // sanity check
+    if(data_size < 10)               // sanity check
         return; 
+
+    /* Check the manufacturer ID */
+    if(data[1] != c_yamaha_ID)                      // could use others here
+        return;
     
+    /* Check the model subcode */
+    unsigned long subcode = 0;
+    
+    subcode += (data[2] << 24);
+    subcode += (data[3] << 16);
+    subcode += (data[4] << 8);
+    subcode += (data[5]);
+
+    if(subcode != c_YPT_model_subcode)
+        return;
+
 /*    for(int i = 0; i < data_size; i++)
     {
         printf( "%02X \n", data[i]);
     }
  */
-    
-    if(data[1] == c_yamaha_ID)                      // could use others here
-    {   
-        switch(data[7])
+
+    /* We are good to go */  
+    switch(data[7])
+    {
+    case SYS_YPT300_START:
+        start_playing();
+        break;
+
+    case SYS_YPT300_STOP:
+        stop_playing();
+        break;
+
+    case SYS_YPT300_TOP:                        // beginning of song
+        if(global_song_start_mode)              // don't bother reposition in 'Live' mode
         {
-        case SYS_YPT300_START:
-            start_playing();
-            break;
-            
-        case SYS_YPT300_STOP:
-            stop_playing();
-            break;
-            
-        case SYS_YPT300_TOP:                        // beginning of song
-            if(global_song_start_mode)              // don't bother reposition in 'Live' mode
+            if(is_jack_running())
             {
-                if(is_jack_running())
-                {
-                    set_reposition();
-                    set_starting_tick(0);
-                    position_jack(true, 0);
-                }
-                else
-                {
-                    set_reposition();
-                    set_starting_tick(0);
-                }
+                set_reposition();
+                set_starting_tick(0);
+                position_jack(true, 0);
             }
-            break;
-            
-        case SYS_YPT300_FAST_FORWARD:
-            if(FF_RW_button_type == FF_RW_RELEASE)  // if we are not already fast forwarding
-                FF_RW_button_type = FF_RW_FORWARD;  // then set it
-            else                                    // we're already fast forwarding
-                FF_RW_button_type = FF_RW_RELEASE;  // so unset it
-            
-            gtk_timeout_add(120,FF_RW_timeout,this);
-            break;
-            
-        case SYS_YPT300_REWIND:
-            if(FF_RW_button_type == FF_RW_RELEASE)  // if we are not already rewinding
-                FF_RW_button_type = FF_RW_REWIND;   // then set it
-            else                                    // we're already rewinding
-                FF_RW_button_type = FF_RW_RELEASE;  // so unset it
-            
-            gtk_timeout_add(120,FF_RW_timeout,this);
-            break;
-            
-        default:
-            break;
+            else
+            {
+                set_reposition();
+                set_starting_tick(0);
+            }
         }
+        break;
+
+    case SYS_YPT300_FAST_FORWARD:
+        if(FF_RW_button_type == FF_RW_RELEASE)  // if we are not already fast forwarding
+            FF_RW_button_type = FF_RW_FORWARD;  // then set it
+        else                                    // we're already fast forwarding
+            FF_RW_button_type = FF_RW_RELEASE;  // so unset it
+
+        gtk_timeout_add(120,FF_RW_timeout,this);
+        break;
+
+    case SYS_YPT300_REWIND:
+        if(FF_RW_button_type == FF_RW_RELEASE)  // if we are not already rewinding
+            FF_RW_button_type = FF_RW_REWIND;   // then set it
+        else                                    // we're already rewinding
+            FF_RW_button_type = FF_RW_RELEASE;  // so unset it
+
+        gtk_timeout_add(120,FF_RW_timeout,this);
+        break;
+
+    default:
+        break;
     }
 }
 
