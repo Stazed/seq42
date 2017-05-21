@@ -1022,6 +1022,10 @@ bool midifile::write_song (perform *a_perf, track *a_solo_track)
             else                                                                // solo trigger export
             {
                 a_trig = a_track->get_trigger_export();                         // the trigger we chose to export
+                
+                if(a_trig == nullptr)                                           // sanity check
+                    return false;
+                
                 seq = a_track->get_sequence(a_trig->m_sequence);                // get trigger sequence
                 
                 seq->seq_number_fill_list( &l, numtracks );                     // write sequence number (will be 0)
@@ -1040,6 +1044,7 @@ bool midifile::write_song (perform *a_perf, track *a_solo_track)
                 //printf("trigger_length: %ld  time_stamp: %ld\n",total_seq_length, time_stamp);
                 
                 seq->meta_track_end(&l, total_seq_length);                      // write end track
+                a_track->set_trigger_export(nullptr);                           // clear the pointer
             }
             
             /* magic number 'MTrk' */

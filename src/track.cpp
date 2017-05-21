@@ -32,6 +32,7 @@ track::track()
     m_song_mute = false;
     m_transposable = true;
     m_trigger_copied = false;
+    m_trigger_export = nullptr;
 
     m_dirty_perf = true;
     m_dirty_names = true;
