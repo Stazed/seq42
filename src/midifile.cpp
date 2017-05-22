@@ -913,11 +913,17 @@ bool midifile::write_song (perform *a_perf, track *a_solo_track)
     
     if(a_solo_track != nullptr)
     {
+        if(a_solo_track->get_trigger_export() == nullptr ) // sanity check - this should never happen
+        {
+            error_message_gtk("Cannot export trigger - none selected");
+            return true;    // true so we don't generate a second error about "Error writing file".
+        }
+ 
         type = E_MIDI_SOLO_TRIGGER;
         numtracks = 1;
     }
     
-    if(type == E_MIDI_SONG_FORMAT)          // no need to count when solo trigger
+    if(type == E_MIDI_SONG_FORMAT)   // no need to count when solo trigger
     {
         /* get number of tracks  */
         for (int i = 0; i < c_max_track; i++)
@@ -938,14 +944,14 @@ bool midifile::write_song (perform *a_perf, track *a_solo_track)
     /* We should be good to load now   */
     /* for each Track Sequence in the midi file */
 
-    numtracks = 0; // reset for seq->fill_list position
+    numtracks = 0;      // reset for seq->fill_list position
 
     for (int curTrack = 0; curTrack < c_max_track; curTrack++)
     {
         if(a_perf->track_is_song_exportable(curTrack) || type == E_MIDI_SOLO_TRIGGER)
         {
             /* Tracks */
-            track *a_track = a_solo_track;          // will be nullptr if not solo
+            track *a_track = a_solo_track;              // will be nullptr if not solo
                     
             if(type == E_MIDI_SONG_FORMAT)
                 a_track = a_perf->get_track(curTrack);
@@ -964,19 +970,19 @@ bool midifile::write_song (perform *a_perf, track *a_solo_track)
                 /*  sequence name - this will assume the first sequence used is the name for the whole track */
                 for (int i = 0; i < vect_size; i++)
                 {
-                    a_trig = &trig_vect[i]; // get the trigger
+                    a_trig = &trig_vect[i];             // get the trigger
                     seq = a_perf->get_track(curTrack)->get_sequence(a_trig->m_sequence); // get trigger sequence
 
                     if(seq == NULL)
-                        continue;  		   // keep checking until we find one
+                        continue;                       // keep checking until we find one
 
                     seq->seq_number_fill_list( &l, numtracks );
                     seq->seq_name_fill_list( &l );
 
-                    break;                // we found one so get out
+                    break;                              // we found one so get out
                 }
 
-                if(seq == NULL) // this is the case of a track has only empty triggers(but has sequences!)
+                if(seq == NULL)                         // this is the case of a track has only empty triggers(but has sequences!)
                 {
                     seq = a_perf->get_track(curTrack)->get_sequence(0); // so just use the first one
 
@@ -1022,9 +1028,6 @@ bool midifile::write_song (perform *a_perf, track *a_solo_track)
             else                                                                // solo trigger export
             {
                 a_trig = a_track->get_trigger_export();                         // the trigger we chose to export
-                
-                if(a_trig == nullptr)                                           // sanity check
-                    return false;
                 
                 seq = a_track->get_sequence(a_trig->m_sequence);                // get trigger sequence
                 
