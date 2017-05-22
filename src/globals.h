@@ -506,7 +506,8 @@ enum file_type_e
     E_MIDI_SEQ24_FORMAT,
     E_MIDI_SONG_FORMAT,
     E_MIDI_SOLO_SEQUENCE,
-    E_MIDI_SOLO_TRIGGER
+    E_MIDI_SOLO_TRIGGER,
+    E_MIDI_SOLO_TRACK
 };
 
 int FF_RW_timeout(void *arg);

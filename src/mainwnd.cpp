@@ -654,6 +654,12 @@ mainwnd::timer_callback(  )
             }
         }
     }
+    
+    if(m_mainperf->get_export_track() != -1)
+    {
+        file_save_as(E_MIDI_SOLO_TRACK, m_mainperf->get_track(m_mainperf->get_export_track()));
+        m_mainperf->set_export_track(-1);
+    }
     return true;
 }
 
@@ -1200,6 +1206,10 @@ void mainwnd::file_save_as(file_type_e type, void *a_seq_or_track)
         dialog.set_title("Midi export solo trigger");
         break;
         
+    case E_MIDI_SOLO_TRACK:
+        dialog.set_title("Midi export solo track");
+        break;
+        
     default:            // Save file as -- native .s42 format
         break;
     }
@@ -1292,7 +1302,7 @@ void mainwnd::file_save_as(file_type_e type, void *a_seq_or_track)
         }
         else
         {
-            export_midi(fname, type, a_seq_or_track); // will be nullptr unless type = E_MIDI_SOLO_SEQUENCE or E_MIDI_SOLO_TRIGGER
+            export_midi(fname, type, a_seq_or_track); //  a_seq_or_track will be nullptr if type = E_MIDI_SEQ24_FORMAT
         }
 
         break;
@@ -1311,9 +1321,8 @@ void mainwnd::export_midi(const Glib::ustring& fn, file_type_e type, void *a_seq
 
     if(type == E_MIDI_SEQ24_FORMAT || type == E_MIDI_SOLO_SEQUENCE )
         result = f.write_sequences(m_mainperf, (sequence*)a_seq_or_track);  // seq24 format will be nullptr
-    
-    if(type == E_MIDI_SONG_FORMAT || type == E_MIDI_SOLO_TRIGGER)
-        result = f.write_song(m_mainperf,(track*)a_seq_or_track);           // song format will be nullptr
+    else
+        result = f.write_song(m_mainperf, type,(track*)a_seq_or_track);     // song format will be nullptr
     
 
     if (!result)

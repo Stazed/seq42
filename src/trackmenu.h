@@ -68,6 +68,7 @@ private:
     void new_sequence();
 
     void trk_clear_perf();
+    void trk_export();
 
     void set_bus_and_midi_channel( int a_bus, int a_ch );
     void mute_all_tracks();

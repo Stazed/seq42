@@ -905,32 +905,49 @@ bool midifile::write_sequences (perform * a_perf, sequence *a_solo_seq)
     return true;
 }
 
-bool midifile::write_song (perform *a_perf, track *a_solo_track)
+bool midifile::write_song (perform *a_perf, file_type_e type ,track *a_solo_track)
 {
     int numtracks = 0;
-
-    file_type_e type = E_MIDI_SONG_FORMAT;  // default
+    int solo_track_index = -1;
     
-    if(a_solo_track != nullptr)
+    
+    if(type != E_MIDI_SONG_FORMAT)
     {
-        if(a_solo_track->get_trigger_export() == nullptr ) // sanity check - this should never happen
+        if(a_solo_track == nullptr) // sanity check - should only happen with song export
         {
-            error_message_gtk("Cannot export trigger - none selected");
+            error_message_gtk("Cannot export track or trigger - none selected");
             return true;    // true so we don't generate a second error about "Error writing file".
         }
- 
-        type = E_MIDI_SOLO_TRIGGER;
-        numtracks = 1;
     }
     
-    if(type == E_MIDI_SONG_FORMAT)   // no need to count when solo trigger
+    switch(type)
     {
+    case E_MIDI_SONG_FORMAT:
         /* get number of tracks  */
         for (int i = 0; i < c_max_track; i++)
         {
             if(a_perf->track_is_song_exportable(i))
                 numtracks++;
         }
+        break;
+        
+    case E_MIDI_SOLO_TRIGGER:
+        if(a_solo_track->get_trigger_export() == nullptr) // sanity check - should never happen
+        {
+            error_message_gtk("Cannot export trigger - none selected");
+            return true;    // true so we don't generate a second error about "Error writing file".
+        }
+        numtracks = 1;
+        break;
+        
+    case E_MIDI_SOLO_TRACK:
+        solo_track_index = a_perf->get_track_index(a_solo_track);
+        if(a_perf->track_is_song_exportable(solo_track_index))
+            numtracks = 1;
+        break;
+        
+    default:                // should never happen will be caught by error below
+        break;
     }
     
     if(numtracks == 0)
@@ -948,7 +965,7 @@ bool midifile::write_song (perform *a_perf, track *a_solo_track)
 
     for (int curTrack = 0; curTrack < c_max_track; curTrack++)
     {
-        if(a_perf->track_is_song_exportable(curTrack) || type == E_MIDI_SOLO_TRIGGER)
+        if(a_perf->track_is_song_exportable(curTrack) || type == E_MIDI_SOLO_TRIGGER || type == E_MIDI_SOLO_TRACK)
         {
             /* Tracks */
             track *a_track = a_solo_track;              // will be nullptr if not solo
@@ -956,13 +973,16 @@ bool midifile::write_song (perform *a_perf, track *a_solo_track)
             if(type == E_MIDI_SONG_FORMAT)
                 a_track = a_perf->get_track(curTrack);
             
+            if(type == E_MIDI_SOLO_TRACK)
+                curTrack = solo_track_index;
+            
             trigger *a_trig = NULL;
             std::vector<trigger> trig_vect;
             list<char> l;
             sequence * seq = NULL;
             int vect_size = 1;                          // for solo trigger
             
-            if(type == E_MIDI_SONG_FORMAT)
+            if(type == E_MIDI_SONG_FORMAT || type == E_MIDI_SOLO_TRACK)
             {
                 a_track->get_trak_triggers(trig_vect);  // all triggers for the track
                 vect_size = trig_vect.size();
@@ -1005,7 +1025,7 @@ bool midifile::write_song (perform *a_perf, track *a_solo_track)
                     if(trigger_seq == NULL) // skip empty triggers
                         continue;
 
-                    prev_timestamp = trigger_seq->song_fill_list_seq_event(&l,a_trig,prev_timestamp, E_MIDI_SONG_FORMAT); // put events on list
+                    prev_timestamp = trigger_seq->song_fill_list_seq_event(&l,a_trig,prev_timestamp, type); // put events on list
                 }
 
                 /* calculate sequence length */
@@ -1034,7 +1054,7 @@ bool midifile::write_song (perform *a_perf, track *a_solo_track)
                 seq->seq_number_fill_list( &l, numtracks );                     // write sequence number (will be 0)
                 seq->seq_name_fill_list( &l );                                  // write sequence name
                 
-                long time_stamp = seq->song_fill_list_seq_event(&l,a_trig,0, E_MIDI_SOLO_TRIGGER);   // put events on list (last zero is previous timestamp)
+                long time_stamp = seq->song_fill_list_seq_event(&l,a_trig,0, type);   // put events on list (last zero is previous timestamp)
                 
                 /* find the total new sequence length of export */
                 long total_seq_length = a_trig->m_tick_end - a_trig->m_tick_start;
@@ -1078,12 +1098,12 @@ bool midifile::write_song (perform *a_perf, track *a_solo_track)
                 l.pop_back ();
             }
             
-            if(type == E_MIDI_SOLO_TRIGGER)
+            if(type == E_MIDI_SOLO_TRIGGER || type == E_MIDI_SOLO_TRACK)
                 break;
             
             numtracks++;
         }
-        if(type == E_MIDI_SOLO_TRIGGER)
+        if(type == E_MIDI_SOLO_TRIGGER || type == E_MIDI_SOLO_TRACK)
             break;
     }
 
