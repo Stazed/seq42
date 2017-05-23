@@ -943,7 +943,14 @@ bool midifile::write_song (perform *a_perf, file_type_e type ,track *a_solo_trac
     case E_MIDI_SOLO_TRACK:
         solo_track_index = a_perf->get_track_index(a_solo_track);
         if(a_perf->track_is_song_exportable(solo_track_index))
+        {
             numtracks = 1;
+        }
+        else
+        {
+            error_message_gtk("Cannot export track!\nDoes it have triggers?\nIs it muted?\nAny sequences?");
+            return true;    // true so we don't generate a second error about "Error writing file".
+        }
         break;
         
     default:                // should never happen will be caught by error below
@@ -953,7 +960,7 @@ bool midifile::write_song (perform *a_perf, file_type_e type ,track *a_solo_trac
     if(numtracks == 0)
     {
         error_message_gtk("There are NO exportable tracks!\nDo any have triggers?\nAre all tracks muted?\nAny sequences?");
-        return true;    // true so we don't generate a second error about "Error writing file".
+        return true;        // true so we don't generate a second error about "Error writing file".
     }
 
     write_header(numtracks);
