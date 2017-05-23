@@ -18,11 +18,11 @@
 //
 //-----------------------------------------------------------------------------
 #include "perfnames.h"
+#include "mainwnd.h"
 #include "font.h"
 
-
-perfnames::perfnames( perform *a_perf, Adjustment *a_vadjust ):
-    trackmenu(a_perf),
+perfnames::perfnames( perform *a_perf, mainwnd *a_main, Adjustment *a_vadjust ):
+    trackmenu(a_perf, a_main),
     m_black(Gdk::Color( "black" )),
     m_white(Gdk::Color( "white" )),
     m_grey(Gdk::Color( "SteelBlue1" )),

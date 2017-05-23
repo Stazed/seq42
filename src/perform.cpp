@@ -45,7 +45,6 @@ perform::perform()
         m_was_active_names[i]   = false;
     }
 
-    m_export_track = -1;
     m_seqlist_open = false;
     m_seqlist_raise = false;
     m_looping = false;
@@ -2963,16 +2962,4 @@ perform::apply_song_transpose()
             get_track(i)->apply_song_transpose();
         }
     }
-}
-
-void
-perform::set_export_track(int a_track)
-{
-    m_export_track = a_track;
-}
-
-int
-perform::get_export_track()
-{
-    return m_export_track;
 }

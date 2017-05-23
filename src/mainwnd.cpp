@@ -250,7 +250,7 @@ mainwnd::mainwnd(perform *a_p):
     m_vscroll   =  manage(new VScrollbar( *m_vadjust ));
     m_hscroll   =  manage(new HScrollbar( *m_hadjust ));
 
-    m_perfnames = manage( new perfnames( m_mainperf, m_vadjust ));
+    m_perfnames = manage( new perfnames( m_mainperf, this, m_vadjust ));
 
     m_perfroll = manage( new perfroll
                          (
@@ -655,11 +655,6 @@ mainwnd::timer_callback(  )
         }
     }
     
-    if(m_mainperf->get_export_track() != -1)
-    {
-        file_save_as(E_MIDI_SOLO_TRACK, m_mainperf->get_track(m_mainperf->get_export_track()));
-        m_mainperf->set_export_track(-1);
-    }
     return true;
 }
 
@@ -1405,6 +1400,11 @@ void mainwnd::export_sequence_midi(sequence *a_seq)
 void mainwnd::export_trigger_midi(track *a_track)
 {
     file_save_as(E_MIDI_SOLO_TRIGGER, a_track);
+}
+
+void mainwnd::export_track_midi(int a_track)
+{
+    file_save_as(E_MIDI_SOLO_TRACK, m_mainperf->get_track(a_track));
 }
 
 /*callback function*/

@@ -38,8 +38,10 @@ using namespace Gtk;
 
 using namespace Menu_Helpers;
 
+/* forward declarations */
 class perfroll;
 class perftime;
+class perfnames;
 
 class mainwnd : public Gtk::Window
 {
@@ -244,6 +246,7 @@ public:
     void open_file(const Glib::ustring&);
     void export_sequence_midi(sequence *a_seq);
     void export_trigger_midi(track *a_track);
+    void export_track_midi(int a_track);
     bool on_delete_event(GdkEventAny *a_e);
     bool on_key_press_event(GdkEventKey* a_ev);
     bool on_key_release_event(GdkEventKey* a_ev);

@@ -25,7 +25,10 @@
 #include "perform.h"
 #include "trackedit.h"
 
+/* forward declarations */
 class trackmenu;
+class mainwnd;
+class perfnames;
 
 #include <gtkmm/button.h>
 #include <gtkmm/window.h>
@@ -50,6 +53,7 @@ private:
 
     Menu        *m_menu;
     perform     *m_mainperf;
+    mainwnd     *m_mainwnd;
     track       m_clipboard;
     bool m_something_to_paste;
 
@@ -82,6 +86,6 @@ protected:
 
 public:
 
-    trackmenu( perform *a_p );
+    trackmenu( perform *a_p, mainwnd *a_main );
     virtual ~trackmenu( ) { };
 };

@@ -20,16 +20,18 @@
 
 #include "trackmenu.h"
 #include "seqedit.h"
+#include "mainwnd.h"
 #include "font.h"
 
 
 // Constructor
 
-trackmenu::trackmenu( perform *a_p  )
+trackmenu::trackmenu( perform *a_p, mainwnd *a_main  )
 {
     using namespace Menu_Helpers;
 
     m_mainperf = a_p;
+    m_mainwnd = a_main;
     m_menu = NULL;
 
     // init the clipboard, so that we don't get a crash
@@ -487,7 +489,6 @@ trackmenu::trk_export()
 {
     if ( m_mainperf->is_active_track( m_current_trk ))
     {
-        m_mainperf->set_export_track (m_current_trk);
+        m_mainwnd->export_track_midi( m_current_trk);
     }
-    
 }

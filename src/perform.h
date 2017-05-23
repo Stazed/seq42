@@ -74,7 +74,6 @@ private:
     /* vector of tracks */
     track *m_tracks[c_max_track];
     track m_clipboard;
-    int m_export_track;
     track m_undo_tracks[100]; // FIXME how big??
     track m_redo_tracks[100]; // FIXME how big??
     int m_undo_track_count;
@@ -357,8 +356,6 @@ public:
     void delete_unused_sequences();
     void create_triggers();
     void apply_song_transpose ();
-    void set_export_track(int a_track);
-    int get_export_track();
 
 #ifdef JACK_SUPPORT
     void jack_BBT_position(jack_position_t &pos, double jack_tick);

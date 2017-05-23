@@ -39,6 +39,9 @@
 #include <gtkmm/widget.h>
 #include <gtkmm/adjustment.h>
 
+/* forward declaration */
+class mainwnd;
+
 using namespace Gtk;
 
 #include "globals.h"
@@ -86,7 +89,7 @@ public:
 
     void redraw_dirty_tracks();
 
-    perfnames( perform *a_perf,
+    perfnames( perform *a_perf, mainwnd *a_main,
                Adjustment *a_vadjust   );
 };
 
