@@ -43,6 +43,10 @@ class perform;
 #endif
 #endif
 
+#define USE_SEQUENCER64_TIMEBASE_CALLBACK   // EXPERIMENTAL - needed for tempo change
+#define USE_MODIFIABLE_JACK_TEMPO           // EXPERIMENTAL SEQUENCER64
+#define USE_JACK_BBT_OFFSET                 // SEQUENCER64
+
 enum mute_op
 {
     MUTE_TOGGLE     = -1,

@@ -633,10 +633,19 @@ void perform::set_bpm(double a_bpm)
     if ( a_bpm < c_bpm_minimum ) a_bpm = c_bpm_minimum;
     if ( a_bpm > c_bpm_maximum ) a_bpm = c_bpm_maximum;
 
+#ifdef USE_MODIFIABLE_JACK_TEMPO           // EXPERIMENTAL SEQUENCER64
+ 
+    m_master_bus.set_bpm( a_bpm );
+
+#else
+
     if ( ! (m_jack_running && global_is_running ))
     {
         m_master_bus.set_bpm( a_bpm );
     }
+
+#endif
+    
 }
 
 double  perform::get_bpm( )
@@ -1309,7 +1318,7 @@ void perform::position_jack( bool a_state, long a_tick )
     double beats_per_minute =  m_master_bus.get_bpm();
 
     uint64_t tick_rate = ((uint64_t)m_jack_frame_rate * current_tick * 60.0);
-    long tpb_bpm = ticks_per_beat * beats_per_minute / (m_bw / 4.0 );
+    long tpb_bpm = ticks_per_beat * beats_per_minute * 4.0 / m_bw;
     uint64_t jack_frame = tick_rate / tpb_bpm;
 
     jack_transport_locate(m_jack_client,jack_frame);
@@ -1318,7 +1327,7 @@ void perform::position_jack( bool a_state, long a_tick )
     /* The below BBT call to jack_BBT_position() is not necessary to change jack position!!! */
 
     jack_position_t pos;
-    double jack_tick = current_tick * (m_bw / 4.0 );
+    double jack_tick = current_tick * 4 / m_bw;
 
     /* gotta set these here since they are set in timebase */
     pos.ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
@@ -2562,6 +2571,106 @@ void perform::jack_BBT_position(jack_position_t &pos, double jack_tick)
 
     //printf( " bbb [%2d:%2d:%4d] jack_tick [%f]\n", pos.bar, pos.beat, pos.tick, jack_tick );
 }
+
+#ifdef USE_SEQUENCER64_TIMEBASE_CALLBACK    // this works with tempo change
+void
+jack_timebase_callback
+(
+    jack_transport_state_t state,           // currently unused !!!
+    jack_nframes_t nframes,
+    jack_position_t * pos,
+    int new_pos,
+    void * arg
+)
+{
+    if (pos == nullptr)
+    {
+        printf("jack_timebase_callback(): null position pointer");
+        return;
+    }
+
+    /*
+     *  Code from sooperlooper that we left out!
+     */
+
+    perform *p = (perform *) arg;
+    pos->beats_per_minute = p->get_bpm();
+    pos->beats_per_bar = p->get_bp_measure();
+    pos->beat_type = p->get_bw();
+    pos->ticks_per_beat = c_ppqn * 10.0;
+
+    long ticks_per_bar = long(pos->ticks_per_beat * pos->beats_per_bar);
+    long ticks_per_minute = long(pos->beats_per_minute * pos->ticks_per_beat);
+
+    /* don't use pos->frame_rate below because it usually will contain garbage or 0 
+     * unless sending client plugs BBT, which is almost never. Using the frame_rate
+     * from p->m_jack_frame_rate which comes from init_jack().     */
+    double framerate = double(p->m_jack_frame_rate * 60.0);
+
+    /**
+     * \todo
+     *      Shouldn't we process the first clause ONLY if new_pos is true?
+     */
+
+    if (new_pos || ! (pos->valid & JackPositionBBT))    // try the NEW code
+    {
+        double minute = pos->frame / framerate;
+        long abs_tick = long(minute * ticks_per_minute);
+        long abs_beat = 0;
+
+        /*
+         *  Handle 0 values of pos->ticks_per_beat and pos->beats_per_bar that
+         *  occur at startup as JACK Master.
+         */
+
+        if (pos->ticks_per_beat > 0)                    // 0 at startup!
+            abs_beat = long(abs_tick / pos->ticks_per_beat);
+
+        if (pos->beats_per_bar > 0)                     // 0 at startup!
+            pos->bar = int(abs_beat / pos->beats_per_bar);
+        else
+            pos->bar = 0;
+
+        pos->beat = int(abs_beat - (pos->bar * pos->beats_per_bar) + 1);
+        pos->tick = int(abs_tick - (abs_beat * pos->ticks_per_beat));
+        pos->bar_start_tick = int(pos->bar * ticks_per_bar);
+        pos->bar++;                             /* adjust start to bar 1 */
+    }
+    else            // This works with tempo change
+    {
+        /*
+         * Try this code, which computes the BBT (beats/bars/ticks) based on
+         * the previous period.  It works!  "klick -j -P" follows Sequencer64
+         * when the latter is JACK Master!  Note that the tick is delta'ed.
+         */
+
+        int delta_tick = int(nframes * ticks_per_minute / framerate);
+        pos->tick += delta_tick;
+        while (pos->tick >= pos->ticks_per_beat)
+        {
+            pos->tick -= int(pos->ticks_per_beat);
+            if (++pos->beat > pos->beats_per_bar)
+            {
+                pos->beat = 1;
+                ++pos->bar;
+                pos->bar_start_tick += ticks_per_bar;
+            }
+        }
+    }
+#ifdef USE_JACK_BBT_OFFSET
+    pos->bbt_offset = 0;
+    pos->valid = (jack_position_bits_t)
+    (
+        pos->valid | JackBBTFrameOffset | JackPositionBBT
+    );
+#else
+    pos->valid = JackPositionBBT;
+#endif
+}
+
+#else // legacy timebase - cannot change tempo
+
+
 /*
     This callback is only called by jack when seq42 is Master and is used to supply jack
     with BBT information based on frame position and frame_rate.
@@ -2588,6 +2697,8 @@ void jack_timebase_callback(jack_transport_state_t state,
 
     p->jack_BBT_position(*pos, jack_tick);
 }
+
+#endif // USE_SEQUENCER64_TIMEBASE_CALLBACK
 
 /* used for checking jack stopped position for auto scroll when stopped */
 long get_current_jack_position(void *arg)
