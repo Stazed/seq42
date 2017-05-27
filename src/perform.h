@@ -47,6 +47,8 @@ class perform;
 #define USE_MODIFIABLE_JACK_TEMPO           // EXPERIMENTAL SEQUENCER64
 #define USE_JACK_BBT_OFFSET                 // SEQUENCER64
 
+#undef USE_JACK_BBT_POSITION                // old code could be used for debug
+
 enum mute_op
 {
     MUTE_TOGGLE     = -1,
@@ -362,7 +364,10 @@ public:
     void apply_song_transpose ();
 
 #ifdef JACK_SUPPORT
+#ifdef USE_JACK_BBT_POSITION
     void jack_BBT_position(jack_position_t &pos, double jack_tick);
+#endif // USE_JACK_BBT_POSITION
+    
     /* now using jack_process_callback() ca. 7/10/16    */
     /*
         friend int jack_sync_callback(jack_transport_state_t state,
@@ -373,7 +378,7 @@ public:
                                        jack_position_t *pos, int new_pos, void *arg);
     friend int jack_process_callback(jack_nframes_t nframes, void* arg);
     friend long get_current_jack_position(void *arg);
-#endif
+#endif // JACK_SUPPORT
 };
 
 /* located in perform.C */
@@ -395,5 +400,5 @@ int jack_process_callback(jack_nframes_t nframes, void* arg);
 long get_current_jack_position(void *arg);
 #ifdef JACK_SESSION
 void jack_session_callback(jack_session_event_t *ev, void *arg);
-#endif
-#endif
+#endif // JACK_SESSION
+#endif // JACK_SUPPORT
