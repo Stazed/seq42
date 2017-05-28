@@ -73,6 +73,7 @@ private:
     int m_4bar_offset;
 
     int m_snap, m_measure_length;
+    long m_tempo_marker;
 
     void on_realize();
     bool on_expose_event(GdkEventExpose* a_ev);
@@ -89,6 +90,7 @@ private:
     int idle_progress();
 
     void change_horz();
+    void set_tempo_marker(long tick);
 
 public:
 

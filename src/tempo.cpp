@@ -38,7 +38,8 @@ tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
     m_4bar_offset(0),
 
     m_snap(c_ppqn),
-    m_measure_length(c_ppqn * 4)
+    m_measure_length(c_ppqn * 4),
+    m_tempo_marker(0)
 {
     add_events( Gdk::BUTTON_PRESS_MASK |
                 Gdk::BUTTON_RELEASE_MASK );
@@ -159,21 +160,6 @@ tempo::draw_background()
     long tick_offset = (m_4bar_offset * 16 * c_ppqn);
     long first_measure = tick_offset / m_measure_length;
 
-    float bar_draw = m_measure_length / (float) m_perf_scale_x;
-
-    int bar_skip = 1;
-
-    if(bar_draw < 24)
-        bar_skip = 4;
-    if(bar_draw < 12)
-        bar_skip = 8;
-    if(bar_draw < 6)
-        bar_skip = 16;
-    if(bar_draw < 3)
-        bar_skip = 32;
-    if(bar_draw < .75)
-        bar_skip = 64;
-
 #if 0
 
     0   1   2   3   4   5   6
@@ -184,7 +170,7 @@ tempo::draw_background()
 #endif
 
     for ( int i=first_measure;
-            i<first_measure+(m_window_x * m_perf_scale_x / (m_measure_length)) + 1; i += bar_skip  )
+            i<first_measure+(m_window_x * m_perf_scale_x / (m_measure_length)) + 1; i++ )
     {
         int x_pos = ((i * m_measure_length) - tick_offset) / m_perf_scale_x;
 
@@ -195,17 +181,22 @@ tempo::draw_background()
                             x_pos,
                             m_window_y );
 
-        char bar[5];
-        snprintf( bar, sizeof(bar), "%d", i + 1 ); // bar numbers
-
+    }
+    
+    long tempo_marker = m_tempo_marker;  // FIXME - iterate through list
+    tempo_marker -= (m_4bar_offset * 16 * c_ppqn);
+    tempo_marker /= m_perf_scale_x;
+    
+    if ( tempo_marker >0 && tempo_marker <= m_window_x )
+    {
         m_gc->set_foreground(m_black);
-
-        p_font_renderer->render_string_on_drawable(m_gc,
-                x_pos + 2,
-                0,
-                m_window, bar, font::BLACK );
+        m_window->draw_rectangle(m_gc,true,
+                                 tempo_marker-4, 0,
+                                 8,
+                                 m_window_y - 5);
     }
 
+/*
     long left = m_mainperf->get_left_tick( );
     long right = m_mainperf->get_right_tick( );
 
@@ -243,6 +234,7 @@ tempo::draw_background()
                 9,
                 m_window, "R", font::WHITE );
     }
+*/
 }
 
 bool
@@ -259,12 +251,13 @@ tempo::on_button_press_event(GdkEventButton* p0)
     //m_mainperf->set_start_tick( tick );
     if ( p0->button == 1 )
     {
-        m_mainperf->set_left_tick( tick );
+        //m_mainperf->set_left_tick( tick );
+        set_tempo_marker(tick);
     }
 
     if ( p0->button == 3 )
     {
-        m_mainperf->set_right_tick( tick + m_snap );
+        //m_mainperf->set_right_tick( tick + m_snap );
     }
 
     queue_draw();
@@ -285,4 +278,12 @@ tempo::on_size_allocate(Gtk::Allocation &a_r )
 
     m_window_x = a_r.get_width();
     m_window_y = a_r.get_height();
+}
+
+void
+tempo::set_tempo_marker(long tick)
+{
+    // FIXME need a popup that allows entry for tempo and save both tempo
+    // and tick to a sorted list.
+    m_tempo_marker = tick;
 }
