@@ -29,6 +29,7 @@
 #include "perfnames.h"
 #include "perfroll.h"
 #include "perftime.h"
+#include "tempo.h"
 
 #include <map>
 #include <gtkmm.h>
@@ -41,6 +42,7 @@ using namespace Menu_Helpers;
 /* forward declarations */
 class perfroll;
 class perftime;
+class tempo;
 class perfnames;
 
 class mainwnd : public Gtk::Window
@@ -93,6 +95,7 @@ private:
     perfnames *m_perfnames;
     perfroll *m_perfroll;
     perftime *m_perftime;
+    tempo *m_tempo;
 
     Menu *m_menu_snap;
     Button *m_button_snap;

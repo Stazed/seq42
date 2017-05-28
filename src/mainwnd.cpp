@@ -261,6 +261,7 @@ mainwnd::mainwnd(perform *a_p):
                          ));
     m_perftime = manage( new perftime( m_mainperf, this, m_hadjust ));
 
+    m_tempo = manage( new tempo( m_mainperf, this, m_hadjust ));
     /* init table, viewports and scroll bars */
     m_table     = manage( new Table( 6, 3, false));
     m_table->set_border_width( 2 );
@@ -273,17 +274,18 @@ mainwnd::mainwnd(perform *a_p):
     /* fill table */
     m_table->attach( *m_hlbox,  0, 3, 0, 1,  Gtk::FILL, Gtk::SHRINK, 2, 0 ); // shrink was 0
 
-    m_table->attach( *m_perfnames,    0, 1, 2, 3, Gtk::SHRINK, Gtk::FILL );
+    m_table->attach( *m_perfnames,    0, 1, 3, 4, Gtk::SHRINK, Gtk::FILL );
+    m_table->attach( *m_tempo, 1, 2, 1, 2, Gtk::FILL, Gtk::SHRINK );
 
-    m_table->attach( *m_perftime, 1, 2, 1, 2, Gtk::FILL, Gtk::SHRINK );
-    m_table->attach( *m_perfroll, 1, 2, 2, 3,
+    m_table->attach( *m_perftime, 1, 2, 2, 3, Gtk::FILL, Gtk::SHRINK );
+    m_table->attach( *m_perfroll, 1, 2, 3, 4,
                      Gtk::FILL | Gtk::SHRINK,
                      Gtk::FILL | Gtk::SHRINK );
 
-    m_table->attach( *m_vscroll, 2, 3, 2, 3, Gtk::SHRINK, Gtk::FILL | Gtk::EXPAND  );
+    m_table->attach( *m_vscroll, 2, 3, 3, 4, Gtk::SHRINK, Gtk::FILL | Gtk::EXPAND  );
 
-    m_table->attach( *m_hbox,  0, 1, 3, 4,  Gtk::FILL, Gtk::SHRINK, 0, 2 );
-    m_table->attach( *m_hscroll, 1, 2, 3, 4, Gtk::FILL | Gtk::EXPAND, Gtk::SHRINK  );
+    m_table->attach( *m_hbox,  0, 1, 4, 5,  Gtk::FILL, Gtk::SHRINK, 0, 2 );
+    m_table->attach( *m_hscroll, 1, 2, 4, 5, Gtk::FILL | Gtk::EXPAND, Gtk::SHRINK  );
 
     m_menu_xpose =   manage( new Menu());
     char num[11];
@@ -1014,6 +1016,7 @@ mainwnd::set_zoom (int z)
 {
     m_perfroll->set_zoom(z);
     m_perftime->set_zoom(z);
+    m_tempo->set_zoom(z);
 }
 
 void

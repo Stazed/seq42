@@ -38,6 +38,7 @@ seq42_SOURCES = \
 	seqroll.cpp seqroll.h \
 	seqtime.cpp seqtime.h \
 	sequence.cpp sequence.h \
+	tempo.cpp tempo.h \
 	track.cpp track.h \
 	trackedit.cpp trackedit.h \
 	trackmenu.cpp trackmenu.h \
