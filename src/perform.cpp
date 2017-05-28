@@ -2591,8 +2591,12 @@ void perform::jack_BBT_position(jack_position_t &pos, double jack_tick)
     //printf( " bbb [%2d:%2d:%4d] jack_tick [%f]\n", pos.bar, pos.beat, pos.tick, jack_tick );
 }
 #endif // USE_JACK_BBT_POSITION
-
-#ifdef USE_SEQUENCER64_TIMEBASE_CALLBACK    // this works with tempo change
+/*
+    This callback is only called by jack when seq42 is Master and is used to supply jack
+    with BBT information based on frame position and frame_rate. It is called once on
+    startup, and afterwards, only when transport is rolling.
+*/
+#ifdef USE_SEQUENCER64_TIMEBASE_CALLBACK
 void
 jack_timebase_callback
 (
@@ -2651,7 +2655,7 @@ jack_timebase_callback
         pos->bar_start_tick = int(pos->bar * ticks_per_bar);
         pos->bar++;                             /* adjust start to bar 1 */
     }
-    else            // This works with tempo change
+    else            // This works with tempo change when rolling
     {
         /*
          * Computes the BBT (beats/bars/ticks) based on the previous period. 
@@ -2682,7 +2686,7 @@ jack_timebase_callback
 #endif // USE_JACK_BBT_OFFSET
 }
 
-#else // legacy timebase - cannot change tempo
+#else // legacy timebase - tempo change while rolling will incorrectly calulate BBT
 
 
 /*
