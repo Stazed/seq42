@@ -21,7 +21,7 @@
 #include "event.h"
 #include "tempo.h"
 #include "font.h"
-#include "pixmaps/down.xpm"   // FIXME
+#include "pixmaps/tempo_marker.xpm"
 
 
 tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
@@ -190,15 +190,15 @@ tempo::draw_background()
     
     if ( tempo_marker >=0 && tempo_marker <= m_window_x )
     {
-        m_gc->set_foreground(m_black);
+/*        m_gc->set_foreground(m_black);
         m_window->draw_rectangle(m_gc,true,
                                  tempo_marker-4, 0,
                                  9,
                                  m_window_y - 5);
-        
+        */
         // Load the images
-        m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(down_xpm);   // FIXME temporary xpm
-        m_window->draw_pixbuf(m_pixbuf,0,0,tempo_marker -3,6, -1,-1,Gdk::RGB_DITHER_NONE, 0, 0);
+        m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(tempo_marker_xpm);
+        m_window->draw_pixbuf(m_pixbuf,0,0,tempo_marker -4,0, -1,-1,Gdk::RGB_DITHER_NONE, 0, 0);
 
     }
 
