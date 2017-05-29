@@ -946,6 +946,7 @@ mainwnd::set_guides()
     long beat_ticks = (c_ppqn * 4) / m_bw;
     m_perfroll->set_guides( snap_ticks, measure_ticks, beat_ticks );
     m_perftime->set_guides( snap_ticks, measure_ticks );
+    m_tempo->set_guides( snap_ticks, measure_ticks );
 }
 
 void
