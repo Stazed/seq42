@@ -61,7 +61,7 @@ private:
     Glib::RefPtr<Gdk::Window>   m_window;
     Gdk::Color    m_black, m_white, m_grey;
 
-    Glib::RefPtr<Gdk::Pixmap> m_pixmap;
+    Glib::RefPtr<Gdk::Pixbuf> m_pixbuf;
 
     perform      * const m_mainperf;
     mainwnd      * const m_mainwnd;

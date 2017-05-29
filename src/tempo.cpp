@@ -21,6 +21,7 @@
 #include "event.h"
 #include "tempo.h"
 #include "font.h"
+#include "pixmaps/rewind.xpm"   // FIXME
 
 
 tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
@@ -194,6 +195,11 @@ tempo::draw_background()
                                  tempo_marker-4, 0,
                                  8,
                                  m_window_y - 5);
+        
+        // Load the images
+        m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(rewind_xpm);   // FIXME temporary xpm
+        m_window->draw_pixbuf(m_pixbuf,0,0,tempo_marker -4,0, -1,-1,Gdk::RGB_DITHER_NONE, 0, 0);
+
     }
 
 /*
