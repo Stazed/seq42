@@ -46,6 +46,7 @@
 #include <gtkmm/adjustment.h>
 
 #include "globals.h"
+#include "tempo_popup.h"
 
 using namespace Gtk;
 
@@ -66,7 +67,9 @@ private:
     perform      * const m_mainperf;
     mainwnd      * const m_mainwnd;
     Adjustment   * const m_hadjust;
-
+    
+    tempo_popup  *m_popup_tempo_wnd;
+    
     int m_window_x, m_window_y;
     int m_perf_scale_x;
 
@@ -74,6 +77,7 @@ private:
 
     int m_snap, m_measure_length;
     long m_tempo_marker;
+    double m_BPM_value;
 
     void on_realize();
     bool on_expose_event(GdkEventExpose* a_ev);

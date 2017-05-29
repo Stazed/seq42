@@ -199,6 +199,12 @@ tempo::draw_background()
         // Load the images
         m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(tempo_marker_xpm);
         m_window->draw_pixbuf(m_pixbuf,0,0,tempo_marker -4,0, -1,-1,Gdk::RGB_DITHER_NONE, 0, 0);
+        
+        m_gc->set_foreground(m_white);
+        p_font_renderer->render_string_on_drawable(m_gc,
+                tempo_marker + 5,
+                0,
+                m_window, "120.00", font::WHITE );
 
     }
 
@@ -289,6 +295,7 @@ tempo::on_size_allocate(Gtk::Allocation &a_r )
 void
 tempo::set_tempo_marker(long tick)
 {
+    m_popup_tempo_wnd =  new tempo_popup(); // FIXME delete ??
     // FIXME need a popup that allows entry for tempo and save both tempo
     // and tick to a sorted list.
     m_tempo_marker = tick;
