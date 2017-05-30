@@ -107,4 +107,7 @@ public:
     void set_guides( int a_snap, int a_measure );
 
     void increment_size();
+    void set_BPM(double a_bpm);
+    
+    friend tempo_popup;
 };

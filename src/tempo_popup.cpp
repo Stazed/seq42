@@ -19,13 +19,16 @@
 //-----------------------------------------------------------------------------
 
 #include "tempo_popup.h"
+#include "tempo.h"
 
 tempo_popup::~tempo_popup()
 {
     
 }
 
-tempo_popup::tempo_popup()
+tempo_popup::tempo_popup(tempo *a_tempo) :
+    m_tempo(a_tempo),
+    m_escape(false)
 {
     std::string title = "BPM";
     set_title(title);
@@ -42,11 +45,15 @@ tempo_popup::tempo_popup()
     m_adjust_bpm->signal_value_changed().connect(
         mem_fun(*this, &tempo_popup::adj_callback_bpm ));   
     
+    m_spinbutton_bpm->set_update_policy(Gtk::UPDATE_IF_VALID);
+    
     HBox *hbox = manage(new HBox());
     hbox->set_border_width(6);
     
     hbox->pack_start(*m_spinbutton_bpm, true, false );
+    
     add(*hbox);
+    set_modal();
     //set_decorated(false);
     show_all();
     raise();
@@ -56,8 +63,36 @@ tempo_popup::tempo_popup()
 void
 tempo_popup::adj_callback_bpm()
 {
+    if(!m_escape)
+    {
+        m_tempo->set_BPM(m_adjust_bpm->get_value());
+        global_is_modified = true;
+    }
+
+    hide();
+}
+
+
+bool
+tempo_popup::on_key_press_event( GdkEventKey* a_ev )
+{
+    if (a_ev->keyval == GDK_Escape)
+    {
+        m_escape = true;
+        hide();
+    }
+    
+    if (a_ev->keyval == GDK_Return)
+    {
+        adj_callback_bpm();
+    }
  
-    m_BPM_value =  m_adjust_bpm->get_value();
-    global_is_modified = true;
-   
+    return Gtk::Window::on_key_press_event(a_ev);
+}
+
+bool
+tempo_popup::on_delete_event(GdkEventAny *a_event)
+{
+    delete this;
+    return false;
 }

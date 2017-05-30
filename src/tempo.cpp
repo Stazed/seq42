@@ -200,11 +200,12 @@ tempo::draw_background()
         m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(tempo_marker_xpm);
         m_window->draw_pixbuf(m_pixbuf,0,0,tempo_marker -4,0, -1,-1,Gdk::RGB_DITHER_NONE, 0, 0);
         
+        std::string bpm = std::to_string(m_BPM_value); // FIXME
         m_gc->set_foreground(m_white);
         p_font_renderer->render_string_on_drawable(m_gc,
                 tempo_marker + 5,
                 0,
-                m_window, "120.00", font::WHITE );
+                m_window, bpm.c_str(), font::WHITE );
 
     }
 
@@ -263,7 +264,6 @@ tempo::on_button_press_event(GdkEventButton* p0)
     //m_mainperf->set_start_tick( tick );
     if ( p0->button == 1 )
     {
-        //m_mainperf->set_left_tick( tick );
         set_tempo_marker(tick);
     }
 
@@ -295,8 +295,17 @@ tempo::on_size_allocate(Gtk::Allocation &a_r )
 void
 tempo::set_tempo_marker(long tick)
 {
-    m_popup_tempo_wnd =  new tempo_popup(); // FIXME delete ??
+    m_popup_tempo_wnd =  new tempo_popup(this);
+    
+   // m_BPM_value = m_popup_tempo_wnd->get_BPM();
     // FIXME need a popup that allows entry for tempo and save both tempo
     // and tick to a sorted list.
     m_tempo_marker = tick;
+}
+
+void
+tempo::set_BPM(double a_bpm)
+{
+    m_BPM_value = a_bpm;
+    printf("m_BPM_value -tempo %f\n",m_BPM_value);
 }

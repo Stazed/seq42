@@ -34,7 +34,7 @@
 
 using namespace Gtk;
 
-//class tempo;
+class tempo;
 
 
 class tempo_popup: public Gtk::Window
@@ -44,20 +44,20 @@ private:
     HBox *m_hbox;
     SpinButton  *m_spinbutton_bpm;
     Adjustment  *m_adjust_bpm;
+    tempo * m_tempo;
     
-    double m_BPM_value;
+    bool m_escape;
+    
+    bool on_key_press_event(GdkEventKey* a_ev);
+    bool on_delete_event(GdkEventAny *a_event);
     
     void adj_callback_bpm();
 
-    //bool on_focus_out_event(GdkEventFocus* p0 );
-
 public:
 
-    tempo_popup ();
+    tempo_popup (tempo *a_tempo);
     virtual ~tempo_popup();
     
-    //friend tempo;
-
 };
 
 
