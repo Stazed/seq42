@@ -49,8 +49,6 @@ private:
     bool m_escape;
     
     bool on_key_press_event(GdkEventKey* a_ev);
-    bool on_delete_event(GdkEventAny *a_event);
-    
     void adj_callback_bpm();
 
 public:

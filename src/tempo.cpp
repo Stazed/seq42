@@ -40,7 +40,8 @@ tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
 
     m_snap(c_ppqn),
     m_measure_length(c_ppqn * 4),
-    m_tempo_marker(0)
+    m_tempo_marker(0),
+    m_BPM_value(m_mainperf->get_bpm())
 {
     add_events( Gdk::BUTTON_PRESS_MASK |
                 Gdk::BUTTON_RELEASE_MASK );
@@ -221,7 +222,7 @@ tempo::on_button_press_event(GdkEventButton* p0)
     if ( p0->button == 3 )  // right mouse button delete marker - FIXME iterate
     {
         //printf("m_tempo_mark %ld: tick %ld\n", m_tempo_marker, tick);
-        if(tick + 5 >= m_tempo_marker && tick -5 <= m_tempo_marker)
+        if(tick >= m_tempo_marker-100 && tick <= m_tempo_marker +100)
         {
             m_tempo_marker = 0; // would remove from list here
             queue_draw();

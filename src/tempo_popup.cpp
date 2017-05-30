@@ -21,43 +21,65 @@
 #include "tempo_popup.h"
 #include "tempo.h"
 
+// tooltip helper, for old vs new gtk...
+#if GTK_MINOR_VERSION >= 12
+#   define add_tooltip( obj, text ) obj->set_tooltip_text( text);
+#else
+#   define add_tooltip( obj, text ) m_tooltips->set_tip( *obj, text );
+#endif
+
 tempo_popup::~tempo_popup()
 {
-    
+     printf("delete\n");
 }
 
 tempo_popup::tempo_popup(tempo *a_tempo) :
     m_tempo(a_tempo),
     m_escape(false)
 {
-    std::string title = "BPM";
-    set_title(title);
-    set_size_request(150, 50);
+ //   std::string title = "BPM";
+ //   set_title(title);
+    set_size_request(120, 50);
     
- //   manage (new Tooltips ());
+    manage (new Tooltips ());
     
     /* bpm spin button */
-    //m_adjust_bpm = manage(new Adjustment(m_mainperf->get_bpm(), c_bpm_minimum, c_bpm_maximum, 1));
-    m_adjust_bpm = manage(new Adjustment(120.0, c_bpm_minimum, c_bpm_maximum, 1)); // FIXME starting value
+    m_adjust_bpm = manage(new Adjustment(m_tempo->m_mainperf->get_bpm(), c_bpm_minimum -1, c_bpm_maximum, 1));
     m_spinbutton_bpm = manage( new SpinButton( *m_adjust_bpm ));
     m_spinbutton_bpm->set_editable( true );
-    m_spinbutton_bpm->set_digits(2);                    // 2 = two decimal precision
+    m_spinbutton_bpm->set_digits(2);                             // 2 = two decimal precision
     m_adjust_bpm->signal_value_changed().connect(
-        mem_fun(*this, &tempo_popup::adj_callback_bpm ));   
+        mem_fun(*this, &tempo_popup::adj_callback_bpm ));
+    m_spinbutton_bpm->set_can_focus();
+    m_spinbutton_bpm->grab_focus();
+    m_spinbutton_bpm->set_numeric();
     
-    m_spinbutton_bpm->set_update_policy(Gtk::UPDATE_IF_VALID);
+    add_tooltip
+    ( 
+        m_spinbutton_bpm,
+        "Adjust beats per minute (BPM) value.\n"
+        "Values range from 0 to 600.00.\n"
+        "Entry of 0 indicates a STOP marker.\n"
+        "Escape to leave without setting\n"
+    );
+    
+    m_spinbutton_bpm->set_update_policy(Gtk::UPDATE_IF_VALID);  // ignore bad entries
+    
+    Label* bpmlabel = manage(new Label("BPM"));
     
     HBox *hbox = manage(new HBox());
     hbox->set_border_width(6);
     
-    hbox->pack_start(*m_spinbutton_bpm, true, false );
+    hbox->pack_start(*bpmlabel, Gtk::PACK_SHRINK);
+    hbox->pack_start(*m_spinbutton_bpm, Gtk::PACK_SHRINK );
     
     add(*hbox);
-    set_modal();
-    //set_decorated(false);
+    set_modal();                            // keep focus until done
+    set_transient_for(*m_tempo->m_mainwnd); // always on top
+    set_decorated(false);                   // don't show title bar
+    
     show_all();
     raise();
-    
 }
 
 void
@@ -68,8 +90,6 @@ tempo_popup::adj_callback_bpm()
         m_tempo->set_BPM(m_adjust_bpm->get_value());
         global_is_modified = true;
     }
-
-    hide();
 }
 
 
@@ -82,17 +102,12 @@ tempo_popup::on_key_press_event( GdkEventKey* a_ev )
         hide();
     }
     
-    if (a_ev->keyval == GDK_Return)
+    if (a_ev->keyval == GDK_Return || a_ev->keyval == GDK_KP_Enter)
     {
         adj_callback_bpm();
+        hide();
     }
  
     return Gtk::Window::on_key_press_event(a_ev);
 }
 
-bool
-tempo_popup::on_delete_event(GdkEventAny *a_event)
-{
-    delete this;
-    return false;
-}

@@ -377,6 +377,7 @@ mainwnd::mainwnd(perform *a_p):
     m_spinbutton_bpm = manage( new SpinButton( *m_adjust_bpm ));
     m_spinbutton_bpm->set_editable( true );
     m_spinbutton_bpm->set_digits(2);                    // 2 = two decimal precision
+    m_spinbutton_bpm->set_numeric();
     m_adjust_bpm->signal_value_changed().connect(
         mem_fun(*this, &mainwnd::adj_callback_bpm ));
 
