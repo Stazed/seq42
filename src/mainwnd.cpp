@@ -260,8 +260,8 @@ mainwnd::mainwnd(perform *a_p):
                              m_vadjust
                          ));
     m_perftime = manage( new perftime( m_mainperf, this, m_hadjust ));
-
     m_tempo = manage( new tempo( m_mainperf, this, m_hadjust ));
+    
     /* init table, viewports and scroll bars */
     m_table     = manage( new Table( 6, 3, false));
     m_table->set_border_width( 2 );

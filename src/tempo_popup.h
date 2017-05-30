@@ -46,7 +46,9 @@ private:
     Adjustment  *m_adjust_bpm;
     tempo * m_tempo;
     
+    double m_BPM_value;
     bool m_escape;
+    bool m_return;
     
     bool on_key_press_event(GdkEventKey* a_ev);
     void adj_callback_bpm();
@@ -54,7 +56,8 @@ private:
 public:
 
     tempo_popup (tempo *a_tempo);
-    virtual ~tempo_popup();
+    
+    void popup_tempo_win();
     
 };
 

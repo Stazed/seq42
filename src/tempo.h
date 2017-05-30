@@ -99,6 +99,7 @@ private:
 public:
 
     tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust );
+    ~tempo();
 
     void set_zoom (int a_zoom);
 

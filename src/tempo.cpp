@@ -53,9 +53,15 @@ tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
     colormap->alloc_color( m_white );
     colormap->alloc_color( m_grey );
 
+    m_popup_tempo_wnd =  new tempo_popup(this);
     m_hadjust->signal_value_changed().connect( mem_fun( *this, &tempo::change_horz ));
 
     set_double_buffered( false );
+}
+
+tempo::~tempo()
+{
+    delete m_popup_tempo_wnd;
 }
 
 void
@@ -250,8 +256,7 @@ tempo::on_size_allocate(Gtk::Allocation &a_r )
 void
 tempo::set_tempo_marker(long tick)
 {
-    m_popup_tempo_wnd =  new tempo_popup(this);
-    
+    m_popup_tempo_wnd->popup_tempo_win();
     // FIXME save both tempo and tick to a sorted list.
     m_tempo_marker = tick;
 }

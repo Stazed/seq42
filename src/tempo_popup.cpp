@@ -28,14 +28,12 @@
 #   define add_tooltip( obj, text ) m_tooltips->set_tip( *obj, text );
 #endif
 
-tempo_popup::~tempo_popup()
-{
-     printf("delete\n");
-}
 
 tempo_popup::tempo_popup(tempo *a_tempo) :
     m_tempo(a_tempo),
-    m_escape(false)
+    m_BPM_value(-1),
+    m_escape(false),
+    m_return(false)
 {
  //   std::string title = "BPM";
  //   set_title(title);
@@ -59,8 +57,8 @@ tempo_popup::tempo_popup(tempo *a_tempo) :
         m_spinbutton_bpm,
         "Adjust beats per minute (BPM) value.\n"
         "Values range from 0 to 600.00.\n"
-        "Entry of 0 indicates a STOP marker.\n"
         "Escape to leave without setting\n"
+        "Entry of 0 indicates a STOP marker.\n"
     );
     
     m_spinbutton_bpm->set_update_policy(Gtk::UPDATE_IF_VALID);  // ignore bad entries
@@ -77,9 +75,6 @@ tempo_popup::tempo_popup(tempo *a_tempo) :
     set_modal();                            // keep focus until done
     set_transient_for(*m_tempo->m_mainwnd); // always on top
     set_decorated(false);                   // don't show title bar
-    
-    show_all();
-    raise();
 }
 
 void
@@ -87,8 +82,12 @@ tempo_popup::adj_callback_bpm()
 {
     if(!m_escape)
     {
-        m_tempo->set_BPM(m_adjust_bpm->get_value());
-        global_is_modified = true;
+        m_BPM_value = m_adjust_bpm->get_value();
+        if(m_return)
+        {
+            m_tempo->set_BPM(m_adjust_bpm->get_value());
+            global_is_modified = true;
+        }
     }
 }
 
@@ -104,6 +103,7 @@ tempo_popup::on_key_press_event( GdkEventKey* a_ev )
     
     if (a_ev->keyval == GDK_Return || a_ev->keyval == GDK_KP_Enter)
     {
+        m_return = true;
         adj_callback_bpm();
         hide();
     }
@@ -111,3 +111,11 @@ tempo_popup::on_key_press_event( GdkEventKey* a_ev )
     return Gtk::Window::on_key_press_event(a_ev);
 }
 
+void 
+tempo_popup::popup_tempo_win()
+{
+    m_return = false;
+    m_escape = false;
+    show_all();
+    raise();
+}
