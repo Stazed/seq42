@@ -161,15 +161,6 @@ tempo::draw_background()
     long tick_offset = (m_4bar_offset * 16 * c_ppqn);
     long first_measure = tick_offset / m_measure_length;
 
-#if 0
-
-    0   1   2   3   4   5   6
-    |   |   |   |   |   |   |
-    |    |    |    |    |    |
-    0    1    2    3    4    5
-
-#endif
-
     for ( int i=first_measure;
             i<first_measure+(m_window_x * m_perf_scale_x / (m_measure_length)) + 1; i++ )
     {
@@ -190,64 +181,26 @@ tempo::draw_background()
     
     if ( tempo_marker >=0 && tempo_marker <= m_window_x )
     {
-/*        m_gc->set_foreground(m_black);
-        m_window->draw_rectangle(m_gc,true,
-                                 tempo_marker-4, 0,
-                                 9,
-                                 m_window_y - 5);
-        */
-        // Load the images
+        // Load the xpm image
         m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(tempo_marker_xpm);
         m_window->draw_pixbuf(m_pixbuf,0,0,tempo_marker -4,0, -1,-1,Gdk::RGB_DITHER_NONE, 0, 0);
         
-        std::string bpm = std::to_string(m_BPM_value); // FIXME
+        // print the tempo BPM value
+        char str[10];
+        snprintf
+        (
+            str, sizeof(str),
+            "[%0.2f]",
+            m_BPM_value
+        );
+        
         m_gc->set_foreground(m_white);
         p_font_renderer->render_string_on_drawable(m_gc,
                 tempo_marker + 5,
                 0,
-                m_window, bpm.c_str(), font::WHITE );
+                m_window, str, font::WHITE );
 
     }
-
-/*
-    long left = m_mainperf->get_left_tick( );
-    long right = m_mainperf->get_right_tick( );
-
-    left -= (m_4bar_offset * 16 * c_ppqn);
-    left /= m_perf_scale_x;
-    right -= (m_4bar_offset * 16 * c_ppqn);
-    right /= m_perf_scale_x;
-
-    if ( left >=0 && left <= m_window_x )
-    {
-        m_gc->set_foreground(m_black);
-        m_window->draw_rectangle(m_gc,true,
-                                 left, m_window_y - 9,
-                                 7,
-                                 10 );
-
-        m_gc->set_foreground(m_white);
-        p_font_renderer->render_string_on_drawable(m_gc,
-                left + 1,
-                9,
-                m_window, "L", font::WHITE );
-    }
-
-    if ( right >=0 && right <= m_window_x )
-    {
-        m_gc->set_foreground(m_black);
-        m_window->draw_rectangle(m_gc,true,
-                                 right - 6, m_window_y - 9,
-                                 7,
-                                 10 );
-
-        m_gc->set_foreground(m_white);
-        p_font_renderer->render_string_on_drawable(m_gc,
-                right - 6 + 1,
-                9,
-                m_window, "R", font::WHITE );
-    }
-*/
 }
 
 bool
@@ -255,24 +208,25 @@ tempo::on_button_press_event(GdkEventButton* p0)
 {
     long tick = (long) p0->x;
     tick *= m_perf_scale_x;
-    //tick = tick - (tick % (c_ppqn * 4));
     tick += (m_4bar_offset * 16 * c_ppqn);
 
     tick = tick - (tick % m_snap);
 
-    //if ( p0->button == 2 )
-    //m_mainperf->set_start_tick( tick );
-    if ( p0->button == 1 )
+    if ( p0->button == 1 )  // left mouse button add marker or drag - FIXME
     {
         set_tempo_marker(tick);
+        // don;t queue_draw() here because they might escape key out
     }
 
-    if ( p0->button == 3 )
+    if ( p0->button == 3 )  // right mouse button delete marker - FIXME iterate
     {
-        //m_mainperf->set_right_tick( tick + m_snap );
+        //printf("m_tempo_mark %ld: tick %ld\n", m_tempo_marker, tick);
+        if(tick + 5 >= m_tempo_marker && tick -5 <= m_tempo_marker)
+        {
+            m_tempo_marker = 0; // would remove from list here
+            queue_draw();
+        }
     }
-
-    queue_draw();
 
     return true;
 }
@@ -297,9 +251,7 @@ tempo::set_tempo_marker(long tick)
 {
     m_popup_tempo_wnd =  new tempo_popup(this);
     
-   // m_BPM_value = m_popup_tempo_wnd->get_BPM();
-    // FIXME need a popup that allows entry for tempo and save both tempo
-    // and tick to a sorted list.
+    // FIXME save both tempo and tick to a sorted list.
     m_tempo_marker = tick;
 }
 
@@ -307,5 +259,6 @@ void
 tempo::set_BPM(double a_bpm)
 {
     m_BPM_value = a_bpm;
-    printf("m_BPM_value -tempo %f\n",m_BPM_value);
+    queue_draw();
+
 }
