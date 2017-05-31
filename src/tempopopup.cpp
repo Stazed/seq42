@@ -87,6 +87,7 @@ tempopopup::adj_callback_bpm()
         {
             m_tempo->set_BPM(m_adjust_bpm->get_value());
             global_is_modified = true;
+            m_return = false;
         }
     }
 }

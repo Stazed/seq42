@@ -31,6 +31,7 @@
 #include "perform.h"
 #include "seqtime.h"
 
+#include <list>
 #include <gtkmm/button.h>
 #include <gtkmm/window.h>
 #include <gtkmm/accelgroup.h>
@@ -49,8 +50,15 @@
 #include "tempopopup.h"
 
 using namespace Gtk;
+using std::list;
 
 class mainwnd;
+
+struct tempo_mark
+{
+    double bpm;
+    long tick;
+};
 
 /* piano time*/
 class tempo: public Gtk::DrawingArea
@@ -68,6 +76,10 @@ private:
     mainwnd      * const m_mainwnd;
     Adjustment   * const m_hadjust;
     
+    /* holds the events */
+    list < tempo_mark > m_list_marker;
+    tempo_mark m_current_mark;
+    
     tempopopup  *m_popup_tempo_wnd;
     
     int m_window_x, m_window_y;
@@ -76,8 +88,6 @@ private:
     int m_4bar_offset;
 
     int m_snap, m_measure_length;
-    long m_tempo_marker;
-    double m_BPM_value;
 
     void on_realize();
     bool on_expose_event(GdkEventExpose* a_ev);
@@ -94,7 +104,7 @@ private:
     int idle_progress();
 
     void change_horz();
-    void set_tempo_marker(long tick);
+    void set_tempo_marker(long a_tick);
 
 public:
 
@@ -109,6 +119,7 @@ public:
 
     void increment_size();
     void set_BPM(double a_bpm);
+    void add_marker(tempo_mark a_mark);
     
     friend tempopopup;
 };
