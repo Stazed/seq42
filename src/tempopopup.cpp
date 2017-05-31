@@ -18,7 +18,7 @@
 //
 //-----------------------------------------------------------------------------
 
-#include "tempo_popup.h"
+#include "tempopopup.h"
 #include "tempo.h"
 
 // tooltip helper, for old vs new gtk...
@@ -29,7 +29,7 @@
 #endif
 
 
-tempo_popup::tempo_popup(tempo *a_tempo) :
+tempopopup::tempopopup(tempo *a_tempo) :
     m_tempo(a_tempo),
     m_BPM_value(-1),
     m_escape(false),
@@ -47,7 +47,7 @@ tempo_popup::tempo_popup(tempo *a_tempo) :
     m_spinbutton_bpm->set_editable( true );
     m_spinbutton_bpm->set_digits(2);                             // 2 = two decimal precision
     m_adjust_bpm->signal_value_changed().connect(
-        mem_fun(*this, &tempo_popup::adj_callback_bpm ));
+        mem_fun(*this, &tempopopup::adj_callback_bpm ));
     m_spinbutton_bpm->set_can_focus();
     m_spinbutton_bpm->grab_focus();
     m_spinbutton_bpm->set_numeric();
@@ -78,7 +78,7 @@ tempo_popup::tempo_popup(tempo *a_tempo) :
 }
 
 void
-tempo_popup::adj_callback_bpm()
+tempopopup::adj_callback_bpm()
 {
     if(!m_escape)
     {
@@ -93,7 +93,7 @@ tempo_popup::adj_callback_bpm()
 
 
 bool
-tempo_popup::on_key_press_event( GdkEventKey* a_ev )
+tempopopup::on_key_press_event( GdkEventKey* a_ev )
 {
     if (a_ev->keyval == GDK_Escape)
     {
@@ -112,7 +112,7 @@ tempo_popup::on_key_press_event( GdkEventKey* a_ev )
 }
 
 void 
-tempo_popup::popup_tempo_win()
+tempopopup::popup_tempo_win()
 {
     m_return = false;
     m_escape = false;

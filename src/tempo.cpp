@@ -53,7 +53,7 @@ tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
     colormap->alloc_color( m_white );
     colormap->alloc_color( m_grey );
 
-    m_popup_tempo_wnd =  new tempo_popup(this);
+    m_popup_tempo_wnd =  new tempopopup(this);
     m_hadjust->signal_value_changed().connect( mem_fun( *this, &tempo::change_horz ));
 
     set_double_buffered( false );

@@ -46,7 +46,7 @@
 #include <gtkmm/adjustment.h>
 
 #include "globals.h"
-#include "tempo_popup.h"
+#include "tempopopup.h"
 
 using namespace Gtk;
 
@@ -68,7 +68,7 @@ private:
     mainwnd      * const m_mainwnd;
     Adjustment   * const m_hadjust;
     
-    tempo_popup  *m_popup_tempo_wnd;
+    tempopopup  *m_popup_tempo_wnd;
     
     int m_window_x, m_window_y;
     int m_perf_scale_x;
@@ -110,5 +110,5 @@ public:
     void increment_size();
     void set_BPM(double a_bpm);
     
-    friend tempo_popup;
+    friend tempopopup;
 };

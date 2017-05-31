@@ -39,7 +39,7 @@ seq42_SOURCES = \
 	seqtime.cpp seqtime.h \
 	sequence.cpp sequence.h \
 	tempo.cpp tempo.h \
-	tempo_popup.cpp tempo_popup.h \
+	tempopopup.cpp tempopopup.h \
 	track.cpp track.h \
 	trackedit.cpp trackedit.h \
 	trackmenu.cpp trackmenu.h \

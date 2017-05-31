@@ -20,7 +20,7 @@
 
 
 /* 
- * File:   tempo_popup.h
+ * File:   tempopopup.h
  * Author: sspresto
  *
  * Created on May 29, 2017, 1:36 PM
@@ -37,7 +37,7 @@ using namespace Gtk;
 class tempo;
 
 
-class tempo_popup: public Gtk::Window
+class tempopopup: public Gtk::Window
 {
 private:
 
@@ -55,7 +55,7 @@ private:
 
 public:
 
-    tempo_popup (tempo *a_tempo);
+    tempopopup (tempo *a_tempo);
     
     void popup_tempo_win();
     
