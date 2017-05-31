@@ -22,6 +22,7 @@
 #include "tempo.h"
 #include "font.h"
 #include "pixmaps/tempo_marker.xpm"
+#include "pixmaps/stop_marker.xpm"
 
 
 tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
@@ -189,18 +190,36 @@ tempo::draw_background()
     if ( tempo_marker >=0 && tempo_marker <= m_window_x )
     {
         // Load the xpm image
-        m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(tempo_marker_xpm);
-        m_window->draw_pixbuf(m_pixbuf,0,0,tempo_marker -4,0, -1,-1,Gdk::RGB_DITHER_NONE, 0, 0);
-        
-        // print the tempo BPM value
         char str[10];
-        snprintf
-        (
-            str, sizeof(str),
-            "[%0.2f]",
-            m_BPM_value
-        );
         
+        if(m_BPM_value == 0)    // Stop marker
+        {
+            m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(stop_marker_xpm);
+            m_window->draw_pixbuf(m_pixbuf,0,0,tempo_marker -4,0, -1,-1,Gdk::RGB_DITHER_NONE, 0, 0);
+            
+            snprintf
+            (
+                str, sizeof(str),
+                "[Stop]"
+            );
+            
+        }
+        else                    // tempo marker
+        {
+            m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(tempo_marker_xpm);
+            m_window->draw_pixbuf(m_pixbuf,0,0,tempo_marker -4,0, -1,-1,Gdk::RGB_DITHER_NONE, 0, 0);
+
+            // print the tempo BPM value
+            char str[10];
+            snprintf
+            (
+                str, sizeof(str),
+                "[%0.2f]",
+                m_BPM_value
+            );
+        }
+        
+        // print the tempo or 'Stop'
         m_gc->set_foreground(m_white);
         p_font_renderer->render_string_on_drawable(m_gc,
                 tempo_marker + 5,

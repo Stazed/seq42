@@ -35,6 +35,8 @@ EXTRA_DIST = \
 	snap.xpm \
 	song-editor.xpm \
 	stop.xpm \
+	stop_marker.xpm \
+	tempo_marker.xpm \
 	thru.xpm \
 	tools.xpm \
 	transportFollow.xpm \
