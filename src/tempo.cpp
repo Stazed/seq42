@@ -23,6 +23,8 @@
 #include "pixmaps/tempo_marker.xpm"
 #include "pixmaps/stop_marker.xpm"
 
+#define STARTING_MARKER     0
+#define STOP_MARKER         0.0
 
 tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
     m_black(Gdk::Color("black")),
@@ -57,7 +59,7 @@ tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
     set_double_buffered( false );
     
     m_current_mark.bpm = m_mainperf->get_bpm();
-    m_current_mark.tick = 0;
+    m_current_mark.tick = STARTING_MARKER;
     add_marker(m_current_mark);
 }
 
@@ -196,7 +198,7 @@ tempo::draw_background()
             // Load the xpm image
             char str[10];
 
-            if((i)->bpm == 0)       // Stop marker
+            if((i)->bpm == STOP_MARKER)       // Stop marker
             {
                 m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(stop_marker_xpm);
                 m_window->draw_pixbuf(m_pixbuf,0,0,tempo_marker -4,0, -1,-1,Gdk::RGB_DITHER_NONE, 0, 0);
@@ -208,12 +210,12 @@ tempo::draw_background()
                 );
 
             }
-            else                    // tempo marker
+            else                                // tempo marker
             {
                 m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(tempo_marker_xpm);
                 m_window->draw_pixbuf(m_pixbuf,0,0,tempo_marker -4,0, -1,-1,Gdk::RGB_DITHER_NONE, 0, 0);
 
-                // print the tempo BPM value
+                // set the tempo BPM value
                 snprintf
                 (
                     str, sizeof(str),
@@ -245,20 +247,23 @@ tempo::on_button_press_event(GdkEventButton* p0)
     if ( p0->button == 1 )  // left mouse button add marker or drag - FIXME
     {
         set_tempo_marker(tick);
-        // don;t queue_draw() here because they might escape key out
+        /* don't queue_draw() here because they might escape key out */
     }
 
-    if ( p0->button == 3 )  // right mouse button delete marker
+    if ( p0->button == 3 )                          // right mouse button delete marker
     {
         list<tempo_mark>::iterator i;
         for ( i = m_list_marker.begin(); i != m_list_marker.end(); i++ )
         {
-            //printf("m_tempo_mark %ld: tick %ld\n", m_tempo_marker, tick);
             if(tick >= (i)->tick - 100 && tick <= (i)->tick +100)
             {
-                m_list_marker.erase(i);
-                queue_draw();
-                return true;
+                if((i)->tick != STARTING_MARKER)    // Don't allow erase of first start marker
+                {
+                    m_list_marker.erase(i);
+                    queue_draw();
+                    return true;
+                }
+                break;
             }
         }
     }
@@ -303,15 +308,15 @@ tempo::add_marker(tempo_mark a_mark)
     list<tempo_mark>::iterator i;
     for ( i = m_list_marker.begin(); i != m_list_marker.end(); i++ )
     {
-        if((i)->tick == a_mark.tick )   // don't allow duplicates - last one wins 
+        if((i)->tick == a_mark.tick )       // don't allow duplicates - last one wins 
         {
-            if((i)->tick != 0)
-            {
-                m_list_marker.erase(i);
-            }
-            else                        // don't allow replacement of start marker
+            if((i)->tick == STARTING_MARKER)// don't allow replacement of start marker
             {
                 start_tick = true;
+            }
+            else                            // erase duplicate location
+            {
+                m_list_marker.erase(i);
             }
             break;
         }

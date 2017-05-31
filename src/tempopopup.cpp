@@ -104,7 +104,21 @@ tempopopup::on_key_press_event( GdkEventKey* a_ev )
     
     if (a_ev->keyval == GDK_Return || a_ev->keyval == GDK_KP_Enter)
     {
-        // FIXME typed value sends 2 callbacks - really ugly
+        // Typed value sends 2 callbacks - really ugly
+        /* The desired behavior is to only set the marker after 'return' or 'enter'
+         is pressed. Below works if the get_value() amount is updated, as in the case
+         of accepting previous amount or when the user used the spin adjusters.
+         In the case of a typed amount, the get_value() amount does not get updated
+         until AFTER a return is pressed and received by the spinbutton. Also the 
+         amount gets updated when hide() is called on the window. The hide() update
+         then triggers the adj_callback_bpm() with the correct amount. But the below manual
+         call to adj_callback_bpm() is called first and sends the incorrect old
+         NOT updated amount to m_tempo->set_BPM. We fix this duplicate in add_marker()
+         by eliminating previous markers set at the same tick location.
+         I cannot find any way of preventing the duplicate send without breaking
+         either accepting previous amounts, or using the spin adjusters. It's ugly
+         but it seems to work... Hopefully someone else can find a more elegant
+         solution.   */
         m_return = true;
         adj_callback_bpm();
         return true;
