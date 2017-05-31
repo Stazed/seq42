@@ -214,7 +214,6 @@ tempo::draw_background()
                 m_window->draw_pixbuf(m_pixbuf,0,0,tempo_marker -4,0, -1,-1,Gdk::RGB_DITHER_NONE, 0, 0);
 
                 // print the tempo BPM value
-                char str[10];
                 snprintf
                 (
                     str, sizeof(str),
@@ -300,7 +299,25 @@ tempo::set_BPM(double a_bpm)
 void
 tempo::add_marker(tempo_mark a_mark)
 {
-    printf("bpm %f: tick %ld\n", a_mark.bpm, a_mark.tick);
-    m_list_marker.push_front(a_mark);
+    bool start_tick = false;
+    list<tempo_mark>::iterator i;
+    for ( i = m_list_marker.begin(); i != m_list_marker.end(); i++ )
+    {
+        if((i)->tick == a_mark.tick )   // don't allow duplicates - last one wins 
+        {
+            if((i)->tick != 0)
+            {
+                m_list_marker.erase(i);
+            }
+            else                        // don't allow replacement of start marker
+            {
+                start_tick = true;
+            }
+            break;
+        }
+    }
+    if(!start_tick)
+        m_list_marker.push_front(a_mark);
+ //   printf("bpm %f: tick %ld\n", a_mark.bpm, a_mark.tick);
     //m_list_marker.sort();
 }

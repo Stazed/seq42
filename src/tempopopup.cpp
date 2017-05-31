@@ -48,8 +48,7 @@ tempopopup::tempopopup(tempo *a_tempo) :
     m_spinbutton_bpm->set_digits(2);                             // 2 = two decimal precision
     m_adjust_bpm->signal_value_changed().connect(
         mem_fun(*this, &tempopopup::adj_callback_bpm ));
-    m_spinbutton_bpm->set_can_focus();
-    m_spinbutton_bpm->grab_focus();
+ 
     m_spinbutton_bpm->set_numeric();
     
     add_tooltip
@@ -87,7 +86,7 @@ tempopopup::adj_callback_bpm()
         {
             m_tempo->set_BPM(m_adjust_bpm->get_value());
             global_is_modified = true;
-            m_return = false;
+            hide();
         }
     }
 }
@@ -100,15 +99,17 @@ tempopopup::on_key_press_event( GdkEventKey* a_ev )
     {
         m_escape = true;
         hide();
+        return true;
     }
     
     if (a_ev->keyval == GDK_Return || a_ev->keyval == GDK_KP_Enter)
     {
+        // FIXME typed value sends 2 callbacks - really ugly
         m_return = true;
         adj_callback_bpm();
-        hide();
+        return true;
     }
- 
+    
     return Gtk::Window::on_key_press_event(a_ev);
 }
 
