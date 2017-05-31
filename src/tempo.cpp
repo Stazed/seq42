@@ -301,6 +301,12 @@ tempo::set_BPM(double a_bpm)
     queue_draw();
 }
 
+bool
+tempo::sort_tempo_mark(const tempo_mark &a, const tempo_mark &b)
+{
+    return a.tick < b.tick;
+}
+
 void
 tempo::add_marker(tempo_mark a_mark)
 {
@@ -322,7 +328,17 @@ tempo::add_marker(tempo_mark a_mark)
         }
     }
     if(!start_tick)
-        m_list_marker.push_front(a_mark);
+        m_list_marker.push_back(a_mark);
  //   printf("bpm %f: tick %ld\n", a_mark.bpm, a_mark.tick);
-    //m_list_marker.sort();
+    m_list_marker.sort(&sort_tempo_mark);
+}
+
+void
+tempo::set_start_BPM(double a_bpm)
+{
+    list<tempo_mark>::iterator i;
+ 
+    i = m_list_marker.begin();
+    (i)->bpm = a_bpm;
+    queue_draw();
 }

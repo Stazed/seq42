@@ -276,6 +276,9 @@ mainwnd::mainwnd(perform *a_p):
 
     m_table->attach( *m_perfnames,    0, 1, 3, 4, Gtk::SHRINK, Gtk::FILL );
     m_table->attach( *m_tempo, 1, 2, 1, 2, Gtk::FILL, Gtk::SHRINK );
+    
+    Label* tempolabel = manage(new Label("                  TEMPO",0, Gtk::ALIGN_END)); // FIXME
+    m_table->attach( *tempolabel,0,1,1,2, Gtk::SHRINK, Gtk::SHRINK);
 
     m_table->attach( *m_perftime, 1, 2, 2, 3, Gtk::FILL, Gtk::SHRINK );
     m_table->attach( *m_perfroll, 1, 2, 3, 4,
@@ -1691,6 +1694,7 @@ mainwnd::adj_callback_bpm( )
     if(m_mainperf->get_bpm() !=  m_adjust_bpm->get_value())
     {
         m_mainperf->set_bpm(  m_adjust_bpm->get_value());
+        m_tempo->set_start_BPM(m_adjust_bpm->get_value());
         global_is_modified = true;
     }
 }
