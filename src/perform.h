@@ -74,6 +74,14 @@ struct undo_redo_perf_tracks
     track perf_tracks[c_max_track];
 };
 
+struct tempo_mark
+{
+    double bpm;
+    long tick;
+};
+
+#define STOP_MARKER         0.0
+
 class perform
 {
 private:
@@ -129,7 +137,7 @@ private:
 
     int m_bp_measure;
     int m_bw;
-
+    
     void set_playback_mode( bool a_playback_mode );
 
     condition_var m_condition_var;
@@ -157,6 +165,8 @@ private:
     bool m_toggle_jack;
     bool m_jack_master;
     long m_jack_stop_tick;
+    
+    bool m_reset_tempo_list;
 
     void inner_start( bool a_state );
     void inner_stop(bool a_midi_clock = false);
@@ -168,6 +178,7 @@ public:
     vector<undo_type> redo_vect;
 
     track m_tracks_clipboard[c_max_track];
+    list < tempo_mark > m_list_play_marker;
 
     float m_excell_FF_RW;
     bool m_have_undo;
@@ -194,7 +205,7 @@ public:
 
     void start_playing();
     void stop_playing();
-
+    
     void FF_rewind();
 
     void toggle_song_mode();
@@ -272,7 +283,11 @@ public:
 
     void start( bool a_state );
     void stop();
-
+    
+    bool get_tempo_reset();
+    void set_tempo_reset(bool a_reset);
+    double get_start_tempo();
+    
     void start_jack();
     void stop_jack();
     void position_jack( bool a_state, long a_tick );
@@ -288,9 +303,11 @@ public:
 
     void new_track( int a_track );
 
-    /* plays all notes to Curent tick */
+    /* plays all notes to Current tick */
     void play( long a_tick );
     void set_orig_ticks( long a_tick  );
+    
+    void tempo_change();
 
     track *get_track( int a_trk );
     sequence *get_sequence( int a_trk, int a_seq );

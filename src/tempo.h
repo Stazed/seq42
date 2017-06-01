@@ -54,12 +54,6 @@ using std::list;
 
 class mainwnd;
 
-struct tempo_mark
-{
-    double bpm;
-    long tick;
-};
-
 /* piano time*/
 class tempo: public Gtk::DrawingArea
 {
@@ -122,6 +116,7 @@ public:
     static bool sort_tempo_mark(const tempo_mark &a, const tempo_mark &b);
     void add_marker(tempo_mark a_mark);
     void set_start_BPM(double a_bpm);
+    void reset_tempo_list();
     
     friend tempopopup;
 };

@@ -24,7 +24,6 @@
 #include "pixmaps/stop_marker.xpm"
 
 #define STARTING_MARKER     0
-#define STOP_MARKER         0.0
 
 tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
     m_black(Gdk::Color("black")),
@@ -260,7 +259,9 @@ tempo::on_button_press_event(GdkEventButton* p0)
                 if((i)->tick != STARTING_MARKER)    // Don't allow erase of first start marker
                 {
                     m_list_marker.erase(i);
+                    m_list_marker.sort(&sort_tempo_mark);
                     queue_draw();
+                    reset_tempo_list();
                     return true;
                 }
                 break;
@@ -328,9 +329,12 @@ tempo::add_marker(tempo_mark a_mark)
         }
     }
     if(!start_tick)
+    {
         m_list_marker.push_back(a_mark);
- //   printf("bpm %f: tick %ld\n", a_mark.bpm, a_mark.tick);
+    }
+
     m_list_marker.sort(&sort_tempo_mark);
+    m_mainperf->m_list_play_marker = m_list_marker;
 }
 
 void
@@ -340,5 +344,14 @@ tempo::set_start_BPM(double a_bpm)
  
     i = m_list_marker.begin();
     (i)->bpm = a_bpm;
+    
+    m_mainperf->m_list_play_marker = m_list_marker;
     queue_draw();
 }
+
+void
+tempo::reset_tempo_list()
+{
+    m_mainperf->m_list_play_marker = m_list_marker;
+}
+

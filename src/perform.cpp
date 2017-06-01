@@ -755,6 +755,7 @@ void perform::play( long a_tick )
 
     /* flush the bus */
     m_master_bus.flush();
+    tempo_change();
 }
 
 void perform::set_orig_ticks( long a_tick  )
@@ -765,6 +766,28 @@ void perform::set_orig_ticks( long a_tick  )
         {
             assert( m_tracks[i] );
             m_tracks[i]->set_orig_tick( a_tick );
+        }
+    }
+}
+
+void perform::tempo_change()
+{
+    list<tempo_mark>::iterator i;
+    
+    for ( i = m_list_play_marker.begin(); i != m_list_play_marker.end(); i++ )
+    {
+        if(m_tick >= (i)->tick)
+        {
+            if((i)->bpm == STOP_MARKER)
+            {
+                stop_playing();
+            }
+            else
+            {
+                m_master_bus.set_bpm((i)->bpm);
+                m_list_play_marker.erase(i);
+                break;
+            }
         }
     }
 }
@@ -1399,9 +1422,28 @@ void perform::stop()
 //        return;
 //   }
 
+    m_reset_tempo_list = true; // since we cleared it as we went along
     inner_stop();
 }
 
+bool
+perform::get_tempo_reset()
+{
+    return m_reset_tempo_list;
+}
+    
+void
+perform::set_tempo_reset(bool a_reset)
+{
+    m_reset_tempo_list = a_reset;
+}
+
+double
+perform::get_start_tempo()
+{
+    return m_list_play_marker.begin()->bpm;
+}
+    
 void perform::inner_start(bool a_state)
 {
     m_condition_var.lock();
@@ -2220,7 +2262,7 @@ void perform::output_func()
 
             if (jack_stopped)
                 inner_stop();
-        }
+        }   // end while(global_is_running)
 
         if (global_stats)
         {

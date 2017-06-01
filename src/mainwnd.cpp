@@ -661,6 +661,13 @@ mainwnd::timer_callback(  )
         }
     }
     
+    if(m_mainperf->get_tempo_reset())
+    {
+        m_tempo->reset_tempo_list();
+        m_mainperf->set_tempo_reset(false);
+        m_mainperf->set_bpm(m_mainperf->get_start_tempo());
+    }
+    
     return true;
 }
 
