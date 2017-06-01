@@ -397,7 +397,7 @@ perform::FF_rewind()
                 a_tick = 0;
                 FF_RW_button_type = FF_RW_RELEASE;  // in the case of sysex control
                                                     // user may forget to send second (release)
-                                                    // sysex because it's all the way to beginning 
+                                                    // sysex because it's all the way to beginning
                                                     // already. So the timeout keeps running.
                                                     // So we shut it off for them (by them I mean me).
             }
@@ -634,7 +634,7 @@ void perform::set_bpm(double a_bpm)
     if ( a_bpm > c_bpm_maximum ) a_bpm = c_bpm_maximum;
 
 #ifdef USE_MODIFIABLE_JACK_TEMPO           // EXPERIMENTAL SEQUENCER64
- 
+
     m_master_bus.set_bpm( a_bpm );
 
 #else
@@ -645,7 +645,7 @@ void perform::set_bpm(double a_bpm)
     }
 
 #endif
-    
+
 }
 
 double  perform::get_bpm( )
@@ -773,7 +773,7 @@ void perform::set_orig_ticks( long a_tick  )
 void perform::tempo_change()
 {
     list<tempo_mark>::iterator i;
-    
+
     for ( i = m_list_play_marker.begin(); i != m_list_play_marker.end(); i++ )
     {
         if(m_tick >= (i)->tick)
@@ -1309,6 +1309,141 @@ void perform::stop_jack(  )
 #endif // JACK_SUPPORT
 }
 
+#ifdef JACK_SUPPORT
+#ifdef USE_NON_TEMPO_MAP
+/** return a stucture containing the BBT info which applies at /frame/ */
+position_info solve_tempomap ( jack_nframes_t frame, void *arg )
+{
+    return render_tempomap( frame, 0, 0, arg );
+}
+
+/* THREAD: UI and RT */
+/** draw appropriate measure lines inside the given bounding box */
+position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void *cb, void *arg )
+{
+    perform *perf = (perform *) arg;
+    const jack_nframes_t end = start + length;
+
+    position_info pos;
+    memset( &pos, 0, sizeof( pos ) );
+
+    BBT &bbt = pos.bbt;
+
+    /* default values */
+    pos.beat_type = 4;
+    pos.beats_per_bar = 4;
+    pos.tempo = 120.0;
+
+    const jack_nframes_t samples_per_minute = perf->m_jack_frame_rate * 60;
+
+    float bpm = 120.0f;
+
+    time_sig sig;
+
+    sig.beats_per_bar = 4;
+    sig.beat_type = 4;
+
+    jack_nframes_t f = 0;
+    jack_nframes_t next = 0;
+
+    jack_nframes_t frames_per_beat = samples_per_minute / bpm;
+
+//    if ( ! _tempomap.size() )
+//       return pos;
+    
+    list<tempo_mark>::iterator i;
+
+    for ( i = perf->m_list_play_marker.begin(); i != perf->m_list_play_marker.end(); ++i )
+    {
+
+//    for ( list <const Sequence_Widget *>::const_iterator i = _tempomap.begin();
+//          i != _tempomap.end(); ++i )
+//    {
+
+//        if ( ! strcmp( (*i)->class_name(), "Tempo_Point" ) )
+//        {
+//            const Tempo_Point *p = (Tempo_Point*)(*i);
+        tempo_mark p = (*i);
+        bpm = p.bpm;
+
+ //           bpm = p->tempo();
+            frames_per_beat = samples_per_minute / bpm;
+//        }
+ //       else
+ //       {
+ //           const Time_Point *p = (Time_Point*)(*i);
+
+//            sig = p->time();
+
+            /* Time point resets beat */
+//            bbt.beat = 0;
+//       }
+
+        {
+               list<tempo_mark>::iterator n = i; 
+//            list <const Sequence_Widget *>::const_iterator n = i;
+            ++n;
+//            if ( n == _tempomap.end() )
+            if ( n == perf->m_list_play_marker.end())
+                next = end;
+// FIXME here
+            
+//            else
+//                next = min( (*n)->start(), end );
+                /* points may not always be aligned with beat boundaries, so we must align here */
+ //               next = (*n)->start() - ( ( (*n)->start() - (*i)->start() ) % frames_per_beat );
+        }
+
+        for ( ; f < next; ++bbt.beat, f += frames_per_beat )
+        {
+
+            if ( bbt.beat == sig.beats_per_bar )
+            {
+                bbt.beat = 0;
+                ++bbt.bar;
+            }
+
+ /*           if ( f >= start )
+            {
+                // in the zone
+                if ( cb )
+                    cb( f, bbt, arg );
+            }
+*/
+            /* ugliness to avoid failing out at -1 */
+            if ( end >= frames_per_beat )
+            {
+                if ( f >= end - frames_per_beat )
+                    goto done;
+            }
+            else if ( f + frames_per_beat >= end )
+                goto done;
+        }
+    }
+
+done:
+
+    pos.frame = f;
+    pos.tempo = bpm;
+    pos.beats_per_bar = sig.beats_per_bar;
+    pos.beat_type = sig.beat_type;
+
+    assert( f <= end );
+
+    assert( end - f <= frames_per_beat );
+
+    /* FIXME: this this right? */
+
+    double ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
+    const double frames_per_tick = frames_per_beat / ticks_per_beat;
+    bbt.tick = ( end - f ) / frames_per_tick;
+
+    return pos;
+}
+
+#endif // USE_NON_TEMPO_MAP
+#endif // JACK_SUPPORT
+
 void perform::position_jack( bool a_state, long a_tick )
 {
     //printf( "perform::position_jack()\n" );
@@ -1431,7 +1566,7 @@ perform::get_tempo_reset()
 {
     return m_reset_tempo_list;
 }
-    
+
 void
 perform::set_tempo_reset(bool a_reset)
 {
@@ -1443,7 +1578,7 @@ perform::get_start_tempo()
 {
     return m_list_play_marker.begin()->bpm;
 }
-    
+
 void perform::inner_start(bool a_state)
 {
     m_condition_var.lock();
@@ -1615,7 +1750,7 @@ int jack_process_callback(jack_nframes_t nframes, void* arg)
     if(!global_is_running)
     {
         jack_transport_state_t state = jack_transport_query( m_mainperf->m_jack_client, nullptr );
-        
+
         /* we are stopped, do we need to start? */
         if(state == JackTransportRolling || state == JackTransportStarting )
         {
@@ -1658,10 +1793,11 @@ int jack_process_callback(jack_nframes_t nframes, void* arg)
             }
         }
     }
-#endif
+#endif // USE_MODIFIABLE_JACK_TEMPO
     return 0;
 }
-#if 0
+
+#ifdef USE_JACK_BBT_POSITION
 /* former slow sync callback - no longer used - now using jack_process_callback() - ca. 7/10/16 */
 int jack_sync_callback(jack_transport_state_t state,
                        jack_position_t *pos, void *arg)
@@ -1698,7 +1834,7 @@ int jack_sync_callback(jack_transport_state_t state,
     print_jack_pos( pos );
     return 1;
 }
-#endif // 0
+#endif // USE_JACK_BBT_POSITION
 
 #ifdef JACK_SESSION
 
@@ -2447,7 +2583,7 @@ void perform::input_func()
                     {
                         if (global_use_sysex)
                             parse_sysex(ev);
-                        
+
                         if (global_showmidi)
                             ev.print();
 
@@ -2483,7 +2619,7 @@ unsigned short perform::combine_bytes(unsigned char First, unsigned char Second)
 
 void perform::parse_sysex(event a_e)
 {
-/*  http://www.indiana.edu/~emusic/etext/MIDI/chapter3_MIDI9.shtml 
+/*  http://www.indiana.edu/~emusic/etext/MIDI/chapter3_MIDI9.shtml
  *  A System Exclusive code set begins with 11110000 (240 decimal or F0 hex),
  *  followed by the manufacturer ID#, then by an unspecified number of
  *  data bytes of any ranges from 0-127) and ends with 11110111
@@ -2492,7 +2628,7 @@ void perform::parse_sysex(event a_e)
  *  message). Normally, after the manufacturer ID, each maker will have its
  *  own instrument model subcode, so a Yamaha DX7 will ignore a Yamaha SY77's
  *  patch dump. In addition, most instruments have a SysEx ID # setting so
- *  more than one of the same instruments can be on a network but not 
+ *  more than one of the same instruments can be on a network but not
  *  necessarily respond to a patch dump not intended for it.
  */
 
@@ -2503,37 +2639,37 @@ void perform::parse_sysex(event a_e)
         SYS_YPT300_TOP,             //  Beginning of song
         SYS_YPT300_FAST_FORWARD,
         SYS_YPT300_REWIND,
-        SYS_YPT300_METRONOME        //  or anything else 
+        SYS_YPT300_METRONOME        //  or anything else
     };
 
 /*  For FF and rewind the sysex is only sent on key press.
- *  So to shut it off a second key press is used as the 
+ *  So to shut it off a second key press is used as the
  *  button release. Not real convenient, but personally I
  *  only really care about start and stop.
  */
-    
+
     /* layout of YPT-300 sysex messages */
     //  EVENT_SYSEX                                         // byte 0 0xF0
-    const unsigned char c_yamaha_ID         = 0x43;         // byte 1 
+    const unsigned char c_yamaha_ID         = 0x43;         // byte 1
     const unsigned long c_YPT_model_subcode = 0x73015015;   // bytes 2 - 5
     // 0x00                                                 // byte 6
     // the message we are looking for - enum 0 to 5         // byte 7
     // 0x00                                                 // byte 8
     // end sysex 0xF7                                       // byte 9
-    
+
     unsigned char *data = a_e.get_sysex();
     long data_size =  a_e.get_size();
-    
+
     if(data_size < 10)               // sanity check
-        return; 
+        return;
 
     /* Check the manufacturer ID */
     if(data[1] != c_yamaha_ID)                      // could use others here
         return;
-    
+
     /* Check the model subcode */
     unsigned long subcode = 0;
-    
+
     subcode += (data[2] << 24);
     subcode += (data[3] << 16);
     subcode += (data[4] << 8);
@@ -2548,7 +2684,7 @@ void perform::parse_sysex(event a_e)
     }
  */
 
-    /* We are good to go */  
+    /* We are good to go */
     switch(data[7])
     {
     case SYS_YPT300_START:
@@ -2664,17 +2800,35 @@ jack_timebase_callback
     long ticks_per_bar = long(pos->ticks_per_beat * pos->beats_per_bar);
     long ticks_per_minute = long(pos->beats_per_minute * pos->ticks_per_beat);
 
-    /* don't use pos->frame_rate below because it usually will contain garbage or 0 
+    /* don't use pos->frame_rate below because it usually will contain garbage or 0
      * on position change unless the sending client plugs BBT, which is almost never.
      * The garbage will cause occasional initial incorrect BBT calculation for one cycle until
      * the position change is accepted by jack and the else{} calculation then corrects.
      * Using the frame_rate from p->m_jack_frame_rate which comes from init_jack().
-     * AFAIK frame rate is set by the jack server and cannot be changed by clients 
+     * AFAIK frame rate is set by the jack server and cannot be changed by clients
      * when running  */
     double framerate = double(p->m_jack_frame_rate * 60.0);
 
     if (new_pos || ! (pos->valid & JackPositionBBT))
     {
+#ifdef USE_NON_TEMPO_MAP
+    position_info pi = solve_tempomap( pos->frame, arg );
+
+    pos->valid = JackPositionBBT;
+
+    pos->beats_per_bar = pi.beats_per_bar;
+    pos->beat_type = pi.beat_type;
+    pos->beats_per_minute = pi.tempo;
+
+    pos->bar = pi.bbt.bar + 1;
+    pos->beat = pi.bbt.beat + 1;
+    pos->tick = pi.bbt.tick;
+    pos->ticks_per_beat = 1920.0;                               /* FIXME: wrong place for this */
+
+    /* FIXME: fill this in */
+    pos->bar_start_tick = 0;
+        
+#else
         double minute = pos->frame / framerate;
         long abs_tick = long(minute * ticks_per_minute);
         long abs_beat = 0;
@@ -2696,11 +2850,12 @@ jack_timebase_callback
         pos->tick = int(abs_tick - (abs_beat * pos->ticks_per_beat));
         pos->bar_start_tick = int(pos->bar * ticks_per_bar);
         pos->bar++;                             /* adjust start to bar 1 */
+#endif // USE_NON_TEMPO_MAP
     }
     else            // This works with tempo change when rolling
     {
         /*
-         * Computes the BBT (beats/bars/ticks) based on the previous period. 
+         * Computes the BBT (beats/bars/ticks) based on the previous period.
          *   Note that the tick is delta'ed.
          */
 
@@ -3033,7 +3188,7 @@ perform::load( const Glib::ustring& a_filename )
         file.read((char *) &bpm, global_file_int_size);
         set_bpm(bpm);
     }
-    
+
     int bp_measure = 4;
     if(version > 3)
     {

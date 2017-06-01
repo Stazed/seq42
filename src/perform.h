@@ -46,6 +46,7 @@ class perform;
 #define USE_SEQUENCER64_TIMEBASE_CALLBACK   // EXPERIMENTAL - needed for tempo change
 #define USE_MODIFIABLE_JACK_TEMPO           // EXPERIMENTAL SEQUENCER64
 #define USE_JACK_BBT_OFFSET                 // SEQUENCER64
+#undef  USE_NON_TEMPO_MAP                   // Non-timeline
 
 #undef USE_JACK_BBT_POSITION                // old code could be used for debug
 
@@ -79,6 +80,46 @@ struct tempo_mark
     double bpm;
     long tick;
 };
+
+#ifdef USE_NON_TEMPO_MAP
+/*  Bar and beat start at 1. */
+struct BBT
+{
+    unsigned short bar;
+    unsigned char beat;
+    unsigned short tick;
+
+    BBT ( ) : bar( 0 ), beat( 0 ), tick( 0 )
+        {
+        }
+};
+
+
+struct position_info
+{
+    jack_nframes_t frame;
+
+    float tempo;
+    int beats_per_bar;
+    int beat_type;
+
+    BBT bbt;
+};
+
+struct time_sig
+{
+    int beats_per_bar;
+    int beat_type;
+
+    time_sig ( ) : beats_per_bar( 0 ), beat_type( 0 )
+        {
+        }
+
+    time_sig ( int bpb, int note ) : beats_per_bar( bpb ), beat_type( note )
+        {
+        }
+};
+#endif // USE_NON_TEMPO_MAP
 
 #define STOP_MARKER         0.0
 
@@ -137,7 +178,7 @@ private:
 
     int m_bp_measure;
     int m_bw;
-    
+
     void set_playback_mode( bool a_playback_mode );
 
     condition_var m_condition_var;
@@ -165,7 +206,7 @@ private:
     bool m_toggle_jack;
     bool m_jack_master;
     long m_jack_stop_tick;
-    
+
     bool m_reset_tempo_list;
 
     void inner_start( bool a_state );
@@ -205,7 +246,7 @@ public:
 
     void start_playing();
     void stop_playing();
-    
+
     void FF_rewind();
 
     void toggle_song_mode();
@@ -283,11 +324,11 @@ public:
 
     void start( bool a_state );
     void stop();
-    
+
     bool get_tempo_reset();
     void set_tempo_reset(bool a_reset);
     double get_start_tempo();
-    
+
     void start_jack();
     void stop_jack();
     void position_jack( bool a_state, long a_tick );
@@ -306,7 +347,7 @@ public:
     /* plays all notes to Current tick */
     void play( long a_tick );
     void set_orig_ticks( long a_tick  );
-    
+
     void tempo_change();
 
     track *get_track( int a_trk );
@@ -383,13 +424,15 @@ public:
 #ifdef JACK_SUPPORT
 #ifdef USE_JACK_BBT_POSITION
     void jack_BBT_position(jack_position_t &pos, double jack_tick);
-#endif // USE_JACK_BBT_POSITION
-    
+
     /* now using jack_process_callback() ca. 7/10/16    */
-    /*
-        friend int jack_sync_callback(jack_transport_state_t state,
+    friend int jack_sync_callback(jack_transport_state_t state,
                                   jack_position_t *pos, void *arg);
-    */
+#endif // USE_JACK_BBT_POSITION
+#ifdef USE_NON_TEMPO_MAP
+    friend position_info solve_tempomap ( jack_nframes_t frame, void *arg );
+    friend position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void *cb, void *arg );
+#endif // USE_NON_TEMPO_MAP
     friend void jack_shutdown(void *arg);
     friend void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
                                        jack_position_t *pos, int new_pos, void *arg);
@@ -406,9 +449,14 @@ extern void *input_thread_func(void *a_p);
 extern ff_rw_type_e FF_RW_button_type;
 
 #ifdef JACK_SUPPORT
-
-//int jack_sync_callback(jack_transport_state_t state,
-//                       jack_position_t *pos, void *arg);
+#ifdef USE_JACK_BBT_POSITION
+int jack_sync_callback(jack_transport_state_t state,
+                       jack_position_t *pos, void *arg);
+#endif // USE_JACK_BBT_POSITION
+#ifdef USE_NON_TEMPO_MAP
+position_info solve_tempomap ( jack_nframes_t frame );
+position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void *cb, void *arg );
+#endif // USE_NON_TEMPO_MAP
 void print_jack_pos( jack_position_t* jack_pos );
 void jack_shutdown(void *arg);
 void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
