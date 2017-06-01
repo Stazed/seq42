@@ -207,7 +207,6 @@ tempo::draw_background()
                     str, sizeof(str),
                     "[Stop]"
                 );
-
             }
             else                                // tempo marker
             {
@@ -229,7 +228,6 @@ tempo::draw_background()
                     tempo_marker + 5,
                     0,
                     m_window, str, font::WHITE );
-
         }
     }
 }
@@ -254,7 +252,8 @@ tempo::on_button_press_event(GdkEventButton* p0)
         list<tempo_mark>::iterator i;
         for ( i = m_list_marker.begin(); i != m_list_marker.end(); i++ )
         {
-            if(tick >= (i)->tick - 100 && tick <= (i)->tick +100)
+            if(tick >= (i)->tick - (100 * (m_perf_scale_x / 32) ) &&
+                    tick <= (i)->tick + (100 * (m_perf_scale_x / 32)))
             {
                 if((i)->tick != STARTING_MARKER)    // Don't allow erase of first start marker
                 {
@@ -287,6 +286,7 @@ tempo::on_size_allocate(Gtk::Allocation &a_r )
     m_window_y = a_r.get_height();
 }
 
+/* Raises the spinbutton entry window */
 void
 tempo::set_tempo_marker(long a_tick)
 {
@@ -294,6 +294,7 @@ tempo::set_tempo_marker(long a_tick)
     m_current_mark.tick = a_tick;
 }
 
+/* Called by tempopopup when a value is accepted */
 void
 tempo::set_BPM(double a_bpm)
 {
@@ -328,27 +329,26 @@ tempo::add_marker(tempo_mark a_mark)
             break;
         }
     }
-    if(!start_tick)
+    if(!start_tick)                         // add the new one
     {
         m_list_marker.push_back(a_mark);
     }
 
     m_list_marker.sort(&sort_tempo_mark);
-    m_mainperf->m_list_play_marker = m_list_marker;
+    reset_tempo_list();
 }
 
+/* Called by mainwnd spinbutton callback */
 void
 tempo::set_start_BPM(double a_bpm)
 {
-    list<tempo_mark>::iterator i;
- 
-    i = m_list_marker.begin();
-    (i)->bpm = a_bpm;
+    m_list_marker.begin()->bpm = a_bpm;
     
-    m_mainperf->m_list_play_marker = m_list_marker;
+    reset_tempo_list();
     queue_draw();
 }
 
+/* update perform */
 void
 tempo::reset_tempo_list()
 {

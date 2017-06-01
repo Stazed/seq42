@@ -60,8 +60,6 @@ private:
     Menu     *m_menu_edit;
     Menu     *m_menu_help;
 
-//    perform  *m_mainperf;
-
     maintime *m_main_time;
 
     options *m_options;
