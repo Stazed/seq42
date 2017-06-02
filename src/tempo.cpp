@@ -353,5 +353,6 @@ void
 tempo::reset_tempo_list()
 {
     m_mainperf->m_list_play_marker = m_list_marker;
+    m_mainperf->m_list_total_marker = m_list_marker;
 }
 

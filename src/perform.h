@@ -46,7 +46,7 @@ class perform;
 #define USE_SEQUENCER64_TIMEBASE_CALLBACK   // EXPERIMENTAL - needed for tempo change
 #define USE_MODIFIABLE_JACK_TEMPO           // EXPERIMENTAL SEQUENCER64
 #define USE_JACK_BBT_OFFSET                 // SEQUENCER64
-#undef  USE_NON_TEMPO_MAP                   // Non-timeline
+#define  USE_NON_TEMPO_MAP                   // Non-timeline
 
 #undef USE_JACK_BBT_POSITION                // old code could be used for debug
 
@@ -220,6 +220,7 @@ public:
 
     track m_tracks_clipboard[c_max_track];
     list < tempo_mark > m_list_play_marker;
+    list < tempo_mark > m_list_total_marker;
 
     float m_excell_FF_RW;
     bool m_have_undo;
@@ -432,6 +433,7 @@ public:
 #ifdef USE_NON_TEMPO_MAP
     friend position_info solve_tempomap ( jack_nframes_t frame, void *arg );
     friend position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void *cb, void *arg );
+    friend jack_nframes_t jack_frame(tempo_mark a_mark, void *arg);
 #endif // USE_NON_TEMPO_MAP
     friend void jack_shutdown(void *arg);
     friend void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
@@ -456,6 +458,7 @@ int jack_sync_callback(jack_transport_state_t state,
 #ifdef USE_NON_TEMPO_MAP
 position_info solve_tempomap ( jack_nframes_t frame );
 position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void *cb, void *arg );
+jack_nframes_t jack_frame(tempo_mark a_mark, void *arg);
 #endif // USE_NON_TEMPO_MAP
 void print_jack_pos( jack_position_t* jack_pos );
 void jack_shutdown(void *arg);

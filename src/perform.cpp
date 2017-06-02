@@ -1311,6 +1311,22 @@ void perform::stop_jack(  )
 
 #ifdef JACK_SUPPORT
 #ifdef USE_NON_TEMPO_MAP
+jack_nframes_t jack_frame(tempo_mark a_mark, void *arg)
+{
+    perform *perf = (perform *) arg;
+    
+    long current_tick = a_mark.tick;
+    current_tick *= 10;
+
+    int ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
+    double beats_per_minute =  a_mark.bpm;
+
+    uint64_t tick_rate = ((uint64_t)perf->m_jack_frame_rate * current_tick * 60.0);
+    long tpb_bpm = ticks_per_beat * beats_per_minute * 4.0 / perf->m_bw;
+    jack_nframes_t jack_frame = tick_rate / tpb_bpm;
+    return jack_frame;
+}
+
 /** return a stucture containing the BBT info which applies at /frame/ */
 position_info solve_tempomap ( jack_nframes_t frame, void *arg )
 {
@@ -1348,48 +1364,45 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
 
     jack_nframes_t frames_per_beat = samples_per_minute / bpm;
 
-//    if ( ! _tempomap.size() )
-//       return pos;
+    if ( ! perf->m_list_total_marker.size() )
+       return pos;
     
     list<tempo_mark>::iterator i;
-
-    for ( i = perf->m_list_play_marker.begin(); i != perf->m_list_play_marker.end(); ++i )
+    
+    for ( i = perf->m_list_total_marker.begin(); i != perf->m_list_total_marker.end(); ++i )
     {
-
-//    for ( list <const Sequence_Widget *>::const_iterator i = _tempomap.begin();
-//          i != _tempomap.end(); ++i )
-//    {
-
-//        if ( ! strcmp( (*i)->class_name(), "Tempo_Point" ) )
-//        {
-//            const Tempo_Point *p = (Tempo_Point*)(*i);
         tempo_mark p = (*i);
         bpm = p.bpm;
 
- //           bpm = p->tempo();
-            frames_per_beat = samples_per_minute / bpm;
-//        }
- //       else
- //       {
- //           const Time_Point *p = (Time_Point*)(*i);
+        frames_per_beat = samples_per_minute / bpm;
 
-//            sig = p->time();
-
+        sig.beat_type = perf->m_bw;
+        sig.beats_per_bar = perf->m_bp_measure;
+        bbt.beat = 0;
+            
             /* Time point resets beat */
 //            bbt.beat = 0;
-//       }
 
         {
-               list<tempo_mark>::iterator n = i; 
-//            list <const Sequence_Widget *>::const_iterator n = i;
+            list<tempo_mark>::iterator n = i; 
             ++n;
-//            if ( n == _tempomap.end() )
-            if ( n == perf->m_list_play_marker.end())
+
+            if ( n == perf->m_list_total_marker.end())
+            {
                 next = end;
-// FIXME here
-            
-//            else
-//                next = min( (*n)->start(), end );
+            }
+            else
+            {
+                jack_nframes_t begin_frame = jack_frame((*i), arg);
+                jack_nframes_t end_frame = jack_frame((*n), arg);
+                jack_nframes_t start_frame = end_frame - begin_frame;
+                
+                printf("start_frame %d\n", start_frame);
+                //next = std::min( jack_frame((*i), arg), end );
+                next = start_frame - ( ( start_frame - end_frame ) % frames_per_beat );
+            }
+                
+               // next = std::min( jack_frame((*i), arg), end );
                 /* points may not always be aligned with beat boundaries, so we must align here */
  //               next = (*n)->start() - ( ( (*n)->start() - (*i)->start() ) % frames_per_beat );
         }
@@ -1403,13 +1416,6 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
                 ++bbt.bar;
             }
 
- /*           if ( f >= start )
-            {
-                // in the zone
-                if ( cb )
-                    cb( f, bbt, arg );
-            }
-*/
             /* ugliness to avoid failing out at -1 */
             if ( end >= frames_per_beat )
             {
@@ -1576,7 +1582,7 @@ perform::set_tempo_reset(bool a_reset)
 double
 perform::get_start_tempo()
 {
-    return m_list_play_marker.begin()->bpm;
+    return m_list_total_marker.begin()->bpm;
 }
 
 void perform::inner_start(bool a_state)
@@ -2812,21 +2818,21 @@ jack_timebase_callback
     if (new_pos || ! (pos->valid & JackPositionBBT))
     {
 #ifdef USE_NON_TEMPO_MAP
-    position_info pi = solve_tempomap( pos->frame, arg );
+        position_info pi = solve_tempomap( pos->frame, arg );
 
-    pos->valid = JackPositionBBT;
+        pos->valid = JackPositionBBT;
 
-    pos->beats_per_bar = pi.beats_per_bar;
-    pos->beat_type = pi.beat_type;
-    pos->beats_per_minute = pi.tempo;
+        pos->beats_per_bar = pi.beats_per_bar;
+        pos->beat_type = pi.beat_type;
+        pos->beats_per_minute = pi.tempo;
 
-    pos->bar = pi.bbt.bar + 1;
-    pos->beat = pi.bbt.beat + 1;
-    pos->tick = pi.bbt.tick;
-    pos->ticks_per_beat = 1920.0;                               /* FIXME: wrong place for this */
+        pos->bar = pi.bbt.bar + 1;
+        pos->beat = pi.bbt.beat + 1;
+        pos->tick = pi.bbt.tick;
+        pos->ticks_per_beat = 1920.0;                               /* FIXME: wrong place for this */
 
-    /* FIXME: fill this in */
-    pos->bar_start_tick = 0;
+        /* FIXME: fill this in */
+        pos->bar_start_tick = 0;
         
 #else
         double minute = pos->frame / framerate;
