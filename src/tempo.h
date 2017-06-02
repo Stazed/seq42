@@ -114,6 +114,7 @@ public:
     void increment_size();
     void set_BPM(double a_bpm);
     static bool sort_tempo_mark(const tempo_mark &a, const tempo_mark &b);
+    static bool reverse_sort_tempo_mark(const tempo_mark &a, const tempo_mark &b);
     void add_marker(tempo_mark a_mark);
     void set_start_BPM(double a_bpm);
     void reset_tempo_list();

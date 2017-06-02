@@ -47,7 +47,7 @@ class perform;
 #define USE_MODIFIABLE_JACK_TEMPO           // EXPERIMENTAL SEQUENCER64
 #define USE_JACK_BBT_OFFSET                 // SEQUENCER64
 #define  USE_NON_TEMPO_MAP                   // Non-timeline
-#undef DEBUG
+
 
 #undef USE_JACK_BBT_POSITION                // old code could be used for debug
 

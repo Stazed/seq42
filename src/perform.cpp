@@ -30,7 +30,7 @@
 
 //For keys
 #include <gtkmm/accelkey.h>
-
+#define RDEBUG
 
 using namespace Gtk;
 
@@ -1337,7 +1337,7 @@ position_info solve_tempomap ( jack_nframes_t frame, void *arg )
 /** draw appropriate measure lines inside the given bounding box */
 position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void *cb, void *arg )
 {
-#ifdef DEBUG
+#ifdef RDEBUG
     printf("start %d\n", start);
 #endif
     perform *perf = (perform *) arg;
@@ -1381,9 +1381,9 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
 
         sig.beat_type = perf->m_bw;
         sig.beats_per_bar = perf->m_bp_measure;
-        bbt.beat = 0;
-#ifdef DEBUG
-        printf("frames per beat %d: bbt.beat %d\n",frames_per_beat, bbt.beat);
+        //bbt.beat = 0;
+#ifdef RDEBUG
+        printf("frames per beat %d: bbt.beat %d: bpm %f\n",frames_per_beat, bbt.beat, bpm);
 #endif
             /* Time point resets beat */
 //            bbt.beat = 0;
@@ -1398,16 +1398,17 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
             }
             else
             {
-                jack_nframes_t begin_frame = jack_frame((*i), arg);
-                jack_nframes_t end_frame = jack_frame((*n), arg);
+                jack_nframes_t begin_frame = jack_frame((*n), arg);
+                jack_nframes_t end_frame = jack_frame((*i), arg);
                 jack_nframes_t start_frame = end_frame - begin_frame;
-                
-                printf("start_frame %d\n", start_frame);
+#ifdef RDEBUG                
+                printf("start_frame %d: begin %d: end_frame %d\n", start_frame,begin_frame,end_frame);
+#endif
                 //next = std::min( jack_frame((*i), arg), end );
                 next = start_frame - ( ( start_frame - end_frame ) % frames_per_beat );
             }
-#ifdef DEBUG
-            printf("next %d\n",next);
+#ifdef RDEBUG
+            printf("next %d: end %d\n",next,end);
 #endif
                // next = std::min( jack_frame((*i), arg), end );
                 /* points may not always be aligned with beat boundaries, so we must align here */
@@ -1422,7 +1423,7 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
                 bbt.beat = 0;
                 ++bbt.bar;
             }
-#ifdef DEBUG
+#ifdef RDEBUG
             printf("bbt,beat %d: bbt.bar %d: frame %d\n", bbt.beat, bbt.bar, f);
 #endif
             /* ugliness to avoid failing out at -1 */

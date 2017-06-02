@@ -309,6 +309,12 @@ tempo::sort_tempo_mark(const tempo_mark &a, const tempo_mark &b)
     return a.tick < b.tick;
 }
 
+bool
+tempo::reverse_sort_tempo_mark(const tempo_mark &a, const tempo_mark &b)
+{
+    return b.tick < a.tick;
+}
+
 void
 tempo::add_marker(tempo_mark a_mark)
 {
@@ -354,5 +360,7 @@ tempo::reset_tempo_list()
 {
     m_mainperf->m_list_play_marker = m_list_marker;
     m_mainperf->m_list_total_marker = m_list_marker;
+    
+    //m_mainperf->m_list_total_marker.sort(&reverse_sort_tempo_mark);
 }
 
