@@ -262,7 +262,9 @@ bool perform::clear_all()
     redo_vect.clear();
     set_have_undo();
     set_have_redo();
-
+    m_list_play_marker.clear();
+    m_list_total_marker.clear();
+    
     return true;
 }
 
@@ -1589,6 +1591,37 @@ perform::set_tempo_reset(bool a_reset)
     m_reset_tempo_list = a_reset;
 }
 
+bool
+perform::get_tempo_load()
+{
+    return m_load_tempo_list;
+}
+
+void
+perform::set_tempo_load(bool a_load)
+{
+    m_load_tempo_list = a_load;
+}
+
+void
+perform::set_start_tempo(double a_bpm)
+{
+    tempo_mark marker;
+    marker.bpm = a_bpm;
+    marker.tick = STARTING_MARKER;
+    
+    if(!m_list_total_marker.size()) // normal file loading .s42 file size will be zero
+    {
+        m_list_total_marker.push_front(marker);
+    }
+    else                            // midi file import - user wants to change BPM so just load at start
+    {
+        (*m_list_total_marker.begin())= marker;
+    }
+        
+    set_tempo_load(true);
+}
+
 double
 perform::get_start_tempo()
 {
@@ -1804,7 +1837,8 @@ int jack_process_callback(jack_nframes_t nframes, void* arg)
                 {
                     s_old_bpm = pos.beats_per_minute;
                     //printf("BPM = %f\n", pos.beats_per_minute);
-                    m_mainperf->set_bpm(pos.beats_per_minute);
+                    //m_mainperf->set_bpm(pos.beats_per_minute);
+                    m_mainperf->set_start_tempo(pos.beats_per_minute);
                 }
             }
         }
@@ -3102,9 +3136,15 @@ perform::save( const Glib::ustring& a_filename )
     /* end file version 5 */
 
     file.write((const char *) &c_file_version, global_file_int_size);
-
-    double bpm = get_bpm();
-    file.write((const char *) &bpm, sizeof(bpm));  // version 6 use double
+    
+    /* version 7 use tempo list */
+    uint32_t list_size = m_list_total_marker.size();
+    file.write((const char *) &list_size, sizeof(uint32_t));
+    list<tempo_mark>::iterator i;
+    for ( i = m_list_total_marker.begin(); i != m_list_total_marker.end(); i++ )
+    {
+        file.write((const char * ) &(*i), sizeof(tempo_mark));
+    }
 
     int bp_measure = get_bp_measure(); // version 4
     file.write((const char *) &bp_measure, global_file_int_size);
@@ -3193,16 +3233,34 @@ perform::load( const Glib::ustring& a_filename )
         return false;
     }
 
-    if(version > 5)
+    if(version > 6) // version 7 uses tempo markers
     {
-        double bpm; // file version 6 uses double
-        file.read((char *) &bpm, sizeof(bpm));
-        set_bpm(bpm);
-    }else
-    {
-        int bpm;    // prior to version 6 uses int
-        file.read((char *) &bpm, global_file_int_size);
-        set_bpm(bpm);
+        uint32_t list_size;
+        file.read((char *) &list_size, sizeof(uint32_t));
+        
+        tempo_mark marker;
+        for(uint32_t i = 0; i < list_size; ++i)
+        {
+            file.read((char *) &marker, sizeof(marker));
+            m_list_total_marker.push_back(marker);
+        }
+        
+        set_tempo_load(true);
+    }
+    else
+    { 
+        if(version > 5)
+        {
+            double bpm; // file version 6 uses double
+            file.read((char *) &bpm, sizeof(bpm));
+            set_start_tempo(bpm);
+        }
+        else
+        {
+            int bpm;    // prior to version 6 uses int
+            file.read((char *) &bpm, global_file_int_size);
+            set_start_tempo(bpm);
+        }
     }
 
     int bp_measure = 4;

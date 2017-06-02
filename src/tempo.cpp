@@ -23,7 +23,6 @@
 #include "pixmaps/tempo_marker.xpm"
 #include "pixmaps/stop_marker.xpm"
 
-#define STARTING_MARKER     0
 
 tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
     m_black(Gdk::Color("black")),
@@ -261,6 +260,7 @@ tempo::on_button_press_event(GdkEventButton* p0)
                     m_list_marker.sort(&sort_tempo_mark);
                     queue_draw();
                     reset_tempo_list();
+                    global_is_modified = true;
                     return true;
                 }
                 break;
@@ -364,3 +364,11 @@ tempo::reset_tempo_list()
     //m_mainperf->m_list_total_marker.sort(&reverse_sort_tempo_mark);
 }
 
+/* file loading */
+void
+tempo::load_tempo_list()
+{
+    m_list_marker = m_mainperf->m_list_total_marker;    // update tempo class
+    m_mainperf->m_list_play_marker = m_list_marker;     // update the m_mainperf play list
+    queue_draw();
+}

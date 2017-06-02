@@ -683,7 +683,7 @@ bool midifile::parse (perform * a_perf, int screen_set)
     {
         if(verify_change_tempo_timesig(bpm, bp_measure, bw))
         {
-            a_perf->set_bpm(bpm);
+            a_perf->set_start_tempo(bpm);
             a_perf->set_bp_measure(bp_measure);
             a_perf->set_bw(bw);
         }

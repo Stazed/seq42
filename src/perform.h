@@ -123,6 +123,7 @@ struct time_sig
 #endif // USE_NON_TEMPO_MAP
 
 #define STOP_MARKER         0.0
+#define STARTING_MARKER     0
 
 class perform
 {
@@ -209,6 +210,7 @@ private:
     long m_jack_stop_tick;
 
     bool m_reset_tempo_list;
+    bool m_load_tempo_list;
 
     void inner_start( bool a_state );
     void inner_stop(bool a_midi_clock = false);
@@ -329,7 +331,10 @@ public:
 
     bool get_tempo_reset();
     void set_tempo_reset(bool a_reset);
+    bool get_tempo_load();
+    void set_tempo_load(bool a_load);
     double get_start_tempo();
+    void set_start_tempo(double a_bpm);
 
     void start_jack();
     void stop_jack();

@@ -34,7 +34,7 @@
 
 using namespace std;
 
-const int c_file_version = 6;  // Version of our save file format.  Increment this whenever the format of the save file changes.
+const int c_file_version = 7;  // Version of our save file format.  Increment this whenever the format of the save file changes.
 /* Version history:
 0 - initial seq42 file format
 1 - added transposable to track
@@ -43,6 +43,7 @@ const int c_file_version = 6;  // Version of our save file format.  Increment th
 4 - added beats per measure, beat width
 5 - Use int32_t for 32 bit 64 bit compatibility, add file identification, add date & time stamp
 6 - Use double for BPM
+7 - Use tempo list for BPM
 */
 
 /* for 32 bit & 64 bit compatible - file version 5 */

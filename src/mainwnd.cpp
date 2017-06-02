@@ -661,7 +661,14 @@ mainwnd::timer_callback(  )
         }
     }
     
-    if(m_mainperf->get_tempo_reset())
+    if(m_mainperf->get_tempo_load())    /* file loading */
+    {
+        m_mainperf->set_tempo_load(false);
+        m_tempo->load_tempo_list();
+        m_mainperf->set_bpm(m_mainperf->get_start_tempo());
+    }
+    
+    if(m_mainperf->get_tempo_reset())   /* play tempo markers */
     {
         m_tempo->reset_tempo_list();
         m_mainperf->set_tempo_reset(false);
@@ -1173,7 +1180,7 @@ void mainwnd::new_file()
         set_bp_measure(4);
         set_bw(4);
         set_xpose(0);
-        m_mainperf->set_bpm(120.0);
+        m_mainperf->set_start_tempo(c_bpm);
 
         global_filename = "";
         update_window_title();
