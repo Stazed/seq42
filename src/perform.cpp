@@ -1337,6 +1337,9 @@ position_info solve_tempomap ( jack_nframes_t frame, void *arg )
 /** draw appropriate measure lines inside the given bounding box */
 position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void *cb, void *arg )
 {
+#ifdef DEBUG
+    printf("start %d\n", start);
+#endif
     perform *perf = (perform *) arg;
     const jack_nframes_t end = start + length;
 
@@ -1379,7 +1382,9 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
         sig.beat_type = perf->m_bw;
         sig.beats_per_bar = perf->m_bp_measure;
         bbt.beat = 0;
-            
+#ifdef DEBUG
+        printf("frames per beat %d: bbt.beat %d\n",frames_per_beat, bbt.beat);
+#endif
             /* Time point resets beat */
 //            bbt.beat = 0;
 
@@ -1401,7 +1406,9 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
                 //next = std::min( jack_frame((*i), arg), end );
                 next = start_frame - ( ( start_frame - end_frame ) % frames_per_beat );
             }
-                
+#ifdef DEBUG
+            printf("next %d\n",next);
+#endif
                // next = std::min( jack_frame((*i), arg), end );
                 /* points may not always be aligned with beat boundaries, so we must align here */
  //               next = (*n)->start() - ( ( (*n)->start() - (*i)->start() ) % frames_per_beat );
@@ -1415,7 +1422,9 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
                 bbt.beat = 0;
                 ++bbt.bar;
             }
-
+#ifdef DEBUG
+            printf("bbt,beat %d: bbt.bar %d: frame %d\n", bbt.beat, bbt.bar, f);
+#endif
             /* ugliness to avoid failing out at -1 */
             if ( end >= frames_per_beat )
             {
