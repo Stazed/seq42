@@ -1340,7 +1340,7 @@ position_info solve_tempomap ( jack_nframes_t frame, void *arg )
 position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void *cb, void *arg )
 {
 #ifdef RDEBUG
-    printf("start %o\n", start);
+    printf("start %u\n", start);
 #endif
     perform *perf = (perform *) arg;
     const jack_nframes_t end = start + length;
@@ -1385,7 +1385,7 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
         sig.beats_per_bar = perf->m_bp_measure;
  
 #ifdef RDEBUG
-        printf("frames per beat %o: bbt.beat %hho: bpm %f\n",frames_per_beat, bbt.beat, bpm);
+        printf("frames per beat %u: bbt.beat %u: bpm %f\n",frames_per_beat, bbt.beat, bpm);
 #endif
             /* Time point resets beat */
 //            bbt.beat = 0;             // timeline needed to, because it supported multiple sig markers -- we don't
@@ -1404,13 +1404,14 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
                 jack_nframes_t end_frame = jack_frame((*i), arg);
                 jack_nframes_t start_frame = end_frame - begin_frame;
 #ifdef RDEBUG                
-                printf("start_frame %o: begin %o: end_frame %o\n", start_frame,begin_frame,end_frame);
+                printf("(*n).tick %ld: (*i).tick %ld\n", (*n).tick, (*i).tick);
+                printf("start_frame %u: begin %u: end_frame %u\n", start_frame,begin_frame,end_frame);
 #endif
                 //next = std::min( jack_frame((*i), arg), end );
                 next = start_frame - ( ( start_frame - end_frame ) % frames_per_beat );
             }
 #ifdef RDEBUG
-            printf("next %o: end %o\n",next,end);
+            printf("next %u: end %u\n",next,end);
 #endif
                // next = std::min( jack_frame((*i), arg), end );
                 /* points may not always be aligned with beat boundaries, so we must align here */
@@ -1426,7 +1427,7 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
                 ++bbt.bar;
             }
 #ifdef RDEBUG
-            printf("bbt,beat %o: bbt.bar %o: frame %o\n", bbt.beat, bbt.bar, f);
+            printf("bbt,beat %u: bbt.bar %u: frame %u\n", bbt.beat, bbt.bar, f);
 #endif
             /* ugliness to avoid failing out at -1 */
             if ( end >= frames_per_beat )
