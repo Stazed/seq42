@@ -78,8 +78,14 @@ struct undo_redo_perf_tracks
 
 struct tempo_mark
 {
+    int64_t tick;
     double bpm;
-    long tick;
+    int32_t bw;             // not used
+    int32_t bp_measure;     // not used
+    
+    tempo_mark ( ) : tick ( 0 ), bpm ( 0.0 ), bw ( 0 ), bp_measure ( 0 )
+        {
+        }
 };
 
 #ifdef USE_NON_TEMPO_MAP

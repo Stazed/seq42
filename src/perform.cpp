@@ -3239,7 +3239,7 @@ perform::load( const Glib::ustring& a_filename )
         file.read((char *) &list_size, sizeof(uint32_t));
         
         tempo_mark marker;
-        for(uint32_t i = 0; i < list_size; ++i)
+        for(unsigned i = 0; i < list_size; ++i)
         {
             file.read((char *) &marker, sizeof(marker));
             m_list_total_marker.push_back(marker);

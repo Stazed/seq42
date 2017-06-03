@@ -127,7 +127,7 @@ bool midifile::parse (perform * a_perf, int screen_set)
     /* for import tempo, time signature verify change */
     long bp_measure = a_perf->get_bp_measure();
     long bw = a_perf->get_bw();
-    double bpm = a_perf->get_bpm();
+    double bpm = a_perf->get_start_tempo();
 
     /* set position to 0 */
     m_pos = 0;
@@ -676,7 +676,7 @@ bool midifile::parse (perform * a_perf, int screen_set)
  
     bool is_changed = false;
     
-    if(a_perf->get_bpm() != bpm || a_perf->get_bp_measure() != bp_measure || a_perf->get_bw() != bw)
+    if(a_perf->get_start_tempo() != bpm || a_perf->get_bp_measure() != bp_measure || a_perf->get_bw() != bw)
         is_changed = true;
     
     if(is_changed)
@@ -742,7 +742,7 @@ midifile::write_tempo(perform * a_perf)
     write_byte(0x00); // delta time
     write_short(0xFF51);
     write_byte(0x03); // length of bytes - must be 3
-    write_mid(60000000/a_perf->get_bpm());
+    write_mid(60000000/a_perf->get_start_tempo());
 }
 
 void
@@ -868,7 +868,7 @@ bool midifile::write_sequences (perform * a_perf, sequence *a_solo_seq)
          * We now encode the Sequencer64-specific BPM value by multiplying it
          *  by 1000.0 first, to get more implicit precision in the number.
          */
-        long scaled_bpm = long(a_perf->get_bpm() * c_bpm_scale_factor);
+        long scaled_bpm = long(a_perf->get_start_tempo() * c_bpm_scale_factor);
         write_long (scaled_bpm);
 
         /* write out the mute groups */
