@@ -30,7 +30,7 @@
 
 //For keys
 #include <gtkmm/accelkey.h>
-#define RDEBUG
+#undef RDEBUG
 
 using namespace Gtk;
 
@@ -1340,7 +1340,7 @@ position_info solve_tempomap ( jack_nframes_t frame, void *arg )
 position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void *cb, void *arg )
 {
 #ifdef RDEBUG
-    printf("start %d\n", start);
+    printf("start %o\n", start);
 #endif
     perform *perf = (perform *) arg;
     const jack_nframes_t end = start + length;
@@ -1383,12 +1383,12 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
 
         sig.beat_type = perf->m_bw;
         sig.beats_per_bar = perf->m_bp_measure;
-        //bbt.beat = 0;
+ 
 #ifdef RDEBUG
-        printf("frames per beat %d: bbt.beat %d: bpm %f\n",frames_per_beat, bbt.beat, bpm);
+        printf("frames per beat %o: bbt.beat %hho: bpm %f\n",frames_per_beat, bbt.beat, bpm);
 #endif
             /* Time point resets beat */
-//            bbt.beat = 0;
+//            bbt.beat = 0;             // timeline needed to, because it supported multiple sig markers -- we don't
 
         {
             list<tempo_mark>::iterator n = i; 
@@ -1404,13 +1404,13 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
                 jack_nframes_t end_frame = jack_frame((*i), arg);
                 jack_nframes_t start_frame = end_frame - begin_frame;
 #ifdef RDEBUG                
-                printf("start_frame %d: begin %d: end_frame %d\n", start_frame,begin_frame,end_frame);
+                printf("start_frame %o: begin %o: end_frame %o\n", start_frame,begin_frame,end_frame);
 #endif
                 //next = std::min( jack_frame((*i), arg), end );
                 next = start_frame - ( ( start_frame - end_frame ) % frames_per_beat );
             }
 #ifdef RDEBUG
-            printf("next %d: end %d\n",next,end);
+            printf("next %o: end %o\n",next,end);
 #endif
                // next = std::min( jack_frame((*i), arg), end );
                 /* points may not always be aligned with beat boundaries, so we must align here */
@@ -1426,7 +1426,7 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
                 ++bbt.bar;
             }
 #ifdef RDEBUG
-            printf("bbt,beat %d: bbt.bar %d: frame %d\n", bbt.beat, bbt.bar, f);
+            printf("bbt,beat %o: bbt.bar %o: frame %o\n", bbt.beat, bbt.bar, f);
 #endif
             /* ugliness to avoid failing out at -1 */
             if ( end >= frames_per_beat )
@@ -2862,6 +2862,9 @@ jack_timebase_callback
     if (new_pos || ! (pos->valid & JackPositionBBT))
     {
 #ifdef USE_NON_TEMPO_MAP
+#ifdef RDEBUG
+        print_jack_pos(pos);
+#endif // RDEBUG
         position_info pi = solve_tempomap( pos->frame, arg );
 
         pos->valid = JackPositionBBT;
@@ -3000,8 +3003,9 @@ void jack_shutdown(void *arg)
 
 void print_jack_pos( jack_position_t* jack_pos )
 {
-    return;
+//    return;
     printf( "print_jack_pos()\n" );
+    printf( "    frame[%d]\n", jack_pos->frame);
     printf( "    bar  [%d]\n", jack_pos->bar  );
     printf( "    beat [%d]\n", jack_pos->beat );
     printf( "    tick [%d]\n", jack_pos->tick );
@@ -3139,7 +3143,7 @@ perform::save( const Glib::ustring& a_filename )
     
     /* version 7 use tempo list */
     uint32_t list_size = m_list_total_marker.size();
-    file.write((const char *) &list_size, sizeof(uint32_t));
+    file.write((const char *) &list_size, sizeof(list_size));
     list<tempo_mark>::iterator i;
     for ( i = m_list_total_marker.begin(); i != m_list_total_marker.end(); i++ )
     {
@@ -3236,7 +3240,7 @@ perform::load( const Glib::ustring& a_filename )
     if(version > 6) // version 7 uses tempo markers
     {
         uint32_t list_size;
-        file.read((char *) &list_size, sizeof(uint32_t));
+        file.read((char *) &list_size, sizeof(list_size));
         
         tempo_mark marker;
         for(unsigned i = 0; i < list_size; ++i)
