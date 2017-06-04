@@ -392,14 +392,14 @@ tempo::calculate_marker_start()
         tempo_mark current = (*i);
         tempo_mark previous = (*n);
         
-        (*i).start = tick_to_jack_frame(current.tick, previous.bpm, m_mainperf );
-        printf("from tick to %d: previous.start %d\n",(*i).start, previous.start );
-        (*i).start -= previous.start;
+        (*i).start = tick_to_jack_frame(current.tick - previous.tick , previous.bpm, m_mainperf );
+//        printf("from tick to %d: previous.start %d\n",(*i).start, previous.start );
+        (*i).start += previous.start;
     }
     reset_tempo_list();
-//#ifdef RDEBUG
+#ifdef RDEBUG
     print_marker_info();
-//#endif
+#endif
 }
 
 void
