@@ -1312,15 +1312,15 @@ void perform::stop_jack(  )
 
 #ifdef JACK_SUPPORT
 #ifdef USE_NON_TEMPO_MAP
-jack_nframes_t jack_frame(tempo_mark current, tempo_mark previous, void *arg)
+jack_nframes_t tick_to_jack_frame(uint64_t a_tick, double a_bpm, void *arg)
 {
     perform *perf = (perform *) arg;
     
-    long current_tick = current.tick;
+    long current_tick = a_tick;
     current_tick *= 10;
 
     int ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
-    double beats_per_minute =  previous.bpm;
+    double beats_per_minute =  a_bpm;
 
     uint64_t tick_rate = ((uint64_t)perf->m_jack_frame_rate * current_tick * 60.0);
     long tpb_bpm = ticks_per_beat * beats_per_minute * 4.0 / perf->m_bw;
@@ -1473,7 +1473,45 @@ void perform::position_jack( bool a_state, long a_tick )
         current_tick = a_tick;
     }
 
-    current_tick *= 10;
+    uint32_t hold_frame = 0;
+    
+    // FIXME STOPMARKERS
+    
+    list<tempo_mark>::iterator i;
+    tempo_mark last_tempo = (*--m_list_total_marker.end());
+    
+    for ( i = ++m_list_total_marker.begin(); i != m_list_total_marker.end(); ++i )
+    {
+        if( current_tick >= (*i).tick )
+        {
+            hold_frame += (*i).start;
+        }
+        else
+        {
+            last_tempo = (*--i);
+            break;
+        }  
+    }
+    
+    uint32_t end_tick = current_tick - last_tempo.tick;
+    
+     printf("end_tick %d: current_tick %d: last tempo.tick %d, bpm %f\n", end_tick, current_tick, last_tempo.tick, last_tempo.bpm);   
+    uint64_t jack_frame = hold_frame + tick_to_jack_frame(end_tick, last_tempo.bpm, this);
+    
+    printf("end_tick %d: jack_frame %d: hold_frame %d, bpm %f\n", end_tick, jack_frame, hold_frame, last_tempo.bpm);
+    
+    jack_transport_locate(m_jack_client,jack_frame);
+    
+    
+   // uint32_t s42_tick = last_tempo.tick + convert_jack_frame_to_s42_tick(end_frames, last_tempo.bpm, arg);
+    
+ //   printf("s42_tick %u: last_tick %u\n", s42_tick, last_tempo.tick);
+    
+ //   return s42_tick;
+    
+    
+    
+ //   current_tick *= 10;
 
     /*  This jack_frame calculation is all that is needed to change jack position
         The BBT calc can be sent but will be overridden by the first call to
@@ -1488,7 +1526,7 @@ void perform::position_jack( bool a_state, long a_tick )
         out again....
     */
 
-    int ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
+/*    int ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
     double beats_per_minute =  m_master_bus.get_bpm();
 
     uint64_t tick_rate = ((uint64_t)m_jack_frame_rate * current_tick * 60.0);
@@ -1496,7 +1534,7 @@ void perform::position_jack( bool a_state, long a_tick )
     uint64_t jack_frame = tick_rate / tpb_bpm;
 
     jack_transport_locate(m_jack_client,jack_frame);
-
+*/
 #ifdef USE_JACK_BBT_POSITION
     /* The below BBT call to jack_BBT_position() is not necessary to change jack position!!! */
 
@@ -2966,28 +3004,78 @@ void jack_timebase_callback(jack_transport_state_t state,
 
 #endif // USE_SEQUENCER64_TIMEBASE_CALLBACK
 
-/* used for checking jack stopped position for auto scroll when stopped */
-long get_current_jack_position(void *arg)
+long convert_jack_frame_to_s42_tick(jack_nframes_t a_frame, double a_bpm, void *arg)
 {
     perform *p = (perform *) arg;
-    jack_nframes_t current_frame;
     double jack_tick;
     double ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
-    double beats_per_minute =  p->get_bpm();
     double beat_type = p->get_bw();
-
-    current_frame = jack_get_current_transport_frame( p->m_jack_client );
     
     jack_tick =
-        (current_frame) *
+        (a_frame) *
         ticks_per_beat  *
-        beats_per_minute / ( p->m_jack_frame_rate* 60.0);
-
+        a_bpm / ( p->m_jack_frame_rate* 60.0);
 
     /* convert ticks */
     return jack_tick * ((double) c_ppqn /
                     (ticks_per_beat *
                      beat_type / 4.0  ));
+}
+
+
+/* used for checking jack stopped position for auto scroll when stopped */
+long get_current_jack_position(void *arg)
+{
+    perform *p = (perform *) arg;
+    jack_nframes_t current_frame;
+    
+    current_frame = jack_get_current_transport_frame( p->m_jack_client );
+    uint32_t hold_frame = 0;
+    
+    // FIXME STOPMARKERS
+    
+    list<tempo_mark>::iterator i;
+    tempo_mark last_tempo = (*--p->m_list_total_marker.end());
+    
+    for ( i = ++p->m_list_total_marker.begin(); i != p->m_list_total_marker.end(); ++i )
+    {
+        if( current_frame >= (*i).start )
+        {
+            hold_frame += (*i).start;
+        }
+        else
+        {
+            last_tempo = (*--i);
+            break;
+        }  
+    }
+    
+    uint32_t end_frames = current_frame - hold_frame;
+    
+    uint32_t s42_tick = last_tempo.tick + convert_jack_frame_to_s42_tick(end_frames, last_tempo.bpm, arg);
+    
+//    printf("s42_tick %u: last_tick %u\n", s42_tick, last_tempo.tick);
+    
+    return s42_tick;
+    
+/*    double jack_tick;
+    double ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
+    double beats_per_minute =  p->get_bpm();
+    double beat_type = p->get_bw();
+*/
+    
+    
+ /*   jack_tick =
+        (current_frame) *
+        ticks_per_beat  *
+        beats_per_minute / ( p->m_jack_frame_rate* 60.0);
+
+*/
+    /* convert ticks */
+ /*   return jack_tick * ((double) c_ppqn /
+                    (ticks_per_beat *
+                     beat_type / 4.0  ));
+ */
 }
 
 void jack_shutdown(void *arg)

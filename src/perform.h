@@ -43,7 +43,7 @@ class perform;
 #endif
 #endif
 
-#define RDEBUG
+#undef RDEBUG
 
 #define USE_SEQUENCER64_TIMEBASE_CALLBACK   // EXPERIMENTAL - needed for tempo change
 #define USE_MODIFIABLE_JACK_TEMPO           // EXPERIMENTAL SEQUENCER64
@@ -448,12 +448,13 @@ public:
 #ifdef USE_NON_TEMPO_MAP
     friend position_info solve_tempomap ( jack_nframes_t frame, void *arg );
     friend position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void *cb, void *arg );
-    friend jack_nframes_t jack_frame(tempo_mark current, tempo_mark previous, void *arg);
+    friend jack_nframes_t tick_to_jack_frame(uint64_t a_tick, double a_bpm, void *arg);
 #endif // USE_NON_TEMPO_MAP
     friend void jack_shutdown(void *arg);
     friend void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
                                        jack_position_t *pos, int new_pos, void *arg);
     friend int jack_process_callback(jack_nframes_t nframes, void* arg);
+    friend long convert_jack_frame_to_s42_tick(jack_nframes_t a_frame, double a_bpm, void *arg);
     friend long get_current_jack_position(void *arg);
 #endif // JACK_SUPPORT
 };
@@ -473,13 +474,14 @@ int jack_sync_callback(jack_transport_state_t state,
 #ifdef USE_NON_TEMPO_MAP
 position_info solve_tempomap ( jack_nframes_t frame );
 position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void *cb, void *arg );
-jack_nframes_t jack_frame(tempo_mark current, tempo_mark previous, void *arg);
+jack_nframes_t tick_to_jack_frame(uint64_t a_tick, double a_bpm, void *arg);
 #endif // USE_NON_TEMPO_MAP
 void print_jack_pos( jack_position_t* jack_pos );
 void jack_shutdown(void *arg);
 void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
                             jack_position_t *pos, int new_pos, void *arg);
 int jack_process_callback(jack_nframes_t nframes, void* arg);
+long convert_jack_frame_to_s42_tick(jack_nframes_t a_frame, double a_bpm, void *arg);
 long get_current_jack_position(void *arg);
 #ifdef JACK_SESSION
 void jack_session_callback(jack_session_event_t *ev, void *arg);
