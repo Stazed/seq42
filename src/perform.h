@@ -43,6 +43,8 @@ class perform;
 #endif
 #endif
 
+#define RDEBUG
+
 #define USE_SEQUENCER64_TIMEBASE_CALLBACK   // EXPERIMENTAL - needed for tempo change
 #define USE_MODIFIABLE_JACK_TEMPO           // EXPERIMENTAL SEQUENCER64
 #define USE_JACK_BBT_OFFSET                 // SEQUENCER64
@@ -78,12 +80,13 @@ struct undo_redo_perf_tracks
 
 struct tempo_mark
 {
-    int64_t tick;
+    uint64_t tick;
     double bpm;
-    int32_t bw;             // not used
-    int32_t bp_measure;     // not used
+    uint32_t bw;            // not used
+    uint32_t bp_measure;    // not used
+    uint64_t start;         // calculated frame offset start
     
-    tempo_mark ( ) : tick ( 0 ), bpm ( 0.0 ), bw ( 0 ), bp_measure ( 0 )
+    tempo_mark ( ) : tick ( 0 ), bpm ( 0.0 ), bw ( 0 ), bp_measure ( 0 ), start ( 0 )
         {
         }
 };
@@ -445,7 +448,7 @@ public:
 #ifdef USE_NON_TEMPO_MAP
     friend position_info solve_tempomap ( jack_nframes_t frame, void *arg );
     friend position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void *cb, void *arg );
-    friend jack_nframes_t jack_frame(tempo_mark a_mark, void *arg);
+    friend jack_nframes_t jack_frame(tempo_mark current, tempo_mark previous, void *arg);
 #endif // USE_NON_TEMPO_MAP
     friend void jack_shutdown(void *arg);
     friend void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
@@ -470,7 +473,7 @@ int jack_sync_callback(jack_transport_state_t state,
 #ifdef USE_NON_TEMPO_MAP
 position_info solve_tempomap ( jack_nframes_t frame );
 position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void *cb, void *arg );
-jack_nframes_t jack_frame(tempo_mark a_mark, void *arg);
+jack_nframes_t jack_frame(tempo_mark current, tempo_mark previous, void *arg);
 #endif // USE_NON_TEMPO_MAP
 void print_jack_pos( jack_position_t* jack_pos );
 void jack_shutdown(void *arg);

@@ -234,7 +234,7 @@ tempo::draw_background()
 bool
 tempo::on_button_press_event(GdkEventButton* p0)
 {
-    long tick = (long) p0->x;
+    uint64_t tick = (uint64_t) p0->x;
     tick *= m_perf_scale_x;
     tick += (m_4bar_offset * 16 * c_ppqn);
 
@@ -258,6 +258,7 @@ tempo::on_button_press_event(GdkEventButton* p0)
                 {
                     m_list_marker.erase(i);
                     m_list_marker.sort(&sort_tempo_mark);
+                    calculate_marker_start();
                     queue_draw();
                     reset_tempo_list();
                     global_is_modified = true;
@@ -341,6 +342,8 @@ tempo::add_marker(tempo_mark a_mark)
     }
 
     m_list_marker.sort(&sort_tempo_mark);
+    calculate_marker_start();
+    
     reset_tempo_list();
 }
 
@@ -371,4 +374,39 @@ tempo::load_tempo_list()
     m_list_marker = m_mainperf->m_list_total_marker;    // update tempo class
     m_mainperf->m_list_play_marker = m_list_marker;     // update the m_mainperf play list
     queue_draw();
+}
+
+/* calculates for jack frame */
+void
+tempo::calculate_marker_start()
+{
+    list<tempo_mark>::iterator i;
+    for ( i = ++m_list_marker.begin(); i != m_list_marker.end(); ++i )
+    {
+        if(i == m_list_marker.end())
+            break;
+        
+        list<tempo_mark>::iterator n = i; 
+            --n;
+            
+        tempo_mark current = (*i);
+        tempo_mark previous = (*n);
+        
+        (*i).start = jack_frame(current,previous, m_mainperf );
+        (*i).start -= previous.start;
+    }
+    reset_tempo_list();
+#ifdef RDEBUG
+    print_marker_info();
+#endif
+}
+
+void
+tempo::print_marker_info()
+{
+    list<tempo_mark>::iterator i;
+    for ( i = m_list_marker.begin(); i != m_list_marker.end(); ++i )
+    {
+        printf("mark tick %lu: start %lu: bpm %f\n", (*i).tick, (*i).start, (*i).bpm);
+    }
 }

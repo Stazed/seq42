@@ -119,6 +119,8 @@ public:
     void set_start_BPM(double a_bpm);
     void reset_tempo_list();
     void load_tempo_list();
+    void calculate_marker_start();
+    void print_marker_info();
     
     friend tempopopup;
 };

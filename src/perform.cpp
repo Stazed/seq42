@@ -30,7 +30,6 @@
 
 //For keys
 #include <gtkmm/accelkey.h>
-#undef RDEBUG
 
 using namespace Gtk;
 
@@ -778,7 +777,7 @@ void perform::tempo_change()
 
     for ( i = m_list_play_marker.begin(); i != m_list_play_marker.end(); i++ )
     {
-        if(m_tick >= (i)->tick)
+        if((uint64_t)m_tick >= (i)->tick)
         {
             if((i)->bpm == STOP_MARKER)
             {
@@ -1313,15 +1312,15 @@ void perform::stop_jack(  )
 
 #ifdef JACK_SUPPORT
 #ifdef USE_NON_TEMPO_MAP
-jack_nframes_t jack_frame(tempo_mark a_mark, void *arg)
+jack_nframes_t jack_frame(tempo_mark current, tempo_mark previous, void *arg)
 {
     perform *perf = (perform *) arg;
     
-    long current_tick = a_mark.tick;
+    long current_tick = current.tick;
     current_tick *= 10;
 
     int ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
-    double beats_per_minute =  a_mark.bpm;
+    double beats_per_minute =  previous.bpm;
 
     uint64_t tick_rate = ((uint64_t)perf->m_jack_frame_rate * current_tick * 60.0);
     long tpb_bpm = ticks_per_beat * beats_per_minute * 4.0 / perf->m_bw;
@@ -1400,14 +1399,12 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
             }
             else
             {
-                jack_nframes_t begin_frame = jack_frame((*n), arg);
-                jack_nframes_t end_frame = jack_frame((*i), arg);
-                jack_nframes_t start_frame = end_frame - begin_frame;
+                jack_nframes_t end_frame = (*i).start;
+                jack_nframes_t start_frame = (*n).start;
 #ifdef RDEBUG                
                 printf("(*n).tick %ld: (*i).tick %ld\n", (*n).tick, (*i).tick);
-                printf("start_frame %u: begin %u: end_frame %u\n", start_frame,begin_frame,end_frame);
+                printf("start_frame(n) %u: end_frame(i) %u\n", start_frame,end_frame);
 #endif
-                //next = std::min( jack_frame((*i), arg), end );
                 next = start_frame - ( ( start_frame - end_frame ) % frames_per_beat );
             }
 #ifdef RDEBUG
@@ -2980,7 +2977,7 @@ long get_current_jack_position(void *arg)
     double beat_type = p->get_bw();
 
     current_frame = jack_get_current_transport_frame( p->m_jack_client );
-
+    
     jack_tick =
         (current_frame) *
         ticks_per_beat  *
