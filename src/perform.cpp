@@ -2155,10 +2155,10 @@ void perform::output_func()
 
                 m_jack_transport_state = jack_transport_query( m_jack_client, &m_jack_pos );
 
-                m_jack_pos.beats_per_bar = m_bp_measure;
-                m_jack_pos.beat_type = m_bw;
-                m_jack_pos.ticks_per_beat = c_ppqn * 10;
-                m_jack_pos.beats_per_minute =  m_master_bus.get_bpm();
+ //               m_jack_pos.beats_per_bar = m_bp_measure;
+ //               m_jack_pos.beat_type = m_bw;
+ //               m_jack_pos.ticks_per_beat = c_ppqn * 10;
+ //               m_jack_pos.beats_per_minute =  m_master_bus.get_bpm();
 
                 if ( m_jack_transport_state_last  ==  JackTransportStarting &&
                         m_jack_transport_state       == JackTransportRolling )
@@ -2175,10 +2175,11 @@ void perform::output_func()
                         m_jack_pos.beats_per_minute / (m_jack_frame_rate * 60.0);
 
                     /* convert ticks */
-                    jack_ticks_converted =
+                   jack_ticks_converted = get_current_jack_position(this);
+ /*                   jack_ticks_converted =
                         m_jack_tick * ((double) c_ppqn /
                                        (m_jack_pos.ticks_per_beat *
-                                        m_jack_pos.beat_type / 4.0  ));
+                                        m_jack_pos.beat_type / 4.0  ));*/
 
                     set_orig_ticks( (long) jack_ticks_converted );
                     current_tick = clock_tick = total_tick = jack_ticks_converted_last = jack_ticks_converted;
@@ -2237,10 +2238,11 @@ void perform::output_func()
                     }
 
                     /* convert ticks */
-                    jack_ticks_converted =
+                    jack_ticks_converted = get_current_jack_position(this);
+                  /*  jack_ticks_converted =
                         m_jack_tick * ((double) c_ppqn /
                                        (m_jack_pos.ticks_per_beat *
-                                        m_jack_pos.beat_type / 4.0  ));
+                                        m_jack_pos.beat_type / 4.0  ));*/
 
                     //printf ( "jack_ticks_conv[%lf] = \n",  jack_ticks_converted );
                     //printf ( "    m_jack_tick[%lf] * ((double) c_ppqn[%lf] / \n", m_jack_tick, (double) c_ppqn );
@@ -2868,7 +2870,7 @@ jack_timebase_callback
         printf("jack_timebase_callback(): null position pointer");
         return;
     }
-
+#if 0
     perform *p = (perform *) arg;
     pos->beats_per_minute = p->get_bpm();
     pos->beats_per_bar = p->get_bp_measure();
@@ -2889,6 +2891,7 @@ jack_timebase_callback
 
     if (new_pos || ! (pos->valid & JackPositionBBT))
     {   
+#endif // 0
 #ifdef USE_NON_TEMPO_MAP
 #ifdef RDEBUG
         print_jack_pos(pos);
@@ -2932,6 +2935,7 @@ jack_timebase_callback
         pos->bar_start_tick = int(pos->bar * ticks_per_bar);
         pos->bar++;                             /* adjust start to bar 1 */
 #endif // USE_NON_TEMPO_MAP
+#if 0
     }
     else            // This works with tempo change when rolling
     {
@@ -2953,6 +2957,7 @@ jack_timebase_callback
             }
         }
     }
+#endif // 0
 #ifdef USE_JACK_BBT_OFFSET
     pos->bbt_offset = 0;
     pos->valid = (jack_position_bits_t)
