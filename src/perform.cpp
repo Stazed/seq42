@@ -1854,6 +1854,7 @@ int jack_process_callback(jack_nframes_t nframes, void* arg)
 #ifdef USE_MODIFIABLE_JACK_TEMPO    // For jack in slave mode, allow tempo change
     else
     {
+        /* this won't work with new tempo markers!!!!*/
         jack_position_t pos;
         jack_transport_query(m_mainperf->m_jack_client, &pos);
         if (! m_mainperf->m_jack_master)

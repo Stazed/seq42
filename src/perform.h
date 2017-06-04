@@ -46,9 +46,9 @@ class perform;
 #undef RDEBUG
 
 #define USE_SEQUENCER64_TIMEBASE_CALLBACK   // EXPERIMENTAL - needed for tempo change
-#define USE_MODIFIABLE_JACK_TEMPO           // EXPERIMENTAL SEQUENCER64
+#undef USE_MODIFIABLE_JACK_TEMPO            // EXPERIMENTAL SEQUENCER64 - won't work with tempo markers
 #define USE_JACK_BBT_OFFSET                 // SEQUENCER64
-#define  USE_NON_TEMPO_MAP                   // Non-timeline
+#define  USE_NON_TEMPO_MAP                  // Non-timeline
 
 
 #undef USE_JACK_BBT_POSITION                // old code could be used for debug
