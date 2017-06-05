@@ -47,7 +47,6 @@ class perform;
 
 #define USE_SEQUENCER64_TIMEBASE_CALLBACK   // EXPERIMENTAL - needed for tempo change
 #undef USE_MODIFIABLE_JACK_TEMPO            // EXPERIMENTAL SEQUENCER64 - won't work with tempo markers
-#define USE_JACK_BBT_OFFSET                 // SEQUENCER64
 #define  USE_NON_TEMPO_MAP                  // Non-timeline
 
 
@@ -231,8 +230,24 @@ public:
     vector<undo_type> redo_vect;
 
     track m_tracks_clipboard[c_max_track];
+    
+    /* m_list_play_marker is used to trigger bpm or stops when running in play().
+     * As each marker is encountered, it's value is used, then it is erased.
+     * It is reset at stop, or when any new marker is set or removed by user.
+     * Reset value = m_list_marker in the tempo() class. */
     list < tempo_mark > m_list_play_marker;
+    
+    /* m_list_total_marker contains all markers including stops.
+     * Used for file saving and loading. Contains stop markers.
+     * Should always = m_list_marker in the tempo() class.
+     * Only adjusted when new marker is set or removed by user  */
     list < tempo_mark > m_list_total_marker;
+    
+    /* m_list_no_stop_markers contains only playing markers (no stops).
+     * It is used by the render_tempomap() (jack) when playing and position_jack().
+     * Also used in output_func() when jack is running.
+     * Only adjusted when new marker is set or removed by user */
+    list < tempo_mark > m_list_no_stop_markers;
 
     float m_excell_FF_RW;
     bool m_have_undo;

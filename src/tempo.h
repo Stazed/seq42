@@ -70,8 +70,9 @@ private:
     mainwnd      * const m_mainwnd;
     Adjustment   * const m_hadjust;
     
-    /* holds the events */
+    /* holds the markers */
     list < tempo_mark > m_list_marker;
+    list < tempo_mark > m_list_no_stop_markers;
     tempo_mark m_current_mark;
     
     tempopopup  *m_popup_tempo_wnd;
@@ -120,7 +121,7 @@ public:
     void reset_tempo_list();
     void load_tempo_list();
     void calculate_marker_start();
-    void print_marker_info();
+    void print_marker_info(list<tempo_mark> a_list);
     
     friend tempopopup;
 };

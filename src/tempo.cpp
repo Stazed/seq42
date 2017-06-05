@@ -196,7 +196,7 @@ tempo::draw_background()
             // Load the xpm image
             char str[10];
 
-            if((i)->bpm == STOP_MARKER)       // Stop marker
+            if((i)->bpm == STOP_MARKER)         // Stop marker
             {
                 m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(stop_marker_xpm);
                 m_window->draw_pixbuf(m_pixbuf,0,0,tempo_marker -4,0, -1,-1,Gdk::RGB_DITHER_NONE, 0, 0);
@@ -257,10 +257,8 @@ tempo::on_button_press_event(GdkEventButton* p0)
                 if((i)->tick != STARTING_MARKER)    // Don't allow erase of first start marker
                 {
                     m_list_marker.erase(i);
-                    m_list_marker.sort(&sort_tempo_mark);
-                    calculate_marker_start();
-                    queue_draw();
                     reset_tempo_list();
+                    queue_draw();
                     global_is_modified = true;
                     return true;
                 }
@@ -310,6 +308,7 @@ tempo::sort_tempo_mark(const tempo_mark &a, const tempo_mark &b)
     return a.tick < b.tick;
 }
 
+/* not currently used */
 bool
 tempo::reverse_sort_tempo_mark(const tempo_mark &a, const tempo_mark &b)
 {
@@ -341,9 +340,6 @@ tempo::add_marker(tempo_mark a_mark)
         m_list_marker.push_back(a_mark);
     }
 
-    m_list_marker.sort(&sort_tempo_mark);
-    calculate_marker_start();
-    
     reset_tempo_list();
 }
 
@@ -357,14 +353,17 @@ tempo::set_start_BPM(double a_bpm)
     queue_draw();
 }
 
-/* update perform */
+/* update marker jack start ticks and perform class lists.
+ * triggered any time user adds or deletes a marker or adjusts
+ * the start marker bpm spin. Also on initial file loading */
 void
 tempo::reset_tempo_list()
 {
+    calculate_marker_start();
+    
     m_mainperf->m_list_play_marker = m_list_marker;
     m_mainperf->m_list_total_marker = m_list_marker;
-    
-    //m_mainperf->m_list_total_marker.sort(&reverse_sort_tempo_mark);
+    m_mainperf->m_list_no_stop_markers = m_list_no_stop_markers;
 }
 
 /* file loading */
@@ -372,7 +371,7 @@ void
 tempo::load_tempo_list()
 {
     m_list_marker = m_mainperf->m_list_total_marker;    // update tempo class
-    m_mainperf->m_list_play_marker = m_list_marker;     // update the m_mainperf play list
+    reset_tempo_list();                                 // needed to update m_list_no_stop_markers
     queue_draw();
 }
 
@@ -380,15 +379,37 @@ tempo::load_tempo_list()
 void
 tempo::calculate_marker_start()
 {
+    /* sort first always */
+    m_list_marker.sort(&sort_tempo_mark);
+    
+    /* clear the old junk */
+    m_list_no_stop_markers.clear();
+    
+    /* vector to hold stop markers */
+    std::vector< tempo_mark > v_stop_markers;
+
     list<tempo_mark>::iterator i;
-    for ( i = ++m_list_marker.begin(); i != m_list_marker.end(); ++i )
+    for ( i = m_list_marker.begin(); i != m_list_marker.end(); ++i )
     {
-        if(i == m_list_marker.end())
+        if((*i).bpm != STOP_MARKER) // hold the playing markers 
+        {
+            m_list_no_stop_markers.push_back((*i));
+        }
+        else                        // hold the stop markers
+        {
+            v_stop_markers.push_back((*i));
+        }
+    }
+
+    /* calculate the jack start tick without the stop markers */
+    for ( i = ++m_list_no_stop_markers.begin(); i != m_list_no_stop_markers.end(); ++i )
+    {
+        if(i == m_list_no_stop_markers.end())
             break;
         
         list<tempo_mark>::iterator n = i; 
             --n;
-// FIXME STOPMARKER !!!
+
         tempo_mark current = (*i);
         tempo_mark previous = (*n);
         
@@ -396,18 +417,27 @@ tempo::calculate_marker_start()
 //        printf("from tick to %d: previous.start %d\n",(*i).start, previous.start );
         (*i).start += previous.start;
     }
-    reset_tempo_list();
-#ifdef RDEBUG
-    print_marker_info();
-#endif
+    
+    /* reset the main list with the calculated starts */
+    m_list_marker = m_list_no_stop_markers;
+    
+    /* add back the stop markers */
+    for(unsigned n = 0; n < v_stop_markers.size(); ++n )
+    {
+        m_list_marker.push_back(v_stop_markers[n]);
+    }
+    
+    /* sort again since stops will be out of order */
+    m_list_marker.sort(&sort_tempo_mark);
 }
 
 void
-tempo::print_marker_info()
+tempo::print_marker_info(list<tempo_mark> a_list)
 {
     list<tempo_mark>::iterator i;
-    for ( i = m_list_marker.begin(); i != m_list_marker.end(); ++i )
+    for ( i = a_list.begin(); i != a_list.end(); ++i)
     {
         printf("mark tick %lu: start %lu: bpm %f\n", (*i).tick, (*i).start, (*i).bpm);
     }
+    printf("\n\n");
 }

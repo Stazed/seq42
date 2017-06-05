@@ -263,6 +263,7 @@ bool perform::clear_all()
     set_have_redo();
     m_list_play_marker.clear();
     m_list_total_marker.clear();
+    m_list_no_stop_markers.clear();
     
     return true;
 }
@@ -1368,12 +1369,12 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
 
     jack_nframes_t frames_per_beat = samples_per_minute / bpm;
 
-    if ( ! perf->m_list_total_marker.size() )
+    if ( ! perf->m_list_no_stop_markers.size() )
        return pos;
     
     list<tempo_mark>::iterator i;
     
-    for ( i = perf->m_list_total_marker.begin(); i != perf->m_list_total_marker.end(); ++i )
+    for ( i = perf->m_list_no_stop_markers.begin(); i != perf->m_list_no_stop_markers.end(); ++i )
     {
         tempo_mark p = (*i);
         bpm = p.bpm;
@@ -1393,7 +1394,7 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
             list<tempo_mark>::iterator n = i; 
             ++n;
 
-            if ( n == perf->m_list_total_marker.end())
+            if ( n == perf->m_list_no_stop_markers.end())
             {
                 next = end;
             }
@@ -1475,12 +1476,10 @@ void perform::position_jack( bool a_state, long a_tick )
 
     uint32_t hold_frame = 0;
     
-    // FIXME STOPMARKERS
-    
     list<tempo_mark>::iterator i;
-    tempo_mark last_tempo = (*--m_list_total_marker.end());
+    tempo_mark last_tempo = (*--m_list_no_stop_markers.end());
     
-    for ( i = ++m_list_total_marker.begin(); i != m_list_total_marker.end(); ++i )
+    for ( i = ++m_list_no_stop_markers.begin(); i != m_list_no_stop_markers.end(); ++i )
     {
         if( current_tick >= (*i).tick )
         {
@@ -2855,7 +2854,7 @@ void perform::jack_BBT_position(jack_position_t &pos, double jack_tick)
     with BBT information based on frame position and frame_rate. It is called once on
     startup, and afterwards, only when transport is rolling.
 */
-#ifdef USE_SEQUENCER64_TIMEBASE_CALLBACK
+#ifdef USE_NON_TEMPO_MAP
 void
 jack_timebase_callback
 (
@@ -2871,29 +2870,7 @@ jack_timebase_callback
         printf("jack_timebase_callback(): null position pointer");
         return;
     }
-#if 0
-    perform *p = (perform *) arg;
-    pos->beats_per_minute = p->get_bpm();
-    pos->beats_per_bar = p->get_bp_measure();
-    pos->beat_type = p->get_bw();
-    pos->ticks_per_beat = c_ppqn * 10.0;
 
-    long ticks_per_bar = long(pos->ticks_per_beat * pos->beats_per_bar);
-    long ticks_per_minute = long(pos->beats_per_minute * pos->ticks_per_beat);
-
-    /* don't use pos->frame_rate below because it usually will contain garbage or 0
-     * on position change unless the sending client plugs BBT, which is almost never.
-     * The garbage will cause occasional initial incorrect BBT calculation for one cycle until
-     * the position change is accepted by jack and the else{} calculation then corrects.
-     * Using the frame_rate from p->m_jack_frame_rate which comes from init_jack().
-     * AFAIK frame rate is set by the jack server and cannot be changed by clients
-     * when running  */
-    double framerate = double(p->m_jack_frame_rate * 60.0);
-
-    if (new_pos || ! (pos->valid & JackPositionBBT))
-    {   
-#endif // 0
-#ifdef USE_NON_TEMPO_MAP
 #ifdef RDEBUG
         print_jack_pos(pos);
 #endif // RDEBUG
@@ -2908,70 +2885,13 @@ jack_timebase_callback
         pos->bar = pi.bbt.bar + 1;
         pos->beat = pi.bbt.beat + 1;
         pos->tick = pi.bbt.tick;
-        pos->ticks_per_beat = 1920.0;                               /* FIXME: wrong place for this */
+        pos->ticks_per_beat = 1920;     // c_ppqn * 10
         
         /* FIXME: fill this in */
         pos->bar_start_tick = 0;
-        
-#else
-        double minute = pos->frame / framerate;
-        long abs_tick = long(minute * ticks_per_minute);
-        long abs_beat = 0;
-
-        /*
-         *  Handle 0 values of pos->ticks_per_beat and pos->beats_per_bar that
-         *  occur at startup as JACK Master.
-         */
-
-        if (pos->ticks_per_beat > 0)                    // 0 at startup!
-            abs_beat = long(abs_tick / pos->ticks_per_beat);
-
-        if (pos->beats_per_bar > 0)                     // 0 at startup!
-            pos->bar = int(abs_beat / pos->beats_per_bar);
-        else
-            pos->bar = 0;
-
-        pos->beat = int(abs_beat - (pos->bar * pos->beats_per_bar) + 1);
-        pos->tick = int(abs_tick - (abs_beat * pos->ticks_per_beat));
-        pos->bar_start_tick = int(pos->bar * ticks_per_bar);
-        pos->bar++;                             /* adjust start to bar 1 */
-#endif // USE_NON_TEMPO_MAP
-#if 0
-    }
-    else            // This works with tempo change when rolling
-    {
-        /*
-         * Computes the BBT (beats/bars/ticks) based on the previous period.
-         *   Note that the tick is delta'ed.
-         */
-
-        int delta_tick = int(nframes * ticks_per_minute / framerate);
-        pos->tick += delta_tick;
-        while (pos->tick >= pos->ticks_per_beat)
-        {
-            pos->tick -= int(pos->ticks_per_beat);
-            if (++pos->beat > pos->beats_per_bar)
-            {
-                pos->beat = 1;
-                ++pos->bar;
-                pos->bar_start_tick += ticks_per_bar;
-            }
-        }
-    }
-#endif // 0
-#ifdef USE_JACK_BBT_OFFSET
-    pos->bbt_offset = 0;
-    pos->valid = (jack_position_bits_t)
-    (
-        pos->valid | JackBBTFrameOffset | JackPositionBBT
-    );
-#else
-    pos->valid = JackPositionBBT;
-#endif // USE_JACK_BBT_OFFSET
 }
 
 #else // legacy timebase - tempo change while rolling will incorrectly calulate BBT
-
 
 /*
     This callback is only called by jack when seq42 is Master and is used to supply jack
@@ -3000,7 +2920,7 @@ void jack_timebase_callback(jack_transport_state_t state,
     p->jack_BBT_position(*pos, jack_tick);
 }
 
-#endif // USE_SEQUENCER64_TIMEBASE_CALLBACK
+#endif  // USE_NON_TEMPO_MAP
 
 long convert_jack_frame_to_s42_tick(jack_nframes_t a_frame, double a_bpm, void *arg)
 {
@@ -3020,22 +2940,20 @@ long convert_jack_frame_to_s42_tick(jack_nframes_t a_frame, double a_bpm, void *
                      beat_type / 4.0  ));
 }
 
-
 /* used for checking jack stopped position for auto scroll when stopped */
 long get_current_jack_position(void *arg)
 {
     perform *p = (perform *) arg;
-    jack_nframes_t current_frame;
-    
+    jack_nframes_t current_frame; 
     current_frame = jack_get_current_transport_frame( p->m_jack_client );
+    
+#ifdef USE_NON_TEMPO_MAP
     uint32_t hold_frame = 0;
     
-    // FIXME STOPMARKERS
-    
     list<tempo_mark>::iterator i;
-    tempo_mark last_tempo = (*--p->m_list_total_marker.end());
+    tempo_mark last_tempo = (*--p->m_list_no_stop_markers.end());
     
-    for ( i = ++p->m_list_total_marker.begin(); i != p->m_list_total_marker.end(); ++i )
+    for ( i = ++p->m_list_no_stop_markers.begin(); i != p->m_list_no_stop_markers.end(); ++i )
     {
         if( current_frame >= (*i).start )
         {
@@ -3054,25 +2972,24 @@ long get_current_jack_position(void *arg)
 //    printf("s42_tick %u: last_tick %u\n", s42_tick, last_tempo.tick);
     
     return s42_tick;
-    
-/*    double jack_tick;
+#else
+    double jack_tick;
     double ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
     double beats_per_minute =  p->get_bpm();
     double beat_type = p->get_bw();
-*/
-    
-    
- /*   jack_tick =
+
+    jack_tick =
         (current_frame) *
         ticks_per_beat  *
         beats_per_minute / ( p->m_jack_frame_rate* 60.0);
 
-*/
+
     /* convert ticks */
- /*   return jack_tick * ((double) c_ppqn /
+    return jack_tick * ((double) c_ppqn /
                     (ticks_per_beat *
                      beat_type / 4.0  ));
- */
+ 
+#endif // USE_NON_TEMPO_MAP
 }
 
 void jack_shutdown(void *arg)
