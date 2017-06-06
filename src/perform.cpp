@@ -1335,8 +1335,6 @@ position_info solve_tempomap ( jack_nframes_t frame, void *arg )
     return render_tempomap( frame, 0, 0, arg );
 }
 
-/* THREAD: UI and RT */
-/** draw appropriate measure lines inside the given bounding box */
 position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void *cb, void *arg )
 {
 #ifdef RDEBUG
@@ -1364,7 +1362,7 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
     sig.beats_per_bar = 4;
     sig.beat_type = 4;
 
-    jack_nframes_t f = 0;
+    jack_nframes_t frame = 0;
     jack_nframes_t next = 0;
 
     jack_nframes_t frames_per_beat = samples_per_minute / bpm;
@@ -1385,7 +1383,7 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
         sig.beats_per_bar = perf->m_bp_measure;
  
 #ifdef RDEBUG
-        printf("frames per beat %u: bbt.beat %u: bpm %f\n",frames_per_beat, bbt.beat, bpm);
+                printf("bpm %f: frames_per_beat %u: TOP frames %u\n",bpm, frames_per_beat,f);
 #endif
             /* Time point resets beat */
 //            bbt.beat = 0;             // timeline needed to, because it supported multiple sig markers -- we don't
@@ -1416,9 +1414,9 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
  //               next = (*n)->start() - ( ( (*n)->start() - (*i)->start() ) % frames_per_beat );
         }
 
-        for ( ; f < next; ++bbt.beat, f += frames_per_beat )
+        for ( ; frame <= next; ++bbt.beat, frame += frames_per_beat )
         {
-
+           // printf("frames %u: next %u: end %u: frames_per_beat %u\n", f, next,end,frames_per_beat);
             if ( bbt.beat == sig.beats_per_bar )
             {
                 bbt.beat = 0;
@@ -1428,32 +1426,34 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
             printf("bbt,beat %u: bbt.bar %u: frame %u\n", bbt.beat, bbt.bar, f);
 #endif
             /* ugliness to avoid failing out at -1 */
-            if ( end >= frames_per_beat )
+            if ( end > frames_per_beat )
             {
-                if ( f >= end - frames_per_beat )
+                if ( frame > end - frames_per_beat )
                     goto done;
             }
-            else if ( f + frames_per_beat >= end )
+            else if ( frame + frames_per_beat > end )
                 goto done;
         }
+        /* when frame is == next then one extra frame & beat are added - so subtract then here */
+        frame -= frames_per_beat;
+        --bbt.beat;
     }
 
 done:
 
-    pos.frame = f;
+    pos.frame = frame;
     pos.tempo = bpm;
     pos.beats_per_bar = sig.beats_per_bar;
     pos.beat_type = sig.beat_type;
 
-    assert( f <= end );
+    assert( frame <= end );
 
-    assert( end - f <= frames_per_beat );
+    assert( end - frame <= frames_per_beat );
 
-    /* FIXME: this this right? */
 
     double ticks_per_beat = c_ppqn * 10; // 192 * 10 = 1920
     const double frames_per_tick = frames_per_beat / ticks_per_beat;
-    bbt.tick = ( end - f ) / frames_per_tick;
+    bbt.tick = ( end - frame ) / frames_per_tick;
 
     return pos;
 }
