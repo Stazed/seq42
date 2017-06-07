@@ -242,15 +242,14 @@ tempo::on_button_press_event(GdkEventButton* p0)
     tick *= m_perf_scale_x;
     tick += (m_4bar_offset * 16 * c_ppqn);
 
-    tick = tick - (tick % m_snap);
-
-    if ( p0->button == 1 )  // left mouse button add marker or drag - FIXME
+    if ( p0->button == 1 )              // left mouse button add marker or drag - FIXME
     {
+        tick = tick - (tick % m_snap);  // snap only when adding, not when trying to delete
         set_tempo_marker(tick);
         /* don't queue_draw() here because they might escape key out */
     }
 
-    if ( p0->button == 3 )                          // right mouse button delete marker
+    if ( p0->button == 3 )              // right mouse button delete marker
     {
         list<tempo_mark>::iterator i;
         for ( i = m_list_marker.begin(); i != m_list_marker.end(); i++ )
