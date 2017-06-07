@@ -744,6 +744,8 @@ void perform::play( long a_tick )
     /* just run down the list of sequences and have them dump */
 
     //printf( "play [%ld]\n", a_tick );
+    
+    tempo_change();
 
     m_tick = a_tick;
     for (int i=0; i< c_max_track; i++ )
@@ -757,7 +759,6 @@ void perform::play( long a_tick )
 
     /* flush the bus */
     m_master_bus.flush();
-    tempo_change();
 }
 
 void perform::set_orig_ticks( long a_tick  )
@@ -1434,7 +1435,7 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
             else if ( frame + frames_per_beat > end )
                 goto done;
         }
-        /* when frame is == next then one extra frame & beat are added - so subtract then here */
+        /* when frame is == next && not goto done: then one extra frame & beat are added - so subtract them here */
         frame -= frames_per_beat;
         --bbt.beat;
     }
@@ -1825,7 +1826,8 @@ int jack_process_callback(jack_nframes_t nframes, void* arg)
     /* For start or FF/RW/ key-p when not running */
     if(!global_is_running)
     {
-        jack_transport_state_t state = jack_transport_query( m_mainperf->m_jack_client, nullptr );
+        jack_position_t pos;
+        jack_transport_state_t state = jack_transport_query( m_mainperf->m_jack_client, &pos );
 
         /* we are stopped, do we need to start? */
         if(state == JackTransportRolling || state == JackTransportStarting )
@@ -1839,7 +1841,7 @@ int jack_process_callback(jack_nframes_t nframes, void* arg)
         /* we don't need to start - just reposition transport marker */
         else
         {
-            long tick = get_current_jack_position((void *)m_mainperf);
+            long tick = get_current_jack_position(pos.frame, (void *)m_mainperf);
             long diff = tick - m_mainperf->get_jack_stop_tick();
 
             if(diff != 0)
@@ -2169,18 +2171,21 @@ void perform::output_func()
                     //printf ("[Start Playback]\n" );
 
                     dumping = true;
+                    
+#ifdef USE_NON_TEMPO_MAP
+                    jack_ticks_converted = get_current_jack_position(m_jack_frame_current,(void*)this);
+#else
                     m_jack_tick =
                         m_jack_pos.frame *
                         m_jack_pos.ticks_per_beat *
                         m_jack_pos.beats_per_minute / (m_jack_frame_rate * 60.0);
 
                     /* convert ticks */
-                   jack_ticks_converted = get_current_jack_position(this);
- /*                   jack_ticks_converted =
+                    jack_ticks_converted =
                         m_jack_tick * ((double) c_ppqn /
                                        (m_jack_pos.ticks_per_beat *
-                                        m_jack_pos.beat_type / 4.0  ));*/
-
+                                        m_jack_pos.beat_type / 4.0  ));
+#endif // USE_NON_TEMPO_MAP
                     set_orig_ticks( (long) jack_ticks_converted );
                     current_tick = clock_tick = total_tick = jack_ticks_converted_last = jack_ticks_converted;
                     init_clock = true;
@@ -2225,6 +2230,9 @@ void perform::output_func()
                     // if we are moving ahead
                     if ( (m_jack_frame_current > m_jack_frame_last))
                     {
+#ifdef USE_NON_TEMPO_MAP
+                        m_jack_frame_last = m_jack_frame_current;
+#else
                         m_jack_tick +=
                             (m_jack_frame_current - m_jack_frame_last)  *
                             m_jack_pos.ticks_per_beat *
@@ -2235,15 +2243,18 @@ void perform::output_func()
                         //printf(  "m_jack_pos.ticks_per_beat[%lf] * m_jack_pos.beats_per_minute[%lf] / \n(m_jack_frame_rate[%lf] * 60.0\n", (double) m_jack_pos.ticks_per_beat, (double) m_jack_pos.beats_per_minute, (double) m_jack_frame_rate);
 
                         m_jack_frame_last = m_jack_frame_current;
+#endif // USE_NON_TEMPO_MAP
                     }
 
                     /* convert ticks */
-                    jack_ticks_converted = get_current_jack_position(this);
-                  /*  jack_ticks_converted =
+#ifdef USE_NON_TEMPO_MAP
+                    jack_ticks_converted = get_current_jack_position(m_jack_frame_current,(void*)this);
+#else
+                    jack_ticks_converted =
                         m_jack_tick * ((double) c_ppqn /
                                        (m_jack_pos.ticks_per_beat *
-                                        m_jack_pos.beat_type / 4.0  ));*/
-
+                                        m_jack_pos.beat_type / 4.0  ));
+#endif // USE_NON_TEMPO_MAP
                     //printf ( "jack_ticks_conv[%lf] = \n",  jack_ticks_converted );
                     //printf ( "    m_jack_tick[%lf] * ((double) c_ppqn[%lf] / \n", m_jack_tick, (double) c_ppqn );
                     //printf ( "   (m_jack_pos.ticks_per_beat[%lf] * m_jack_pos.beat_type[%lf] / 4.0  )\n",
@@ -2525,7 +2536,9 @@ void perform::output_func()
 
 #ifdef JACK_SUPPORT
         if(m_jack_running)
-            m_jack_stop_tick = get_current_jack_position((void *)this);
+        {
+            m_jack_stop_tick = get_current_jack_position(jack_get_current_transport_frame( m_jack_client ),(void *)this);
+        }
 #endif // JACK_SUPPORT
     }
 
@@ -2940,12 +2953,11 @@ long convert_jack_frame_to_s42_tick(jack_nframes_t a_frame, double a_bpm, void *
                      beat_type / 4.0  ));
 }
 
-/* used for checking jack stopped position for auto scroll when stopped */
-long get_current_jack_position(void *arg)
+/* returns conversion of jack frame position to seq42 tick */
+long get_current_jack_position(jack_nframes_t a_frame, void *arg)
 {
     perform *p = (perform *) arg;
-    jack_nframes_t current_frame; 
-    current_frame = jack_get_current_transport_frame( p->m_jack_client );
+    jack_nframes_t current_frame = a_frame; 
     
 #ifdef USE_NON_TEMPO_MAP
     uint32_t hold_frame = 0;

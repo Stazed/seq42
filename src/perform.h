@@ -470,7 +470,7 @@ public:
                                        jack_position_t *pos, int new_pos, void *arg);
     friend int jack_process_callback(jack_nframes_t nframes, void* arg);
     friend long convert_jack_frame_to_s42_tick(jack_nframes_t a_frame, double a_bpm, void *arg);
-    friend long get_current_jack_position(void *arg);
+    friend long get_current_jack_position(jack_nframes_t a_frame, void *arg);
 #endif // JACK_SUPPORT
 };
 
@@ -497,7 +497,7 @@ void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes
                             jack_position_t *pos, int new_pos, void *arg);
 int jack_process_callback(jack_nframes_t nframes, void* arg);
 long convert_jack_frame_to_s42_tick(jack_nframes_t a_frame, double a_bpm, void *arg);
-long get_current_jack_position(void *arg);
+long get_current_jack_position(jack_nframes_t a_frame, void *arg);
 #ifdef JACK_SESSION
 void jack_session_callback(jack_session_event_t *ev, void *arg);
 #endif // JACK_SESSION
