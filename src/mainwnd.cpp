@@ -565,6 +565,7 @@ mainwnd::timer_callback(  )
 
     m_main_time->idle_progress( ticks );
 
+    /* used on initial file load and during play with tempo changes from markers */
     if ( m_adjust_bpm->get_value() != m_mainperf->get_bpm())
     {
         m_adjust_bpm->set_value( m_mainperf->get_bpm());
@@ -665,13 +666,15 @@ mainwnd::timer_callback(  )
     {
         m_mainperf->set_tempo_load(false);
         m_tempo->load_tempo_list();
+        /* reset the m_mainperf bpm for display purposes, not changing the list value*/
         m_mainperf->set_bpm(m_mainperf->get_start_tempo());
     }
     
     if(m_mainperf->get_tempo_reset())   /* play tempo markers */
     {
-        m_tempo->reset_tempo_list();
+        m_tempo->reset_tempo_list(true); // true for updating play_list only, no need to recalc here
         m_mainperf->set_tempo_reset(false);
+        /* reset the m_mainperf bpm for display purposes, not changing the list value*/
         m_mainperf->set_bpm(m_mainperf->get_start_tempo());
     }
     
@@ -1707,9 +1710,8 @@ mainwnd::adj_callback_bpm( )
 {
     if(m_mainperf->get_bpm() !=  m_adjust_bpm->get_value())
     {
-        m_mainperf->set_bpm(  m_adjust_bpm->get_value());
+        /* call to set_start_BPM will call m_mainperf->set_bpm() */
         m_tempo->set_start_BPM(m_adjust_bpm->get_value());
-        global_is_modified = true;
     }
 }
 
@@ -1763,14 +1765,14 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
 
         if ( a_ev->keyval == m_mainperf->m_key_bpm_dn )
         {
-            m_mainperf->set_bpm( m_mainperf->get_bpm() - 1 );
+            m_tempo->set_start_BPM(m_mainperf->get_bpm() - 1);
             m_adjust_bpm->set_value(  m_mainperf->get_bpm() );
             return true;
         }
 
         if ( a_ev->keyval ==  m_mainperf->m_key_bpm_up )
         {
-            m_mainperf->set_bpm( m_mainperf->get_bpm() + 1 );
+            m_tempo->set_start_BPM(m_mainperf->get_bpm() + 1);
             m_adjust_bpm->set_value(  m_mainperf->get_bpm() );
             return true;
         }

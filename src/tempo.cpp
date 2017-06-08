@@ -346,14 +346,22 @@ tempo::add_marker(tempo_mark a_mark)
     reset_tempo_list();
 }
 
-/* Called by mainwnd spinbutton callback */
+/* Called by mainwnd spinbutton callback & key-bind */
 void
 tempo::set_start_BPM(double a_bpm)
 {
-    m_list_marker.begin()->bpm = a_bpm;
+    if ( a_bpm < c_bpm_minimum ) a_bpm = c_bpm_minimum;
+    if ( a_bpm > c_bpm_maximum ) a_bpm = c_bpm_maximum;
     
-    reset_tempo_list();
-    queue_draw();
+    if ( ! (m_mainperf->is_jack_running() && global_is_running ))
+    {
+        m_mainperf->set_bpm( a_bpm );
+        m_list_marker.begin()->bpm = a_bpm;
+
+        reset_tempo_list();
+        queue_draw();
+        global_is_modified = true;
+    }
 }
 
 /* update marker jack start ticks and perform class lists.
@@ -361,13 +369,20 @@ tempo::set_start_BPM(double a_bpm)
  * the start marker bpm spin. Also on initial file loading.
  * also when measures are changed */
 void
-tempo::reset_tempo_list()
+tempo::reset_tempo_list(bool play_list_only)
 {
-    calculate_marker_start();
-    
-    m_mainperf->m_list_play_marker = m_list_marker;
-    m_mainperf->m_list_total_marker = m_list_marker;
-    m_mainperf->m_list_no_stop_markers = m_list_no_stop_markers;
+    if(play_list_only)
+    {
+        m_mainperf->m_list_play_marker = m_list_marker;
+    }
+    else
+    {
+        calculate_marker_start();
+
+        m_mainperf->m_list_play_marker = m_list_marker;
+        m_mainperf->m_list_total_marker = m_list_marker;
+        m_mainperf->m_list_no_stop_markers = m_list_no_stop_markers;
+    }
 }
 
 /* file loading */

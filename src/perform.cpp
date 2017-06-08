@@ -635,19 +635,10 @@ void perform::set_bpm(double a_bpm)
     if ( a_bpm < c_bpm_minimum ) a_bpm = c_bpm_minimum;
     if ( a_bpm > c_bpm_maximum ) a_bpm = c_bpm_maximum;
 
-#ifdef USE_MODIFIABLE_JACK_TEMPO           // EXPERIMENTAL SEQUENCER64
-
-    m_master_bus.set_bpm( a_bpm );
-
-#else
-
     if ( ! (m_jack_running && global_is_running ))
     {
         m_master_bus.set_bpm( a_bpm );
     }
-
-#endif
-
 }
 
 double  perform::get_bpm( )
