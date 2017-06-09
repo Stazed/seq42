@@ -132,6 +132,7 @@ tempopopup::popup_tempo_win()
 {
     m_return = false;
     m_escape = false;
+    m_spinbutton_bpm->select_region(0,-1); // select all for easy typing replacement
     show_all();
     raise();
 }
