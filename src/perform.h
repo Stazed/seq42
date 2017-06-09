@@ -45,11 +45,7 @@ class perform;
 
 #undef RDEBUG
 
-#define USE_SEQUENCER64_TIMEBASE_CALLBACK   // EXPERIMENTAL - needed for tempo change
 #undef USE_MODIFIABLE_JACK_TEMPO            // EXPERIMENTAL SEQUENCER64 - won't work with tempo markers
-#define  USE_NON_TEMPO_MAP                  // Non-timeline
-
-
 #undef USE_JACK_BBT_POSITION                // old code could be used for debug
 
 enum mute_op
@@ -90,7 +86,6 @@ struct tempo_mark
         }
 };
 
-#ifdef USE_NON_TEMPO_MAP
 /*  Bar and beat start at 1. */
 struct BBT
 {
@@ -128,7 +123,6 @@ struct time_sig
         {
         }
 };
-#endif // USE_NON_TEMPO_MAP
 
 #define STOP_MARKER         0.0
 #define STARTING_MARKER     0
@@ -188,8 +182,6 @@ private:
 
     int m_bp_measure;
     int m_bw;
-
-    void set_playback_mode( bool a_playback_mode );
 
     condition_var m_condition_var;
     seq42_mutex m_mutex;
@@ -278,6 +270,8 @@ public:
     void FF_rewind();
 
     void toggle_song_mode();
+    void set_playback_mode( bool a_playback_mode );
+    bool get_playback_mode();
 
     void toggle_jack_mode();
     void set_jack_mode(bool a_mode);
@@ -460,11 +454,9 @@ public:
     friend int jack_sync_callback(jack_transport_state_t state,
                                   jack_position_t *pos, void *arg);
 #endif // USE_JACK_BBT_POSITION
-#ifdef USE_NON_TEMPO_MAP
     friend position_info solve_tempomap ( jack_nframes_t frame, void *arg );
     friend position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void *cb, void *arg );
     friend jack_nframes_t tick_to_jack_frame(uint64_t a_tick, double a_bpm, void *arg);
-#endif // USE_NON_TEMPO_MAP
     friend void jack_shutdown(void *arg);
     friend void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
                                        jack_position_t *pos, int new_pos, void *arg);
@@ -486,11 +478,9 @@ extern ff_rw_type_e FF_RW_button_type;
 int jack_sync_callback(jack_transport_state_t state,
                        jack_position_t *pos, void *arg);
 #endif // USE_JACK_BBT_POSITION
-#ifdef USE_NON_TEMPO_MAP
-position_info solve_tempomap ( jack_nframes_t frame );
+position_info solve_tempomap ( jack_nframes_t frame, void *arg );
 position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void *cb, void *arg );
 jack_nframes_t tick_to_jack_frame(uint64_t a_tick, double a_bpm, void *arg);
-#endif // USE_NON_TEMPO_MAP
 void print_jack_pos( jack_position_t* jack_pos );
 void jack_shutdown(void *arg);
 void jack_timebase_callback(jack_transport_state_t state, jack_nframes_t nframes,
