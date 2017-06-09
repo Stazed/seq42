@@ -42,7 +42,8 @@ tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
     m_measure_length(c_ppqn * 4)
 {
     add_events( Gdk::BUTTON_PRESS_MASK |
-                Gdk::BUTTON_RELEASE_MASK );
+                Gdk::BUTTON_RELEASE_MASK |
+                Gdk::POINTER_MOTION_MASK );
 
     // in the constructor you can only allocate colors,
     // get_window() returns 0 because we have not been realized
@@ -254,8 +255,10 @@ tempo::on_button_press_event(GdkEventButton* p0)
         list<tempo_mark>::iterator i;
         for ( i = m_list_marker.begin(); i != m_list_marker.end(); i++ )
         {
-            if(tick >= (i)->tick - (100 * (m_perf_scale_x / 32) ) &&
-                    tick <= (i)->tick + (100 * (m_perf_scale_x / 32)))
+            uint64_t start_tick = (i)->tick - (120.0 * (float) (m_perf_scale_x / 32.0) );
+            uint64_t end_tick = (i)->tick + (120.0 * (float) (m_perf_scale_x / 32.0) );
+            
+            if(tick >= start_tick && tick <= end_tick)
             {
                 if((i)->tick != STARTING_MARKER)    // Don't allow erase of first start marker
                 {
@@ -276,6 +279,18 @@ tempo::on_button_press_event(GdkEventButton* p0)
 bool
 tempo::on_button_release_event(GdkEventButton* p0)
 {
+    return false;
+}
+
+bool
+tempo::on_motion_notify_event(GdkEventMotion* a_ev)
+{
+    uint64_t tick = (uint64_t) a_ev->x;
+    
+    tick *= m_perf_scale_x;
+    tick += (m_4bar_offset * 16 * c_ppqn);
+    
+    //printf("motion_tick %ld\n",tick);
     return false;
 }
 

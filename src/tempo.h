@@ -88,8 +88,9 @@ private:
     bool on_expose_event(GdkEventExpose* a_ev);
     bool on_button_press_event(GdkEventButton* a_ev);
     bool on_button_release_event(GdkEventButton* a_ev);
+    bool on_motion_notify_event(GdkEventMotion* a_ev);
     void on_size_allocate(Gtk::Allocation &a_r );
-
+    
     void draw_background();
     void update_sizes();
     void draw_pixmap_on_window();
