@@ -255,10 +255,10 @@ tempo::on_button_press_event(GdkEventButton* p0)
         list<tempo_mark>::iterator i;
         for ( i = m_list_marker.begin(); i != m_list_marker.end(); i++ )
         {
-            uint64_t start_tick = (i)->tick - (120.0 * (float) (m_perf_scale_x / 32.0) );
-            uint64_t end_tick = (i)->tick + (120.0 * (float) (m_perf_scale_x / 32.0) );
+            uint64_t start_marker = (i)->tick - (120.0 * (float) (m_perf_scale_x / 32.0) );
+            uint64_t end_marker = (i)->tick + (120.0 * (float) (m_perf_scale_x / 32.0) );
             
-            if(tick >= start_tick && tick <= end_tick)
+            if(tick >= start_marker && tick <= end_marker)
             {
                 if((i)->tick != STARTING_MARKER)    // Don't allow erase of first start marker
                 {

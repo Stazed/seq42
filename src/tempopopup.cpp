@@ -37,7 +37,7 @@ tempopopup::tempopopup(tempo *a_tempo) :
 {
  //   std::string title = "BPM";
  //   set_title(title);
-    set_size_request(120, 50);
+    set_size_request(130, 50);
     
     manage (new Tooltips ());
     
@@ -64,18 +64,55 @@ tempopopup::tempopopup(tempo *a_tempo) :
     
     Label* bpmlabel = manage(new Label("BPM"));
     
+    /* bpm tap tempo button - sequencer64 */
+    m_button_tap = manage(new Button("0"));
+    m_button_tap->signal_clicked().connect(sigc::mem_fun(*this, &tempopopup::tap));
+    add_tooltip
+    (
+        m_button_tap,
+        "Tap in time to set the beats per minute (BPM) value. "
+        "After 5 seconds of no taps, the tap-counter will reset to 0. "
+        "Also see the File / Options / Keyboard / Tap BPM key assignment."
+    );
+    
     HBox *hbox = manage(new HBox());
     hbox->set_border_width(6);
     
     hbox->pack_start(*bpmlabel, Gtk::PACK_SHRINK);
     hbox->pack_start(*m_spinbutton_bpm, Gtk::PACK_SHRINK );
+    hbox->pack_start(*m_button_tap, Gtk::PACK_SHRINK, 5 );
     
     add(*hbox);
     set_modal();                            // keep focus until done
     set_transient_for(*m_tempo->m_mainwnd); // always on top
     set_decorated(false);                   // don't show title bar
+    
+    m_timeout_connect = Glib::signal_timeout().connect(
+                        mem_fun(*this, &tempopopup::timer_callback), 25);
 }
 
+bool
+tempopopup::timer_callback(  )
+{
+    /* Tap button - sequencer64 */
+    if (m_current_beats > 0)
+    {
+        if (m_last_time_ms > 0)
+        {
+            struct timespec spec;
+            clock_gettime(CLOCK_REALTIME, &spec);
+            long ms = long(spec.tv_sec) * 1000;     /* seconds to ms        */
+            ms += round(spec.tv_nsec * 1.0e-6);     /* nanoseconds to ms    */
+            long difference = ms - m_last_time_ms;
+            if (difference > 5000L)                 /* 5 second wait        */
+            {
+                m_current_beats = m_base_time_ms = m_last_time_ms = 0;
+                set_tap_button(0);
+            }
+        }
+    }
+    return true;
+}
 void
 tempopopup::adj_callback_bpm()
 {
@@ -95,6 +132,11 @@ tempopopup::adj_callback_bpm()
 bool
 tempopopup::on_key_press_event( GdkEventKey* a_ev )
 {
+    if (a_ev->keyval  == m_tempo->m_mainperf->m_key_tap_bpm )
+    {
+        tap();
+    }
+    
     if (a_ev->keyval == GDK_Escape)
     {
         m_escape = true;
@@ -136,4 +178,49 @@ tempopopup::popup_tempo_win()
     m_spinbutton_bpm->select_region(0,-1);                          // select all for easy typing replacement
     show_all();
     raise();
+}
+
+
+void
+tempopopup::tap ()
+{
+    double bpm = update_bpm();
+    set_tap_button(m_current_beats);
+    if (m_current_beats > 1)                    /* first one is useless */
+        m_adjust_bpm->set_value(double(bpm));
+}
+
+void
+tempopopup::set_tap_button (int beats)
+{
+    Gtk::Label * tapptr(dynamic_cast<Gtk::Label *>(m_button_tap->get_child()));
+    if (tapptr != nullptr)
+    {
+        char temp[8];
+        snprintf(temp, sizeof(temp), "%d", beats);
+        tapptr->set_text(temp);
+    }
+}
+
+double
+tempopopup::update_bpm ()
+{
+    double bpm = 0.0;
+    struct timespec spec;
+    clock_gettime(CLOCK_REALTIME, &spec);
+    long ms = long(spec.tv_sec) * 1000;     /* seconds to milliseconds      */
+    ms += round(spec.tv_nsec * 1.0e-6);     /* nanoseconds to milliseconds  */
+    if (m_current_beats == 0)
+    {
+        m_base_time_ms = ms;
+        m_last_time_ms = 0;
+    }
+    else if (m_current_beats >= 1)
+    {
+        int diffms = ms - m_base_time_ms;
+        bpm = m_current_beats * 60000.0 / diffms;
+        m_last_time_ms = ms;
+    }
+    ++m_current_beats;
+    return bpm;
 }

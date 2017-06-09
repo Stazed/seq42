@@ -44,20 +44,34 @@ private:
     HBox *m_hbox;
     SpinButton  *m_spinbutton_bpm;
     Adjustment  *m_adjust_bpm;
-    tempo * m_tempo;
+    Button      *m_button_tap;
+    tempo       *m_tempo;
+
+    sigc::connection   m_timeout_connect;
     
     double m_BPM_value;
     bool m_escape;
     bool m_return;
     
+    /* tap button - From sequencer64 */
+    int m_current_beats; // value is displayed in the button.
+    long m_base_time_ms; // Indicates the first time the tap button was ... tapped.
+    long m_last_time_ms; // Indicates the last time the tap button was tapped.
+    
     bool on_key_press_event(GdkEventKey* a_ev);
     void adj_callback_bpm();
+    bool timer_callback( );
 
 public:
 
     tempopopup (tempo *a_tempo);
     
     void popup_tempo_win();
+    
+    /* From  sequencer64 tap button */
+    void tap ();
+    void set_tap_button (int beats);
+    double update_bpm ();
     
 };
 
