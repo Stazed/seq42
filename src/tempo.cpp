@@ -274,6 +274,7 @@ tempo::on_button_press_event(GdkEventButton* p0)
             {
                 if((i)->tick != STARTING_MARKER)    // Don't allow erase of first start marker
                 {
+                    push_undo();
                     m_list_marker.erase(i);
                     reset_tempo_list();
                     queue_draw();
@@ -327,6 +328,7 @@ tempo::set_tempo_marker(long a_tick)
 void
 tempo::set_BPM(double a_bpm)
 {
+    push_undo();
     m_current_mark.bpm = a_bpm;
     add_marker(m_current_mark);
     queue_draw();
@@ -369,7 +371,6 @@ tempo::add_marker(tempo_mark a_mark)
     if(!start_tick)                         // add the new one
     {
         //printf("add_marker bpm %f\n", a_mark.bpm);
-        push_undo();
         m_list_marker.push_back(a_mark);
     }
 
@@ -432,6 +433,7 @@ tempo::load_tempo_list()
 void
 tempo::calculate_marker_start()
 {
+    lock();
     /* sort first always */
     m_list_marker.sort(&sort_tempo_mark);
     
@@ -482,6 +484,7 @@ tempo::calculate_marker_start()
     
     /* sort again since stops will be out of order */
     m_list_marker.sort(&sort_tempo_mark);
+    unlock();
 }
 
 void
@@ -492,7 +495,6 @@ tempo::push_undo(bool a_hold)
         m_list_undo.push( m_list_undo_hold );
     else
     {
-        //printf("push undo\n");
         m_list_undo.push( m_list_marker );
         m_mainperf->push_bpm_undo();
     }
@@ -510,7 +512,6 @@ tempo::pop_undo()
         m_list_redo.push( m_list_marker );
         m_list_marker = m_list_undo.top();
         m_list_undo.pop();
-        m_mainperf->pop_bpm_undo();
         reset_tempo_list();
         queue_draw();
     }
@@ -530,7 +531,6 @@ tempo::pop_redo()
         m_list_undo.push( m_list_marker );
         m_list_marker = m_list_redo.top();
         m_list_redo.pop();
-        m_mainperf->pop_bpm_redo();
         reset_tempo_list();
         queue_draw();
     }

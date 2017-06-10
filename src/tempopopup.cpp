@@ -33,7 +33,8 @@ tempopopup::tempopopup(tempo *a_tempo) :
     m_tempo(a_tempo),
     m_BPM_value(-1),
     m_escape(false),
-    m_return(false)
+    m_return(false),
+    m_is_typing(false)
 {
  //   std::string title = "BPM";
  //   set_title(title);
@@ -123,13 +124,20 @@ tempopopup::adj_callback_bpm()
         m_BPM_value = m_adjust_bpm->get_value();
         if(m_return)
         {
-            m_tempo->set_BPM(m_adjust_bpm->get_value());
-            global_is_modified = true;
+            if(!m_is_typing)
+            {
+                m_tempo->set_BPM(m_adjust_bpm->get_value());
+                global_is_modified = true;
+            }
+            else
+            {
+                m_is_typing = false;
+            }
+ //           global_is_modified = true;
             hide();
         }
     }
 }
-
 
 bool
 tempopopup::on_key_press_event( GdkEventKey* a_ev )
@@ -137,6 +145,8 @@ tempopopup::on_key_press_event( GdkEventKey* a_ev )
     if (a_ev->keyval  == m_tempo->m_mainperf->m_key_tap_bpm )
     {
         tap();
+        m_is_typing = false;
+        return true;
     }
     
     if (a_ev->keyval == GDK_Escape)
@@ -157,15 +167,13 @@ tempopopup::on_key_press_event( GdkEventKey* a_ev )
          amount gets updated when hide() is called on the window. The hide() update
          then triggers the adj_callback_bpm() with the correct amount. But the below manual
          call to adj_callback_bpm() is called first and sends the incorrect old
-         NOT updated amount to m_tempo->set_BPM. We fix this duplicate in add_marker()
-         by eliminating previous markers set at the same tick location.
-         I cannot find any way of preventing the duplicate send without breaking
-         either accepting previous amounts, or using the spin adjusters. It's ugly
-         and does not work with undo FIXME   */
+         NOT updated amount to m_tempo->set_BPM. The m_is_typing bool is set any
+         time a keypress is use to eliminate the dupicate.  */
         m_return = true;
         adj_callback_bpm();
         return true;
     }
+    m_is_typing = true;
     
     return Gtk::Window::on_key_press_event(a_ev);
 }
@@ -175,8 +183,10 @@ tempopopup::popup_tempo_win()
 {
     m_return = false;
     m_escape = false;
+    m_is_typing = false;
     m_spinbutton_bpm->set_value(m_tempo->m_mainperf->get_bpm());    // set to default starting bpm
     m_spinbutton_bpm->select_region(0,-1);                          // select all for easy typing replacement
+    m_spinbutton_bpm->grab_focus();
     show_all();
     raise();
 }

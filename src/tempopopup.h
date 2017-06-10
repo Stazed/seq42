@@ -52,6 +52,7 @@ private:
     double m_BPM_value;
     bool m_escape;
     bool m_return;
+    bool m_is_typing;
     
     /* tap button - From sequencer64 */
     int m_current_beats; // value is displayed in the button.
