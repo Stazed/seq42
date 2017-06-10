@@ -509,6 +509,7 @@ tempo::pop_undo()
 
     if (m_list_undo.size() > 0 )
     {
+        m_mainperf->pop_bpm_undo();
         m_list_redo.push( m_list_marker );
         m_list_marker = m_list_undo.top();
         m_list_undo.pop();
@@ -528,6 +529,7 @@ tempo::pop_redo()
 
     if (m_list_redo.size() > 0 )
     {
+        m_mainperf->pop_bpm_redo();
         m_list_undo.push( m_list_marker );
         m_list_marker = m_list_redo.top();
         m_list_redo.pop();

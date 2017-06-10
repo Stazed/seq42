@@ -744,7 +744,6 @@ mainwnd::undo_perf()
 void
 mainwnd::undo_bpm()
 {
-    m_mainperf->pop_bpm_undo();
     m_tempo->pop_undo();
 }
 
@@ -811,7 +810,6 @@ mainwnd::redo_perf()
 void
 mainwnd::redo_bpm()
 {
-    m_mainperf->pop_bpm_redo();
     m_tempo->pop_redo();
 }
 

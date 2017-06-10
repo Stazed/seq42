@@ -49,7 +49,6 @@ private:
 
     sigc::connection   m_timeout_connect;
     
-    double m_BPM_value;
     bool m_escape;
     bool m_return;
     bool m_is_typing;

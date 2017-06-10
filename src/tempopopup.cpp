@@ -31,7 +31,6 @@
 
 tempopopup::tempopopup(tempo *a_tempo) :
     m_tempo(a_tempo),
-    m_BPM_value(-1),
     m_escape(false),
     m_return(false),
     m_is_typing(false)
@@ -116,27 +115,24 @@ tempopopup::timer_callback(  )
     }
     return true;
 }
+
 void
 tempopopup::adj_callback_bpm()
 {
     if(!m_escape)
     {
-        m_BPM_value = m_adjust_bpm->get_value();
         if(m_return)
         {
-            if(!m_is_typing)
+            if(!m_is_typing)    // first typed is old value so we discard
             {
                 m_tempo->set_BPM(m_adjust_bpm->get_value());
                 global_is_modified = true;
             }
-            else
-            {
-                m_is_typing = false;
-            }
- //           global_is_modified = true;
             hide();
         }
     }
+
+    m_is_typing = false;        // using spinner & to keep typed second value
 }
 
 bool
@@ -145,7 +141,6 @@ tempopopup::on_key_press_event( GdkEventKey* a_ev )
     if (a_ev->keyval  == m_tempo->m_mainperf->m_key_tap_bpm )
     {
         tap();
-        m_is_typing = false;
         return true;
     }
     
@@ -195,6 +190,7 @@ tempopopup::popup_tempo_win()
 void
 tempopopup::tap ()
 {
+    m_is_typing = false;
     double bpm = update_bpm();
     set_tap_button(m_current_beats);
     if (m_current_beats > 1)                    /* first one is useless */
