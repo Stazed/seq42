@@ -87,6 +87,8 @@ tempopopup::tempopopup(tempo *a_tempo) :
     set_transient_for(*m_tempo->m_mainwnd); // always on top
     set_decorated(false);                   // don't show title bar
     
+    add_events( Gdk::KEY_PRESS_MASK | Gdk::KEY_RELEASE_MASK );
+    
     m_timeout_connect = Glib::signal_timeout().connect(
                         mem_fun(*this, &tempopopup::timer_callback), 25);
 }
@@ -159,8 +161,7 @@ tempopopup::on_key_press_event( GdkEventKey* a_ev )
          by eliminating previous markers set at the same tick location.
          I cannot find any way of preventing the duplicate send without breaking
          either accepting previous amounts, or using the spin adjusters. It's ugly
-         but it seems to work... Hopefully someone else can find a more elegant
-         solution.   */
+         and does not work with undo FIXME   */
         m_return = true;
         adj_callback_bpm();
         return true;

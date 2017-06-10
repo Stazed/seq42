@@ -133,13 +133,13 @@ private:
     /* vector of tracks */
     track *m_tracks[c_max_track];
     track m_clipboard;
-    track m_undo_tracks[100]; // FIXME how big??
-    track m_redo_tracks[100]; // FIXME how big??
+    track m_undo_tracks[c_max_undo_track];
+    track m_redo_tracks[c_max_undo_track];
     int m_undo_track_count;
     int m_redo_track_count;
 
-    undo_redo_perf_tracks undo_perf[40]; // FIXME how big
-    undo_redo_perf_tracks redo_perf[40]; // FIXME how big
+    undo_redo_perf_tracks undo_perf[c_max_undo_perf];
+    undo_redo_perf_tracks redo_perf[c_max_undo_perf];
     int m_undo_perf_count;
     int m_redo_perf_count;
 
@@ -321,6 +321,10 @@ public:
 
     void move_triggers( bool a_direction );
     void copy_triggers(  );
+    
+    void push_bpm_undo();
+    void pop_bpm_undo();
+    void pop_bpm_redo();
     // collapse and expand - all tracks
     void push_trigger_undo();
     void pop_trigger_undo();

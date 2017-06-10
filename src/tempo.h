@@ -32,6 +32,7 @@
 #include "seqtime.h"
 
 #include <list>
+#include <stack>
 #include <gtkmm/button.h>
 #include <gtkmm/window.h>
 #include <gtkmm/accelgroup.h>
@@ -48,6 +49,7 @@
 
 #include "globals.h"
 #include "tempopopup.h"
+#include "mutex.h"
 
 using namespace Gtk;
 using std::list;
@@ -75,6 +77,11 @@ private:
     list < tempo_mark > m_list_no_stop_markers;
     tempo_mark m_current_mark;
     
+    list < tempo_mark > m_list_undo_hold;
+
+    stack < list < tempo_mark > >m_list_undo;
+    stack < list < tempo_mark > >m_list_redo;
+    
     tempopopup  *m_popup_tempo_wnd;
     
     int m_window_x, m_window_y;
@@ -83,6 +90,11 @@ private:
     int m_4bar_offset;
 
     int m_snap, m_measure_length;
+    
+    /* locking */
+    seq42_mutex m_mutex;
+    void lock ();
+    void unlock ();
 
     void on_realize();
     bool on_expose_event(GdkEventExpose* a_ev);
@@ -122,6 +134,11 @@ public:
     void reset_tempo_list(bool play_list_only = false);
     void load_tempo_list();
     void calculate_marker_start();
+    
+    void push_undo(bool a_hold = false);
+    void pop_undo();
+    void pop_redo();
+    
     void print_marker_info(list<tempo_mark> a_list);
     
     friend tempopopup;

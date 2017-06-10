@@ -216,11 +216,13 @@ private:
     void undo_trigger();
     void undo_track(int a_track );
     void undo_perf();
+    void undo_bpm();
     void redo_type();
     void redo_trigger (int a_track);
     void redo_trigger ();
     void redo_track(int a_track );
     void redo_perf();
+    void redo_bpm();
 
     void popup_menu (Menu * a_menu);
 

@@ -68,6 +68,18 @@ tempo::~tempo()
 }
 
 void
+tempo::lock( )
+{
+    m_mutex.lock();
+}
+
+void
+tempo::unlock( )
+{
+    m_mutex.unlock();
+}
+
+void
 tempo::increment_size()
 {
 
@@ -336,6 +348,7 @@ tempo::reverse_sort_tempo_mark(const tempo_mark &a, const tempo_mark &b)
 void
 tempo::add_marker(tempo_mark a_mark)
 {
+    lock();
     bool start_tick = false;
     list<tempo_mark>::iterator i;
     for ( i = m_list_marker.begin(); i != m_list_marker.end(); i++ )
@@ -355,10 +368,13 @@ tempo::add_marker(tempo_mark a_mark)
     }
     if(!start_tick)                         // add the new one
     {
+        //printf("add_marker bpm %f\n", a_mark.bpm);
+        push_undo();
         m_list_marker.push_back(a_mark);
     }
 
     reset_tempo_list();
+    unlock();
 }
 
 /* Called by mainwnd spinbutton callback & key-bind */
@@ -370,6 +386,7 @@ tempo::set_start_BPM(double a_bpm)
     
     if ( ! (m_mainperf->is_jack_running() && global_is_running ))
     {
+        //push_undo(true);
         m_mainperf->set_bpm( a_bpm );
         m_list_marker.begin()->bpm = a_bpm;
 
@@ -392,11 +409,13 @@ tempo::reset_tempo_list(bool play_list_only)
     }
     else
     {
+        lock();
         calculate_marker_start();
 
         m_mainperf->m_list_play_marker = m_list_marker;
         m_mainperf->m_list_total_marker = m_list_marker;
         m_mainperf->m_list_no_stop_markers = m_list_no_stop_markers;
+        unlock();
     }
 }
 
@@ -464,6 +483,65 @@ tempo::calculate_marker_start()
     /* sort again since stops will be out of order */
     m_list_marker.sort(&sort_tempo_mark);
 }
+
+void
+tempo::push_undo(bool a_hold)
+{
+    lock();
+    if(a_hold)
+        m_list_undo.push( m_list_undo_hold );
+    else
+    {
+        //printf("push undo\n");
+        m_list_undo.push( m_list_marker );
+        m_mainperf->push_bpm_undo();
+    }
+    unlock();
+   // set_have_undo();
+}
+
+void
+tempo::pop_undo()
+{
+    lock();
+
+    if (m_list_undo.size() > 0 )
+    {
+        m_list_redo.push( m_list_marker );
+        m_list_marker = m_list_undo.top();
+        m_list_undo.pop();
+        m_mainperf->pop_bpm_undo();
+        reset_tempo_list();
+        queue_draw();
+    }
+
+    unlock();
+  //  set_have_undo();
+  //  set_have_redo();
+}
+
+void
+tempo::pop_redo()
+{
+    lock();
+
+    if (m_list_redo.size() > 0 )
+    {
+        m_list_undo.push( m_list_marker );
+        m_list_marker = m_list_redo.top();
+        m_list_redo.pop();
+        m_mainperf->pop_bpm_redo();
+        reset_tempo_list();
+        queue_draw();
+    }
+
+    unlock();
+   // set_have_redo();
+   // set_have_undo();
+}
+
+
+
 
 void
 tempo::print_marker_info(list<tempo_mark> a_list)

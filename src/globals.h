@@ -56,7 +56,9 @@ const short global_time_array_size = 32;
 const int c_max_track_name = 16;
 const int c_max_seq_name = 32;
 
-const int c_max_track = 64;  // FIXME: use a list instead of a fixed number array?
+const int c_max_track = 64;         // FIXME: use a list instead of a fixed number array?
+const int c_max_undo_track = 100;   // FIXME how big??
+const int c_max_undo_perf  = 40;    // FIXME how big??
 
 const int c_ppqn         = 192;  /* default - doesn't change */
 const int c_ppwn         = c_ppqn * 4;  // whole note
@@ -154,6 +156,7 @@ const unsigned long c_transpose    = 0x24240014;  // 7/20/16
 const unsigned long c_perf_bp_mes  = 0x24240015;  // perfedit beats per measure
 const unsigned long c_perf_bw      = 0x24240016;  // perfedit beat width
 
+/* these are never used */
 const char c_font_6_12[] = "-*-fixed-medium-r-*--12-*-*-*-*-*-*";
 const char c_font_8_13[] = "-*-fixed-medium-r-*--13-*-*-*-*-*-*";
 const char c_font_5_7[]  = "-*-fixed-medium-r-*--7-*-*-*-*-*-*";
@@ -168,6 +171,7 @@ const int c_undo_trigger = 0;
 const int c_undo_track   = 1;
 const int c_undo_perf    = 2;
 const int c_undo_collapse_expand = 3;
+const int c_undo_bpm     = 4;
 
 /* redraw when recording ms */
 #ifdef __WIN32__

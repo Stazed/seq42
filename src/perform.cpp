@@ -811,6 +811,41 @@ void perform::move_triggers( bool a_direction )
     }
 }
 
+/* setting the undo_vect for proper location - called by tempo */
+void perform::push_bpm_undo()
+{
+    undo_type a_undo;
+    a_undo.track = -1; // does not matter - not used
+    a_undo.type = c_undo_bpm;
+    
+    undo_vect.push_back(a_undo);
+    redo_vect.clear();
+    set_have_undo();
+    set_have_redo();
+}
+
+void perform::pop_bpm_undo()
+{
+    undo_type a_undo;
+    a_undo.track = -1; // does not matter - not used
+    a_undo.type = c_undo_bpm;
+
+    undo_vect.pop_back();
+    redo_vect.push_back(a_undo);
+    set_have_redo();
+}
+
+void perform::pop_bpm_redo()
+{
+    undo_type a_undo;
+    a_undo.track = -1; // does not matter - not used
+    a_undo.type = c_undo_bpm;
+
+    redo_vect.pop_back();
+    undo_vect.push_back(a_undo);
+    set_have_undo();
+}
+
 // collapse and expand - all tracks
 void perform::push_trigger_undo()
 {
@@ -1218,8 +1253,8 @@ void
 perform::check_max_undo_redo()
 {
     m_mutex.lock();
-    if(m_undo_track_count > 100 || m_redo_track_count > 100 ||
-            m_undo_perf_count > 40 || m_redo_perf_count > 40 )
+    if(m_undo_track_count > c_max_undo_track || m_redo_track_count > c_max_undo_track ||
+            m_undo_perf_count > c_max_undo_perf || m_redo_perf_count > c_max_undo_perf )
     {
         m_undo_track_count = 0;
         m_redo_track_count = 0;

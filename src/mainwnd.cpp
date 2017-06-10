@@ -703,6 +703,10 @@ mainwnd::undo_type()
         break;
     case c_undo_collapse_expand:
         undo_trigger();
+        break;
+    case c_undo_bpm:
+        undo_bpm();
+        break;
     default:
         break;
     }
@@ -738,6 +742,13 @@ mainwnd::undo_perf()
 }
 
 void
+mainwnd::undo_bpm()
+{
+    m_mainperf->pop_bpm_undo();
+    m_tempo->pop_undo();
+}
+
+void
 mainwnd::redo_type()
 {
     char type = '\0';
@@ -759,6 +770,9 @@ mainwnd::redo_type()
         break;
     case c_undo_collapse_expand:
         redo_trigger();
+        break;
+    case c_undo_bpm:
+        redo_bpm();
         break;
     default:
         break;
@@ -792,6 +806,13 @@ mainwnd::redo_perf()
 {
     m_mainperf->pop_perf_redo();
     m_perfroll->queue_draw();
+}
+
+void
+mainwnd::redo_bpm()
+{
+    m_mainperf->pop_bpm_redo();
+    m_tempo->pop_redo();
 }
 
 void
