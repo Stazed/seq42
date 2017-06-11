@@ -80,14 +80,14 @@ bool
 Bpm_spinbutton::on_enter_notify_event(GdkEventCrossing* event)
 {
     //printf("spin enter\n");
-    return false;
+    return Gtk::Widget::on_enter_notify_event(event);
 }
 
 bool 
 Bpm_spinbutton::on_leave_notify_event(GdkEventCrossing* event)
 {
     //printf("spin bpm leave\n");
-    return false;
+    return Gtk::Widget::on_leave_notify_event(event);
 }
 
 
@@ -1106,6 +1106,9 @@ mainwnd::set_xpose( int a_xpose  )
 void
 mainwnd::tap ()
 {
+    if(!m_tempo->get_hold_undo())
+        m_tempo->set_hold_undo(true);
+    
     double bpm = update_bpm();
     set_tap_button(m_current_beats);
     if (m_current_beats > 1)                    /* first one is useless */
@@ -1115,6 +1118,12 @@ mainwnd::tap ()
 void
 mainwnd::set_tap_button (int beats)
 {
+    if(beats == 0)
+    {
+        m_tempo->push_undo(true);
+        m_tempo->set_hold_undo(false);
+    }
+    
     Gtk::Label * tapptr(dynamic_cast<Gtk::Label *>(m_button_tap->get_child()));
     if (tapptr != nullptr)
     {
@@ -1807,6 +1816,9 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
 
         if ( a_ev->keyval == m_mainperf->m_key_bpm_dn )
         {
+            if(!m_tempo->get_hold_undo())
+                m_tempo->set_hold_undo(true);
+            
             m_tempo->set_start_BPM(m_mainperf->get_bpm() - 1);
             m_adjust_bpm->set_value(  m_mainperf->get_bpm() );
             return true;
@@ -1814,6 +1826,9 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
 
         if ( a_ev->keyval ==  m_mainperf->m_key_bpm_up )
         {
+            if(!m_tempo->get_hold_undo())
+                m_tempo->set_hold_undo(true);
+            
             m_tempo->set_start_BPM(m_mainperf->get_bpm() + 1);
             m_adjust_bpm->set_value(  m_mainperf->get_bpm() );
             return true;
@@ -1906,6 +1921,19 @@ mainwnd::on_key_release_event(GdkEventKey* a_ev)
         if ( a_ev->keyval ==  m_mainperf->m_key_rewind )
         {
             rewind(false);
+            return true;
+        }
+        
+        if ( a_ev->keyval == m_mainperf->m_key_bpm_dn )
+        {
+            m_tempo->push_undo(true);
+            m_tempo->set_hold_undo(false);
+            return true;
+        }
+        if ( a_ev->keyval ==  m_mainperf->m_key_bpm_up )
+        {
+            m_tempo->push_undo(true);
+            m_tempo->set_hold_undo(false);
             return true;
         }
     }

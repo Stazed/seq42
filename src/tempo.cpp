@@ -278,7 +278,6 @@ tempo::on_button_press_event(GdkEventButton* p0)
                     m_list_marker.erase(i);
                     reset_tempo_list();
                     queue_draw();
-                    global_is_modified = true;
                     return true;
                 }
                 break;
@@ -393,7 +392,6 @@ tempo::set_start_BPM(double a_bpm)
 
         reset_tempo_list();
         queue_draw();
-        global_is_modified = true;
     }
 }
 
@@ -492,12 +490,15 @@ tempo::push_undo(bool a_hold)
 {
     lock();
     if(a_hold)
+    {
         m_list_undo.push( m_list_undo_hold );
+    }
     else
     {
         m_list_undo.push( m_list_marker );
-        m_mainperf->push_bpm_undo();
     }
+    m_mainperf->push_bpm_undo();
+    global_is_modified = true;
     unlock();
    // set_have_undo();
 }
@@ -544,7 +545,26 @@ tempo::pop_redo()
    // set_have_undo();
 }
 
+void
+tempo::set_hold_undo (bool a_hold)
+{
+    lock();
 
+    if(a_hold)
+    {
+        m_list_undo_hold = m_list_marker;
+    }
+    else
+       m_list_undo_hold.clear( );
+
+    unlock();
+}
+
+int
+tempo::get_hold_undo ()
+{
+    return m_list_undo_hold.size();
+}
 
 
 void

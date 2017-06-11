@@ -126,7 +126,6 @@ tempopopup::adj_callback_bpm()
             if(!m_is_typing)    // first typed is old value so we discard
             {
                 m_tempo->set_BPM(m_adjust_bpm->get_value());
-                global_is_modified = true;
             }
             hide();
         }

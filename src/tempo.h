@@ -138,6 +138,8 @@ public:
     void push_undo(bool a_hold = false);
     void pop_undo();
     void pop_redo();
+    void set_hold_undo (bool a_hold);
+    int get_hold_undo ();
     
     void print_marker_info(list<tempo_mark> a_list);
     
