@@ -514,6 +514,7 @@ tempo::pop_undo()
         m_list_marker = m_list_undo.top();
         m_list_undo.pop();
         reset_tempo_list();
+        m_mainperf->set_bpm(m_mainperf->get_start_tempo());
         queue_draw();
     }
 
@@ -534,6 +535,7 @@ tempo::pop_redo()
         m_list_marker = m_list_redo.top();
         m_list_redo.pop();
         reset_tempo_list();
+        m_mainperf->set_bpm(m_mainperf->get_start_tempo());
         queue_draw();
     }
 
