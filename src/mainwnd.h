@@ -45,6 +45,20 @@ class perftime;
 class tempo;
 class perfnames;
 
+
+class Bpm_spinbutton : public Gtk::SpinButton
+{
+private:
+    bool on_enter_notify_event(GdkEventCrossing* event);
+    bool on_leave_notify_event(GdkEventCrossing* event);
+    
+    public:
+
+    Bpm_spinbutton(Adjustment& adjustment, double climb_rate =  0.0, guint digits =  0);
+};
+
+
+
 class mainwnd : public Gtk::Window
 {
 private:
@@ -71,7 +85,8 @@ private:
     Button      *m_button_play;
     Button      *m_button_fastforward;
 
-    SpinButton  *m_spinbutton_bpm;
+    Bpm_spinbutton *m_spinbutton_bpm;
+//    SpinButton  *m_spinbutton_bpm;
     Adjustment  *m_adjust_bpm;
     Button      *m_button_tap;
 

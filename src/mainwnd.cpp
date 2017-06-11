@@ -69,6 +69,28 @@ ff_rw_type_e FF_RW_button_type = FF_RW_RELEASE;
 #   define add_tooltip( obj, text ) m_tooltips->set_tip( *obj, text );
 #endif
 
+
+Bpm_spinbutton::Bpm_spinbutton(Adjustment& adjustment, double climb_rate, guint digits):
+    Gtk::SpinButton(adjustment,climb_rate, digits)
+{
+    
+}
+
+bool
+Bpm_spinbutton::on_enter_notify_event(GdkEventCrossing* event)
+{
+    //printf("spin enter\n");
+    return false;
+}
+
+bool 
+Bpm_spinbutton::on_leave_notify_event(GdkEventCrossing* event)
+{
+    //printf("spin bpm leave\n");
+    return false;
+}
+
+
 mainwnd::mainwnd(perform *a_p):
     m_mainperf(a_p),
     m_options(NULL),
@@ -377,7 +399,8 @@ mainwnd::mainwnd(perform *a_p):
 
     /* bpm spin button */
     m_adjust_bpm = manage(new Adjustment(m_mainperf->get_bpm(), c_bpm_minimum, c_bpm_maximum, 1));
-    m_spinbutton_bpm = manage( new SpinButton( *m_adjust_bpm ));
+    m_spinbutton_bpm = manage( new Bpm_spinbutton( *m_adjust_bpm ));
+//    m_spinbutton_bpm = manage( new SpinButton( *m_adjust_bpm ));
     m_spinbutton_bpm->set_editable( true );
     m_spinbutton_bpm->set_digits(2);                    // 2 = two decimal precision
     m_spinbutton_bpm->set_numeric();
