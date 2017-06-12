@@ -74,6 +74,7 @@ Bpm_spinbutton::Bpm_spinbutton(Adjustment& adjustment, double climb_rate, guint 
     Gtk::SpinButton(adjustment,climb_rate, digits),
     m_have_enter(false),
     m_have_leave(false),
+    m_is_typing(false),
     m_hold_bpm(0.0)
 {
     
@@ -84,6 +85,7 @@ Bpm_spinbutton::on_enter_notify_event(GdkEventCrossing* event)
 {
     m_have_enter = true;
     m_have_leave = false;
+    m_is_typing = false;
     m_hold_bpm = this->get_value();
 //    printf("spin enter - hold bpm %f\n", m_hold_bpm);
     return Gtk::Widget::on_enter_notify_event(event);
@@ -94,8 +96,21 @@ Bpm_spinbutton::on_leave_notify_event(GdkEventCrossing* event)
 {
     m_have_leave = true;
     m_have_enter = false;
+    m_is_typing = false;
 //    printf("spin bpm leave\n");
     return Gtk::Widget::on_leave_notify_event(event);
+}
+
+bool
+Bpm_spinbutton::on_key_press_event( GdkEventKey* a_ev )
+{
+    if (a_ev->keyval == GDK_Return || a_ev->keyval == GDK_KP_Enter)
+    {
+        m_is_typing = true;
+        m_hold_bpm = 0.0;
+//        printf("enter\n");
+    }
+    return Gtk::Widget::on_key_press_event(a_ev);
 }
 
 void
@@ -119,6 +134,18 @@ bool
 Bpm_spinbutton::get_have_leave()
 {
     return m_have_leave;
+}
+
+void
+Bpm_spinbutton::set_have_typing(bool a_type)
+{
+    m_is_typing = a_type;
+}
+
+bool
+Bpm_spinbutton::get_have_typing()
+{
+    return m_is_typing;
 }
 
 void
@@ -744,9 +771,10 @@ mainwnd::timer_callback(  )
         m_mainperf->set_bpm(m_mainperf->get_start_tempo());
     }
     
-    if(m_spinbutton_bpm->get_have_leave())
+    if(m_spinbutton_bpm->get_have_leave() && !m_spinbutton_bpm->get_have_typing())
     {
-        if(m_spinbutton_bpm->get_hold_bpm() != m_adjust_bpm->get_value())
+        if(m_spinbutton_bpm->get_hold_bpm() != m_adjust_bpm->get_value() &&
+                m_spinbutton_bpm->get_hold_bpm() != 0.0)
         {
             m_tempo->push_undo(true);                   // use the hold marker
             m_spinbutton_bpm->set_have_leave(false);
@@ -1812,6 +1840,13 @@ mainwnd::adj_callback_bpm( )
 {
     if(m_mainperf->get_bpm() !=  m_adjust_bpm->get_value())
     {
+        if(m_spinbutton_bpm->get_have_typing())
+        {
+            m_tempo->push_undo();
+            m_tempo->set_start_BPM(m_adjust_bpm->get_value());
+            m_spinbutton_bpm->set_hold_bpm(0.0);
+            return;
+        }
         if(m_spinbutton_bpm->get_have_enter())      // for user using spinner
         {
             if(!m_tempo->get_hold_undo())

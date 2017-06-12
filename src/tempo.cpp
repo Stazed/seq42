@@ -491,17 +491,22 @@ tempo::push_undo(bool a_hold)
     lock();
     if(a_hold)
     {
-        m_list_undo.push( m_list_undo_hold );
-        set_hold_undo (false);
+        if(m_list_undo_hold.size())
+        {
+            m_list_undo.push( m_list_undo_hold );
+            set_hold_undo (false);
+            m_mainperf->push_bpm_undo();
+            global_is_modified = true;
+        }
     }
     else
     {
         m_list_undo.push( m_list_marker );
+        set_hold_undo (false);
+        m_mainperf->push_bpm_undo();
+        global_is_modified = true;
     }
-    m_mainperf->push_bpm_undo();
-    global_is_modified = true;
     unlock();
-   // set_have_undo();
 }
 
 void
@@ -521,8 +526,6 @@ tempo::pop_undo()
     }
 
     unlock();
-  //  set_have_undo();
-  //  set_have_redo();
 }
 
 void
@@ -542,8 +545,6 @@ tempo::pop_redo()
     }
 
     unlock();
-   // set_have_redo();
-   // set_have_undo();
 }
 
 void
