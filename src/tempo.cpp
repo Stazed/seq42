@@ -579,3 +579,98 @@ tempo::print_marker_info(list<tempo_mark> a_list)
     }
     printf("\n\n");
 }
+
+
+/* Modified spinbutton for using the mainwnd bpm spinner to allow for better undo support.
+ * This allows user to spin and won't push to undo on every changed value, but will only
+ * push undo when user leaves the widget. Modified to work with typed entries as well.
+ */
+
+Bpm_spinbutton::Bpm_spinbutton(Adjustment& adjustment, double climb_rate, guint digits):
+    Gtk::SpinButton(adjustment,climb_rate, digits),
+    m_have_enter(false),
+    m_have_leave(false),
+    m_is_typing(false),
+    m_hold_bpm(0.0)
+{
+    
+}
+
+bool
+Bpm_spinbutton::on_enter_notify_event(GdkEventCrossing* event)
+{
+    m_have_enter = true;
+    m_have_leave = false;
+    m_is_typing = false;
+    m_hold_bpm = this->get_value();
+
+    return Gtk::Widget::on_enter_notify_event(event);
+}
+
+bool 
+Bpm_spinbutton::on_leave_notify_event(GdkEventCrossing* event)
+{
+    m_have_leave = true;
+    m_have_enter = false;
+    m_is_typing = false;
+
+    return Gtk::Widget::on_leave_notify_event(event);
+}
+
+bool
+Bpm_spinbutton::on_key_press_event( GdkEventKey* a_ev )
+{
+    if (a_ev->keyval == GDK_Return || a_ev->keyval == GDK_KP_Enter)
+    {
+        m_is_typing = true;
+        m_hold_bpm = 0.0;
+    }
+    return Gtk::Widget::on_key_press_event(a_ev);
+}
+
+void
+Bpm_spinbutton::set_have_enter(bool a_enter)
+{
+    m_have_enter = a_enter;
+}
+
+bool
+Bpm_spinbutton::get_have_enter()
+{
+    return m_have_enter;
+}
+
+void
+Bpm_spinbutton::set_have_leave(bool a_leave)
+{
+    m_have_leave = a_leave;
+}
+bool
+Bpm_spinbutton::get_have_leave()
+{
+    return m_have_leave;
+}
+
+void
+Bpm_spinbutton::set_have_typing(bool a_type)
+{
+    m_is_typing = a_type;
+}
+
+bool
+Bpm_spinbutton::get_have_typing()
+{
+    return m_is_typing;
+}
+
+void
+Bpm_spinbutton::set_hold_bpm(double a_bpm)
+{
+    m_hold_bpm = a_bpm;
+}
+
+double
+Bpm_spinbutton::get_hold_bpm()
+{
+    return m_hold_bpm;
+}

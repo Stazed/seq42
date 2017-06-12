@@ -145,3 +145,37 @@ public:
     
     friend tempopopup;
 };
+
+
+/* Modified spinbutton for using the mainwnd bpm spinner to allow for better undo support.
+ * This allows user to spin and won't push to undo on every changed value, but will only
+ * push undo when user leaves the widget. Modified to work with typed entries as well.
+ */
+class Bpm_spinbutton : public Gtk::SpinButton
+{
+private:
+    
+    bool m_have_enter;
+    bool m_have_leave;
+    bool m_is_typing;
+    
+    double m_hold_bpm;
+    
+    bool on_enter_notify_event(GdkEventCrossing* event);
+    bool on_leave_notify_event(GdkEventCrossing* event);
+    bool on_key_press_event(GdkEventKey* a_ev);
+    
+    public:
+
+    Bpm_spinbutton(Adjustment& adjustment, double climb_rate =  0.0, guint digits =  0);
+    
+    void set_have_enter(bool a_enter);
+    bool get_have_enter();
+    void set_have_leave(bool a_leave);
+    bool get_have_leave();
+    void set_have_typing(bool a_type);
+    bool get_have_typing();
+    
+    void set_hold_bpm(double a_bpm = 0.0);
+    double get_hold_bpm();
+};
