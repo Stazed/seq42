@@ -492,6 +492,7 @@ tempo::push_undo(bool a_hold)
     if(a_hold)
     {
         m_list_undo.push( m_list_undo_hold );
+        set_hold_undo (false);
     }
     else
     {

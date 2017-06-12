@@ -49,12 +49,26 @@ class perfnames;
 class Bpm_spinbutton : public Gtk::SpinButton
 {
 private:
+    
+    bool m_have_enter;
+    bool m_have_leave;
+    
+    double m_hold_bpm;
+    
     bool on_enter_notify_event(GdkEventCrossing* event);
     bool on_leave_notify_event(GdkEventCrossing* event);
     
     public:
 
     Bpm_spinbutton(Adjustment& adjustment, double climb_rate =  0.0, guint digits =  0);
+    
+    void set_have_enter(bool a_enter);
+    bool get_have_enter();
+    void set_have_leave(bool a_leave);
+    bool get_have_leave();
+    
+    void set_hold_bpm(double a_bpm = 0.0);
+    double get_hold_bpm();
 };
 
 
@@ -164,7 +178,6 @@ private:
     void options_dialog();
     void about_dialog();
 
-    //void adj_callback_ss( );
     void adj_callback_bpm( );
     void bw_button_callback(int a_beat_width);
     void bp_measure_button_callback(int a_beats_per_measeure);

@@ -71,7 +71,10 @@ ff_rw_type_e FF_RW_button_type = FF_RW_RELEASE;
 
 
 Bpm_spinbutton::Bpm_spinbutton(Adjustment& adjustment, double climb_rate, guint digits):
-    Gtk::SpinButton(adjustment,climb_rate, digits)
+    Gtk::SpinButton(adjustment,climb_rate, digits),
+    m_have_enter(false),
+    m_have_leave(false),
+    m_hold_bpm(0.0)
 {
     
 }
@@ -79,15 +82,55 @@ Bpm_spinbutton::Bpm_spinbutton(Adjustment& adjustment, double climb_rate, guint 
 bool
 Bpm_spinbutton::on_enter_notify_event(GdkEventCrossing* event)
 {
-    //printf("spin enter\n");
+    m_have_enter = true;
+    m_have_leave = false;
+    m_hold_bpm = this->get_value();
+//    printf("spin enter - hold bpm %f\n", m_hold_bpm);
     return Gtk::Widget::on_enter_notify_event(event);
 }
 
 bool 
 Bpm_spinbutton::on_leave_notify_event(GdkEventCrossing* event)
 {
-    //printf("spin bpm leave\n");
+    m_have_leave = true;
+    m_have_enter = false;
+//    printf("spin bpm leave\n");
     return Gtk::Widget::on_leave_notify_event(event);
+}
+
+void
+Bpm_spinbutton::set_have_enter(bool a_enter)
+{
+    m_have_enter = a_enter;
+}
+
+bool
+Bpm_spinbutton::get_have_enter()
+{
+    return m_have_enter;
+}
+
+void
+Bpm_spinbutton::set_have_leave(bool a_leave)
+{
+    m_have_leave = a_leave;
+}
+bool
+Bpm_spinbutton::get_have_leave()
+{
+    return m_have_leave;
+}
+
+void
+Bpm_spinbutton::set_hold_bpm(double a_bpm)
+{
+    m_hold_bpm = a_bpm;
+}
+
+double
+Bpm_spinbutton::get_hold_bpm()
+{
+    return m_hold_bpm;
 }
 
 
@@ -701,6 +744,15 @@ mainwnd::timer_callback(  )
         m_mainperf->set_bpm(m_mainperf->get_start_tempo());
     }
     
+    if(m_spinbutton_bpm->get_have_leave())
+    {
+        if(m_spinbutton_bpm->get_hold_bpm() != m_adjust_bpm->get_value())
+        {
+            m_tempo->push_undo(true);                   // use the hold marker
+            m_spinbutton_bpm->set_have_leave(false);
+        }
+    }
+    
     return true;
 }
 
@@ -1121,7 +1173,6 @@ mainwnd::set_tap_button (int beats)
     if(beats == 0)
     {
         m_tempo->push_undo(true);
-        m_tempo->set_hold_undo(false);
     }
     
     Gtk::Label * tapptr(dynamic_cast<Gtk::Label *>(m_button_tap->get_child()));
@@ -1761,6 +1812,13 @@ mainwnd::adj_callback_bpm( )
 {
     if(m_mainperf->get_bpm() !=  m_adjust_bpm->get_value())
     {
+        if(m_spinbutton_bpm->get_have_enter())      // for user using spinner
+        {
+            if(!m_tempo->get_hold_undo())
+                m_tempo->set_hold_undo(true);
+
+            m_spinbutton_bpm->set_have_enter(false);
+        }
         /* call to set_start_BPM will call m_mainperf->set_bpm() */
         m_tempo->set_start_BPM(m_adjust_bpm->get_value());
     }
@@ -1927,13 +1985,11 @@ mainwnd::on_key_release_event(GdkEventKey* a_ev)
         if ( a_ev->keyval == m_mainperf->m_key_bpm_dn )
         {
             m_tempo->push_undo(true);
-            m_tempo->set_hold_undo(false);
             return true;
         }
         if ( a_ev->keyval ==  m_mainperf->m_key_bpm_up )
         {
             m_tempo->push_undo(true);
-            m_tempo->set_hold_undo(false);
             return true;
         }
     }
