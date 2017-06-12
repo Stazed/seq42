@@ -155,6 +155,7 @@ const unsigned long c_midictrl     = 0x24240010;
 const unsigned long c_transpose    = 0x24240014;  // 7/20/16
 const unsigned long c_perf_bp_mes  = 0x24240015;  // perfedit beats per measure
 const unsigned long c_perf_bw      = 0x24240016;  // perfedit beat width
+const unsigned long c_tempo_map    = 0x24240017;  // perfedit tempo map
 
 /* these are never used */
 const char c_font_6_12[] = "-*-fixed-medium-r-*--12-*-*-*-*-*-*";

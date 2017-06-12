@@ -671,14 +671,49 @@ bool midifile::parse (perform * a_perf, int screen_set)
         }
     }
 
+    if ((file_size - m_pos) > (int) sizeof (unsigned int))
+    {
+        /* Get ID + Length */
+        ID = read_long ();
+        if (ID == c_tempo_map)
+        {
+            tempo_mark a_marker;
+            long length = read_long();
+            
+            if(length > 0)
+            {
+                a_perf->m_list_total_marker.clear();    // FIXME prompt for confirmation
+            }
+                
+            for(int i = 0; i < length; ++i)
+            {
+                a_marker.tick = read_long();
+                double a_bpm = (double) read_long ();
+                if(a_bpm != 0)                // stop marker = 0, so don't bother with scale
+                {
+                    if(a_bpm > (c_bpm_scale_factor - 1.0))
+                        a_bpm /= c_bpm_scale_factor;
+                }
+                a_marker.bpm = a_bpm;
+                a_marker.bw = read_long();
+                a_marker.bp_measure = read_long();
+                a_marker.start = read_long();
+                
+                a_perf->m_list_total_marker.push_back(a_marker);
+            }
+            a_perf->set_tempo_load(true);
+        }
+    }
+    
+    /* If tempo map is accepted above then perf will already be changed to bpm */
     /* round the bpm value to our precision so change comparison below will work */
     bpm = round(bpm * 100.0)/100.0;
- 
+
     bool is_changed = false;
-    
+
     if(a_perf->get_start_tempo() != bpm || a_perf->get_bp_measure() != bp_measure || a_perf->get_bw() != bw)
         is_changed = true;
-    
+
     if(is_changed)
     {
         if(verify_change_tempo_timesig(bpm, bp_measure, bw))
@@ -688,7 +723,7 @@ bool midifile::parse (perform * a_perf, int screen_set)
             a_perf->set_bw(bw);
         }
     }
-    
+
     // *** ADD NEW TAGS AT END **************/
     return true;
 }
@@ -882,6 +917,20 @@ bool midifile::write_sequences (perform * a_perf, sequence *a_solo_seq)
         /* write out the beat width */
         write_long(c_perf_bw);
         write_long(a_perf->get_bw());
+        
+        /* write out the tempo map */
+        write_long(c_tempo_map);
+        write_long(a_perf->m_list_total_marker.size());
+        list<tempo_mark>::iterator i;
+        for ( i = a_perf->m_list_total_marker.begin(); i != a_perf->m_list_total_marker.end(); i++ )
+        {
+            write_long((*i).tick);
+            long scaled_bpm = long((*i).bpm * c_bpm_scale_factor);
+            write_long (scaled_bpm);
+            write_long((*i).bw);
+            write_long((*i).bp_measure);
+            write_long((*i).start);
+        }
     }
     /* open binary file */
     ofstream file (m_name.c_str (), ios::out | ios::binary | ios::trunc);
