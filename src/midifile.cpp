@@ -679,12 +679,16 @@ bool midifile::parse (perform * a_perf, int screen_set)
         {
             tempo_mark a_marker;
             long length = read_long();
+            bool use_tempo_map = false;
             
             if(length > 0)
             {
-                a_perf->m_list_total_marker.clear();    // FIXME prompt for confirmation
+                use_tempo_map = verify_tempo_map();
+                if(use_tempo_map)
+                    a_perf->m_list_total_marker.clear();
             }
-                
+            
+            /* if use_tempo_map is false we should still run through the reads in case additional tags are added later */
             for(int i = 0; i < length; ++i)
             {
                 a_marker.tick = read_long();
@@ -699,14 +703,19 @@ bool midifile::parse (perform * a_perf, int screen_set)
                 a_marker.bp_measure = read_long();
                 a_marker.start = read_long();
                 
-                a_perf->m_list_total_marker.push_back(a_marker);
+                if(use_tempo_map)
+                    a_perf->m_list_total_marker.push_back(a_marker);
             }
-            a_perf->set_tempo_load(true);
+            if(use_tempo_map)
+                a_perf->set_tempo_load(true);
         }
     }
     
-    /* If tempo map is accepted above then perf will already be changed to bpm */
-    /* round the bpm value to our precision so change comparison below will work */
+    // *** ADD NEW TAGS AT END **************/
+    
+    /* If tempo map is accepted above then perf will already be changed to a_bpm & below verification will not be triggered */
+    /* If tempo map is not accepted then user may get second verification message here for starting bpm */
+    /* round the bpm value to our precision so change comparison below will work */ 
     bpm = round(bpm * 100.0)/100.0;
 
     bool is_changed = false;
@@ -724,7 +733,6 @@ bool midifile::parse (perform * a_perf, int screen_set)
         }
     }
 
-    // *** ADD NEW TAGS AT END **************/
     return true;
 }
 
@@ -1256,6 +1264,28 @@ midifile::verify_change_tempo_timesig(double tempo, long bp_measure, long bw)
     
     message += "\n\nTempo or time signature is different from current project!\n\n";
     message += "Do you want to change the current project tempo and time signature to the import values?";
+
+    Gtk::MessageDialog warning(message,
+                           false,
+                           Gtk::MESSAGE_WARNING, Gtk::BUTTONS_YES_NO, true);
+
+    auto result = warning.run();
+
+    if (result == Gtk::RESPONSE_NO )
+    {
+        return false;
+    }
+    return true;
+}
+
+bool
+midifile::verify_tempo_map()
+{
+    Glib::ustring message = "From Import file:  ";
+    message += m_name.c_str();
+    
+    message += "\n\nFile contains a tempo map!\n\n";
+    message += "Do you want to change the current project tempo map to the import values?";
 
     Gtk::MessageDialog warning(message,
                            false,
