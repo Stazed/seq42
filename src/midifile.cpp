@@ -184,7 +184,7 @@ bool midifile::parse (perform * a_perf, int screen_set)
     }
 
     /* We should be good to load now   */
-    a_perf->push_perf_undo();
+    a_perf->push_perf_undo(true);   // true for import file
 
     /* seq24 screen set import */
     int screen_set_start = 0;

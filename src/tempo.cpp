@@ -493,7 +493,7 @@ tempo::push_undo(bool a_hold)
     {
         if(m_list_undo_hold.size())
         {
-            m_list_undo.push( m_list_undo_hold );
+            m_mainperf->m_list_undo.push( m_list_undo_hold );
             set_hold_undo (false);
             m_mainperf->push_bpm_undo();
             global_is_modified = true;
@@ -501,7 +501,7 @@ tempo::push_undo(bool a_hold)
     }
     else
     {
-        m_list_undo.push( m_list_marker );
+        m_mainperf->m_list_undo.push( m_list_marker );
         set_hold_undo (false);
         m_mainperf->push_bpm_undo();
         global_is_modified = true;
@@ -514,12 +514,12 @@ tempo::pop_undo()
 {
     lock();
 
-    if (m_list_undo.size() > 0 )
+    if (m_mainperf->m_list_undo.size() > 0 )
     {
         m_mainperf->pop_bpm_undo();
-        m_list_redo.push( m_list_marker );
-        m_list_marker = m_list_undo.top();
-        m_list_undo.pop();
+        m_mainperf->m_list_redo.push( m_list_marker );
+        m_list_marker = m_mainperf->m_list_undo.top();
+        m_mainperf->m_list_undo.pop();
         reset_tempo_list();
         m_mainperf->set_bpm(m_mainperf->get_start_tempo());
         queue_draw();
@@ -533,12 +533,12 @@ tempo::pop_redo()
 {
     lock();
 
-    if (m_list_redo.size() > 0 )
+    if (m_mainperf->m_list_redo.size() > 0 )
     {
         m_mainperf->pop_bpm_redo();
-        m_list_undo.push( m_list_marker );
-        m_list_marker = m_list_redo.top();
-        m_list_redo.pop();
+        m_mainperf->m_list_undo.push( m_list_marker );
+        m_list_marker = m_mainperf->m_list_redo.top();
+        m_mainperf->m_list_redo.pop();
         reset_tempo_list();
         m_mainperf->set_bpm(m_mainperf->get_start_tempo());
         queue_draw();

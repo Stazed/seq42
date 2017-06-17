@@ -173,6 +173,7 @@ const int c_undo_track   = 1;
 const int c_undo_perf    = 2;
 const int c_undo_collapse_expand = 3;
 const int c_undo_bpm     = 4;
+const int c_undo_import  = 5;
 
 /* redraw when recording ms */
 #ifdef __WIN32__

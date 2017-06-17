@@ -1131,7 +1131,7 @@ void perform::pop_track_redo( int a_track )
 }
 
 void
-perform::push_perf_undo()
+perform::push_perf_undo(bool a_import)
 {
     m_mutex.lock();
     for(int i = 0; i < c_max_track; i++)
@@ -1145,12 +1145,18 @@ perform::push_perf_undo()
             undo_perf[m_undo_perf_count].perf_tracks[i].m_is_NULL = true;
         }
     }
+    
+    undo_type a_undo;
+    a_undo.type = c_undo_perf;
+    
+    if(a_import)
+    {
+        a_undo.type = c_undo_import;
+        m_list_undo.push( m_list_total_marker );
+    }
 
     m_undo_perf_count++;
-
-    undo_type a_undo;
     a_undo.track = -1;
-    a_undo.type = c_undo_perf;
 
     undo_vect.push_back(a_undo);
     redo_vect.clear();
@@ -1160,7 +1166,7 @@ perform::push_perf_undo()
 }
 
 void
-perform::pop_perf_undo()
+perform::pop_perf_undo(bool a_import)
 {
     m_mutex.lock();
     for(int i = 0; i < c_max_track; i++)//now delete and replace
@@ -1189,13 +1195,23 @@ perform::pop_perf_undo()
             }
         }
     }
+    
+    undo_type a_undo;
+    a_undo.type = c_undo_perf;
+    
+    if(a_import)
+    {
+        a_undo.type = c_undo_import;
+        m_list_redo.push( m_list_total_marker );
+        m_list_total_marker = m_list_undo.top();
+        m_list_undo.pop();
+        set_tempo_load(true);// used by mainwnd timeout to call m_tempo->load_tempo_list();
+    }
 
     m_undo_perf_count--;
     m_redo_perf_count++;
 
-    undo_type a_undo;
     a_undo.track = -1;
-    a_undo.type = c_undo_perf;
 
     undo_vect.pop_back();
     redo_vect.push_back(a_undo);
@@ -1205,7 +1221,7 @@ perform::pop_perf_undo()
 }
 
 void
-perform::pop_perf_redo()
+perform::pop_perf_redo(bool a_import)
 {
     m_mutex.lock();
     for(int i = 0; i < c_max_track; i++)//now delete and replace
@@ -1235,12 +1251,22 @@ perform::pop_perf_redo()
         }
     }
 
+    undo_type a_undo;
+    a_undo.type = c_undo_perf;
+    
+    if(a_import)
+    {
+        a_undo.type = c_undo_import;
+        m_list_undo.push( m_list_total_marker );
+        m_list_total_marker = m_list_redo.top();
+        m_list_redo.pop();
+        set_tempo_load(true); // used by mainwnd timeout to call m_tempo->load_tempo_list();
+    }
+    
     m_undo_perf_count++;
     m_redo_perf_count--;
 
-    undo_type a_undo;
     a_undo.track = -1;
-    a_undo.type = c_undo_perf;
 
     redo_vect.pop_back();
     undo_vect.push_back(a_undo);

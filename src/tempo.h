@@ -78,9 +78,6 @@ private:
     tempo_mark m_current_mark;
     
     list < tempo_mark > m_list_undo_hold;
-
-    stack < list < tempo_mark > >m_list_undo;
-    stack < list < tempo_mark > >m_list_redo;
     
     tempopopup  *m_popup_tempo_wnd;
     

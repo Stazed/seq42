@@ -720,6 +720,9 @@ mainwnd::undo_type()
     case c_undo_bpm:
         undo_bpm();
         break;
+    case c_undo_import:
+        undo_perf(true);
+        break;
     default:
         break;
     }
@@ -748,9 +751,9 @@ mainwnd::undo_track( int a_track )
 }
 
 void
-mainwnd::undo_perf()
+mainwnd::undo_perf(bool a_import)
 {
-    m_mainperf->pop_perf_undo();
+    m_mainperf->pop_perf_undo(a_import);
     m_perfroll->queue_draw();
 }
 
@@ -786,6 +789,9 @@ mainwnd::redo_type()
     case c_undo_bpm:
         redo_bpm();
         break;
+    case c_undo_import:
+        redo_perf(true);
+        break;
     default:
         break;
     }
@@ -814,9 +820,9 @@ mainwnd::redo_track( int a_track )
 }
 
 void
-mainwnd::redo_perf()
+mainwnd::redo_perf(bool a_import)
 {
-    m_mainperf->pop_perf_redo();
+    m_mainperf->pop_perf_redo(a_import);
     m_perfroll->queue_draw();
 }
 

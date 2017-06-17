@@ -241,6 +241,10 @@ public:
      * Only adjusted when new marker is set or removed by user */
     list < tempo_mark > m_list_no_stop_markers;
 
+    /* for undo/redo */
+    stack < list < tempo_mark > >m_list_undo;
+    stack < list < tempo_mark > >m_list_redo;
+
     float m_excell_FF_RW;
     bool m_have_undo;
     bool m_have_redo;
@@ -338,9 +342,9 @@ public:
     void pop_track_undo(int a_track );
     void pop_track_redo(int a_track );
     // row insert/delete, track pack, midi import
-    void push_perf_undo();
-    void pop_perf_undo();
-    void pop_perf_redo();
+    void push_perf_undo(bool a_import = false);
+    void pop_perf_undo(bool a_import = false);
+    void pop_perf_redo(bool a_import = false);
 
     void check_max_undo_redo();
     void set_have_undo();
