@@ -397,7 +397,7 @@ tempo::set_start_BPM(double a_bpm)
 
 /* update marker jack start ticks and perform class lists.
  * triggered any time user adds or deletes a marker or adjusts
- * the start marker bpm spin. Also on initial file loading.
+ * the start marker bpm spin. Also on initial file loading, undo / redo.
  * also when measures are changed */
 void
 tempo::reset_tempo_list(bool play_list_only)
@@ -418,12 +418,12 @@ tempo::reset_tempo_list(bool play_list_only)
     }
 }
 
-/* file loading */
+/* file loading & undo / redo on import */
 void
 tempo::load_tempo_list()
 {
     m_list_marker = m_mainperf->m_list_total_marker;    // update tempo class
-    reset_tempo_list();                                 // needed to update m_list_no_stop_markers
+    reset_tempo_list();                                 // needed to update m_list_no_stop_markers & calculate start frames
     queue_draw();
 }
 
@@ -575,7 +575,7 @@ tempo::print_marker_info(list<tempo_mark> a_list)
     list<tempo_mark>::iterator i;
     for ( i = a_list.begin(); i != a_list.end(); ++i)
     {
-        printf("mark tick %lu: start %lu: bpm %f\n", (*i).tick, (*i).start, (*i).bpm);
+        printf("mark tick %lu: start %u: bpm %f\n", (*i).tick, (*i).start, (*i).bpm);
     }
     printf("\n\n");
 }

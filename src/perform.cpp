@@ -3231,8 +3231,12 @@ perform::save( const Glib::ustring& a_filename )
     file.write((const char *) &list_size, sizeof(list_size));
     list<tempo_mark>::iterator i;
     for ( i = m_list_total_marker.begin(); i != m_list_total_marker.end(); i++ )
-    {
-        file.write((const char * ) &(*i), sizeof(tempo_mark));
+    {   
+        file.write((const char * ) &(*i).tick, sizeof((*i).tick));
+        file.write((const char * ) &(*i).bpm, sizeof((*i).bpm));
+        file.write((const char * ) &(*i).bw, sizeof((*i).bw));                  // not currently used - future use maybe
+        file.write((const char * ) &(*i).bp_measure, sizeof((*i).bp_measure));  // ditto
+        // we don't need to write the start frame since it will be recalculated when loaded.
     }
 
     int bp_measure = get_bp_measure(); // version 4
@@ -3330,7 +3334,12 @@ perform::load( const Glib::ustring& a_filename )
         tempo_mark marker;
         for(unsigned i = 0; i < list_size; ++i)
         {
-            file.read((char *) &marker, sizeof(marker));
+            file.read((char *) &marker.tick, sizeof(marker.tick));
+            file.read((char *) &marker.bpm, sizeof(marker.bpm));
+            file.read((char *) &marker.bw, sizeof(marker.bw));
+            file.read((char *) &marker.bp_measure, sizeof(marker.bp_measure));
+            // we don't need start marker since set_tempo_load() will recalculate it
+            
             m_list_total_marker.push_back(marker);
         }
         

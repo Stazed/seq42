@@ -79,7 +79,7 @@ struct tempo_mark
     double bpm;
     uint32_t bw;            // not used
     uint32_t bp_measure;    // not used
-    uint64_t start;         // calculated frame offset start
+    uint32_t start;         // calculated frame offset start - jack_nframes_t
     
     tempo_mark ( ) : tick ( 0 ), bpm ( 0.0 ), bw ( 0 ), bp_measure ( 0 ), start ( 0 )
         {
