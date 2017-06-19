@@ -697,6 +697,9 @@ mainwnd::timer_callback(  )
 void
 mainwnd::undo_type()
 {
+    if(m_tempo->get_hold_undo())
+        return;
+    
     char type = '\0';
     if(m_mainperf->undo_vect.size() > 0)
         type = m_mainperf->undo_vect[m_mainperf->undo_vect.size() -1].type;
@@ -766,6 +769,9 @@ mainwnd::undo_bpm()
 void
 mainwnd::redo_type()
 {
+    if(m_tempo->get_hold_undo())
+        return;
+    
     char type = '\0';
     if(m_mainperf->redo_vect.size() > 0)
         type = m_mainperf->redo_vect[m_mainperf->redo_vect.size() -1].type;
