@@ -454,6 +454,7 @@ tempo::calculate_marker_start()
         }
     }
 
+#ifdef JACK_SUPPORT
     /* calculate the jack start tick without the stop markers */
     for ( i = ++m_list_no_stop_markers.begin(); i != m_list_no_stop_markers.end(); ++i )
     {
@@ -470,7 +471,7 @@ tempo::calculate_marker_start()
 //        printf("from tick to %d: previous.start %d\n",(*i).start, previous.start );
         (*i).start += previous.start;
     }
-    
+#endif // JACK_SUPPORT
     /* reset the main list with the calculated starts */
     m_list_marker = m_list_no_stop_markers;
     

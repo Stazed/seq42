@@ -2372,7 +2372,9 @@ void perform::output_func()
             {
                 if ( m_looping && m_playback_mode )
                 {
+#ifdef JACK_SUPPORT
                     static bool jack_position_once = false;
+#endif // JACK_SUPPORT
                     if ( current_tick >= get_right_tick() )
                     {
                         //printf("current_tick [%f]: right_tick [%ld]\n", current_tick, get_right_tick());
@@ -2397,8 +2399,10 @@ void perform::output_func()
                         set_orig_ticks( get_left_tick() );
                         current_tick = (double) get_left_tick() + leftover_tick;
                     }
+#ifdef JACK_SUPPORT
                     else
                         jack_position_once = false;
+#endif // JACK_SUPPORT
                 }
                 /* play */
 #ifdef JACK_SUPPORT // don't play during JackTransportStarting to avoid xruns on FF or rewind

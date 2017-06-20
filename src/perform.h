@@ -86,6 +86,7 @@ struct tempo_mark
         }
 };
 
+#ifdef JACK_SUPPORT
 /*  Bar and beat start at 1. */
 struct BBT
 {
@@ -123,6 +124,7 @@ struct time_sig
         {
         }
 };
+#endif // JACK_SUPPORT
 
 #define STOP_MARKER         0.0
 #define STARTING_MARKER     0
