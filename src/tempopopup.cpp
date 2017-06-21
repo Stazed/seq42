@@ -138,6 +138,17 @@ tempopopup::adj_callback_bpm()
 bool
 tempopopup::on_key_press_event( GdkEventKey* a_ev )
 {
+    if ( a_ev->keyval == m_tempo->m_mainperf->m_key_bpm_dn )
+    {
+        m_adjust_bpm->set_value(m_adjust_bpm->get_value() - 1);
+        return true;
+    }
+    if ( a_ev->keyval ==  m_tempo->m_mainperf->m_key_bpm_up )
+    {
+        m_adjust_bpm->set_value(m_adjust_bpm->get_value() + 1);
+        return true;
+    }
+    
     if (a_ev->keyval  == m_tempo->m_mainperf->m_key_tap_bpm )
     {
         tap();
