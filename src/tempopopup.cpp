@@ -74,6 +74,7 @@ tempopopup::tempopopup(tempo *a_tempo) :
         "After 5 seconds of no taps, the tap-counter will reset to 0. "
         "Also see the File / Options / Keyboard / Tap BPM key assignment."
     );
+    m_button_tap->set_can_focus(false);  // to force all keys to the spin button
     
     HBox *hbox = manage(new HBox());
     hbox->set_border_width(6);
@@ -164,8 +165,12 @@ tempopopup::on_key_press_event( GdkEventKey* a_ev )
          NOT updated amount to m_tempo->set_BPM. The m_is_typing bool is set any
          time a keypress is use to eliminate the dupicate.  */
         m_return = true;
+        bool is_typing = m_is_typing;   // must check before callback since cb will set to false
+        
         adj_callback_bpm();
-        return true;
+        
+        if(is_typing)                   // must set return = true or we get nothing if typed...??
+            return true;
     }
     m_is_typing = true;
     
