@@ -37,7 +37,7 @@ tempopopup::tempopopup(tempo *a_tempo) :
 {
  //   std::string title = "BPM";
  //   set_title(title);
-    set_size_request(130, 50);
+    set_size_request(150, 50);
     
     manage (new Tooltips ());
     
