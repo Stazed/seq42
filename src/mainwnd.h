@@ -168,6 +168,7 @@ private:
     void new_open_error_dialog();
     void file_new();
     void file_open();
+    void file_open_setlist();
     void file_save();
     void file_save_as(file_type_e type, void *a_seq_or_track = nullptr);
     void export_midi(const Glib::ustring&, file_type_e type, void *a_seq_or_track = nullptr);
@@ -175,7 +176,7 @@ private:
     void file_exit();
     void new_file();
     bool save_file();
-    void choose_file();
+    void choose_file(bool setlist_mode = false);
     int query_save_changes();
     bool is_save();
     static void handle_signal(int sig);
@@ -247,13 +248,14 @@ public:
     }
 
     void set_zoom (int z);
-    void open_file(const Glib::ustring&);
+    bool open_file(const Glib::ustring& fn);
     void export_sequence_midi(sequence *a_seq);
     void export_trigger_midi(track *a_track);
     void export_track_midi(int a_track);
     bool on_delete_event(GdkEventAny *a_e);
     bool on_key_press_event(GdkEventKey* a_ev);
     bool on_key_release_event(GdkEventKey* a_ev);
+    void setlist_jump(int jmp);
     friend int FF_RW_timeout(void *arg);
 };
 

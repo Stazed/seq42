@@ -112,6 +112,8 @@ mainwnd::mainwnd(perform *a_p):
                                             mem_fun(*this, &mainwnd::file_save)));
     m_menu_file->items().push_back(MenuElem("Save _as...",
                                             sigc::bind(mem_fun(*this, &mainwnd::file_save_as), E_SEQ42_NATIVE_FILE, nullptr)));
+    m_menu_file->items().push_back(MenuElem("Open _setlist...",
+                                            mem_fun(*this, &mainwnd::file_open_setlist)));
 
     m_menu_file->items().push_back(SeparatorElem());
 
@@ -555,6 +557,53 @@ mainwnd::~mainwnd()
         close(m_sigpipe[1]);
 }
 
+/*
+ * move through the setlist (jmp is 0 on start and 1 if right arrow, -1 for left arrow)
+ */
+void mainwnd::setlist_jump(int jmp)
+{
+    int found = 0;
+
+    while(!found)
+    {
+        if(m_mainperf->set_setlist_index(m_mainperf->get_setlist_index() + jmp))
+        {
+            if(Glib::file_test(m_mainperf->get_setlist_current_file(), Glib::FILE_TEST_EXISTS))
+            {
+                if(open_file(m_mainperf->get_setlist_current_file()))
+                {
+                    found = 1;
+                    break;
+                }
+                else
+                {
+                    Glib::ustring message = "Playlist file open error\n";
+                    message += m_mainperf->get_setlist_current_file();
+                    m_mainperf->error_message_gtk(message);
+                    m_mainperf->set_setlist_mode(false);    // abandon ship
+                    break;  
+                }
+            }
+            else
+            {
+                Glib::ustring message = "Midi playlist file does not exist\n";
+                message += m_mainperf->get_setlist_current_file();
+                m_mainperf->error_message_gtk(message);
+                m_mainperf->set_setlist_mode(false);        // abandon ship
+                break;  
+            }
+        }
+        else
+        {
+           //printf("Setlist index %d out of range\n",m_mainperf->get_setlist_index() + jmp);
+            break;
+        }
+    }
+    
+    if(!m_mainperf->get_setlist_mode())     // if errors occured above
+        update_window_title();
+}
+
 // This is the GTK timer callback, used to draw our current time and bpm
 // ondd_events( the main window
 bool
@@ -689,6 +738,14 @@ mainwnd::timer_callback(  )
             m_tempo->push_undo(true);                   // use the hold marker
             m_spinbutton_bpm->set_have_leave(false);
         }
+    }
+    /* when in set list mode, tempo stop markers trigger set file increment.
+     We have to let the transport completely stop before doing the 
+     file loading or strange things happen*/
+    if(m_mainperf->m_setlist_stop_mark && !global_is_running)
+    {
+        m_mainperf->m_setlist_stop_mark = false;
+        setlist_jump(1);    // next file
     }
     
     return true;
@@ -1236,6 +1293,7 @@ void mainwnd::new_file()
         set_bw(4);
         set_xpose(0);
         m_mainperf->set_start_tempo(c_bpm);
+        m_mainperf->set_setlist_mode(false);
 
         global_filename = "";
         update_window_title();
@@ -1427,7 +1485,7 @@ void mainwnd::new_open_error_dialog()
     errdialog.run();
 }
 
-void mainwnd::open_file(const Glib::ustring& fn)
+bool mainwnd::open_file(const Glib::ustring& fn)
 {
     bool result;
 
@@ -1450,7 +1508,8 @@ void mainwnd::open_file(const Glib::ustring& fn)
                 true
             );
             errdialog.run();
-            return;
+            global_filename = "";
+            return false;
         }
 
         last_used_dir = fn.substr(0, fn.rfind("/") + 1);
@@ -1465,8 +1524,9 @@ void mainwnd::open_file(const Glib::ustring& fn)
     else
     {
         new_open_error_dialog();
-        return;
+        return false;
     }
+    return true;
 }
 
 void mainwnd::export_sequence_midi(sequence *a_seq)
@@ -1491,20 +1551,36 @@ void mainwnd::file_open()
         choose_file();
 }
 
-void mainwnd::choose_file()
+/*callback function*/
+void mainwnd::file_open_setlist()
+{
+    if (is_save())
+    {
+        choose_file(true);
+    }
+}
+
+void mainwnd::choose_file(const bool setlist_mode)
 {
     Gtk::FileChooserDialog dialog("Open Seq42 file",
                                   Gtk::FILE_CHOOSER_ACTION_OPEN);
     dialog.set_transient_for(*this);
 
+    if(setlist_mode)
+    	dialog.set_title("Open Playlist file");
+
     dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
     dialog.add_button(Gtk::Stock::OPEN, Gtk::RESPONSE_OK);
 
-    Gtk::FileFilter filter_midi;
-    filter_midi.set_name("Seq42 files");
-    filter_midi.add_pattern("*.s42");
-    dialog.add_filter(filter_midi);
-
+    if(!setlist_mode)
+    {
+        m_mainperf->set_setlist_mode(setlist_mode); // false
+        Gtk::FileFilter filter_midi;
+        filter_midi.set_name("Seq42 files");
+        filter_midi.add_pattern("*.s42");
+        dialog.add_filter(filter_midi);
+    }
+    
     Gtk::FileFilter filter_any;
     filter_any.set_name("Any files");
     filter_any.add_pattern("*");
@@ -1517,8 +1593,17 @@ void mainwnd::choose_file()
     switch(result)
     {
     case(Gtk::RESPONSE_OK):
-        open_file(dialog.get_filename());
-
+        if(setlist_mode)
+        {
+            m_mainperf->set_setlist_mode(true);
+            m_mainperf->set_setlist_file(dialog.get_filename());
+            setlist_jump(0);
+            update_window_title();
+        }
+        else
+        {
+            open_file(dialog.get_filename());
+        }
     default:
         break;
     }
@@ -1912,7 +1997,20 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
             if(a_ev->keyval == GDK_space)
                 return true;
         }
-        else if (a_ev->keyval == GDK_F12)
+        
+        if(m_mainperf->get_setlist_mode())
+        {
+            if ( a_ev->keyval == m_mainperf->m_key_leftarrow )
+            {
+            	setlist_jump(-1);
+            }
+            if ( a_ev->keyval == m_mainperf->m_key_rightarrow )
+            {
+            	setlist_jump(1);
+            }
+        }
+        
+        if (a_ev->keyval == GDK_F12)
         {
             m_mainperf->print();
             fflush( stdout );
@@ -1957,14 +2055,29 @@ mainwnd::update_window_title()
 {
     std::string title;
 
-    if (global_filename == "")
-        title = ( PACKAGE ) + string( " - song - unsaved" );
+    if(m_mainperf->get_setlist_mode())
+    {
+    	char num[20];
+    	sprintf(num,"%02d",m_mainperf->get_setlist_index() +1);
+    	title =
+    		( PACKAGE )
+			+ string(" - Playlist, Song ")
+			+ num
+			+ string(" - [")
+            + Glib::filename_to_utf8(global_filename)
+            + string( "]" );
+    }
     else
-        title =
-            ( PACKAGE )
-            + string( " - song - " )
-            + Glib::filename_to_utf8(global_filename);
-
+    {
+        if (global_filename == "")
+            title = ( PACKAGE ) + string( " - song - unsaved" );
+        else
+            title =
+                ( PACKAGE )
+                + string( " - song - " )
+                + Glib::filename_to_utf8(global_filename);
+    }
+    
     set_title ( title.c_str());
 }
 

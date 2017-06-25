@@ -49,6 +49,7 @@ static struct
     {"priority", 0, 0, 'p' },
     {"ignore",required_argument, 0, 'i'},
     {"interaction_method",required_argument, 0, 'x'},
+    {"setlist file", required_argument, 0, 'X'},
     {"jack_transport",0, 0, 'j'},
     {"jack_master",0, 0, 'J'},
     {"jack_master_cond",0,0,'C'},
@@ -78,6 +79,7 @@ Glib::ustring last_midi_dir ="/";
 std::string config_filename = ".seq42rc";
 std::string user_filename = ".seq42usr";
 Glib::ustring global_client_name = "seq42"; // default
+Glib::ustring setlist_file = "";
 bool global_print_keys = false;
 interaction_method_e global_interactionmethod = e_seq42_interaction;
 
@@ -85,6 +87,8 @@ bool global_with_jack_transport = false;
 bool global_with_jack_master = false;
 bool global_with_jack_master_cond = false;
 bool global_song_start_mode = true;
+bool setlist_mode = false;
+
 Glib::ustring global_jack_session_uuid = "";
 
 user_midi_bus_definition   global_user_midi_bus_definitions[c_maxBuses];
@@ -141,7 +145,7 @@ main (int argc, char *argv[])
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long (argc, argv, "Chi:jJkmM:pPsSuU:vx:n:", long_options, &option_index);
+        c = getopt_long (argc, argv, "Chi:jJkmM:pPsSuU:vx:X:n:", long_options, &option_index);
 
         /* Detect the end of the options. */
         if (c == -1)
@@ -163,6 +167,7 @@ main (int argc, char *argv[])
             printf( "   -i, --ignore <number>: ignore ALSA device\n" );
             printf( "   -k, --show_keys: prints pressed key value\n" );
             printf( "   -x, --interaction_method <number>: see .seq42rc for methods to use\n" );
+            printf( "   -X, --setlist file: path to setlist file and name\n" );
             printf( "   -j, --jack_transport: seq42 will sync to jack transport\n" );
             printf( "   -J, --jack_master: seq42 will try to be jack master\n" );
             printf( "   -C, --jack_master_cond: jack master will fail if there is already a master\n" );
@@ -251,6 +256,10 @@ main (int argc, char *argv[])
             global_interactionmethod = (interaction_method_e)atoi( optarg );
             break;
 
+        case 'X':
+            setlist_mode = true;
+            setlist_file = Glib::ustring(optarg);
+            break;
 
         default:
             break;
@@ -313,6 +322,13 @@ main (int argc, char *argv[])
             printf("File not found: %s\n", argv[optind]);
     }
 
+    if(setlist_mode)
+    {
+        p.set_setlist_mode(setlist_mode);
+        p.set_setlist_file(setlist_file);
+        seq42_window.setlist_jump(0);
+    }
+    
     /* connect to lash daemon and poll events*/
 #ifdef LASH_SUPPORT
     lash_driver->start( &p );

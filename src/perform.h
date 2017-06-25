@@ -131,7 +131,30 @@ struct time_sig
 
 class perform
 {
+public:
+
+    //Setlist mode
+    void 	set_setlist_mode(bool mode);
+    bool 	get_setlist_mode();
+    void 	set_setlist_file(const Glib::ustring& fn);
+    Glib::ustring get_setlist_current_file();
+    int		get_setlist_index();
+    bool 	set_setlist_index(int index);
+
+    unsigned int 	m_key_leftarrow;        // FIXME - configurable
+    unsigned int 	m_key_rightarrow;
+    bool                m_setlist_stop_mark;
+    // end selist public
 private:
+
+    //Setlist mode
+    bool m_setlist_mode;
+    Glib::ustring m_setlist_file;
+    int m_setlist_nfiles;
+    int m_setlist_current_idx;
+    std::vector<Glib::ustring> m_setlist_fileset;
+    // end selist private
+
     /* vector of tracks */
     track *m_tracks[c_max_track];
     track m_clipboard;
@@ -353,6 +376,7 @@ public:
     void set_have_redo();
 
     void print();
+    void error_message_gtk( Glib::ustring message);
 
     void start( bool a_state );
     void stop();
