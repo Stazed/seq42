@@ -20,7 +20,7 @@
 
 #include "midifile.h"
 #include <iostream>
-#include <gtkmm.h>
+#include <gtkmm/messagedialog.h>
 #include <math.h>
 
 midifile::midifile(const Glib::ustring& a_name) :
