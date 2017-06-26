@@ -30,6 +30,7 @@
 
 //For keys
 #include <gtkmm/accelkey.h>
+#include <gtkmm/messagedialog.h>
 
 using namespace Gtk;
 
@@ -44,6 +45,12 @@ perform::perform()
         m_was_active_names[i]   = false;
     }
 
+    m_setlist_stop_mark = false;
+    m_setlist_mode = false;
+    m_setlist_file = "";
+    m_setlist_nfiles = 0;
+    m_setlist_current_idx = 0;
+    
     m_seqlist_open = false;
     m_seqlist_raise = false;
     m_looping = false;
@@ -77,7 +84,11 @@ perform::perform()
     m_key_jack   = GDK_F2;
     m_key_seqlist   = GDK_F3;
     m_key_follow_trans  = GDK_F4;
-
+    
+    //setlist next/prev keys:
+    m_key_leftarrow = GDK_Left;
+    m_key_rightarrow = GDK_Right;
+    
     m_jack_stop_tick = 0;
     m_reset_tempo_list = false;
     m_load_tempo_list = false;
@@ -732,6 +743,19 @@ void perform::print()
     //m_master_bus.print();
 }
 
+void perform::error_message_gtk( Glib::ustring message)
+{
+    Gtk::MessageDialog errdialog
+    (
+        message,
+        false,
+        Gtk::MESSAGE_ERROR,
+        Gtk::BUTTONS_OK,
+        true
+    );
+    errdialog.run();
+}
+
 void perform::play( long a_tick )
 {
     /* just run down the list of sequences and have them dump */
@@ -776,6 +800,8 @@ void perform::tempo_change()
             if((i)->bpm == STOP_MARKER)
             {
                 stop_playing();
+                if(m_setlist_mode) // if we are in set list mode then increment the file on stop marker
+                    m_setlist_stop_mark = true;
             }
             else
             {
@@ -3466,4 +3492,83 @@ perform::apply_song_transpose()
             get_track(i)->apply_song_transpose();
         }
     }
+}
+
+/****************************************************/
+
+void perform::set_setlist_mode(bool mode)
+{
+    m_setlist_mode = mode;
+}
+
+bool perform::get_setlist_mode()
+{
+    return m_setlist_mode;
+}
+
+void perform::set_setlist_file(const Glib::ustring& fn)
+{   
+    printf("Opening setlist %s\n",fn.c_str());
+    
+    if(m_setlist_file != "")                                // if we have a previous file, then reset everything
+    {
+        m_setlist_fileset.clear();
+        m_setlist_nfiles = 0;
+        m_setlist_current_idx = 0;
+    }
+    
+    m_setlist_file = fn;                                    // set the file
+    
+    /*Now read the file*/
+    std::ifstream openFile(m_setlist_file);
+
+    if(openFile)
+    {
+        std::string strFileLine = "";
+        while(getline(openFile,strFileLine))
+        {
+            m_setlist_fileset.push_back(strFileLine);       // load into vector
+        }
+        openFile.close();
+        
+        if(m_setlist_fileset.size())                        // if we got something
+        {
+            m_setlist_nfiles = m_setlist_fileset.size();
+        }
+        else                                                // if we did not get anything
+        {
+            error_message_gtk("No files listed in playlist!\n");
+            set_setlist_mode(false);                        // abandon ship
+        }
+    }
+    else
+    {
+        Glib::ustring message = "Unable to open playlist file\n";
+        message += m_setlist_file; 
+        error_message_gtk(message);
+        set_setlist_mode(false);                            // abandon ship
+    }
+}
+
+Glib::ustring perform::get_setlist_current_file()
+{
+    return m_setlist_fileset[m_setlist_current_idx];
+}
+
+int perform::get_setlist_index()
+{
+    return m_setlist_current_idx;
+}
+
+bool perform::set_setlist_index(int index)
+{
+    if(index < 0)
+        return false;
+
+    if(index >= m_setlist_nfiles)
+        return false;
+
+    m_setlist_current_idx = index;
+    
+    return true;
 }
