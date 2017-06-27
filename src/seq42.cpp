@@ -326,7 +326,14 @@ main (int argc, char *argv[])
     {
         p.set_setlist_mode(setlist_mode);
         p.set_setlist_file(setlist_file);
-        seq42_window.setlist_jump(0);
+        if(seq42_window.verify_setlist_dialog())
+        {
+            seq42_window.setlist_verify();
+        }
+        else
+        {
+            seq42_window.setlist_jump(0);
+        }
     }
     
     /* connect to lash daemon and poll events*/

@@ -255,7 +255,9 @@ public:
     bool on_delete_event(GdkEventAny *a_e);
     bool on_key_press_event(GdkEventKey* a_ev);
     bool on_key_release_event(GdkEventKey* a_ev);
-    void setlist_jump(int jmp);
+    bool setlist_jump(int jmp, bool a_verify = false);
+    bool verify_setlist_dialog();
+    void setlist_verify();
     friend int FF_RW_timeout(void *arg);
 };
 

@@ -140,6 +140,10 @@ public:
     Glib::ustring get_setlist_current_file();
     int		get_setlist_index();
     bool 	set_setlist_index(int index);
+    int         get_setlist_num_files()
+    {
+        return m_setlist_nfiles;
+    };
 
     unsigned int 	m_key_leftarrow;        // FIXME - configurable
     unsigned int 	m_key_rightarrow;
