@@ -3537,13 +3537,13 @@ void perform::set_setlist_file(const Glib::ustring& fn)
         }
         else                                                // if we did not get anything
         {
-            error_message_gtk("No files listed in playlist!\n");
+            error_message_gtk("No files listed in setlist!\n");
             set_setlist_mode(false);                        // abandon ship
         }
     }
     else
     {
-        Glib::ustring message = "Unable to open playlist file\n";
+        Glib::ustring message = "Unable to open setlist file\n";
         message += m_setlist_file; 
         error_message_gtk(message);
         set_setlist_mode(false);                            // abandon ship

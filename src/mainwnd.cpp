@@ -577,7 +577,7 @@ bool mainwnd::setlist_jump(int jmp, bool a_verify)
             {
                 if(open_file(m_mainperf->get_setlist_current_file()))
                 {
-                    if(a_verify)
+                    if(a_verify)    // verify whole setlist
                     {
                         jmp = 1;    // after the first one set to 1 for jump
                         continue;   // keep going till the end of list
@@ -587,7 +587,7 @@ bool mainwnd::setlist_jump(int jmp, bool a_verify)
                 }
                 else
                 {
-                    Glib::ustring message = "Playlist file open error\n";
+                    Glib::ustring message = "Setlist file open error\n";
                     message += m_mainperf->get_setlist_current_file();
                     m_mainperf->error_message_gtk(message);
                     m_mainperf->set_setlist_mode(false);    // abandon ship
@@ -597,7 +597,7 @@ bool mainwnd::setlist_jump(int jmp, bool a_verify)
             }
             else
             {
-                Glib::ustring message = "Midi playlist file does not exist\n";
+                Glib::ustring message = "Setlist file does not exist\n";
                 message += m_mainperf->get_setlist_current_file();
                 m_mainperf->error_message_gtk(message);
                 m_mainperf->set_setlist_mode(false);        // abandon ship
@@ -607,8 +607,7 @@ bool mainwnd::setlist_jump(int jmp, bool a_verify)
         }
         else                                                // end of file list
         {
-           //printf("Setlist index %d out of range\n",m_mainperf->get_setlist_index() + jmp);
-            result = true;
+            result = true;                  // means we got to the end or beginning, without error
             break;
         }
     }
@@ -643,7 +642,7 @@ mainwnd::setlist_verify()
     
     result = setlist_jump(0,true);              // true is verify mode
     
-    if(result)                                  // everything loaded
+    if(result)                                  // everything loaded ok
     {
         m_mainperf->set_setlist_index(0);       // set to start
         setlist_jump(0);                        // load the first file
@@ -1618,7 +1617,7 @@ void mainwnd::choose_file(const bool setlist_mode)
     dialog.set_transient_for(*this);
 
     if(setlist_mode)
-    	dialog.set_title("Open Playlist file");
+    	dialog.set_title("Open Setlist file");
 
     dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
     dialog.add_button(Gtk::Stock::OPEN, Gtk::RESPONSE_OK);
