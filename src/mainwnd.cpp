@@ -1624,7 +1624,6 @@ void mainwnd::choose_file(const bool setlist_mode)
 
     if(!setlist_mode)
     {
-        m_mainperf->set_setlist_mode(setlist_mode); // false
         Gtk::FileFilter filter_midi;
         filter_midi.set_name("Seq42 files");
         filter_midi.add_pattern("*.s42");
@@ -1660,6 +1659,7 @@ void mainwnd::choose_file(const bool setlist_mode)
         }
         else
         {
+            m_mainperf->set_setlist_mode(setlist_mode); // clear setlist flag if set.
             open_file(dialog.get_filename());
         }
     default:
