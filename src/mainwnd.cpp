@@ -2062,10 +2062,12 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
             if ( a_ev->keyval == m_mainperf->m_key_leftarrow )
             {
             	setlist_jump(-1);
+                return true;
             }
             if ( a_ev->keyval == m_mainperf->m_key_rightarrow )
             {
             	setlist_jump(1);
+                return true;
             }
         }
         
