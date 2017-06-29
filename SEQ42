@@ -2,6 +2,89 @@ SEQ42 - Midi Sequencer
 ======================
 FIXME: update this document!!!!
 
+release-1.0.9
+
+Tempo Changes:
+
+To add a tempo change marker, left click on the Tempo grid. A BPM pop up window will appear
+in which you can type, use the spin button, use the bpm key-binding or use tap button
+to set the BPM value. Press enter or return to accept the value. Press escape to abandon
+the value. Upon acceptance, a blue tempo mark will be set at the location of the left click
+location, grid snapped. Also, to the right of the marker, the tempo value will be indicated.
+Tempo values range from 1 to 600.
+
+To delete a tempo marker, right click above the marker.
+During play, when the progress line reaches the tempo mark, the BPM value will change
+to the indicated amount. Also the, the main bpm spin button will indicate the current
+tempo being played. Upon stop, the main spin button will revert back to the original 
+starting value.
+
+The first marker at the start of the song cannot be deleted. Use the main window BPM spin
+buttons as used in previous releases to adjust the starting marker.
+
+STOP Markers:
+When setting the marker BPM, a value of 0 (zero) can be used to set a stop marker.
+Stop markers are indicated by red color, and the bpm value will indicate "[stop]".
+When playing, as the progress mark encounters a stop marker, the transport will stop.
+Stop markers can be used for editing purposes, or at the end of a song to stop the transport.
+When it Setlist mode, if stopped by a stop marker, the set list will automatically increment
+to the next file on the set list after stopping.
+
+Live mode:
+In live mode, only the starting bpm will be used. No subsequent tempo marks or stop marks
+will have any effect.
+
+For the tempo map, special thanks to:
+Jonathan Moore Liles    (non-timeline)
+http://non.tuxfamily.org
+
+
+Setlist mode:
+
+A setlist is a text file containing multiple seq42 files (.s42), that can be quickly loaded
+for possible accompaniment with a live performance. The file should list on each line the
+full path to the .s42 file and name, ex:
+
+/home/username/seq42dir/file1.s42
+/home/username/seq42dir/file2.s42
+/home/username/seq42dir/file3.s42
+
+There should be no blank lines before, after, or between the files listed. Do not use
+place holders, full path only.
+
+Setlist mode can be invoked from the command line with the -X <path to setlist file> option.
+The setlist can also be selected from the main menu, File, Open setlist...
+
+When the setlist mode is first invoked, you will be prompted with a dialog pop-up asking
+if you wish to verify the setlist. For new setlists, or if a setlist is modified, selecting 'Yes'
+would be beneficial to check for errors.  The verification will attempt to load all the files
+on the list, in order, and if errors are encountered, will stop and indicate the offending file.
+Select 'No' or escape key if the setlist has previously been verified.
+
+When setlist mode is in effect, the main window title will indicate "Setlist" and
+the current song and numeric value listed in the setlist file ex:
+
+    "seq42 - Setlist, Song 03 - [/home/username/seq42dir/file3.s42]"
+
+To cycle through the setlist, use the right arrow key to go down the list, and the left
+arrow key to go up the list, from the main window only.
+
+During play, when the transport is stopped by a Stop marker, the setlist song will 
+automatically be incremented down by one song. (See STOP markers above).
+
+To shut off setlist mode, simply load a new file from the main menu, File, New or
+File, Open. You could also quit and restart. The main window title will no longer
+show the "Setlist, Song XX" listing.
+
+If editing while in setlist mode, you will NOT be prompted to save changes when moving
+to a new song on the list. If unsaved, all editing will be lost! So if editing in setlist
+mode, be sure to save before right arrow, or left arrow!
+
+Special thanks to for the setlist idea, and some code (modified) go to:
+Simon Hickinbotham - seq24plus.
+https://github.com/franticspider/seq24plus
+
+
 
 [1] What & Why
 [2] Who 
