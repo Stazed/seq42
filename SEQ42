@@ -69,6 +69,10 @@ the current song and numeric value listed in the setlist file ex:
 To cycle through the setlist, use the right arrow key to go down the list, and the left
 arrow key to go up the list, from the main window only.
 
+ALERT!! - the key binding may need to be reset if a previous .seq42rc file is present 
+in your home directory. Go to File/Options/Keyboard to set the 'Setlist next' and
+'Setlist previous' keys. The default is the left(previous) and right(next) arrow keys.
+
 During play, when the transport is stopped by a Stop marker, the setlist song will 
 automatically be incremented down by one song. (See STOP markers above).
 

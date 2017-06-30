@@ -241,12 +241,22 @@ options::add_keyboard_page()
     entry = manage(new KeyBindEntry(&m_perf->m_key_tap_bpm));
     controltable->attach(*label, 2, 3, 5, 6);
     controltable->attach(*entry, 3, 4, 5, 6);
+    
+    label = manage(new Label("Setlist next", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_setlist_next));
+    controltable->attach(*label, 2, 3, 6, 7);
+    controltable->attach(*entry, 3, 4, 6, 7);
+    
+    label = manage(new Label("Setlist previous", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_setlist_prev));
+    controltable->attach(*label, 0, 1, 6, 7);
+    controltable->attach(*entry, 1, 2, 6, 7);
 
 #ifdef JACK_SUPPORT
     label = manage(new Label("Jack", Gtk::ALIGN_RIGHT));
     entry = manage(new KeyBindEntry(&m_perf->m_key_jack));
-    controltable->attach(*label, 2, 3, 6, 7);
-    controltable->attach(*entry, 3, 4, 6, 7);
+    controltable->attach(*label, 2, 3, 7, 8);
+    controltable->attach(*entry, 3, 4, 7, 8);
 #endif // JACK_SUPPORT
 
 

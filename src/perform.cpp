@@ -86,8 +86,8 @@ perform::perform()
     m_key_follow_trans  = GDK_F4;
     
     //setlist next/prev keys:
-    m_key_leftarrow = GDK_Left;
-    m_key_rightarrow = GDK_Right;
+    m_key_setlist_next = GDK_Right;
+    m_key_setlist_prev = GDK_Left;
     
     m_jack_stop_tick = 0;
     m_reset_tempo_list = false;

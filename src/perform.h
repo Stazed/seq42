@@ -141,8 +141,8 @@ public:
     int		get_setlist_index();
     bool 	set_setlist_index(int index);
 
-    unsigned int 	m_key_leftarrow;        // FIXME - configurable
-    unsigned int 	m_key_rightarrow;
+    unsigned int 	m_key_setlist_next;
+    unsigned int 	m_key_setlist_prev;
     bool                m_setlist_stop_mark;
     // end selist public
 private:

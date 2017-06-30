@@ -2059,12 +2059,12 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
         
         if(m_mainperf->get_setlist_mode())
         {
-            if ( a_ev->keyval == m_mainperf->m_key_leftarrow )
+            if ( a_ev->keyval == m_mainperf->m_key_setlist_prev )
             {
             	setlist_jump(-1);
                 return true;
             }
-            if ( a_ev->keyval == m_mainperf->m_key_rightarrow )
+            if ( a_ev->keyval == m_mainperf->m_key_setlist_next )
             {
             	setlist_jump(1);
                 return true;
