@@ -1,6 +1,5 @@
 SEQ42 - Midi Sequencer
 ======================
-FIXME: update this document!!!!
 
 release-1.0.9
 
@@ -14,8 +13,9 @@ location, grid snapped. Also, to the right of the marker, the tempo value will b
 Tempo values range from 1 to 600.
 
 To delete a tempo marker, right click above the marker.
+
 During play, when the progress line reaches the tempo mark, the BPM value will change
-to the indicated amount. Also the, the main bpm spin button will indicate the current
+to the indicated amount. Also, the main bpm spin button will indicate the current
 tempo being played. Upon stop, the main spin button will revert back to the original 
 starting value.
 
@@ -27,7 +27,7 @@ When setting the marker BPM, a value of 0 (zero) can be used to set a stop marke
 Stop markers are indicated by red color, and the bpm value will indicate "[stop]".
 When playing, as the progress mark encounters a stop marker, the transport will stop.
 Stop markers can be used for editing purposes, or at the end of a song to stop the transport.
-When it Setlist mode, if stopped by a stop marker, the set list will automatically increment
+When in Setlist mode, if stopped by a stop marker, the set list will automatically increment
 to the next file on the set list after stopping.
 
 Live mode:
@@ -67,13 +67,14 @@ the current song and numeric value listed in the setlist file ex:
     "seq42 - Setlist, Song 03 - [/home/username/seq42dir/file3.s42]"
 
 To cycle through the setlist, use the right arrow key to go down the list, and the left
-arrow key to go up the list, from the main window only.
+arrow key to go up the list, from the main window only. The key binding can be changed in
+the File/Options/Keyboard tab.
 
 ALERT!! - the key binding may need to be reset if a previous .seq42rc file is present 
 in your home directory. Go to File/Options/Keyboard to set the 'Setlist next' and
 'Setlist previous' keys. The default is the left(previous) and right(next) arrow keys.
 
-During play, when the transport is stopped by a Stop marker, the setlist song will 
+During setlist play, when the transport is stopped by a Stop marker, the setlist song will 
 automatically be incremented down by one song. (See STOP markers above).
 
 To shut off setlist mode, simply load a new file from the main menu, File, New or
@@ -89,6 +90,9 @@ Simon Hickinbotham - seq24plus.
 https://github.com/franticspider/seq24plus
 
 
+
+FIXME: update this document!!!!
+--------------------------------------------------------------
 
 [1] What & Why
 [2] Who 
