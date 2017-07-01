@@ -232,7 +232,7 @@ seqedit::seqedit( sequence *a_seq,
     dhbox->pack_start( *m_entry_data, true, true );
 
     /* lfo button */
-    m_button_lfo = manage (new Button("lfo") );
+    m_button_lfo = manage (new Button("LFO") );
     dhbox->pack_start(*m_button_lfo, false, false);
     m_button_lfo->signal_clicked().connect ( mem_fun(m_lfo_wnd, &lfownd::toggle_visible));
 

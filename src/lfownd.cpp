@@ -30,7 +30,6 @@ using sigc::mem_fun;
 
 double lfownd::wave_func(double a_angle, int wave_type)
 {
-    
     double result = 0.0;
     switch (wave_type)
     {
