@@ -562,6 +562,9 @@ mainwnd::~mainwnd()
  */
 bool mainwnd::setlist_jump(int jmp, bool a_verify)
 {
+    if(global_is_running)                       // don't allow jump if running
+        return false;
+    
     bool result = false;
     if(a_verify)                                // we will run through all the files
     {
