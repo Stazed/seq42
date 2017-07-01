@@ -28,6 +28,16 @@
 
 using namespace Gtk;
 
+
+enum wave_type_t
+{
+    WAVE_NONE               = 0,    /**< No waveform, never used.           */
+    WAVE_SINE               = 1,    /**< Sine wave modulation.              */
+    WAVE_SAWTOOTH           = 2,    /**< Saw-tooth (ramp) modulation.       */
+    WAVE_REVERSE_SAWTOOTH   = 3,    /**< Reverse saw-tooth (decay).         */
+    WAVE_TRIANGLE           = 4     /**< No waveform, never used.           */
+};
+
 class lfownd: public Gtk::Window
 {
 private:
@@ -37,12 +47,13 @@ private:
     VScale *m_scale_speed;
     VScale *m_scale_phase;
     VScale *m_scale_wave;
+    Label * m_wave_name;       /**< Human readable name for wave type. */
 
     double m_value;
     double m_range;
     double m_speed;
     double m_phase;
-    int m_wave;
+    wave_type_t m_wave;
 
     HBox *m_hbox;
     sequence *m_seq;
@@ -50,6 +61,7 @@ private:
 
     void scale_lfo_change();
     bool on_focus_out_event(GdkEventFocus* p0 );
+    std::string wave_type_name (wave_type_t wv);
 
 public:
 
