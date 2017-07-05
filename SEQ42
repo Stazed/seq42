@@ -59,7 +59,8 @@ When the setlist mode is first invoked, you will be prompted with a dialog pop-u
 if you wish to verify the setlist. For new setlists, or if a setlist is modified, selecting 'Yes'
 would be beneficial to check for errors.  The verification will attempt to load all the files
 on the list, in order, and if errors are encountered, will stop and indicate the offending file.
-Select 'No' or escape key if the setlist has previously been verified.
+Select 'No' or escape key if the setlist has previously been verified. If the verification is
+successful, no pop-up errors will occur, and the first file on the list will be loaded.
 
 When setlist mode is in effect, the main window title will indicate "Setlist" and
 the current song and numeric value listed in the setlist file ex:
@@ -87,7 +88,7 @@ If editing while in setlist mode, you will NOT be prompted to save changes when 
 to a new song on the list. If unsaved, all editing will be lost! So if editing in setlist
 mode, be sure to save before right arrow, or left arrow!
 
-Special thanks to for the setlist idea, and some code (modified) go to:
+Special thanks for the setlist idea, and some code (modified) go to:
 Simon Hickinbotham - seq24plus.
 https://github.com/franticspider/seq24plus
 

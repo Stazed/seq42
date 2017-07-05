@@ -207,7 +207,7 @@ options::add_keyboard_page()
     controltable->attach(*label, 0, 1, 4, 5);
     controltable->attach(*entry, 1, 2, 4, 5);
 
-    label = manage(new Label("looping", Gtk::ALIGN_RIGHT));
+    label = manage(new Label("Looping", Gtk::ALIGN_RIGHT));
     entry = manage(new KeyBindEntry(&m_perf->m_key_loop));
     controltable->attach(*label, 0, 1, 5, 6);
     controltable->attach(*entry, 1, 2, 5, 6);
@@ -217,22 +217,22 @@ options::add_keyboard_page()
     controltable->attach(*label, 2, 3, 0, 1);
     controltable->attach(*entry, 3, 4, 0, 1);
 
-    label = manage(new Label("seqlist", Gtk::ALIGN_RIGHT));
+    label = manage(new Label("Sequence list", Gtk::ALIGN_RIGHT));
     entry = manage(new KeyBindEntry(&m_perf->m_key_seqlist));
     controltable->attach(*label, 2, 3, 1, 2);
     controltable->attach(*entry, 3, 4, 1, 2);
 
-    label = manage(new Label("transport", Gtk::ALIGN_RIGHT));
+    label = manage(new Label("Transport", Gtk::ALIGN_RIGHT));
     entry = manage(new KeyBindEntry(&m_perf->m_key_follow_trans));
     controltable->attach(*label, 2, 3, 2, 3);
     controltable->attach(*entry, 3, 4, 2, 3);
 
-    label = manage(new Label("bpm down", Gtk::ALIGN_RIGHT));
+    label = manage(new Label("BPM down", Gtk::ALIGN_RIGHT));
     entry = manage(new KeyBindEntry(&m_perf->m_key_bpm_dn));
     controltable->attach(*label, 2, 3, 3, 4);
     controltable->attach(*entry, 3, 4, 3, 4);
 
-    label = manage(new Label("bpm up", Gtk::ALIGN_RIGHT));
+    label = manage(new Label("BPM up", Gtk::ALIGN_RIGHT));
     entry = manage(new KeyBindEntry(&m_perf->m_key_bpm_up));
     controltable->attach(*label, 2, 3, 4, 5);
     controltable->attach(*entry, 3, 4, 4, 5);
@@ -279,11 +279,11 @@ options::add_mouse_page()
     interactionframe->add(*interactionbox);
 
     Gtk::RadioButton *rb_seq42 = manage(new RadioButton(
-                                            "se_q42 (original style)", true));
+                                            "SE_Q42 (original style)", true));
     interactionbox->pack_start(*rb_seq42, Gtk::PACK_SHRINK);
 
     Gtk::RadioButton * rb_fruity = manage(new RadioButton(
-            "_fruity (similar to a certain well known sequencer)", true));
+            "_Fruity (similar to a certain well known sequencer)", true));
     interactionbox->pack_start(*rb_fruity, Gtk::PACK_SHRINK);
 
     Gtk::RadioButton::Group group = rb_seq42->get_group();
