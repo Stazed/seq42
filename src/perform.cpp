@@ -2766,6 +2766,20 @@ void perform::input_func()
                             /* dump to it - possibly multiple sequences set */
                             m_master_bus.dump_midi_input(ev);
                         }
+                        
+                        /* To fix the FF/RW sysex on the YPT that only sends on - this is the off key */
+                        if (global_use_sysex)
+                        {
+                            if(FF_RW_button_type != FF_RW_RELEASE)
+                            {
+                                if(ev.is_note_off())
+                                {
+                                    /* notes 91 G5 & 96 C6 on YPT are the FF/RW keys */
+                                    if(ev.get_note() == 91 || ev.get_note() == 96)
+                                        FF_RW_button_type = FF_RW_RELEASE;
+                                }
+                            }
+                        }
                     }
 
                     if (ev.get_status() == EVENT_SYSEX)
@@ -2830,12 +2844,6 @@ void perform::parse_sysex(event a_e)
         SYS_YPT300_REWIND,
         SYS_YPT300_METRONOME        //  or anything else
     };
-
-/*  For FF and rewind the sysex is only sent on key press.
- *  So to shut it off a second key press is used as the
- *  button release. Not real convenient, but personally I
- *  only really care about start and stop.
- */
 
     /* layout of YPT-300 sysex messages */
     //  EVENT_SYSEX                                         // byte 0 0xF0
@@ -2902,20 +2910,12 @@ void perform::parse_sysex(event a_e)
         break;
 
     case SYS_YPT300_FAST_FORWARD:
-        if(FF_RW_button_type == FF_RW_RELEASE)  // if we are not already fast forwarding
-            FF_RW_button_type = FF_RW_FORWARD;  // then set it
-        else                                    // we're already fast forwarding
-            FF_RW_button_type = FF_RW_RELEASE;  // so unset it
-
+        FF_RW_button_type = FF_RW_FORWARD;
         gtk_timeout_add(120,FF_RW_timeout,this);
         break;
 
     case SYS_YPT300_REWIND:
-        if(FF_RW_button_type == FF_RW_RELEASE)  // if we are not already rewinding
-            FF_RW_button_type = FF_RW_REWIND;   // then set it
-        else                                    // we're already rewinding
-            FF_RW_button_type = FF_RW_RELEASE;  // so unset it
-
+        FF_RW_button_type = FF_RW_REWIND;
         gtk_timeout_add(120,FF_RW_timeout,this);
         break;
 
