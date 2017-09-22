@@ -33,7 +33,10 @@ tempopopup::tempopopup(tempo *a_tempo) :
     m_tempo(a_tempo),
     m_escape(false),
     m_return(false),
-    m_is_typing(false)
+    m_is_typing(false),
+    m_current_beats(0),
+    m_base_time_ms(0),
+    m_last_time_ms(0)
 {
  //   std::string title = "BPM";
  //   set_title(title);
