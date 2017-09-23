@@ -1344,12 +1344,13 @@ void mainwnd::new_file()
 {
     if(m_mainperf->clear_all())
     {
+        m_tempo->load_tempo_list();
         set_bp_measure(4);
         set_bw(4);
         set_xpose(0);
         m_mainperf->set_start_tempo(c_bpm);
         m_mainperf->set_setlist_mode(false);
-
+        
         global_filename = "";
         update_window_title();
         global_is_modified = false;
@@ -1575,6 +1576,7 @@ bool mainwnd::open_file(const Glib::ustring& fn)
 
         m_adjust_swing_amount8->set_value( m_mainperf->get_swing_amount8());
         m_adjust_swing_amount16->set_value( m_mainperf->get_swing_amount16());
+        m_tempo->load_tempo_list();
     }
     else
     {
