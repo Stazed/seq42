@@ -37,6 +37,7 @@ seqdata::seqdata(sequence *a_seq, int a_zoom, Gtk::Adjustment *a_hadjust):
 
     m_scroll_offset_ticks(0),
     m_scroll_offset_x(0),
+    m_status(0x00),
 
     m_dragging(false),
     m_drag_handle(false)

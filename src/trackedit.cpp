@@ -127,7 +127,6 @@ trackedit::on_delete_event(GdkEventAny *a_event)
     //printf( "trackedit::on_delete_event()\n" );
     m_track->set_editing( false );
     delete this;
-    m_track = NULL;
     return false;
 }
 

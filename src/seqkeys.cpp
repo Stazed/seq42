@@ -31,6 +31,7 @@ seqkeys::seqkeys(sequence *a_seq,
     m_scroll_offset_key(0),
     m_scroll_offset_y(0),
     m_hint_state(false),
+    m_hint_key(0),
     m_keying(false),
     m_scale(0),
     m_key(0)
