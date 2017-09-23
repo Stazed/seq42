@@ -74,7 +74,9 @@ ff_rw_type_e FF_RW_button_type = FF_RW_RELEASE;
 mainwnd::mainwnd(perform *a_p):
     m_mainperf(a_p),
     m_options(NULL),
-    m_snap(c_ppqn / 4)
+    m_snap(c_ppqn / 4),
+    m_bp_measure(4),
+    m_bw(4)
 {
     using namespace Menu_Helpers;
 
