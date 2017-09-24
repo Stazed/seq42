@@ -98,7 +98,6 @@ seqlist::on_delete_event(GdkEventAny *a_event)
     //printf( "seqlist::on_delete_event()\n" );
     m_perf->set_seqlist_open(false);
     delete this;
-    m_perf = NULL;
     return false;
 }
 

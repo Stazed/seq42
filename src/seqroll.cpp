@@ -139,7 +139,6 @@ seqroll::set_background_sequence( bool a_state, int a_trk, int a_seq )
 seqroll::~seqroll( )
 {
     delete m_clipboard;
-    m_clipboard = NULL;
 }
 
 void

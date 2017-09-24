@@ -1,7 +1,7 @@
 /* XPM */
 static const char *seqlist_xpm[] = {
 /* columns rows colors chars-per-pixel */
-"20 15 2 1 ",
+"20 14 2 1 ",
 "  c #None",
 ". c #000000",
 /* pixels */
