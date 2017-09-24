@@ -45,7 +45,9 @@ trackedit::trackedit (track *a_track)
 
     m_track->set_editing(true);
 
-    m_tooltips = manage( new Tooltips( ) );
+#if GTK_MINOR_VERSION < 12
+    m_tooltips = manage( new Tooltips() );
+#endif
     m_vbox = manage( new VBox( false, 2 ));
     m_vbox->set_border_width( 2 );
 
@@ -73,7 +75,7 @@ trackedit::trackedit (track *a_track)
     m_button_bus = manage( new Button());
     m_button_bus->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( bus_xpm  ))));
     m_button_bus->signal_clicked().connect( mem_fun( *this, &trackedit::popup_midibus_menu));
-    m_tooltips->set_tip( *m_button_bus, "Select Output Bus." );
+    add_tooltip( m_button_bus, "Select Output Bus." );
 
     m_entry_bus = manage( new Entry());
     m_entry_bus->set_max_length(60);
@@ -87,7 +89,7 @@ trackedit::trackedit (track *a_track)
     m_button_channel = manage( new Button());
     m_button_channel->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( midi_xpm  ))));
     m_button_channel->signal_clicked().connect(  mem_fun( *this, &trackedit::popup_midich_menu ));
-    m_tooltips->set_tip( *m_button_channel, "Select Midi channel." );
+    add_tooltip( m_button_channel, "Select Midi channel." );
     m_entry_channel = manage( new Entry());
     m_entry_channel->set_width_chars(2);
     m_entry_channel->set_editable( false );

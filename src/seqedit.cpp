@@ -183,7 +183,9 @@ seqedit::seqedit( sequence *a_seq,
     create_menus();
 
     /* tooltips */
-    m_tooltips = manage( new Tooltips( ) );
+#if GTK_MINOR_VERSION < 12
+    m_tooltips = manage( new Tooltips() );
+#endif
 
     /* init table, viewports and scroll bars */
     m_table     = manage( new Table( 7, 4, false));
@@ -922,7 +924,7 @@ seqedit::fill_top_bar()
     m_button_tools->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( tools_xpm  ))));
     m_button_tools->signal_clicked().connect(
         mem_fun( *this, &seqedit::popup_tool_menu ));
-    m_tooltips->set_tip(  *m_button_tools, "Tools." );
+    add_tooltip(m_button_tools, "Tools." );
 
     m_hbox2->pack_start( *m_button_tools, false, false );
     m_hbox2->pack_start( *(manage(new VSeparator( ))), false, false, 4);

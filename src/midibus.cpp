@@ -1121,8 +1121,15 @@ mastermidibus::~mastermidibus()
     for ( int i=0; i<m_num_out_buses; i++ )
     {
         delete m_buses_out[i];
-        m_buses_out[i] = NULL;
     }
+    
+    for ( int i=0; i<m_num_in_buses; i++ )
+    {
+        delete m_buses_in[i];
+    }
+    
+    delete[] m_poll_descriptors;
+    
 #ifdef HAVE_LIBASOUND
     snd_seq_event_t ev;
 

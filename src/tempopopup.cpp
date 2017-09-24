@@ -42,7 +42,9 @@ tempopopup::tempopopup(tempo *a_tempo) :
  //   set_title(title);
     set_size_request(150, 50);
     
-    manage (new Tooltips ());
+#if GTK_MINOR_VERSION < 12
+    m_tooltips = manage( new Tooltips() );
+#endif
     
     /* bpm spin button */
     m_adjust_bpm = manage(new Adjustment(m_tempo->m_mainperf->get_bpm(), c_bpm_minimum -1, c_bpm_maximum, 1));
