@@ -2369,10 +2369,13 @@ void perform::output_func()
                  * then reset to adjusted starting  */
                 if ( m_playback_mode && !m_jack_running && !m_usemidiclock && m_reposition)
                 {
+                    current_tick = clock_tick;      // needed if looping unchecked while global_is_running
                     delta_tick = m_starting_tick - clock_tick;
                     init_clock=true;                // must set to send EVENT_MIDI_SONG_POS
                     m_starting_tick = m_left_tick;  // restart at left marker
                     m_reposition = false;
+                    m_reset_tempo_list = true;      // since we cleared it as we went along
+
                 }
 
                 /* default if jack is not compiled in, or not running */
@@ -2426,6 +2429,9 @@ void perform::output_func()
 
                         set_orig_ticks( get_left_tick() );
                         current_tick = (double) get_left_tick() + leftover_tick;
+                        
+                        if(!m_jack_running)
+                            m_reset_tempo_list = true; // since we cleared it as we went along
                     }
 #ifdef JACK_SUPPORT
                     else
@@ -2980,6 +2986,8 @@ jack_timebase_callback
         printf("jack_timebase_callback(): null position pointer");
         return;
     }
+    
+    perform *p = (perform *) arg;
 
     if(global_song_start_mode)      // song mode - use tempo map
     {
@@ -2999,6 +3007,11 @@ jack_timebase_callback
 
         long ticks_per_bar = long(pos->ticks_per_beat * pos->beats_per_bar);
         pos->bar_start_tick = int(pos->bar * ticks_per_bar);
+        
+        if(new_pos)
+        {
+            p->set_tempo_reset(true);
+        }
     }
     else                            // live mode - only use start bpm
     {
