@@ -95,6 +95,8 @@ mainwnd::mainwnd(perform *a_p):
 
     m_menu_file = manage(new Menu());
     m_menubar->items().push_front(MenuElem("_File", *m_menu_file));
+    
+    m_menu_recent = nullptr;
 
     m_menu_edit = manage(new Menu());
     m_menubar->items().push_back(MenuElem("_Edit", *m_menu_edit));
@@ -109,13 +111,18 @@ mainwnd::mainwnd(perform *a_p):
     m_menu_file->items().push_back(MenuElem("_Open...",
                                             Gtk::AccelKey("<control>O"),
                                             mem_fun(*this, &mainwnd::file_open)));
+    update_recent_files_menu();
+    
+    m_menu_file->items().push_back(MenuElem("Open _setlist...",
+                                            mem_fun(*this, &mainwnd::file_open_setlist)));
+    
+    m_menu_file->items().push_back(SeparatorElem());
+    
     m_menu_file->items().push_back(MenuElem("_Save",
                                             Gtk::AccelKey("<control>S"),
                                             mem_fun(*this, &mainwnd::file_save)));
     m_menu_file->items().push_back(MenuElem("Save _as...",
                                             sigc::bind(mem_fun(*this, &mainwnd::file_save_as), E_SEQ42_NATIVE_FILE, nullptr)));
-    m_menu_file->items().push_back(MenuElem("Open _setlist...",
-                                            mem_fun(*this, &mainwnd::file_open_setlist)));
 
     m_menu_file->items().push_back(SeparatorElem());
 
@@ -1570,6 +1577,13 @@ bool mainwnd::open_file(const Glib::ustring& fn)
 
         last_used_dir = fn.substr(0, fn.rfind("/") + 1);
         global_filename = fn;
+        
+        if(!m_mainperf->get_setlist_mode())            /* don't list files from setlist */
+        {
+            m_mainperf->add_recent_file(fn);           /* from Oli Kester's Kepler34/Sequencer 64       */
+            update_recent_files_menu();
+        }
+        
         update_window_title();
 
         m_adjust_bpm->set_value( m_mainperf->get_bpm());
@@ -1687,7 +1701,12 @@ bool mainwnd::save_file()
 
     result = m_mainperf->save(global_filename);
 
-    if (!result)
+    if (result && !m_mainperf->get_setlist_mode())            /* don't list files from setlist */
+    {
+        m_mainperf->add_recent_file(global_filename);
+        update_recent_files_menu();
+    }
+    else if (!result)
     {
         Gtk::MessageDialog errdialog
         (
@@ -1755,6 +1774,81 @@ bool mainwnd::is_save()
         result = true;
 
     return result;
+}
+
+/**
+ *  Sets up the recent .s42 files menu.  If the menu already exists, delete it.
+ *  Then recreate the new menu named "&Recent .s42 files...".  Add all of the
+ *  entries present in the m_minperf->recent_files_count() list.  Hook each entry up
+ *  to the open_file() function with each file-name as a parameter.  If there
+ *  are none, just add a disabled "<none>" entry.
+ */
+
+#define SET_FILE    mem_fun(*this, &mainwnd::load_recent_file)
+
+void
+mainwnd::update_recent_files_menu ()
+{
+    if (m_menu_recent != nullptr)
+    {
+        /*
+         * Causes a crash:
+         *
+         *      m_menu_file->items().remove(*m_menu_recent);    // crash!
+         *      delete m_menu_recent;
+         */
+
+        m_menu_recent->items().clear();
+    }
+    else
+    {
+        m_menu_recent = manage(new Gtk::Menu());
+        m_menu_file->items().push_back
+        (
+            MenuElem("_Recent .s42 files...", *m_menu_recent)
+        );
+    }
+
+    if (m_mainperf->recent_file_count() > 0)
+    {
+        for (int i = 0; i < m_mainperf->recent_file_count(); ++i)
+        {
+            std::string filepath = m_mainperf->recent_file(i);     // shortened name
+            m_menu_recent->items().push_back
+            (
+                MenuElem(filepath, sigc::bind(SET_FILE, i))
+            );
+        }
+    }
+    else
+    {
+        m_menu_recent->items().push_back
+        (
+            MenuElem("<none>", sigc::bind(SET_FILE, (-1)))
+        );
+    }
+}
+
+/**
+ *  Looks up the desired recent .s42 file and opens it.  This function passes
+ *  false as the shorten parameter of m_mainperf::recent_file().
+ *
+ * \param index
+ *      Indicates which file in the list to open, ranging from 0 to the number
+ *      of recent files minus 1.  If set to -1, then nothing is done.
+ */
+
+void
+mainwnd::load_recent_file (int index)
+{
+    if (index >= 0 and index < m_mainperf->recent_file_count())
+    {
+        if (is_save())
+        {
+            std::string filepath = m_mainperf->recent_file(index, false);
+            open_file(filepath);
+        }
+    }
 }
 
 /* convert string to lower case letters */

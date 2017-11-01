@@ -214,6 +214,11 @@ extern Glib::ustring global_filename;
 extern Glib::ustring global_jack_session_uuid;
 extern Glib::ustring last_used_dir;
 extern Glib::ustring last_midi_dir;
+/**
+ *  Indicates the maximum number of recently-opened .s42 file-names we will
+ *  store.
+ */
+const int c_max_recent_files = 10;
 
 extern bool global_print_keys;
 

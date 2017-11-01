@@ -3506,6 +3506,62 @@ perform::apply_song_transpose()
         }
     }
 }
+/**
+ * \getter m_recent_files
+ *
+ *  Gets the desired recent .s42 file-name, if present.
+ *
+ * \param index
+ *      Provides the desired index into the recent-files vector.
+ *
+ * \param shorten
+ *      If true, remove the path-name from the file-name.  True by default.
+ *
+ * \return
+ *      Returns m_recent_files[index], perhaps shortened.  An empty string is
+ *      returned if there is no such animal.
+ */
+
+std::string
+perform::recent_file (int index, bool shorten) const
+{
+    std::string result;
+    if (index >= 0 && index < recent_file_count())
+        result = m_recent_files[index];
+
+    if (shorten)
+    {
+        std::string::size_type slashpos = result.find_last_of("/\\");
+        result = result.substr(slashpos + 1, std::string::npos);
+    }
+    return result;
+}
+
+/**
+ * \setter m_recent_files
+ *
+ *  First makes sure the filename is not already present, before adding it.
+ *
+ * \param fname
+ *      Provides the full path to the .s42 file that is to be added to the
+ *      recent-files list.
+ */
+
+void
+perform::add_recent_file (const std::string & fname)
+{
+    bool found =
+        std::find(m_recent_files.begin(), m_recent_files.end(), fname) !=
+            m_recent_files.end();
+
+    if (! found)
+    {
+        if (m_recent_files.size() >= c_max_recent_files)
+            m_recent_files.pop_back();
+
+        m_recent_files.insert(m_recent_files.begin(), fname);
+    }
+}
 
 /****************************************************/
 

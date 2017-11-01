@@ -155,7 +155,20 @@ optionsfile::parse( perform *a_perf )
     //FIXME: check for a valid path is missing
     if (m_line[0] == '/')
         last_midi_dir.assign(m_line);
-
+    
+    /* recent files */
+    line_after( &file, "[recent-files]" );
+    {
+        int count;
+        sscanf(m_line, "%d", &count);
+        for (int i = 0; i < count; ++i)
+        {
+            next_data_line( &file );
+            if (strlen(m_line) > 0)
+                a_perf->add_recent_file(std::string(m_line));
+        }
+    }
+    
     /* interaction method  */
     long method = 0;
     line_after( &file, "[interaction-method]" );
@@ -313,6 +326,24 @@ optionsfile::write( perform *a_perf  )
          << "# Last midi directory.\n"
          << last_midi_dir << "\n\n";
 
+    /*
+     *  New feature from sequencer64 via Kepler34
+     */
+
+    int count = a_perf->recent_file_count();
+    file << "\n"
+        "[recent-files]\n\n"
+        "# Holds a list of the last few recently-loaded .s42 files.\n\n"
+        << count << "\n\n" ;
+
+    if (count > 0)
+    {
+        for (int i = 0; i < count; ++i)
+            file << a_perf->recent_file(i, false) << "\n";
+
+        file << "\n";
+    }
+    
     file.close();
     return true;
 }

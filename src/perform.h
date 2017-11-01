@@ -236,6 +236,15 @@ private:
 
     bool m_reset_tempo_list;
     bool m_load_tempo_list;
+    
+    /**
+     *  Holds a few .s42 file-names most recently used.  Although this is a
+     *  vector, we do not let it grow past c_max_recent_files.
+     *
+     *  New feature from Oli Kester's kepler34 project via sequencer64
+     */
+
+    std::vector<std::string> m_recent_files;
 
     void inner_start( bool a_state );
     void inner_stop(bool a_midi_clock = false);
@@ -479,6 +488,17 @@ public:
     void delete_unused_sequences();
     void create_triggers();
     void apply_song_transpose ();
+    
+    std::string recent_file (int index, bool shorten = true) const;
+    void add_recent_file (const std::string & filename);
+    /**
+     * \getter m_recent_files.size()
+     */
+
+    int recent_file_count () const
+    {
+        return int(m_recent_files.size());
+    }
 
 #ifdef JACK_SUPPORT
 #ifdef USE_JACK_BBT_POSITION

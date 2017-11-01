@@ -58,6 +58,7 @@ private:
 #endif
     MenuBar  *m_menubar;
     Menu     *m_menu_file;
+    Menu     *m_menu_recent;          /**< File/Recent menu popup.    */
     Menu     *m_menu_edit;
     Menu     *m_menu_help;
 
@@ -179,6 +180,9 @@ private:
     void choose_file(bool setlist_mode = false);
     int query_save_changes();
     bool is_save();
+    void update_recent_files_menu ();
+    void load_recent_file (int index);
+    
     static void handle_signal(int sig);
     bool install_signal_handlers();
     bool signal_action(Glib::IOCondition condition);
