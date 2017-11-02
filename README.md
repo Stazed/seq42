@@ -99,6 +99,7 @@ the track edit items (name,channel,bus,transpose,mute)... except when undo/redo 
 * NEW - Add setlist file support (See SEQ42 document for details).
 * NEW - BPM, tempo changes added to undo/redo.
 * NEW - Clean up and beautify the LFO window.
+* NEW - Add recent files list to menu.
 
 
 What to do with a fresh repository checkout?
