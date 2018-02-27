@@ -316,6 +316,7 @@ public:
     void set_jack_mode(bool a_mode);
     bool get_toggle_jack();
     bool is_jack_running();
+    bool is_jack_master();
 
     void set_follow_transport(bool a_set);
     bool get_follow_transport();

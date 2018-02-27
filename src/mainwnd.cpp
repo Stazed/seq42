@@ -1136,8 +1136,12 @@ mainwnd::set_jack_mode ()
     // FIXME currently does not work for slave from disconnected - need jack position
     if(global_song_start_mode)
     {
-        m_mainperf->set_reposition(false);
         m_mainperf->set_starting_tick(m_mainperf->get_left_tick());
+        
+        if(m_mainperf->is_jack_running() && m_mainperf->is_jack_master() )
+            m_mainperf->position_jack(true, m_mainperf->get_left_tick());
+        
+        m_mainperf->set_reposition();
     }
     else
         m_mainperf->set_starting_tick(m_mainperf->get_tick());
