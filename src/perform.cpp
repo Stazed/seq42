@@ -374,7 +374,7 @@ perform::start_playing()
     {
         if(m_jack_master)
         {
-            if(!m_reposition)    // allow to start at key-p position if set
+            if(m_reposition)    // allow to start at key-p position if set
                 position_jack(global_song_start_mode, m_left_tick);     // for cosmetic reasons - to stop transport line flicker on start
         }
         start_jack( );
@@ -1935,8 +1935,6 @@ int jack_process_callback(jack_nframes_t nframes, void* arg)
                 m_mainperf->set_starting_tick(tick);
                 m_mainperf->set_jack_stop_tick(tick);
             }
-            else if(m_mainperf->get_reposition())
-                m_mainperf->set_reposition(false);
         }
     }
 #ifdef USE_MODIFIABLE_JACK_TEMPO    // For jack in slave mode, allow tempo change
@@ -2119,10 +2117,8 @@ void perform::output_func()
 
         if(m_jack_running && m_jack_master && m_playback_mode) // song mode master start left tick marker
         {
-            if(!m_reposition)                                  // allow to start if key-p set
+            if(m_reposition)                                  // allow to start if key-p set
                 position_jack(true, m_left_tick);
-            else
-                m_reposition = false;
         }
 
         if(m_jack_running && m_jack_master && !m_playback_mode)// live mode master start at zero
@@ -2632,8 +2628,10 @@ void perform::output_func()
         if(!m_usemidiclock) // will be true if stopped by midi event
         {
             if(m_playback_mode && !m_jack_running) // song mode default
-                m_tick = m_left_tick;
-
+            {
+                set_starting_tick(m_left_tick);
+                set_reposition();
+            }
             if(!m_playback_mode && !m_jack_running) // live mode default
                 m_tick = 0;
         }

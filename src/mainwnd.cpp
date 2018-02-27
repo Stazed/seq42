@@ -822,9 +822,17 @@ mainwnd::timer_callback(  )
     
     /* Calculate the current time, and display it. */
     if (global_is_running || m_mainperf->get_reposition())
-    {printf("global running = %d: reposition = %d\n", global_is_running, m_mainperf->get_reposition());
+    {
         std::string t = tick_to_timestring(ticks);
         m_tick_time->set_text(t);
+    }
+    
+    if (!global_is_running)
+    {
+        if((m_mainperf->get_starting_tick() == m_mainperf->get_tick()) && m_mainperf->get_reposition())
+        {
+            m_mainperf->set_reposition(false);
+        }
     }
 
 // FIXME remove this when done
