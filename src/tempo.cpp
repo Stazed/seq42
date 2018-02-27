@@ -454,7 +454,6 @@ tempo::calculate_marker_start()
         }
     }
 
-#ifdef JACK_SUPPORT
     /* calculate the jack start tick without the stop markers */
     for ( i = ++m_list_no_stop_markers.begin(); i != m_list_no_stop_markers.end(); ++i )
     {
@@ -467,11 +466,17 @@ tempo::calculate_marker_start()
         tempo_mark current = (*i);
         tempo_mark previous = (*n);
         
+        /* Wall Clock offset */
+        (*i).microseconds_start = ticks_to_delta_time_us(current.tick - previous.tick, previous.bpm, c_ppqn);
+        (*i).microseconds_start += previous.microseconds_start;
+
+#ifdef JACK_SUPPORT
+        /* Jack frame offset*/
         (*i).start = tick_to_jack_frame(current.tick - previous.tick , previous.bpm, m_mainperf );
-//        printf("from tick to %d: previous.start %d\n",(*i).start, previous.start );
         (*i).start += previous.start;
-    }
 #endif // JACK_SUPPORT
+    }
+
     /* reset the main list with the calculated starts */
     m_list_marker = m_list_no_stop_markers;
     

@@ -701,7 +701,7 @@ bool midifile::parse (perform * a_perf, int screen_set)
                 a_marker.bpm = a_bpm;
                 a_marker.bw = read_long();
                 a_marker.bp_measure = read_long();
-                // we don't need start frame since it will be calculated on reset
+                // we don't need start frame or microseconds since it will be calculated on reset
                 
                 if(use_tempo_map)
                     a_perf->m_list_total_marker.push_back(a_marker);
@@ -937,7 +937,7 @@ bool midifile::write_sequences (perform * a_perf, sequence *a_solo_seq)
             write_long (scaled_bpm);
             write_long((*i).bw);
             write_long((*i).bp_measure);
-           // don't need start frame since it will be re-calculated on load
+           // don't need start frame or microseconds since it will be re-calculated on load
         }
     }
     /* open binary file */

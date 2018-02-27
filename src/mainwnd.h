@@ -147,6 +147,13 @@ private:
     int m_current_beats; // value is displayed in the button.
     long m_base_time_ms; // Indicates the first time the tap button was ... tapped.
     long m_last_time_ms; // Indicates the last time the tap button was tapped.
+    
+    /**
+     *  This new item shows the current time into the song performance.
+     *  Long overdue, actually!
+     */
+
+    Gtk::Label * m_tick_time;
 
     void file_import_dialog();
     void options_dialog();
@@ -240,6 +247,28 @@ private:
     void tap ();
     void set_tap_button (int beats);
     double update_bpm ();
+    
+    double tempo_map_microseconds(unsigned long a_tick);
+    
+    inline double
+    ticks_to_delta_time_us (long delta_ticks, double bpm, int ppqn)
+    {
+        return double(delta_ticks) * pulse_length_us(bpm, ppqn);
+    }
+    
+    inline double
+    pulse_length_us (double bpm, int ppqn)
+    {
+        /*
+         * Let's use the original notation for now.
+         *
+         * return 60000000.0 / double(bpm * ppqn);
+         */
+
+        return 60000000.0 / ppqn / bpm;
+    }
+    
+    std::string tick_to_timestring(long a_tick);
 
 public:
 

@@ -317,6 +317,11 @@ void perform::set_reposition(bool a_pos_type)
     m_reposition = a_pos_type;
 }
 
+bool perform::get_reposition()
+{
+    return m_reposition;
+}
+
 void perform::set_song_mute( mute_op op  )
 {
     for (int i=0; i< c_max_track; i++ )
@@ -1930,6 +1935,8 @@ int jack_process_callback(jack_nframes_t nframes, void* arg)
                 m_mainperf->set_starting_tick(tick);
                 m_mainperf->set_jack_stop_tick(tick);
             }
+            else if(m_mainperf->get_reposition())
+                m_mainperf->set_reposition(false);
         }
     }
 #ifdef USE_MODIFIABLE_JACK_TEMPO    // For jack in slave mode, allow tempo change
@@ -2361,13 +2368,13 @@ void perform::output_func()
                     jack_ticks_converted_last = jack_ticks_converted;
 
                 } /* end if dumping / sane state */
-            } /* if jack running */
+            } /* if m_jack running */
             else
             {
 #endif // JACK_SUPPORT
                 /* if we reposition key-p, FF, rewind, adjust delta_tick for change
                  * then reset to adjusted starting  */
-                if ( m_playback_mode && !m_jack_running && !m_usemidiclock && m_reposition)
+                if ( m_playback_mode && !m_usemidiclock && m_reposition)
                 {
                     current_tick = clock_tick;      // needed if looping unchecked while global_is_running
                     delta_tick = m_starting_tick - clock_tick;
@@ -2377,7 +2384,7 @@ void perform::output_func()
                     m_reset_tempo_list = true;      // since we cleared it as we went along
 
                 }
-
+                
                 /* default if jack is not compiled in, or not running */
                 /* add delta to current ticks */
                 clock_tick     += delta_tick;
@@ -2630,7 +2637,7 @@ void perform::output_func()
             if(!m_playback_mode && !m_jack_running) // live mode default
                 m_tick = 0;
         }
-
+        
         /* this means we leave m_tick at stopped location if in slave mode or m_usemidiclock = true */
 
         m_master_bus.flush();
@@ -3016,7 +3023,6 @@ jack_timebase_callback
     else                            // live mode - only use start bpm
     {
         /* From sequencer64 timebase callback */
-        perform *p = (perform *) arg;
 
         pos->beats_per_minute = p->get_bpm();
         pos->beats_per_bar = p->m_bp_measure;

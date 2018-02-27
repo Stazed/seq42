@@ -255,7 +255,17 @@ mainwnd::mainwnd(perform *a_p):
 
     /* timeline */
     hbox2->pack_start( *m_main_time, false, false );
+    
+    m_tick_time = manage(new Gtk::Label(""));
+    Gtk::HBox * hbox4 = manage(new Gtk::HBox(false, 0));
+    m_tick_time->set_justify(Gtk::JUSTIFY_LEFT);
 
+    Gtk::Label * timedummy = manage(new Gtk::Label("   "));
+    hbox4->pack_start(*timedummy, false, false, 0);
+    hbox4->pack_start(*m_tick_time, false, false, 0);
+    vbox_b->pack_start(*hbox4, false, false, 0);
+    
+    
     /* perfedit widgets */
     m_vadjust = manage( new Adjustment(0,0,1,1,1,1 ));
     m_hadjust = manage( new Adjustment(0,0,1,1,1,1 ));
@@ -809,6 +819,35 @@ mainwnd::timer_callback(  )
         m_mainperf->m_setlist_stop_mark = false;
         setlist_jump(1);    // next file
     }
+    
+    /* Calculate the current time, and display it. */
+    if (global_is_running || m_mainperf->get_reposition())
+    {printf("global running = %d: reposition = %d\n", global_is_running, m_mainperf->get_reposition());
+        std::string t = tick_to_timestring(ticks);
+        m_tick_time->set_text(t);
+    }
+
+// FIXME remove this when done
+/*    if (perf().is_pattern_playing())
+    {
+        midibpm bpm = perf().get_beats_per_minute();
+        int ppqn = perf().ppqn();
+        if (m_tick_time_as_bbt)
+        {
+            midi_timing mt
+            (
+                bpm, perf().get_beats_per_bar(), perf().get_beat_width(), ppqn
+            );
+            std::string t = pulses_to_measurestring(tick, mt);
+            m_tick_time->set_text(t);
+        }
+        else
+        {
+            std::string t = pulses_to_timestring(tick, bpm, ppqn, false);
+            m_tick_time->set_text(t);
+        }
+    }
+*/
     
     return true;
 }
@@ -2321,6 +2360,48 @@ mainwnd::signal_action(Glib::IOCondition condition)
         break;
     }
     return true;
+}
+
+double
+mainwnd::tempo_map_microseconds(unsigned long a_tick)
+{
+    uint32_t hold_microseconds = 0;
+
+    list<tempo_mark>::iterator i;
+    tempo_mark last_tempo = (*--m_mainperf->m_list_no_stop_markers.end());
+    
+    for ( i = ++m_mainperf->m_list_no_stop_markers.begin(); i != m_mainperf->m_list_no_stop_markers.end(); ++i )
+    {
+        if( a_tick >= (*i).tick )
+        {
+            hold_microseconds = (*i).microseconds_start;
+        }
+        else
+        {
+            last_tempo = (*--i);
+            break;
+        }
+    }
+    
+    uint32_t end_tick = a_tick - last_tempo.tick;
+   
+    return hold_microseconds + ticks_to_delta_time_us (end_tick, last_tempo.bpm, c_ppqn);
+}
+
+std::string
+mainwnd::tick_to_timestring (long a_tick)
+{
+    unsigned long microseconds = tempo_map_microseconds(a_tick);
+    int seconds = int(microseconds / 1000000UL);
+    int minutes = seconds / 60;
+    int hours = seconds / (60 * 60);
+    minutes -= hours * 60;
+    seconds -= (hours * 60 * 60) + (minutes * 60);
+    microseconds -= (hours * 60 * 60 + minutes * 60 + seconds) * 1000000UL;
+
+    char tmp[32];
+    snprintf(tmp, sizeof tmp, "%03d:%d:%02d   ", hours, minutes, seconds);
+    return std::string(tmp);
 }
 
 int

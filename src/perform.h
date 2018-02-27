@@ -80,8 +80,9 @@ struct tempo_mark
     uint32_t bw;            // not used
     uint32_t bp_measure;    // not used
     uint32_t start;         // calculated frame offset start - jack_nframes_t
+    uint32_t microseconds_start; // calculated offset for clock display
     
-    tempo_mark ( ) : tick ( 0 ), bpm ( 0.0 ), bw ( 0 ), bp_measure ( 0 ), start ( 0 )
+    tempo_mark ( ) : tick ( 0 ), bpm ( 0.0 ), bw ( 0 ), bp_measure ( 0 ), start ( 0 ), microseconds_start( 0 )
         {
         }
 };
@@ -298,7 +299,7 @@ public:
     unsigned int m_key_jack;
     unsigned int m_key_seqlist;
     unsigned int m_key_follow_trans;
-
+    
     perform();
     ~perform();
 
@@ -443,6 +444,7 @@ public:
     };
 
     void set_reposition(bool a_pos_type = true);
+    bool get_reposition();
     void set_song_mute( mute_op op );
 
     mastermidibus* get_master_midi_bus( );
