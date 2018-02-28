@@ -148,12 +148,26 @@ private:
     long m_base_time_ms; // Indicates the first time the tap button was ... tapped.
     long m_last_time_ms; // Indicates the last time the tap button was tapped.
     
-    /**
-     *  This new item shows the current time into the song performance.
-     *  Long overdue, actually!
+    /** From sequencer64
+     *  Shows the current time into the song performance.
      */
 
     Gtk::Label * m_tick_time;
+    /**
+     *  This button will toggle the m_tick_time_as_bbt member.
+     */
+
+    Gtk::Button * m_button_time_type;
+
+    /**
+     *  Indicates whether to show the time as bar:beats:ticks or as
+     *  hours:minutes:seconds.  The default is true:  bar:beats:ticks.
+     */
+
+    bool m_tick_time_as_bbt;
+    
+    /* Flag used when time type is toggled when stopped to update gui */
+    bool m_toggle_time_type;
 
     void file_import_dialog();
     void options_dialog();
@@ -163,6 +177,7 @@ private:
     void bw_button_callback(int a_beat_width);
     void bp_measure_button_callback(int a_beats_per_measeure);
     void xpose_button_callback( int a_xpose);
+    void toggle_time_format( );
     void adj_callback_swing_amount8( );
     void adj_callback_swing_amount16( );
     bool timer_callback( );
@@ -268,7 +283,10 @@ private:
         return 60000000.0 / ppqn / bpm;
     }
     
+    /* Sequencer64 */
     std::string tick_to_timestring(long a_tick);
+    std::string tick_to_measurestring (long a_tick);
+    void tick_to_midi_measures (long a_tick, int &measures, int &beats, int &divisions);
 
 public:
 

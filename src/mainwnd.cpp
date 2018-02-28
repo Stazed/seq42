@@ -76,7 +76,9 @@ mainwnd::mainwnd(perform *a_p):
     m_options(NULL),
     m_snap(c_ppqn / 4),
     m_bp_measure(4),
-    m_bw(4)
+    m_bw(4),
+    m_tick_time_as_bbt(false),
+    m_toggle_time_type(false)
 {
     using namespace Menu_Helpers;
 
@@ -257,8 +259,23 @@ mainwnd::mainwnd(perform *a_p):
     hbox2->pack_start( *m_main_time, false, false );
     
     m_tick_time = manage(new Gtk::Label(""));
+    m_button_time_type = manage(new Gtk::Button("HMS"));
     Gtk::HBox * hbox4 = manage(new Gtk::HBox(false, 0));
     m_tick_time->set_justify(Gtk::JUSTIFY_LEFT);
+    
+    m_button_time_type->set_focus_on_click(false);
+    
+    m_button_time_type->signal_clicked().connect
+    (
+        mem_fun(*this, &mainwnd::toggle_time_format)
+    );
+    add_tooltip
+    (
+        m_button_time_type,
+        "Toggles between B:B:T and H:M:S format, showing the selected format."
+    );
+ 
+    hbox1->pack_end(*m_button_time_type, false, false);
 
     Gtk::Label * timedummy = manage(new Gtk::Label("   "));
     hbox4->pack_start(*timedummy, false, false, 0);
@@ -820,13 +837,23 @@ mainwnd::timer_callback(  )
         setlist_jump(1);    // next file
     }
     
-    /* Calculate the current time, and display it. */
-    if (global_is_running || m_mainperf->get_reposition())
+    /* Calculate the current time/BBT, and display it. */
+    if (global_is_running || m_mainperf->get_reposition() || m_toggle_time_type)
     {
-        std::string t = tick_to_timestring(ticks);
-        m_tick_time->set_text(t);
+        m_toggle_time_type = false;
+        if (m_tick_time_as_bbt)
+        {
+            std::string t = tick_to_measurestring(ticks);
+            m_tick_time->set_text(t);
+        }
+        else
+        {
+            std::string t = tick_to_timestring(ticks); 
+            m_tick_time->set_text(t);
+        }
     }
     
+    /* Shut off the reposition flag after the reposition */
     if (!global_is_running)
     {
         if((m_mainperf->get_starting_tick() == m_mainperf->get_tick()) && m_mainperf->get_reposition())
@@ -835,28 +862,6 @@ mainwnd::timer_callback(  )
         }
     }
 
-// FIXME remove this when done
-/*    if (perf().is_pattern_playing())
-    {
-        midibpm bpm = perf().get_beats_per_minute();
-        int ppqn = perf().ppqn();
-        if (m_tick_time_as_bbt)
-        {
-            midi_timing mt
-            (
-                bpm, perf().get_beats_per_bar(), perf().get_beat_width(), ppqn
-            );
-            std::string t = pulses_to_measurestring(tick, mt);
-            m_tick_time->set_text(t);
-        }
-        else
-        {
-            std::string t = pulses_to_timestring(tick, bpm, ppqn, false);
-            m_tick_time->set_text(t);
-        }
-    }
-*/
-    
     return true;
 }
 
@@ -2414,6 +2419,60 @@ mainwnd::tick_to_timestring (long a_tick)
     char tmp[32];
     snprintf(tmp, sizeof tmp, "%03d:%d:%02d   ", hours, minutes, seconds);
     return std::string(tmp);
+}
+
+void
+mainwnd::tick_to_midi_measures ( long a_tick, int &measures, int &beats, int &divisions )
+{
+    static const double s_epsilon = 0.000001;   /* HMMMMMMMMMMMMMMMMMMMMMMM */
+    int W = m_mainperf->get_bw();
+    int P = c_ppqn;
+    int B = m_mainperf->get_bp_measure();
+    bool result = (W > 0) && (P > 0) && (B > 0);
+    if (result)
+    {
+        double m = a_tick * W / (4.0 * P * B);       /* measures, whole.frac     */
+        double m_whole = floor(m);              /* holds integral measures  */
+        m -= m_whole;                           /* get fractional measure   */
+        double b = m * B;                       /* beats, whole.frac        */
+        double b_whole = floor(b);              /* get integral beats       */
+        b -= b_whole;                           /* get fractional beat      */
+        double pulses_per_beat = 4 * P / W;     /* pulses/qn * qn/beat      */
+        measures = (int(m_whole + s_epsilon) + 1);
+        beats = (int(b_whole + s_epsilon) + 1);
+        divisions = (int(b * pulses_per_beat + s_epsilon));
+    }
+}
+
+std::string
+mainwnd::tick_to_measurestring (long a_tick )
+{
+    int measures = 0;
+    int beats = 0;
+    int divisions = 0;
+
+    char tmp[32];
+
+    tick_to_midi_measures( a_tick, measures, beats, divisions );
+    snprintf
+    (
+        tmp, sizeof tmp, "%03d:%d:%03d",
+        measures, beats, divisions
+    );
+    return std::string(tmp);
+}
+
+void
+mainwnd::toggle_time_format ()
+{
+    m_tick_time_as_bbt = ! m_tick_time_as_bbt;
+    std::string label = m_tick_time_as_bbt ? "BBT" : "HMS" ;
+    Gtk::Label * lbl(dynamic_cast<Gtk::Label *>(m_button_time_type->get_child()));
+    if (lbl != NULL)
+    {
+        lbl->set_text(label);
+        m_toggle_time_type = true;
+    }
 }
 
 int
