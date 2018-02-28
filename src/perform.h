@@ -80,9 +80,9 @@ struct tempo_mark
     uint32_t bw;            // not used
     uint32_t bp_measure;    // not used
     uint32_t start;         // calculated frame offset start - jack_nframes_t
-    uint32_t microseconds_start; // calculated offset for clock display
+    double microseconds_start; // calculated offset for clock display
     
-    tempo_mark ( ) : tick ( 0 ), bpm ( 0.0 ), bw ( 0 ), bp_measure ( 0 ), start ( 0 ), microseconds_start( 0 )
+    tempo_mark ( ) : tick ( 0 ), bpm ( 0.0 ), bw ( 0 ), bp_measure ( 0 ), start ( 0 ), microseconds_start( 0.0 )
         {
         }
 };
