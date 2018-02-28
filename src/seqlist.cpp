@@ -191,10 +191,11 @@ seqlist::on_realize()
 bool
 seqlist::timeout()
 {
-    if (m_perf->get_seqlist_raise())
+    if (m_perf->get_seqlist_toggle())
     {
-        m_perf->set_seqlist_raise(false);
-        raise();
+        m_perf->set_seqlist_toggle(false);
+        on_delete_event(0);
+       // raise();
     }
 
     if(global_seqlist_need_update)

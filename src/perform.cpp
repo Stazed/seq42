@@ -52,7 +52,7 @@ perform::perform()
     m_setlist_current_idx = 0;
     
     m_seqlist_open = false;
-    m_seqlist_raise = false;
+    m_seqlist_toggle = false;
     m_looping = false;
     m_reposition = false;
     m_inputing = true;

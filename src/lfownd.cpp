@@ -157,8 +157,13 @@ lfownd::lfownd(sequence *a_seq, seqdata *a_seqdata)
 
 void lfownd::toggle_visible()
 {
-    show_all();
-    raise();
+    if(!get_visible())
+    {
+        show_all();
+        raise();
+    }
+    else
+        hide();
 }
 
 void lfownd::scale_lfo_change()

@@ -1372,7 +1372,7 @@ mainwnd::open_seqlist()
 {
     if(m_mainperf->get_seqlist_open())
     {
-        m_mainperf->set_seqlist_raise(true);
+        m_mainperf->set_seqlist_toggle(true);
     }
     else
     {

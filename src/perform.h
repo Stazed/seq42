@@ -171,7 +171,7 @@ private:
 
     bool m_tracks_active[ c_max_track ];
     bool m_seqlist_open;
-    bool m_seqlist_raise;
+    bool m_seqlist_toggle;
 
     bool m_was_active_edit[ c_max_track ];
     bool m_was_active_perf[ c_max_track ];
@@ -478,14 +478,14 @@ public:
         return m_seqlist_open;
     };
 
-    void set_seqlist_raise( bool a_raise )
+    void set_seqlist_toggle( bool a_raise )
     {
-        m_seqlist_raise = a_raise;
+        m_seqlist_toggle = a_raise;
     };
 
-    bool get_seqlist_raise()
+    bool get_seqlist_toggle()
     {
-        return m_seqlist_raise;
+        return m_seqlist_toggle;
     };
 
     void delete_unused_sequences();
