@@ -137,7 +137,7 @@ perfnames::draw_track( int track )
         {
             m_track_active[track]=true;
 
-            char str[20];
+            char str[30];
             snprintf
             (
                 str, sizeof(str),

@@ -46,7 +46,7 @@ userfile::parse( perform *a_perf )
     line_after( &file, "[user-midi-bus-definitions]" );
     int buses = 0;
     sscanf( m_line, "%d", &buses );
-    char bus_num[4];
+    char bus_num[12];
 
     for ( int i=0; i<buses; i++ )
     {
@@ -72,7 +72,7 @@ userfile::parse( perform *a_perf )
     line_after( &file, "[user-instrument-definitions]" );
     int instruments = 0;
     sscanf( m_line, "%d", &instruments );
-    char instrument_num[4];
+    char instrument_num[12];
 
     for ( int i=0; i<instruments; i++ )
     {

@@ -274,12 +274,6 @@ private:
     inline double
     pulse_length_us (double bpm, int ppqn)
     {
-        /*
-         * Let's use the original notation for now.
-         *
-         * return 60000000.0 / double(bpm * ppqn);
-         */
-
         return 60000000.0 / ppqn / bpm;
     }
     
