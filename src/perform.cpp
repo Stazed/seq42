@@ -92,6 +92,7 @@ perform::perform()
     m_jack_stop_tick = 0;
     m_reset_tempo_list = false;
     m_load_tempo_list = false;
+    m_continue = false;
 
     m_jack_running = false;
     m_toggle_jack = false;
@@ -432,7 +433,7 @@ perform::FF_rewind()
         else
         {
             set_starting_tick(a_tick);          // this will set progress line
-            set_reposition();
+            set_reposition();                   // this is needed for ff/rw when running (global_is_running)
         }
     }
 }
@@ -2625,7 +2626,10 @@ void perform::output_func()
 #ifdef JACK_SUPPORT
         if(m_playback_mode && m_jack_master) // master in song mode
         {
-            position_jack(m_playback_mode,m_left_tick);
+            if(!m_continue)
+                position_jack(m_playback_mode, m_left_tick);
+            else
+                m_continue = false;         // FIXME for button
         }
         if(!m_playback_mode && m_jack_running && m_jack_master) // master in live mode
         {
@@ -2636,8 +2640,15 @@ void perform::output_func()
         {
             if(m_playback_mode && !m_jack_running) // song mode default
             {
-                set_starting_tick(m_left_tick);
-                set_reposition();
+                if(!m_continue)
+                {
+                    set_starting_tick(m_left_tick);
+                }
+                else
+                {
+                    m_continue = false;             // FIXME for button
+                    set_starting_tick(m_tick);
+                }
             }
             if(!m_playback_mode && !m_jack_running) // live mode default
                 m_tick = 0;
@@ -2907,6 +2918,7 @@ void perform::parse_sysex(event a_e)
         break;
 
     case SYS_YPT300_STOP:
+        m_continue = true;                      // allow to continue where stopped FIXME for button
         stop_playing();
         break;
 
