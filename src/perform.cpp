@@ -2922,19 +2922,19 @@ void perform::parse_sysex(event a_e)
         stop_playing();
         break;
 
-    case SYS_YPT300_TOP:                        // beginning of song
+    case SYS_YPT300_TOP:                        // beginning of song or left marker
         if(global_song_start_mode)              // don't bother reposition in 'Live' mode
         {
             if(is_jack_running())
             {
                 set_reposition();
-                set_starting_tick(0);
-                position_jack(true, 0);
+                set_starting_tick(m_left_tick);
+                position_jack(true, m_left_tick);
             }
             else
             {
                 set_reposition();
-                set_starting_tick(0);
+                set_starting_tick(m_left_tick);
             }
         }
         break;
