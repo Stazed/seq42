@@ -2406,8 +2406,16 @@ mainwnd::signal_action(Glib::IOCondition condition)
 double
 mainwnd::tempo_map_microseconds(unsigned long a_tick)
 {
+    /* live mode - we ignore tempo changes so use the first tempo only */
+    if(!global_song_start_mode)
+    {
+        tempo_mark first_tempo = (* m_mainperf->m_list_no_stop_markers.begin());
+        return ticks_to_delta_time_us (a_tick, first_tempo.bpm, c_ppqn);
+    }
+    
+    /* song mode - cycle through tempo map */
     double hold_microseconds = 0;
-
+    
     list<tempo_mark>::iterator i;
     tempo_mark last_tempo = (*--m_mainperf->m_list_no_stop_markers.end());
     
