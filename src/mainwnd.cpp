@@ -142,8 +142,8 @@ mainwnd::mainwnd(perform *a_p):
     m_menu_edit->items().push_back(MenuElem("_Apply song transpose",
                                             mem_fun(*this, &mainwnd::apply_song_transpose)));
 
-    m_menu_edit->items().push_back(MenuElem("Increase _grid size",
-                                            mem_fun(*this, &mainwnd::grow)));
+//    m_menu_edit->items().push_back(MenuElem("Increase _grid size",
+//                                            mem_fun(*this, &mainwnd::grow)));
 
     m_menu_edit->items().push_back(MenuElem("_Delete unused sequences",
                                             mem_fun(*this, &mainwnd::delete_unused_seq)));
@@ -319,6 +319,13 @@ mainwnd::mainwnd(perform *a_p):
     m_hlbox     = manage( new HBox( false, 2 ));
 
     m_hlbox->set_border_width( 2 );
+    
+    m_button_grow = manage( new Button());
+    m_button_grow->add( *manage( new Arrow( Gtk::ARROW_RIGHT, Gtk::SHADOW_OUT )));
+    m_button_grow->signal_clicked().connect( mem_fun( *this, &mainwnd::grow));
+    add_tooltip( m_button_grow, "Increase size of Grid.\n"
+            "This does not scroll but adds to the end of\n"
+            "the grid if you scroll all the way to the right.");
 
     /* fill table */
     m_table->attach( *m_hlbox,  0, 3, 0, 1,  Gtk::FILL, Gtk::SHRINK, 2, 0 ); // shrink was 0
@@ -338,6 +345,7 @@ mainwnd::mainwnd(perform *a_p):
 
     m_table->attach( *m_hbox,  0, 1, 4, 5,  Gtk::FILL, Gtk::SHRINK, 0, 2 );
     m_table->attach( *m_hscroll, 1, 2, 4, 5, Gtk::FILL | Gtk::EXPAND, Gtk::SHRINK  );
+    m_table->attach( *m_button_grow, 2, 3, 4, 5, Gtk::SHRINK, Gtk::SHRINK  );
 
     m_menu_xpose =   manage( new Menu());
     char num[11];
