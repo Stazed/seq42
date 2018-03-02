@@ -398,6 +398,12 @@ perform::stop_playing()
 }
 
 void
+perform::set_continue(bool a_set)
+{
+    m_continue = a_set;
+}
+
+void
 perform::FF_rewind()
 {
     if(FF_RW_button_type == FF_RW_RELEASE)
@@ -2628,8 +2634,6 @@ void perform::output_func()
         {
             if(!m_continue)
                 position_jack(m_playback_mode, m_left_tick);
-            else
-                m_continue = false;         // FIXME for button
         }
         if(!m_playback_mode && m_jack_running && m_jack_master) // master in live mode
         {
@@ -2643,10 +2647,10 @@ void perform::output_func()
                 if(!m_continue)
                 {
                     set_starting_tick(m_left_tick);
+                    set_reposition();
                 }
                 else
                 {
-                    m_continue = false;             // FIXME for button
                     set_starting_tick(m_tick);
                 }
             }
@@ -2918,7 +2922,6 @@ void perform::parse_sysex(event a_e)
         break;
 
     case SYS_YPT300_STOP:
-        m_continue = true;                      // allow to continue where stopped FIXME for button
         stop_playing();
         break;
 

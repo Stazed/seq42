@@ -178,11 +178,19 @@ mainwnd::mainwnd(perform *a_p):
     /* top line items */
     HBox *hbox1 = manage( new HBox( false, 2 ) );
     hbox1->set_border_width( 2 );
+    
+    m_button_continue = manage( new ToggleButton( "S" ) );
+    m_button_continue->signal_toggled().connect(  mem_fun( *this, &mainwnd::set_continue_callback ));
+    add_tooltip( m_button_continue, "Toggle to set 'Stop/Pause' button method.\n"
+            "If set to 'S', stopping transport will reposition to 'L' mark.\n"
+            "If set to 'P', stopping transport will not reposition to 'L' mark." );
+    
+    m_button_continue->set_active( false );
 
     m_button_stop = manage( new Button() );
     m_button_stop->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( stop_xpm ))));
     m_button_stop->signal_clicked().connect( mem_fun( *this, &mainwnd::stop_playing));
-    add_tooltip( m_button_stop, "Stop playing." );
+    add_tooltip( m_button_stop, "Stop/Pause playing." );
 
     m_button_rewind = manage( new Button() );
     m_button_rewind->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( rewind_xpm ))));
@@ -193,7 +201,7 @@ mainwnd::mainwnd(perform *a_p):
     m_button_play = manage( new Button() );
     m_button_play->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( play2_xpm ))));
     m_button_play->signal_clicked().connect(  mem_fun( *this, &mainwnd::start_playing));
-    add_tooltip( m_button_play, "Begin playing at L marker." );
+    add_tooltip( m_button_play, "Begin/Continue playing." );
 
     m_button_fastforward = manage( new Button() );
     m_button_fastforward->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( fastforward_xpm ))));
@@ -228,7 +236,7 @@ mainwnd::mainwnd(perform *a_p):
     m_button_seq = manage( new Button() );
     m_button_seq->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( seqlist_xpm ))));
     m_button_seq->signal_clicked().connect(  mem_fun( *this, &mainwnd::open_seqlist ));
-    add_tooltip( m_button_seq, "Open sequence list" );
+    add_tooltip( m_button_seq, "Open/Close sequence list" );
 
     m_button_follow = manage( new ToggleButton() );
     m_button_follow->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( transportFollow_xpm ))));
@@ -236,6 +244,7 @@ mainwnd::mainwnd(perform *a_p):
     add_tooltip( m_button_follow, "Follow transport" );
     m_button_follow->set_active(true);
 
+    hbox1->pack_start( *m_button_continue, false, false );
     hbox1->pack_start( *m_button_stop, false, false );
     hbox1->pack_start( *m_button_rewind, false, false );
     hbox1->pack_start( *m_button_play, false, false );
@@ -1013,6 +1022,21 @@ void
 mainwnd::start_playing()
 {
     m_mainperf->start_playing();
+}
+
+void
+mainwnd::set_continue_callback()
+{
+    m_mainperf->set_continue(m_button_continue->get_active());
+    bool is_active = m_button_continue->get_active();
+    
+    std::string label = is_active ? "P" : "S";
+    Gtk::Label * lblptr(dynamic_cast<Gtk::Label *>
+    (
+         m_button_continue->get_child())
+    );
+    if (lblptr != NULL)
+        lblptr->set_text(label);
 }
 
 void

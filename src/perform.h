@@ -308,6 +308,7 @@ public:
 
     void start_playing();
     void stop_playing();
+    void set_continue(bool a_set);
 
     void FF_rewind();
 

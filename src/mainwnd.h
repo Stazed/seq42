@@ -106,6 +106,7 @@ private:
     Button *m_button_xpose;
     Entry *m_entry_xpose;
 
+    ToggleButton *m_button_continue;
     ToggleButton *m_button_loop;
     ToggleButton *m_button_mode;
     ToggleButton *m_button_jack;
@@ -183,6 +184,7 @@ private:
     bool timer_callback( );
 
     void start_playing();
+    void set_continue_callback();
     void stop_playing();
     void rewind(bool a_press);
     void fast_forward(bool a_press);
