@@ -680,3 +680,11 @@ Bpm_spinbutton::get_hold_bpm()
 {
     return m_hold_bpm;
 }
+
+
+double
+tempo::pulse_length_us (double bpm, int ppqn)
+{
+    double bw = (double) m_mainwnd->get_bw();
+    return 60000000.0 / ppqn / bpm * ( bw / 4.0 );
+}

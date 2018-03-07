@@ -1284,6 +1284,11 @@ void mainwnd::set_bw( int a_beat_width )
     set_guides();
 }
 
+int mainwnd::get_bw()
+{
+    return m_bw;
+}
+
 void
 mainwnd::set_zoom (int z)
 {

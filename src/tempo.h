@@ -117,11 +117,7 @@ private:
         return double(delta_ticks) * pulse_length_us(bpm, ppqn);
     }
     
-    inline double
-    pulse_length_us (double bpm, int ppqn)
-    {
-        return 60000000.0 / ppqn / bpm;
-    }
+    double pulse_length_us (double bpm, int ppqn);
 
 public:
 

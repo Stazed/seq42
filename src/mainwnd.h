@@ -276,7 +276,7 @@ private:
     inline double
     pulse_length_us (double bpm, int ppqn)
     {
-        return 60000000.0 / ppqn / bpm;
+        return 60000000.0 / ppqn / bpm * ((double) m_bw / 4.0 );;
     }
     
     /* Sequencer64 */
@@ -294,6 +294,7 @@ public:
         return z >= c_perf_max_zoom && z <= (4 * c_perf_scale_x);
     }
 
+    int get_bw();
     void set_zoom (int z);
     bool open_file(const Glib::ustring& fn);
     void export_sequence_midi(sequence *a_seq);
