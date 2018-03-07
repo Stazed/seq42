@@ -828,14 +828,6 @@ mainwnd::timer_callback(  )
         m_mainperf->set_bpm(m_mainperf->get_start_tempo());
     }
     
-    if(m_mainperf->get_tempo_reset())   /* play tempo markers */
-    {
-        m_tempo->reset_tempo_list(true); // true for updating play_list only, no need to recalc here
-        m_mainperf->set_tempo_reset(false);
-        /* reset the m_mainperf bpm for display purposes, not changing the list value*/
-        m_mainperf->set_bpm(m_mainperf->get_start_tempo());
-    }
-    
     if(m_spinbutton_bpm->get_have_leave() && !m_spinbutton_bpm->get_have_typing())
     {
         if(m_spinbutton_bpm->get_hold_bpm() != m_adjust_bpm->get_value() &&

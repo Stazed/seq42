@@ -57,7 +57,7 @@ tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
 
     set_double_buffered( false );
     
-    m_current_mark.bpm = m_mainperf->get_bpm();
+    m_current_mark.bpm = c_bpm; // default 120 
     m_current_mark.tick = STARTING_MARKER;
     add_marker(m_current_mark);
 }
@@ -131,6 +131,7 @@ tempo::set_guides( int a_snap, int a_measure )
     m_snap = a_snap;
     if(a_measure != m_measure_length)
     {
+        //printf("tempo::set_guides\n");
         m_measure_length = a_measure;
         reset_tempo_list();
     }
@@ -327,6 +328,7 @@ tempo::set_tempo_marker(long a_tick)
 void
 tempo::set_BPM(double a_bpm)
 {
+    //printf("tempo::set_BPM - calls add_marker\n");
     push_undo();
     m_current_mark.bpm = a_bpm;
     add_marker(m_current_mark);
@@ -373,6 +375,7 @@ tempo::add_marker(tempo_mark a_mark)
         m_list_marker.push_back(a_mark);
     }
 
+    //printf("tempo::add_marker\n");
     reset_tempo_list();
     unlock();
 }
@@ -400,22 +403,17 @@ tempo::set_start_BPM(double a_bpm)
  * the start marker bpm spin. Also on initial file loading, undo / redo.
  * also when measures are changed */
 void
-tempo::reset_tempo_list(bool play_list_only)
+tempo::reset_tempo_list()
 {
-    if(play_list_only)
-    {
-        m_mainperf->m_list_play_marker = m_list_marker;
-    }
-    else
-    {
-        lock();
-        calculate_marker_start();
+    //printf("tempo::reset_tempo_list()\n");
+    lock();
+    calculate_marker_start();
 
-        m_mainperf->m_list_play_marker = m_list_marker;
-        m_mainperf->m_list_total_marker = m_list_marker;
-        m_mainperf->m_list_no_stop_markers = m_list_no_stop_markers;
-        unlock();
-    }
+    m_mainperf->m_list_play_marker = m_list_marker;
+    m_mainperf->m_list_total_marker = m_list_marker;
+    m_mainperf->m_list_no_stop_markers = m_list_no_stop_markers;
+    unlock();
+    
 }
 
 /* file loading & undo / redo on import */

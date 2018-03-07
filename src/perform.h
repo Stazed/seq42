@@ -235,7 +235,6 @@ private:
     bool m_jack_master;
     long m_jack_stop_tick;
 
-    bool m_reset_tempo_list;
     bool m_load_tempo_list;
     
     /* Allow continue on stop  */
@@ -396,8 +395,7 @@ public:
     void start( bool a_state );
     void stop();
 
-    bool get_tempo_reset();
-    void set_tempo_reset(bool a_reset);
+    void reset_tempo_play_marker_list();
     bool get_tempo_load();
     void set_tempo_load(bool a_load);
     double get_start_tempo();
