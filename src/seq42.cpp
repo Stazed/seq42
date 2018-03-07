@@ -326,13 +326,17 @@ main (int argc, char *argv[])
     {
         p.set_playlist_mode(playlist_mode);
         p.set_playlist_file(playlist_file);
-        if(seq42_window.verify_playlist_dialog())
+        
+        if(p.get_playlist_mode())    // true means file load with no errors
         {
-            seq42_window.playlist_verify();
-        }
-        else
-        {
-            seq42_window.playlist_jump(0);
+            if(seq42_window.verify_playlist_dialog())
+            {
+                seq42_window.playlist_verify();
+            }
+            else
+            {
+                seq42_window.playlist_jump(0);
+            }
         }
     }
     

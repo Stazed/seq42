@@ -1760,16 +1760,20 @@ void mainwnd::choose_file(const bool playlist_mode)
         {
             m_mainperf->set_playlist_mode(true);
             m_mainperf->set_playlist_file(dialog.get_filename());
-            if(verify_playlist_dialog())
-            {
-                playlist_verify();
-            }
-            else
-            {
-                playlist_jump(0);
-            }
             
-            update_window_title();
+            if(m_mainperf->get_playlist_mode())  // true means file load with no errors
+            {
+                if(verify_playlist_dialog())
+                {
+                    playlist_verify();
+                }
+                else
+                {
+                    playlist_jump(0);
+                }
+            
+                update_window_title();
+            }
         }
         else
         {
