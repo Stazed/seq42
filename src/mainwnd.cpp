@@ -433,7 +433,7 @@ mainwnd::mainwnd(perform *a_p):
     }
 
     /* bpm spin button */
-    m_adjust_bpm = manage(new Adjustment(m_mainperf->get_bpm(), c_bpm_minimum, c_bpm_maximum, 1));
+    m_adjust_bpm = manage(new Adjustment(c_bpm, c_bpm_minimum, c_bpm_maximum, 1));
     m_spinbutton_bpm = manage( new Bpm_spinbutton( *m_adjust_bpm ));
 //    m_spinbutton_bpm = manage( new SpinButton( *m_adjust_bpm ));
     m_spinbutton_bpm->set_editable( true );
