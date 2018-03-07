@@ -45,11 +45,11 @@ perform::perform()
         m_was_active_names[i]   = false;
     }
 
-    m_setlist_stop_mark = false;
-    m_setlist_mode = false;
-    m_setlist_file = "";
-    m_setlist_nfiles = 0;
-    m_setlist_current_idx = 0;
+    m_playlist_stop_mark = false;
+    m_playlist_mode = false;
+    m_playlist_file = "";
+    m_playlist_nfiles = 0;
+    m_playlist_current_idx = 0;
     
     m_seqlist_open = false;
     m_seqlist_toggle = false;
@@ -85,9 +85,9 @@ perform::perform()
     m_key_seqlist   = GDK_F3;
     m_key_follow_trans  = GDK_F4;
     
-    //setlist next/prev keys:
-    m_key_setlist_next = GDK_Right;
-    m_key_setlist_prev = GDK_Left;
+    //playlist next/prev keys:
+    m_key_playlist_next = GDK_Right;
+    m_key_playlist_prev = GDK_Left;
     
     m_jack_stop_tick = 0;
     m_reset_tempo_list = false;
@@ -817,8 +817,8 @@ void perform::tempo_change()
             if((i)->bpm == STOP_MARKER)
             {
                 stop_playing();
-                if(m_setlist_mode) // if we are in set list mode then increment the file on stop marker
-                    m_setlist_stop_mark = true;
+                if(m_playlist_mode) // if we are in playlist mode then increment the file on stop marker
+                    m_playlist_stop_mark = true;
             }
             else
             {
@@ -3591,79 +3591,79 @@ perform::add_recent_file (const std::string & fname)
 
 /****************************************************/
 
-void perform::set_setlist_mode(bool mode)
+void perform::set_playlist_mode(bool mode)
 {
-    m_setlist_mode = mode;
+    m_playlist_mode = mode;
 }
 
-bool perform::get_setlist_mode()
+bool perform::get_playlist_mode()
 {
-    return m_setlist_mode;
+    return m_playlist_mode;
 }
 
-void perform::set_setlist_file(const Glib::ustring& fn)
+void perform::set_playlist_file(const Glib::ustring& fn)
 {   
-    printf("Opening setlist %s\n",fn.c_str());
+    printf("Opening playlist %s\n",fn.c_str());
     
-    if(m_setlist_file != "")                                // if we have a previous file, then reset everything
+    if(m_playlist_file != "")                                // if we have a previous file, then reset everything
     {
-        m_setlist_fileset.clear();
-        m_setlist_nfiles = 0;
-        m_setlist_current_idx = 0;
+        m_playlist_fileset.clear();
+        m_playlist_nfiles = 0;
+        m_playlist_current_idx = 0;
     }
     
-    m_setlist_file = fn;                                    // set the file
+    m_playlist_file = fn;                                    // set the file
     
     /*Now read the file*/
-    std::ifstream openFile(m_setlist_file);
+    std::ifstream openFile(m_playlist_file);
 
     if(openFile)
     {
         std::string strFileLine = "";
         while(getline(openFile,strFileLine))
         {
-            m_setlist_fileset.push_back(strFileLine);       // load into vector
+            m_playlist_fileset.push_back(strFileLine);       // load into vector
         }
         openFile.close();
         
-        if(m_setlist_fileset.size())                        // if we got something
+        if(m_playlist_fileset.size())                        // if we got something
         {
-            m_setlist_nfiles = m_setlist_fileset.size();
+            m_playlist_nfiles = m_playlist_fileset.size();
         }
-        else                                                // if we did not get anything
+        else                                                 // if we did not get anything
         {
-            error_message_gtk("No files listed in setlist!\n");
-            set_setlist_mode(false);                        // abandon ship
+            error_message_gtk("No files listed in playlist!\n");
+            set_playlist_mode(false);                        // abandon ship
         }
     }
     else
     {
-        Glib::ustring message = "Unable to open setlist file\n";
-        message += m_setlist_file; 
+        Glib::ustring message = "Unable to open playlist file\n";
+        message += m_playlist_file; 
         error_message_gtk(message);
-        set_setlist_mode(false);                            // abandon ship
+        set_playlist_mode(false);                            // abandon ship
     }
 }
 
-Glib::ustring perform::get_setlist_current_file()
+Glib::ustring perform::get_playlist_current_file()
 {
-    return m_setlist_fileset[m_setlist_current_idx];
+    return m_playlist_fileset[m_playlist_current_idx];
 }
 
-int perform::get_setlist_index()
+int perform::get_playlist_index()
 {
-    return m_setlist_current_idx;
+    return m_playlist_current_idx;
 }
 
-bool perform::set_setlist_index(int index)
+bool perform::set_playlist_index(int index)
 {
     if(index < 0)
         return false;
 
-    if(index >= m_setlist_nfiles)
+    if(index >= m_playlist_nfiles)
         return false;
 
-    m_setlist_current_idx = index;
+    m_playlist_current_idx = index;
     
     return true;
 }

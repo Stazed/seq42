@@ -242,13 +242,13 @@ options::add_keyboard_page()
     controltable->attach(*label, 2, 3, 5, 6);
     controltable->attach(*entry, 3, 4, 5, 6);
     
-    label = manage(new Label("Setlist next", Gtk::ALIGN_RIGHT));
-    entry = manage(new KeyBindEntry(&m_perf->m_key_setlist_next));
+    label = manage(new Label("Playlist next", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_playlist_next));
     controltable->attach(*label, 2, 3, 6, 7);
     controltable->attach(*entry, 3, 4, 6, 7);
     
-    label = manage(new Label("Setlist previous", Gtk::ALIGN_RIGHT));
-    entry = manage(new KeyBindEntry(&m_perf->m_key_setlist_prev));
+    label = manage(new Label("Playlist previous", Gtk::ALIGN_RIGHT));
+    entry = manage(new KeyBindEntry(&m_perf->m_key_playlist_prev));
     controltable->attach(*label, 0, 1, 6, 7);
     controltable->attach(*entry, 1, 2, 6, 7);
 

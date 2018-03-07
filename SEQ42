@@ -27,8 +27,8 @@ When setting the marker BPM, a value of 0 (zero) can be used to set a stop marke
 Stop markers are indicated by red color, and the bpm value will indicate "[stop]".
 When playing, as the progress mark encounters a stop marker, the transport will stop.
 Stop markers can be used for editing purposes, or at the end of a song to stop the transport.
-When in Setlist mode, if stopped by a stop marker, the set list will automatically increment
-to the next file on the set list after stopping.
+When in Playlist mode, if stopped by a stop marker, the play list will automatically increment
+to the next file on the play list after stopping.
 
 Live mode:
 In live mode, only the starting bpm will be used. No subsequent tempo marks or stop marks
@@ -39,9 +39,9 @@ Jonathan Moore Liles    (non-timeline)
 http://non.tuxfamily.org
 
 
-Setlist mode:
+Playlist mode:
 
-A setlist is a text file containing multiple seq42 files (.s42), that can be quickly loaded
+A playlist is a text file containing multiple seq42 files (.s42), that can be quickly loaded
 for possible accompaniment with a live performance. The file should list on each line the
 full path to the .s42 file and name, ex:
 
@@ -52,43 +52,43 @@ full path to the .s42 file and name, ex:
 There should be no blank lines before, after, or between the files listed. Do not use
 place holders, full path only.
 
-Setlist mode can be invoked from the command line with the -X <path to setlist file> option.
-The setlist can also be selected from the main menu, File, Open setlist...
+Playlist mode can be invoked from the command line with the -X <path to playlist file> option.
+The playlist can also be selected from the main menu, File/Open playlist...
 
-When the setlist mode is first invoked, you will be prompted with a dialog pop-up asking
-if you wish to verify the setlist. For new setlists, or if a setlist is modified, selecting 'Yes'
+When the playlist mode is first invoked, you will be prompted with a dialog pop-up asking
+if you wish to verify the playlist. For new playlists, or if a playlist is modified, selecting 'Yes'
 would be beneficial to check for errors.  The verification will attempt to load all the files
 on the list, in order, and if errors are encountered, will stop and indicate the offending file.
-Select 'No' or escape key if the setlist has previously been verified. If the verification is
+Select 'No' or escape key if the playlist has previously been verified. If the verification is
 successful, no pop-up errors will occur, and the first file on the list will be loaded.
 
-When setlist mode is in effect, the main window title will indicate "Setlist" and
-the current song and numeric value listed in the setlist file ex:
+When playlist mode is in effect, the main window title will indicate "Playlist" and
+the current song and numeric value listed in the playlist file ex:
 
-    "seq42 - Setlist, Song 03 - [/home/username/seq42dir/file3.s42]"
+    "seq42 - Playlist, Song 03 - [/home/username/seq42dir/file3.s42]"
 
-To cycle through the setlist, use the right arrow key to go down the list, and the left
+To cycle through the playlist, use the right arrow key to go down the list, and the left
 arrow key to go up the list, from the main window only. The key binding can be changed in
 the File/Options/Keyboard tab.
 
-The sequencer must be stopped in order to cycle up or down the setlist.
+The sequencer must be stopped in order to cycle up or down the playlist.
 
 ALERT!! - the key binding may need to be reset if a previous .seq42rc file is present 
-in your home directory. Go to File/Options/Keyboard to set the 'Setlist next' and
-'Setlist previous' keys. The default is the left(previous) and right(next) arrow keys.
+in your home directory. Go to File/Options/Keyboard to set the 'Playlist next' and
+'Playlist previous' keys. The default is the left(previous) and right(next) arrow keys.
 
-During setlist play, when the transport is stopped by a Stop marker, the setlist song will 
+During playlist play, when the transport is stopped by a Stop marker, the playlist song will 
 automatically be incremented down by one song. (See STOP markers above).
 
-To shut off setlist mode, simply load a new file from the main menu, File, New or
-File, Open. You could also quit and restart. The main window title will no longer
-show the "Setlist, Song XX" listing.
+To shut off playlist mode, simply load a new file from the main menu, File/New or
+File/Open. You could also quit and restart. The main window title will no longer
+show the "Playlist, Song XX" listing.
 
-If editing while in setlist mode, you will NOT be prompted to save changes when moving
-to a new song on the list. If unsaved, all editing will be lost! So if editing in setlist
+If editing while in playlist mode, you will NOT be prompted to save changes when moving
+to a new song on the list. If unsaved, all editing will be lost! So if editing in playlist
 mode, be sure to save before right arrow, or left arrow!
 
-Special thanks for the setlist idea, and some code (modified) go to:
+Special thanks for the playlist idea, and some code (modified) go to:
 Simon Hickinbotham - seq24plus.
 https://github.com/franticspider/seq24plus
 

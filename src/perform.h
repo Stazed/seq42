@@ -134,27 +134,27 @@ class perform
 {
 public:
 
-    //Setlist mode
-    void 	set_setlist_mode(bool mode);
-    bool 	get_setlist_mode();
-    void 	set_setlist_file(const Glib::ustring& fn);
-    Glib::ustring get_setlist_current_file();
-    int		get_setlist_index();
-    bool 	set_setlist_index(int index);
+    //Playlist mode
+    void 	set_playlist_mode(bool mode);
+    bool 	get_playlist_mode();
+    void 	set_playlist_file(const Glib::ustring& fn);
+    Glib::ustring get_playlist_current_file();
+    int		get_playlist_index();
+    bool 	set_playlist_index(int index);
 
-    unsigned int 	m_key_setlist_next;
-    unsigned int 	m_key_setlist_prev;
-    bool                m_setlist_stop_mark;
-    // end selist public
+    unsigned int 	m_key_playlist_next;
+    unsigned int 	m_key_playlist_prev;
+    bool                m_playlist_stop_mark;
+    // end playlist public
 private:
 
-    //Setlist mode
-    bool m_setlist_mode;
-    Glib::ustring m_setlist_file;
-    int m_setlist_nfiles;
-    int m_setlist_current_idx;
-    std::vector<Glib::ustring> m_setlist_fileset;
-    // end selist private
+    //Playlist mode
+    bool m_playlist_mode;
+    Glib::ustring m_playlist_file;
+    int m_playlist_nfiles;
+    int m_playlist_current_idx;
+    std::vector<Glib::ustring> m_playlist_fileset;
+    // end playlist private
 
     /* vector of tracks */
     track *m_tracks[c_max_track];

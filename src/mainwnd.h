@@ -193,7 +193,7 @@ private:
     void new_open_error_dialog();
     void file_new();
     void file_open();
-    void file_open_setlist();
+    void file_open_playlist();
     void file_save();
     void file_save_as(file_type_e type, void *a_seq_or_track = nullptr);
     void export_midi(const Glib::ustring&, file_type_e type, void *a_seq_or_track = nullptr);
@@ -201,7 +201,7 @@ private:
     void file_exit();
     void new_file();
     bool save_file();
-    void choose_file(bool setlist_mode = false);
+    void choose_file(bool playlist_mode = false);
     int query_save_changes();
     bool is_save();
     void update_recent_files_menu ();
@@ -303,9 +303,9 @@ public:
     bool on_delete_event(GdkEventAny *a_e);
     bool on_key_press_event(GdkEventKey* a_ev);
     bool on_key_release_event(GdkEventKey* a_ev);
-    bool setlist_jump(int jmp, bool a_verify = false);
-    bool verify_setlist_dialog();
-    void setlist_verify();
+    bool playlist_jump(int jmp, bool a_verify = false);
+    bool verify_playlist_dialog();
+    void playlist_verify();
     friend int FF_RW_timeout(void *arg);
 };
 

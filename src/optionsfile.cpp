@@ -100,10 +100,10 @@ optionsfile::parse( perform *a_perf )
     sscanf( m_line, "%u", &a_perf->m_key_tap_bpm );
     
     next_data_line( &file );
-    sscanf( m_line, "%u", &a_perf->m_key_setlist_next );
+    sscanf( m_line, "%u", &a_perf->m_key_playlist_next );
     
     next_data_line( &file );
-    sscanf( m_line, "%u", &a_perf->m_key_setlist_prev );
+    sscanf( m_line, "%u", &a_perf->m_key_playlist_prev );
     
 
     line_after( &file, "[jack-transport]" );
@@ -299,13 +299,13 @@ optionsfile::write( perform *a_perf  )
          << gdk_keyval_name( a_perf->m_key_tap_bpm )
          << " tap BPM key\n";
     
-    file << a_perf->m_key_setlist_next << "        # "
-         << gdk_keyval_name( a_perf->m_key_setlist_next )
-         << " Setlist next key\n";
+    file << a_perf->m_key_playlist_next << "        # "
+         << gdk_keyval_name( a_perf->m_key_playlist_next )
+         << " Playlist next key\n";
     
-    file << a_perf->m_key_setlist_prev << "        # "
-         << gdk_keyval_name( a_perf->m_key_setlist_prev )
-         << " Setlist previous key\n";
+    file << a_perf->m_key_playlist_prev << "        # "
+         << gdk_keyval_name( a_perf->m_key_playlist_prev )
+         << " Playlist previous key\n";
 
     file << "\n\n\n[jack-transport]\n\n"
 
