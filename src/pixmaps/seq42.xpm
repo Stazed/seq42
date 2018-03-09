@@ -1,5 +1,5 @@
 /* XPM */
-static char *seq42_xpm[] = {
+static const char *seq42_xpm[] = {
 "124 32 3 1",
 "0	c #000000",
 " 	c None",

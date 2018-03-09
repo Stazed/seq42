@@ -32,6 +32,8 @@
 #include "seqlist.h"
 
 #include "pixmaps/seq42_32.xpm"
+#include "pixmaps/seq42.xpm"
+#include "pixmaps/seq42_playlist.xpm"
 #include "pixmaps/play2.xpm"
 #include "pixmaps/seqlist.xpm"
 #include "pixmaps/stop.xpm"
@@ -176,8 +178,10 @@ mainwnd::mainwnd(perform *a_p):
                                             mem_fun(*this, &mainwnd::about_dialog)));
 
     /* top line items */
-    HBox *hbox1 = manage( new HBox( false, 2 ) );
+    hbox1 = manage( new HBox( false, 2 ) );
     hbox1->set_border_width( 2 );
+    
+    m_image_seq42 = manage(new Image( Gdk::Pixbuf::create_from_xpm_data(seq42_xpm)));
     
     m_button_continue = manage( new ToggleButton( "S" ) );
     m_button_continue->signal_toggled().connect(  mem_fun( *this, &mainwnd::set_continue_callback ));
@@ -244,6 +248,7 @@ mainwnd::mainwnd(perform *a_p):
     add_tooltip( m_button_follow, "Follow transport" );
     m_button_follow->set_active(true);
 
+    hbox1->pack_start( *m_image_seq42, false, false);
     hbox1->pack_start( *m_button_continue, false, false );
     hbox1->pack_start( *m_button_stop, false, false );
     hbox1->pack_start( *m_button_rewind, false, false );
@@ -669,7 +674,10 @@ bool mainwnd::playlist_jump(int jmp, bool a_verify)
     }
     
     if(!result)                                             // if errors occured above
+    {
         update_window_title();
+        update_window_xpm();
+    }
     
     return result;
 }
@@ -1445,6 +1453,7 @@ void mainwnd::new_file()
         
         global_filename = "";
         update_window_title();
+        update_window_xpm();
         global_is_modified = false;
     }
     else
@@ -1576,6 +1585,7 @@ void mainwnd::file_save_as(file_type_e type, void *a_seq_or_track)
         {
             global_filename = fname;
             update_window_title();
+            update_window_xpm();
             save_file();
         }
         else
@@ -1670,6 +1680,7 @@ bool mainwnd::open_file(const Glib::ustring& fn)
         }
         
         update_window_title();
+        update_window_xpm();
 
         m_adjust_bpm->set_value( m_mainperf->get_bpm());
 
@@ -1765,13 +1776,17 @@ void mainwnd::choose_file(const bool playlist_mode)
                 }
             
                 update_window_title();
+                update_window_xpm();
             }
         }
         else
         {
             m_mainperf->set_playlist_mode(playlist_mode); // clear playlist flag if set.
             if(!open_file(dialog.get_filename()))
+            {
                 update_window_title();                  // since we cleared flag above but fail does not update
+                update_window_xpm();
+            }
         }
     default:
         break;
@@ -2330,6 +2345,29 @@ mainwnd::update_window_title()
     }
     
     set_title ( title.c_str());
+}
+
+/* This changes the main window logo .xpm when in playlist mode and back */
+void
+mainwnd::update_window_xpm()
+{
+    hbox1->remove(*m_image_seq42);
+    
+    if(m_mainperf->get_playlist_mode())
+    {
+        m_image_seq42 = manage(new Image( Gdk::Pixbuf::create_from_xpm_data(seq42_xpm_playlist)));
+    }
+    else
+    {
+        m_image_seq42 = manage(new Image( Gdk::Pixbuf::create_from_xpm_data(seq42_xpm)));
+    }
+
+    if(m_image_seq42 != NULL)
+    {
+        hbox1->pack_start(*m_image_seq42, false, false);
+        hbox1->reorder_child(*m_image_seq42, 0);
+        m_image_seq42->show();
+    }
 }
 
 int mainwnd::m_sigpipe[2];

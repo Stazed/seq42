@@ -62,7 +62,8 @@ on the list, in order, and if errors are encountered, will stop and indicate the
 Select 'No' or escape key if the playlist has previously been verified. If the verification is
 successful, no pop-up errors will occur, and the first file on the list will be loaded.
 
-When playlist mode is in effect, the main window title will indicate "Playlist" and
+When playlist mode is in effect, the main window SEQ42 logo will turn blue with a red "PLAYLIST" overlay.
+In addition, the main window title and song editor title will indicate "Playlist" and
 the current song and numeric value listed in the playlist file ex:
 
     "seq42 - Playlist, Song 03 - [/home/username/seq42dir/file3.s42]"

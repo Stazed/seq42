@@ -61,6 +61,9 @@ private:
     Menu     *m_menu_recent;          /**< File/Recent menu popup.    */
     Menu     *m_menu_edit;
     Menu     *m_menu_help;
+    
+    Gtk::HBox *hbox1;               /* top line mainwindow */
+    Gtk::Image * m_image_seq42;     /* Image for Mainwindow logo.   */
 
     maintime *m_main_time;
 
@@ -189,6 +192,7 @@ private:
     void rewind(bool a_press);
     void fast_forward(bool a_press);
     void update_window_title();
+    void update_window_xpm();
     void toLower(basic_string<char>&);
     void new_open_error_dialog();
     void file_new();
