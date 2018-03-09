@@ -338,8 +338,34 @@ mainwnd::mainwnd(perform *a_p):
     m_table->attach( *m_perfnames,    0, 1, 3, 4, Gtk::SHRINK, Gtk::FILL );
     m_table->attach( *m_tempo, 1, 2, 1, 2, Gtk::FILL, Gtk::SHRINK );
     
-    Label* tempolabel = manage(new Label("TEMPO",0, Gtk::ALIGN_END)); // FIXME
-    m_table->attach( *tempolabel,0,1,1,2, Gtk::SHRINK, Gtk::SHRINK);
+    /* bpm spin button */
+    m_adjust_bpm = manage(new Adjustment(c_bpm, c_bpm_minimum, c_bpm_maximum, 1));
+    m_spinbutton_bpm = manage( new Bpm_spinbutton( *m_adjust_bpm ));
+    m_spinbutton_bpm->set_editable( true );
+    m_spinbutton_bpm->set_digits(2);                    // 2 = two decimal precision
+    m_spinbutton_bpm->set_numeric();
+    m_adjust_bpm->signal_value_changed().connect(
+        mem_fun(*this, &mainwnd::adj_callback_bpm ));
+
+    add_tooltip( m_spinbutton_bpm, "Adjust starting beats per minute (BPM)" );
+
+    /* bpm tap tempo button - sequencer64 */
+    m_button_tap = manage(new Button("0"));
+    m_button_tap->signal_clicked().connect(mem_fun(*this, &mainwnd::tap));
+    add_tooltip
+    (
+        m_button_tap,
+        "Tap in time to set the beats per minute (BPM) value. "
+        "After 5 seconds of no taps, the tap-counter will reset to 0. "
+        "Also see the File / Options / Keyboard / Tap BPM key assignment."
+    );
+    
+    Gtk::HBox *bpm_hbox = manage( new HBox( false, 2 ));
+    
+    bpm_hbox->pack_start(*m_spinbutton_bpm, Gtk::PACK_SHRINK);
+    bpm_hbox->pack_start( *m_button_tap, false, false );
+    
+    m_table->attach( *bpm_hbox,0,1,1,3, Gtk::SHRINK, Gtk::SHRINK);
 
     m_table->attach( *m_perftime, 1, 2, 2, 3, Gtk::FILL, Gtk::SHRINK );
     m_table->attach( *m_perfroll, 1, 2, 3, 4,
@@ -437,32 +463,6 @@ mainwnd::mainwnd(perform *a_p):
                                              sigc::bind(mem_fun(*this,&mainwnd::bp_measure_button_callback),i+1 )));
     }
 
-    /* bpm spin button */
-    m_adjust_bpm = manage(new Adjustment(c_bpm, c_bpm_minimum, c_bpm_maximum, 1));
-    m_spinbutton_bpm = manage( new Bpm_spinbutton( *m_adjust_bpm ));
-//    m_spinbutton_bpm = manage( new SpinButton( *m_adjust_bpm ));
-    m_spinbutton_bpm->set_editable( true );
-    m_spinbutton_bpm->set_digits(2);                    // 2 = two decimal precision
-    m_spinbutton_bpm->set_numeric();
-    m_adjust_bpm->signal_value_changed().connect(
-        mem_fun(*this, &mainwnd::adj_callback_bpm ));
-
-    add_tooltip( m_spinbutton_bpm, "Adjust beats per minute (BPM) value" );
-    
-    Label* bpmlabel = manage(new Label("_BPM", true));
-    bpmlabel->set_mnemonic_widget(*m_spinbutton_bpm);
-
-    /* bpm tap tempo button - sequencer64 */
-    m_button_tap = manage(new Button("0"));
-    m_button_tap->signal_clicked().connect(mem_fun(*this, &mainwnd::tap));
-    add_tooltip
-    (
-        m_button_tap,
-        "Tap in time to set the beats per minute (BPM) value. "
-        "After 5 seconds of no taps, the tap-counter will reset to 0. "
-        "Also see the File / Options / Keyboard / Tap BPM key assignment."
-    );
-    
     /* beats per measure */
     m_button_bp_measure = manage( new Button());
     m_button_bp_measure->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( down_xpm  ))));
@@ -531,15 +531,7 @@ mainwnd::mainwnd(perform *a_p):
     m_hlbox->pack_end( *m_button_collapse, false, false );
     m_hlbox->pack_end( *m_button_redo, false, false );
     m_hlbox->pack_end( *m_button_undo, false, false );
-    
-
-    m_hlbox->pack_start(*bpmlabel, Gtk::PACK_SHRINK);
-    m_hlbox->pack_start(*m_spinbutton_bpm, Gtk::PACK_SHRINK);
-
-    m_hlbox->pack_start( *m_button_tap, false, false );
-    
-    m_hlbox->pack_start( *(manage(new VSeparator())), false, false, 4);
-
+     
     m_hlbox->pack_start( *m_button_bp_measure, false, false );
     m_hlbox->pack_start( *m_entry_bp_measure, false, false );
 
@@ -1782,11 +1774,9 @@ void mainwnd::choose_file(const bool playlist_mode)
         else
         {
             m_mainperf->set_playlist_mode(playlist_mode); // clear playlist flag if set.
-            if(!open_file(dialog.get_filename()))
-            {
-                update_window_title();                  // since we cleared flag above but fail does not update
-                update_window_xpm();
-            }
+            open_file(dialog.get_filename());
+            update_window_title();
+            update_window_xpm();
         }
     default:
         break;
@@ -1950,6 +1940,7 @@ mainwnd::load_recent_file (int index)
         if (is_save())
         {
             std::string filepath = m_mainperf->recent_file(index, false);
+            m_mainperf->set_playlist_mode(false);
             open_file(filepath);
         }
     }
