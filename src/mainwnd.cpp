@@ -574,6 +574,18 @@ mainwnd::mainwnd(perform *a_p):
     set_snap( 4 );
     set_bp_measure( 4 );
     set_xpose( 0 );
+    
+    /* m_mainperf->set_start_tempo(c_bpm);
+     * this sets the tempo marker list start.
+     * we need to set this here or jack timebase callback
+     * will call reset_tempo_play_marker_list(); upon
+     * initialization due to newpos being set. The call
+     * to reset uses the value of the start tempo from
+     * m_list_total_markers - which is sometimes not
+     * set do to timing of the tempo marker creation.
+     * So, set the default here so we do not get junk.
+       */
+    m_mainperf->set_start_tempo(c_bpm);
 
     /* tap button  */
     m_current_beats = 0;
