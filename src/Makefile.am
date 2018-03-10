@@ -21,6 +21,7 @@ seq42_SOURCES = \
 	midibus.cpp midibus.h \
 	midibus_portmidi.cpp midibus_portmidi.h \
 	midifile.cpp midifile.h \
+	s42file.cpp s42file.h \
 	mutex.cpp mutex.h \
 	options.cpp options.h \
 	optionsfile.cpp optionsfile.h \

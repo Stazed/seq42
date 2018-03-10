@@ -27,6 +27,7 @@
 #include "mainwnd.h"
 #include "perform.h"
 #include "midifile.h"
+#include "s42file.h"
 #include "sequence.h"
 #include "font.h"
 #include "seqlist.h"
@@ -1654,8 +1655,9 @@ bool mainwnd::open_file(const Glib::ustring& fn)
     if(m_mainperf->clear_all())
     {
         set_xpose(0);
-
-        result = m_mainperf->load(fn);
+        
+        s42file f;
+        result = f.load(fn, m_mainperf, this);
 
         global_is_modified = !result;
 
@@ -1805,7 +1807,8 @@ bool mainwnd::save_file()
         return true;
     }
 
-    result = m_mainperf->save(global_filename);
+    s42file f;
+    result = f.save(global_filename, m_mainperf);
 
     if (result && !m_mainperf->get_playlist_mode())            /* don't list files from playlist */
     {
