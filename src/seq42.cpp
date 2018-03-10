@@ -342,6 +342,7 @@ main (int argc, char *argv[])
     
     /* connect to lash daemon and poll events*/
 #ifdef LASH_SUPPORT
+    lash_driver->set_mainwnd(&seq42_window);
     lash_driver->start( &p );
 #endif
     kit.run(seq42_window);
