@@ -19,6 +19,7 @@
 //-----------------------------------------------------------------------------
 
 #include "midifile.h"
+#include "mainwnd.h"
 #include <iostream>
 #include <gtkmm/messagedialog.h>
 #include <math.h>
@@ -86,7 +87,7 @@ midifile::read_var ()
     return ret;
 }
 
-bool midifile::parse (perform * a_perf, int screen_set)
+bool midifile::parse (perform * a_perf, mainwnd *a_main, int screen_set)
 {
     /* open binary file */
     ifstream file(m_name.c_str(), ios::in | ios::binary | ios::ate);
@@ -706,8 +707,13 @@ bool midifile::parse (perform * a_perf, int screen_set)
                 if(use_tempo_map)
                     a_perf->m_list_total_marker.push_back(a_marker);
             }
+ 
             if(use_tempo_map)
-                a_perf->set_tempo_load(true);
+            {
+                /* load_tempo_list() will set tempo class markers, set perform midibus
+                * and trigger mainwnd timeout to update the mainwnd bpm spinner */
+                a_main->load_tempo_list();
+            }
         }
     }
     
@@ -727,9 +733,11 @@ bool midifile::parse (perform * a_perf, int screen_set)
     {
         if(verify_change_tempo_timesig(bpm, bp_measure, bw))
         {
-            a_perf->set_start_tempo(bpm);
-            a_perf->set_bp_measure(bp_measure);
-            a_perf->set_bw(bw);
+            /* update_start_BPM() will set tempo markers, set perform midibus
+             * and trigger mainwnd timeout to update the mainwnd bpm spinner */
+            a_main->update_start_BPM(bpm);
+            a_main->set_bp_measure(bp_measure);
+            a_main->set_bw(bw);
         }
     }
 

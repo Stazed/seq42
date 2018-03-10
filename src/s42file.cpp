@@ -172,7 +172,7 @@ s42file::load(const Glib::ustring& a_filename, perform *a_perf, mainwnd *a_main)
             a_perf->m_list_total_marker.push_back(marker);
         }
 
-        /* load_tempo_list() will set tempo markers, set perform midibus
+        /* load_tempo_list() will set tempo class markers, set perform midibus
         * and trigger mainwnd timeout to update the mainwnd bpm spinner */
         a_main->load_tempo_list();
     }

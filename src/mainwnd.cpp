@@ -571,12 +571,7 @@ mainwnd::mainwnd(perform *a_p):
     /* add box */
     this->add (*ovbox);
 
-    set_bw( 4 ); // set this first
-    set_snap( 4 );
-    set_bp_measure( 4 );
-    set_xpose( 0 );
-    
-    /* m_mainperf->set_start_tempo(c_bpm);
+    /* m_tempo->set_start_tempo(c_bpm);
      * this sets the tempo marker list start.
      * we need to set this here or jack timebase callback
      * will call reset_tempo_play_marker_list(); upon
@@ -586,7 +581,12 @@ mainwnd::mainwnd(perform *a_p):
      * set do to timing of the tempo marker creation.
      * So, set the default here so we do not get junk.
        */
-    m_mainperf->set_start_tempo(c_bpm);
+    m_tempo->set_start_BPM(c_bpm);
+    
+    set_bw( 4 ); // set this first
+    set_snap( 4 );
+    set_bp_measure( 4 );
+    set_xpose( 0 );
 
     /* tap button  */
     m_current_beats = 0;
@@ -813,7 +813,8 @@ mainwnd::timer_callback(  )
         }
     }
     
-    if(m_mainperf->get_tempo_load())    /* file loading */
+    /* Undo and redo */
+    if(m_mainperf->get_tempo_load())
     {
         m_mainperf->set_tempo_load(false);
         m_tempo->load_tempo_list();
@@ -1428,12 +1429,12 @@ void mainwnd::new_file()
     if(m_mainperf->clear_all())
     {
         m_tempo->clear_tempo_list();
+        m_tempo->set_start_BPM(c_bpm);
         set_bp_measure(4);
         set_bw(4);
         set_xpose(0);
         set_swing_amount8(0);
         set_swing_amount16(0);
-        m_tempo->set_start_BPM(c_bpm);
         m_mainperf->set_playlist_mode(false);
         
         global_filename = "";
@@ -1998,7 +1999,7 @@ mainwnd::file_import_dialog()
         {
             midifile f( dialog.get_filename() );
 
-            if(f.parse( m_mainperf, (int) m_adjust_load_offset->get_value() ))
+            if(f.parse( m_mainperf, this, (int) m_adjust_load_offset->get_value() ))
                 last_midi_dir = dialog.get_filename().substr(0, dialog.get_filename().rfind("/") + 1);
             else return;
         }

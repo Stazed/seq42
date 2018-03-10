@@ -1720,6 +1720,7 @@ perform::set_tempo_load(bool a_load)
     m_load_tempo_list = a_load;
 }
 
+/* Currently not used */
 void
 perform::set_start_tempo(double a_bpm)
 {

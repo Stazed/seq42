@@ -410,10 +410,16 @@ tempo::set_start_BPM(double a_bpm)
     }
 }
 
-/* update marker jack start ticks and perform class lists.
- * triggered any time user adds or deletes a marker or adjusts
+/* reset_tempo_list()
+ * update marker jack start ticks, microseconds start and perform class lists.
+ * Triggered any time user adds or deletes a marker or adjusts
  * the start marker bpm spin. Also on initial file loading, undo / redo.
- * also when measures are changed */
+ * also when measures are changed.
+ * This should be called directly when the tempo class m_list_marker is
+ * adjusted and then is pushed to m_mainperf class.
+ * 
+ * Use load_tempo_list() for pushing m_mainperf to the tempo class
+ * m_list_marker. */
 void
 tempo::reset_tempo_list()
 {
@@ -428,7 +434,12 @@ tempo::reset_tempo_list()
     
 }
 
-/* file loading & undo / redo on import */
+/* load_tempo_list()
+ * This should be called when the m_mainperf->m_list_total_marker is
+ * correct and the tempo class m_list_marker needs to be adjusted to it.
+ * Use for file loading & undo / redo on import.
+ * Use reset_tempo_list() above directly when m_list_marker is correct
+ * and m_mainperf needs to be adjusted. */
 void
 tempo::load_tempo_list()
 {
