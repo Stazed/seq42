@@ -139,6 +139,7 @@ public:
     void reset_tempo_list();
     void load_tempo_list();
     void calculate_marker_start();
+    void clear_tempo_list();
     
     void push_undo(bool a_hold = false);
     void pop_undo();

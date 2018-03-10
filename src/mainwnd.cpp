@@ -483,14 +483,14 @@ mainwnd::mainwnd(perform *a_p):
     m_entry_bw->set_editable( false );
 
     /* swing_amount spin buttons */
-    m_adjust_swing_amount8 = manage(new Adjustment(m_mainperf->get_swing_amount8(), 0, c_max_swing_amount, 1));
+    m_adjust_swing_amount8 = manage(new Adjustment(0, 0, c_max_swing_amount, 1));
     m_spinbutton_swing_amount8 = manage( new SpinButton( *m_adjust_swing_amount8 ));
     m_spinbutton_swing_amount8->set_editable( false );
     m_adjust_swing_amount8->signal_value_changed().connect(
         mem_fun(*this, &mainwnd::adj_callback_swing_amount8 ));
     add_tooltip( m_spinbutton_swing_amount8, "Adjust 1/8 swing amount" );
 
-    m_adjust_swing_amount16 = manage(new Adjustment(m_mainperf->get_swing_amount16(), 0, c_max_swing_amount, 1));
+    m_adjust_swing_amount16 = manage(new Adjustment(0, 0, c_max_swing_amount, 1));
     m_spinbutton_swing_amount16 = manage( new SpinButton( *m_adjust_swing_amount16 ));
     m_spinbutton_swing_amount16->set_editable( false );
     m_adjust_swing_amount16->signal_value_changed().connect(
@@ -742,16 +742,6 @@ mainwnd::timer_callback(  )
         m_adjust_bpm->set_value( m_mainperf->get_bpm());
     }
 
-    if ( m_bp_measure != m_mainperf->get_bp_measure())
-    {
-        set_bp_measure( m_mainperf->get_bp_measure());
-    }
-
-    if ( m_bw != m_mainperf->get_bw())
-    {
-        set_bw( m_mainperf->get_bw());
-    }
-
     if (m_button_mode->get_active() != global_song_start_mode)        // for seqroll keybinding
     {
         m_button_mode->set_active(global_song_start_mode);
@@ -785,16 +775,6 @@ mainwnd::timer_callback(  )
     if (m_button_follow->get_active() != m_mainperf->get_follow_transport())
     {
         m_button_follow->set_active(m_mainperf->get_follow_transport());
-    }
-
-    if ( m_adjust_swing_amount8->get_value() != m_mainperf->get_swing_amount8())
-    {
-        m_adjust_swing_amount8->set_value( m_mainperf->get_swing_amount8());
-    }
-
-    if ( m_adjust_swing_amount16->get_value() != m_mainperf->get_swing_amount16())
-    {
-        m_adjust_swing_amount16->set_value( m_mainperf->get_swing_amount16());
     }
 
     if(m_mainperf->m_have_undo && !m_button_undo->get_sensitive())
@@ -837,8 +817,6 @@ mainwnd::timer_callback(  )
     {
         m_mainperf->set_tempo_load(false);
         m_tempo->load_tempo_list();
-        /* reset the m_mainperf bpm for display purposes, not changing the list value*/
-        m_mainperf->set_bpm(m_mainperf->get_start_tempo());
     }
     
     if(m_spinbutton_bpm->get_have_leave() && !m_spinbutton_bpm->get_have_typing())
@@ -1449,11 +1427,13 @@ void mainwnd::new_file()
 {
     if(m_mainperf->clear_all())
     {
-        m_tempo->load_tempo_list();
+        m_tempo->clear_tempo_list();
         set_bp_measure(4);
         set_bw(4);
         set_xpose(0);
-        m_mainperf->set_start_tempo(c_bpm);
+        set_swing_amount8(0);
+        set_swing_amount16(0);
+        m_tempo->set_start_BPM(c_bpm);
         m_mainperf->set_playlist_mode(false);
         
         global_filename = "";
@@ -1654,6 +1634,7 @@ bool mainwnd::open_file(const Glib::ustring& fn)
 
     if(m_mainperf->clear_all())
     {
+        m_tempo->clear_tempo_list();
         set_xpose(0);
         
         s42file f;
@@ -1673,6 +1654,7 @@ bool mainwnd::open_file(const Glib::ustring& fn)
             );
             errdialog.run();
             global_filename = "";
+            new_file();
             return false;
         }
 
@@ -1687,12 +1669,6 @@ bool mainwnd::open_file(const Glib::ustring& fn)
         
         update_window_title();
         update_window_xpm();
-
-        m_adjust_bpm->set_value( m_mainperf->get_bpm());
-
-        m_adjust_swing_amount8->set_value( m_mainperf->get_swing_amount8());
-        m_adjust_swing_amount16->set_value( m_mainperf->get_swing_amount16());
-        m_tempo->load_tempo_list();
     }
     else
     {
@@ -2454,6 +2430,33 @@ mainwnd::signal_action(Glib::IOCondition condition)
         break;
     }
     return true;
+}
+
+/* update tempo class for file loading of tempo map */
+void
+mainwnd::load_tempo_list()
+{
+    m_tempo->load_tempo_list();
+}
+
+void
+mainwnd::update_start_BPM(double bpm)
+{
+    m_tempo->set_start_BPM(bpm);
+}
+
+void
+mainwnd::set_swing_amount8(int swing_amount8)
+{
+    m_mainperf->set_swing_amount8(swing_amount8);
+    m_adjust_swing_amount8->set_value((double) swing_amount8);
+}
+
+void
+mainwnd::set_swing_amount16(int swing_amount16)
+{
+    m_mainperf->set_swing_amount16(swing_amount16);
+    m_adjust_swing_amount16->set_value((double) swing_amount16);
 }
 
 double

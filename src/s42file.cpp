@@ -172,7 +172,9 @@ s42file::load(const Glib::ustring& a_filename, perform *a_perf, mainwnd *a_main)
             a_perf->m_list_total_marker.push_back(marker);
         }
 
-        a_perf->set_tempo_load(true); // FIXME use mainwnd direct to tempo
+        /* load_tempo_list() will set tempo markers, set perform midibus
+        * and trigger mainwnd timeout to update the mainwnd bpm spinner */
+        a_main->load_tempo_list();
     }
     else
     {
@@ -180,13 +182,17 @@ s42file::load(const Glib::ustring& a_filename, perform *a_perf, mainwnd *a_main)
         {
             double bpm; // file version 6 uses double
             file.read((char *) &bpm, sizeof (bpm));
-            a_perf->set_start_tempo(bpm); // FIXME
+            /* update_start_BPM() will set tempo markers, set perform midibus
+             * and trigger mainwnd timeout to update the mainwnd bpm spinner */
+            a_main->update_start_BPM(bpm);
         }
         else
         {
             int bpm; // prior to version 6 uses int
             file.read((char *) &bpm, global_file_int_size);
-            a_perf->set_start_tempo(bpm); // FIXME
+            /* update_start_BPM() will set tempo markers, set perform midibus
+             * and trigger mainwnd timeout to update the mainwnd bpm spinner */
+            a_main->update_start_BPM(bpm);
         }
     }
 
@@ -196,7 +202,7 @@ s42file::load(const Glib::ustring& a_filename, perform *a_perf, mainwnd *a_main)
         file.read((char *) &bp_measure, global_file_int_size);
     }
 
-    a_perf->set_bp_measure(bp_measure); // FIXME
+    a_main->set_bp_measure(bp_measure);
 
     int bw = 4;
     if (version > 3)
@@ -204,7 +210,7 @@ s42file::load(const Glib::ustring& a_filename, perform *a_perf, mainwnd *a_main)
         file.read((char *) &bw, global_file_int_size);
     }
 
-    a_perf->set_bw(bw); // FIXME
+    a_main->set_bw(bw);
 
     int swing_amount8 = 0;
     if (version > 1)
@@ -212,14 +218,15 @@ s42file::load(const Glib::ustring& a_filename, perform *a_perf, mainwnd *a_main)
         file.read((char *) &swing_amount8, global_file_int_size);
     }
 
-    a_perf->set_swing_amount8(swing_amount8);
+    a_main->set_swing_amount8(swing_amount8);
+    
     int swing_amount16 = 0;
     if (version > 1)
     {
         file.read((char *) &swing_amount16, global_file_int_size);
     }
 
-    a_perf->set_swing_amount16(swing_amount16);
+    a_main->set_swing_amount16(swing_amount16);
 
     int active_tracks;
     file.read((char *) &active_tracks, global_file_int_size);

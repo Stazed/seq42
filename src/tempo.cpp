@@ -390,10 +390,22 @@ tempo::set_start_BPM(double a_bpm)
     if ( ! (m_mainperf->is_jack_running() && global_is_running ))
     {
         //push_undo(true);
-        m_mainperf->set_bpm( a_bpm );
-        m_list_marker.begin()->bpm = a_bpm;
+        
+        tempo_mark marker;
+        marker.bpm = a_bpm;
+        marker.tick = STARTING_MARKER;
+
+        if(!m_list_marker.size())
+        {
+            m_list_marker.push_front(marker);
+        }
+        else
+        {
+            (*m_list_marker.begin())= marker;
+        }
 
         reset_tempo_list();
+        m_mainperf->set_bpm( a_bpm );
         queue_draw();
     }
 }
@@ -422,6 +434,7 @@ tempo::load_tempo_list()
 {
     m_list_marker = m_mainperf->m_list_total_marker;    // update tempo class
     reset_tempo_list();                                 // needed to update m_list_no_stop_markers & calculate start frames
+    m_mainperf->set_bpm(m_list_marker.begin()->bpm);
     queue_draw();
 }
 
@@ -429,7 +442,6 @@ tempo::load_tempo_list()
 void
 tempo::calculate_marker_start()
 {
-    lock();
     /* sort first always */
     m_list_marker.sort(&sort_tempo_mark);
     
@@ -486,7 +498,17 @@ tempo::calculate_marker_start()
     
     /* sort again since stops will be out of order */
     m_list_marker.sort(&sort_tempo_mark);
-    unlock();
+}
+
+/* Clear the tempo map and set default start bpm.
+   Called by mainwnd new file and load file to clear previous tempo items */
+void
+tempo::clear_tempo_list()
+{
+    m_list_marker.clear();
+    m_current_mark.bpm = c_bpm;
+    m_current_mark.tick = STARTING_MARKER;
+    m_list_marker.push_back(m_current_mark);
 }
 
 void

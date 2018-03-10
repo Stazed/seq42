@@ -216,8 +216,6 @@ private:
     bool signal_action(Glib::IOCondition condition);
 
     /* Begin method that used to be in perfedit */
-    void set_bp_measure( int a_beats_per_measure );
-    void set_bw( int a_beat_width );
     void set_snap (int a_snap);
 
     void set_guides();
@@ -310,6 +308,12 @@ public:
     bool playlist_jump(int jmp, bool a_verify = false);
     bool verify_playlist_dialog();
     void playlist_verify();
+    void load_tempo_list();
+    void set_bp_measure(int bp_measure);
+    void set_bw(int bw);
+    void set_swing_amount8(int swing_amount8);
+    void set_swing_amount16(int swing_amount16);
+    void update_start_BPM(double bpm);
     friend int FF_RW_timeout(void *arg);
 };
 
