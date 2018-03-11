@@ -275,9 +275,6 @@ bool perform::clear_all()
     redo_vect.clear();
     set_have_undo();
     set_have_redo();
-    m_list_play_marker.clear();
-    m_list_total_marker.clear();
-    m_list_no_stop_markers.clear();
 
     return true;
 }

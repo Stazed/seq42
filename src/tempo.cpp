@@ -517,9 +517,9 @@ void
 tempo::clear_tempo_list()
 {
     m_list_marker.clear();
-    m_current_mark.bpm = c_bpm;
-    m_current_mark.tick = STARTING_MARKER;
-    m_list_marker.push_back(m_current_mark);
+    m_mainperf->m_list_play_marker.clear();
+    m_mainperf->m_list_total_marker.clear();
+    m_mainperf->m_list_no_stop_markers.clear();
 }
 
 void
