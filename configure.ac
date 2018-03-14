@@ -127,5 +127,5 @@ else
 fi
 
 
-AC_OUTPUT(Makefile man/Makefile src/Makefile src/pixmaps/Makefile)
+AC_OUTPUT(Makefile man/Makefile icons/Makefile src/Makefile src/pixmaps/Makefile)
 
