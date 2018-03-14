@@ -209,8 +209,8 @@ private:
     int m_bp_measure;
     int m_bw;
 
-    condition_var m_condition_var;
-    seq42_mutex m_mutex;
+    seq42::condition_var m_condition_var;
+    seq42::mutex m_mutex;
 
 #ifdef JACK_SUPPORT
 

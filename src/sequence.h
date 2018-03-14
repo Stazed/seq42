@@ -113,7 +113,7 @@ private:
     long m_time_beat_width;
 
     /* locking */
-    seq42_mutex m_mutex;
+    seq42::mutex m_mutex;
     void lock ();
     void unlock ();
 

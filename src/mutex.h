@@ -24,28 +24,29 @@
 
 #include <pthread.h>
 
-class seq42_mutex
+namespace seq42
 {
-
+    
+class mutex {
+    
 private:
 
     static const pthread_mutex_t recmutex;
-
+    
 protected:
-
+    
     /* mutex lock */
     pthread_mutex_t  m_mutex_lock;
-
+    
 public:
-
-    seq42_mutex();
+    
+    mutex();
 
     void lock();
     void unlock();
 };
 
-class condition_var : public seq42_mutex
-{
+class condition_var : public mutex {
 
 private:
 
@@ -56,7 +57,9 @@ private:
 public:
 
     condition_var();
-
+    
     void wait();
     void signal();
 };
+
+} // namespace seq42

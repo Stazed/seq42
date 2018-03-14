@@ -89,7 +89,7 @@ private:
     long m_lasttick;
 
     /* locking */
-    seq42_mutex m_mutex;
+    seq42::mutex m_mutex;
 
     /* mutex */
     void lock();
@@ -216,7 +216,7 @@ private:
     int m_swing_amount16;
 
     /* locking */
-    seq42_mutex m_mutex;
+    seq42::mutex m_mutex;
 
     /* mutex */
     void lock();

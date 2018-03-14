@@ -64,7 +64,7 @@ private:
     long m_lasttick;
 
     /* locking */
-    seq42_mutex m_mutex;
+    seq42::mutex m_mutex;
 
     /* mutex */
     void lock();
@@ -168,7 +168,7 @@ private:
     vector < sequence *> m_vector_sequence;
 
     /* locking */
-    seq42_mutex m_mutex;
+    seq42::mutex m_mutex;
 
     /* mutex */
     void lock();

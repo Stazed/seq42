@@ -29,7 +29,7 @@ class mainwnd;
 class s42file
 {
 private:
-    seq42_mutex m_mutex;
+    seq42::mutex m_mutex;
     std::string current_date_time();
 
 public:

@@ -20,23 +20,26 @@
 
 #include "mutex.h"
 
-const pthread_mutex_t seq42_mutex::recmutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
+namespace seq42
+{
+    
+const pthread_mutex_t mutex::recmutex = PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP;
 const pthread_cond_t condition_var::cond  = PTHREAD_COND_INITIALIZER;
 
-seq42_mutex::seq42_mutex( )
+mutex::mutex( )
 {
     m_mutex_lock = recmutex;
 }
 
-void
-seq42_mutex::lock( )
+void 
+mutex::lock( )
 {
     pthread_mutex_lock( &m_mutex_lock );
 }
 
-void
-seq42_mutex::unlock( )
-{
+void 
+mutex::unlock( )
+{      
     pthread_mutex_unlock( &m_mutex_lock );
 }
 
@@ -56,3 +59,5 @@ condition_var::wait( )
 {
     pthread_cond_wait( &m_cond, &m_mutex_lock );
 }
+
+} // namespace seq42
