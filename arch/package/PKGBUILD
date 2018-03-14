@@ -1,7 +1,7 @@
 # Maintainer: stazed<stazed@mapson.com>
 _pkgbasename=seq42
 pkgname=${_pkgbasename}-git
-pkgver=Release.1.1.0.
+pkgver=Release.1.1.1.
 pkgrel=1
 pkgdesc="A MIDI sequencer"
 arch=('i686' 'x86_64')
@@ -33,6 +33,4 @@ package() {
 
     make DESTDIR="${pkgdir}" install
 
-    install -v -D -m 0644 "icons/scalable/${_pkgbasename}.svg" "${pkgdir}/usr/share/pixmaps/${_pkgbasename}.svg"
-    install -v -D -m 0644 "icons/${_pkgbasename}.desktop" "${pkgdir}/usr/share/applications/${_pkgbasename}.desktop"
 }

@@ -100,6 +100,10 @@ the track edit items (name,channel,bus,transpose,mute)... except when undo/redo 
 * NEW - BPM, tempo changes added to undo/redo.
 * NEW - Clean up and beautify the LFO window.
 * NEW - Add recent files list to menu.
+* NEW - Add HMS:BBT display to main window (Thanks to Chris Ahlstrom - sequencer64).
+* NEW - Add seq42 logo to main window (with modified colors for playlist mode).
+* NEW - Add pause/stop toggle button.
+* NEW - Add .desktop and seq42 icon to install.
 
 
 What to do with a fresh repository checkout?
