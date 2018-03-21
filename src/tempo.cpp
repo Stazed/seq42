@@ -62,6 +62,8 @@ tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
     m_current_mark.bpm = c_bpm; // default 120 
     m_current_mark.tick = STARTING_MARKER;
     add_marker(m_current_mark);
+    
+    m_move_marker.tick = 0;    // 0 is used as bool flag to check if we are holding a marker
 }
 
 tempo::~tempo()
@@ -265,7 +267,6 @@ tempo::on_button_press_event(GdkEventButton* p0)
         {
             m_init_move = false;
             m_moving = true;
-            // FIXME
         }
         else
         {
@@ -290,15 +291,41 @@ tempo::on_button_release_event(GdkEventButton* p0)
     if(m_moving)
     {
         m_moving = false;
+        
+        /* If they move to start or before, then just ignore them and reset everything*/
+        if(p0->x <= 0)
+        {
+            /* Clear the move marker */
+            m_move_marker.tick = 0; 
+            return false;
+        }
+        
         uint64_t tick = (uint64_t) p0->x;
         tick *= m_perf_scale_x;
         tick += (m_4bar_offset * 16 * c_ppqn);
         tick = tick - (tick % m_snap);
-
-        // FIXME delete old marker and set the new one.
+        
+        /* snapped tick may try to set to 0, so ignore that also */
+        if(tick == 0)
+        {
+            /* Clear the move marker */
+            m_move_marker.tick = 0; 
+            return false;
+        }
+        
+        /* We have a good location so set the move and delete the old */
+        /* set the current mark to same as held bpm */
+        tempo_mark current_mark = m_move_marker;
+        /* update to the new location */
+        current_mark.tick = tick;
+        /* Delete the old marker */
+        check_above_marker(m_move_marker.tick, true );
+        /* add the moved marker */
+        add_marker(current_mark);
+        /* Clear the moved marker */
+        m_move_marker.tick = 0; 
     }
     
-    queue_draw();
     return true;
 }
 
@@ -315,12 +342,15 @@ tempo::on_motion_notify_event(GdkEventMotion* a_ev)
     
     if(change_mouse || m_moving)
     {
-        m_init_move = true;
+        if(!m_moving)
+            m_init_move = true;
+        
         this->get_window()->set_cursor( Gdk::Cursor( Gdk::CENTER_PTR ));
     }
     else
     {
         m_init_move = false;
+        m_move_marker.tick = 0;  // clear the move marker
         this->get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
     }
     
@@ -740,6 +770,7 @@ tempo::pulse_length_us (double bpm, int ppqn)
     return 60000000.0 / ppqn / bpm * ( bw / 4.0 );
 }
 
+/* called by motion notify and when right mouse click for delete */
 bool
 tempo::check_above_marker(uint64_t mouse_tick, bool a_delete )
 {
@@ -751,18 +782,20 @@ tempo::check_above_marker(uint64_t mouse_tick, bool a_delete )
 
         if(mouse_tick >= start_marker && mouse_tick <= end_marker)
         {
-            if(!a_delete)
-            {
-                // FIXME hold the found marker for move & delete
-                return true;
-            }
-            
-            /* Don't allow delete or move or first marker (STARTING_MARKER) */
+            /* Don't allow delete or move of first marker (STARTING_MARKER) */
             if((i)->tick != STARTING_MARKER)
             {
                 /* If !a_delete, context sensitive mouse (on_motion_notify_event */
                 if(!a_delete)
+                {
+                    /* we may be moving the marker - so hold it if we do not already have a hold */
+                    if(!m_move_marker.tick)
+                    {
+                        m_move_marker = *(i);
+                    }
+                    /* return true which tells motion_notify to change the mouse pointer */
                     return true;
+                }
                 
                 /* Deleting the marker (on_button_press_event - right click on marker */
                 push_undo();

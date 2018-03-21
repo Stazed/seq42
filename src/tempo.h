@@ -90,6 +90,7 @@ private:
     
     bool m_init_move;
     bool m_moving;
+    tempo_mark m_move_marker;
     
     /* locking */
     seq42::mutex m_mutex;
