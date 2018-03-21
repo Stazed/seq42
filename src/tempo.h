@@ -88,6 +88,9 @@ private:
 
     int m_snap, m_measure_length;
     
+    bool m_init_move;
+    bool m_moving;
+    
     /* locking */
     seq42::mutex m_mutex;
     void lock ();
@@ -118,6 +121,8 @@ private:
     }
     
     double pulse_length_us (double bpm, int ppqn);
+    
+    bool check_above_marker(uint64_t mouse_tick, bool a_delete );
 
 public:
 

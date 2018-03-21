@@ -39,7 +39,9 @@ tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
     m_4bar_offset(0),
 
     m_snap(c_ppqn),
-    m_measure_length(c_ppqn * 4)
+    m_measure_length(c_ppqn * 4),
+    m_init_move(false),
+    m_moving(false)
 {
     add_events( Gdk::BUTTON_PRESS_MASK |
                 Gdk::BUTTON_RELEASE_MASK |
@@ -256,34 +258,27 @@ tempo::on_button_press_event(GdkEventButton* p0)
     tick *= m_perf_scale_x;
     tick += (m_4bar_offset * 16 * c_ppqn);
 
-    if ( p0->button == 1 )              // left mouse button add marker or drag - FIXME
+    /* Left mouse button - add or move marker */
+    if ( p0->button == 1 )
     {
-        tick = tick - (tick % m_snap);  // snap only when adding, not when trying to delete
-        set_tempo_marker(tick);
-        /* don't queue_draw() here because they might escape key out */
+        if(m_init_move)
+        {
+            m_init_move = false;
+            m_moving = true;
+            // FIXME
+        }
+        else
+        {
+            tick = tick - (tick % m_snap);  // snap only when adding, not when trying to delete
+            set_tempo_marker(tick);
+            /* don't queue_draw() here because they might escape key out */
+        }
     }
 
-    if ( p0->button == 3 )              // right mouse button delete marker
+    /* right mouse button delete marker */
+    if ( p0->button == 3 )
     {
-        list<tempo_mark>::iterator i;
-        for ( i = m_list_marker.begin(); i != m_list_marker.end(); i++ )
-        {
-            uint64_t start_marker = (i)->tick - (120.0 * (float) (m_perf_scale_x / 32.0) );
-            uint64_t end_marker = (i)->tick + (120.0 * (float) (m_perf_scale_x / 32.0) );
-            
-            if(tick >= start_marker && tick <= end_marker)
-            {
-                if((i)->tick != STARTING_MARKER)    // Don't allow erase of first start marker
-                {
-                    push_undo();
-                    m_list_marker.erase(i);
-                    reset_tempo_list();
-                    queue_draw();
-                    return true;
-                }
-                break;
-            }
-        }
+        check_above_marker(tick, true);
     }
 
     return true;
@@ -292,7 +287,19 @@ tempo::on_button_press_event(GdkEventButton* p0)
 bool
 tempo::on_button_release_event(GdkEventButton* p0)
 {
-    return false;
+    if(m_moving)
+    {
+        m_moving = false;
+        uint64_t tick = (uint64_t) p0->x;
+        tick *= m_perf_scale_x;
+        tick += (m_4bar_offset * 16 * c_ppqn);
+        tick = tick - (tick % m_snap);
+
+        // FIXME delete old marker and set the new one.
+    }
+    
+    queue_draw();
+    return true;
 }
 
 bool
@@ -304,6 +311,19 @@ tempo::on_motion_notify_event(GdkEventMotion* a_ev)
     tick += (m_4bar_offset * 16 * c_ppqn);
     
     //printf("motion_tick %ld\n",tick);
+    bool change_mouse = check_above_marker(tick, false);
+    
+    if(change_mouse || m_moving)
+    {
+        m_init_move = true;
+        this->get_window()->set_cursor( Gdk::Cursor( Gdk::CENTER_PTR ));
+    }
+    else
+    {
+        m_init_move = false;
+        this->get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
+    }
+    
     return false;
 }
 
@@ -718,4 +738,42 @@ tempo::pulse_length_us (double bpm, int ppqn)
 {
     double bw = (double) m_mainwnd->get_bw();
     return 60000000.0 / ppqn / bpm * ( bw / 4.0 );
+}
+
+bool
+tempo::check_above_marker(uint64_t mouse_tick, bool a_delete )
+{
+    list<tempo_mark>::iterator i;
+    for ( i = m_list_marker.begin(); i != m_list_marker.end(); i++ )
+    {
+        uint64_t start_marker = (i)->tick - (120.0 * (float) (m_perf_scale_x / 32.0) );
+        uint64_t end_marker = (i)->tick + (120.0 * (float) (m_perf_scale_x / 32.0) );
+
+        if(mouse_tick >= start_marker && mouse_tick <= end_marker)
+        {
+            if(!a_delete)
+            {
+                // FIXME hold the found marker for move & delete
+                return true;
+            }
+            
+            /* Don't allow delete or move or first marker (STARTING_MARKER) */
+            if((i)->tick != STARTING_MARKER)
+            {
+                /* If !a_delete, context sensitive mouse (on_motion_notify_event */
+                if(!a_delete)
+                    return true;
+                
+                /* Deleting the marker (on_button_press_event - right click on marker */
+                push_undo();
+                m_list_marker.erase(i);
+                reset_tempo_list();
+                queue_draw();
+                return true;
+            }
+            break;
+        }
+    }
+    /* we are not above any existing markers */
+    return false;
 }
