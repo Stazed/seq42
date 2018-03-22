@@ -820,6 +820,9 @@ tempo::pulse_length_us (double bpm, int ppqn)
 bool
 tempo::check_above_marker(uint64_t mouse_tick, bool a_delete, bool exact )
 {
+    bool ret = false;
+    lock();
+    
     list<tempo_mark>::iterator i;
     for ( i = m_list_marker.begin(); i != m_list_marker.end(); i++ )
     {
@@ -828,7 +831,7 @@ tempo::check_above_marker(uint64_t mouse_tick, bool a_delete, bool exact )
         
         /* exact: used when deleting for move. We have the exact marker location from the 
            held m_move_marker so do not use range because it is inaccurate for delete
-           of markers that are very close together. */
+           of markers that are very close together and the ranges overlap. */
         if(exact)
         {
             start_marker = (i)->tick;
@@ -849,19 +852,24 @@ tempo::check_above_marker(uint64_t mouse_tick, bool a_delete, bool exact )
                         m_move_marker = *(i);
                     }
                     /* return true which tells motion_notify to change the mouse pointer */
-                    return true;
+                    ret = true;
+                    break;
                 }
                 
-                /* Deleting the marker (on_button_press_event - right click on marker */
+                /* Deleting the marker (on_button_press_event - right click on marker) 
+                   or when moving and released left button for landing location */
                 push_undo();
                 m_list_marker.erase(i);
                 reset_tempo_list();
                 queue_draw();
-                return true;
+                ret = true;
+                break;
             }
             break;
         }
     }
     /* we are not above any existing markers */
-    return false;
+    
+    unlock();
+    return ret;
 }
