@@ -276,26 +276,43 @@ tempo::on_button_press_event(GdkEventButton* p0)
     /* Left mouse button - add or move marker */
     if ( p0->button == 1 )
     {
+        /* Triggered by motion notify */
         if(m_init_move)
         {
             m_init_move = false;
             m_moving = true;
+            return true;
         }
-        else
+        
+        /* If we moved and released button then clicked again without moving,
+         * the check for m_init_move above will fail because of no motion.
+         * So check if we are still on the marker and assume another move rather
+         * than popping up the bpm window. */
+        if(check_above_marker(tick, false))
         {
-            tick = tick - (tick % m_snap);  // snap only when adding, not when trying to delete
-            set_tempo_marker(tick);
-            /* don't queue_draw() here because they might escape key out */
+            m_current_mark = m_move_marker;
+            m_current_mark.tick = tick;
+            m_init_move = false;
+            m_moving = true;
+            return true;
         }
-    }
+        
+        /* We are not above a marker so trigger the popup bpm window to add */
+        tick = tick - (tick % m_snap);  // snap only when adding, not when trying to delete
+        set_tempo_marker(tick);
+        /* don't queue_draw() here because they might escape key out */
+        return true;
+
+    }   // end button 1 (left mouse click)
 
     /* right mouse button delete marker */
     if ( p0->button == 3 )
     {
         check_above_marker(tick, true);
+        return true;
     }
 
-    return true;
+    return false;
 }
 
 bool
@@ -352,16 +369,24 @@ tempo::on_motion_notify_event(GdkEventMotion* a_ev)
     tick *= m_perf_scale_x;
     tick += (m_4bar_offset * 16 * c_ppqn);
     
-    //printf("motion_tick %ld\n",tick);
-    bool change_mouse = check_above_marker(tick, false);
+    bool change_mouse = false;
+    if(!m_moving)
+        change_mouse = check_above_marker(tick, false);
     
     if(change_mouse || m_moving)
     {
+        /* If we are not already moving ... */
         if(!m_moving)
-            m_init_move = true;
+        {
+            m_init_move = true;     // to tell button press we are on a marker
+            m_current_mark = m_move_marker; // load the marker for display movement
+            this->get_window()->set_cursor( Gdk::Cursor( Gdk::CENTER_PTR ));
+        }
         
-        this->get_window()->set_cursor( Gdk::Cursor( Gdk::CENTER_PTR ));
-        m_current_mark = m_move_marker;
+        /* snap the movement so the user can see where it 
+         * actually lands before button release */
+        tick = tick - (tick % m_snap);
+        /* m_current_mark is used to show the movement in draw background */
         m_current_mark.tick = tick;
         queue_draw();
     }
