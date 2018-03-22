@@ -59,12 +59,6 @@ tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
     m_hadjust->signal_value_changed().connect( mem_fun( *this, &tempo::change_horz ));
 
     set_double_buffered( false );
-    
-    m_current_mark.bpm = c_bpm; // default 120 
-    m_current_mark.tick = STARTING_MARKER;
-    add_marker(m_current_mark);
-    
-    m_move_marker.tick = 0;    // 0 is used as bool flag to check if we are holding a marker
 }
 
 tempo::~tempo()
@@ -288,7 +282,7 @@ tempo::on_button_press_event(GdkEventButton* p0)
          * the check for m_init_move above will fail because of no motion.
          * So check if we are still on the marker and assume another move rather
          * than popping up the bpm window. */
-        if(check_above_marker(tick, false))
+        if(check_above_marker(tick, false, false))
         {
             m_current_mark = m_move_marker;
             m_current_mark.tick = tick;
@@ -308,7 +302,7 @@ tempo::on_button_press_event(GdkEventButton* p0)
     /* right mouse button delete marker */
     if ( p0->button == 3 )
     {
-        check_above_marker(tick, true);
+        check_above_marker(tick, true, false);
         return true;
     }
 
@@ -350,8 +344,8 @@ tempo::on_button_release_event(GdkEventButton* p0)
         tempo_mark current_mark = m_move_marker;
         /* update to the new location */
         current_mark.tick = tick;
-        /* Delete the old marker */
-        check_above_marker(m_move_marker.tick, true );
+        /* Delete the old marker based on exact location, not range */
+        check_above_marker(m_move_marker.tick, true, true );
         /* add the moved marker */
         add_marker(current_mark);
         /* Clear the moved marker */
@@ -371,7 +365,7 @@ tempo::on_motion_notify_event(GdkEventMotion* a_ev)
     
     bool change_mouse = false;
     if(!m_moving)
-        change_mouse = check_above_marker(tick, false);
+        change_mouse = check_above_marker(tick, false, false);
     
     if(change_mouse || m_moving)
     {
@@ -824,13 +818,22 @@ tempo::pulse_length_us (double bpm, int ppqn)
 
 /* called by motion notify and when right mouse click for delete */
 bool
-tempo::check_above_marker(uint64_t mouse_tick, bool a_delete )
+tempo::check_above_marker(uint64_t mouse_tick, bool a_delete, bool exact )
 {
     list<tempo_mark>::iterator i;
     for ( i = m_list_marker.begin(); i != m_list_marker.end(); i++ )
     {
-        uint64_t start_marker = (i)->tick - (120.0 * (float) (m_perf_scale_x / 32.0) );
-        uint64_t end_marker = (i)->tick + (120.0 * (float) (m_perf_scale_x / 32.0) );
+        uint64_t start_marker = (i)->tick - (60.0 * (float) (m_perf_scale_x / 32.0) );
+        uint64_t end_marker = (i)->tick + (260.0 * (float) (m_perf_scale_x / 32.0) );
+        
+        /* exact: used when deleting for move. We have the exact marker location from the 
+           held m_move_marker so do not use range because it is inaccurate for delete
+           of markers that are very close together. */
+        if(exact)
+        {
+            start_marker = (i)->tick;
+            end_marker = (i)->tick;
+        }
 
         if(mouse_tick >= start_marker && mouse_tick <= end_marker)
         {

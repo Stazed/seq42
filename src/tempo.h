@@ -124,7 +124,7 @@ private:
     
     double pulse_length_us (double bpm, int ppqn);
     
-    bool check_above_marker(uint64_t mouse_tick, bool a_delete );
+    bool check_above_marker(uint64_t mouse_tick, bool a_delete, bool exact );
 
 public:
 
