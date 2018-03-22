@@ -18,13 +18,6 @@
 //
 //-----------------------------------------------------------------------------
 
-/* 
- * File:   tempo.h
- * Author: sspresto
- *
- * Created on May 28, 2017, 11:54 AM
- */
-
 #pragma once
 
 #include "mainwnd.h"

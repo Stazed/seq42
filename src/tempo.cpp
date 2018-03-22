@@ -384,11 +384,14 @@ tempo::on_motion_notify_event(GdkEventMotion* a_ev)
         m_current_mark.tick = tick;
         queue_draw();
     }
-    else
+    else /* we are not over a marker and not moving so reset everything if not done already */
     {
-        m_init_move = false;
-        m_move_marker.tick = 0;  // clear the move marker
-        this->get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
+        if(m_init_move)
+        {
+            m_init_move = false;
+            m_move_marker.tick = 0;  // clear the move marker
+            this->get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
+        }
     }
     
     return false;
