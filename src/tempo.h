@@ -102,6 +102,7 @@ private:
     bool on_button_press_event(GdkEventButton* a_ev);
     bool on_button_release_event(GdkEventButton* a_ev);
     bool on_motion_notify_event(GdkEventMotion* a_ev);
+    bool on_leave_notify_event(GdkEventCrossing* a_ev);
     void on_size_allocate(Gtk::Allocation &a_r );
     
     void draw_background();

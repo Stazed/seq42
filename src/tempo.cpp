@@ -45,7 +45,8 @@ tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
 {
     add_events( Gdk::BUTTON_PRESS_MASK |
                 Gdk::BUTTON_RELEASE_MASK |
-                Gdk::POINTER_MOTION_MASK );
+                Gdk::POINTER_MOTION_MASK |
+                Gdk::LEAVE_NOTIFY_MASK );
 
     // in the constructor you can only allocate colors,
     // get_window() returns 0 because we have not been realized
@@ -206,10 +207,22 @@ tempo::draw_background()
 
     }
     
+    /* Draw the markers */
     list<tempo_mark>::iterator i;
     for ( i = m_list_marker.begin(); i != m_list_marker.end(); i++ )
     {
-        long tempo_marker = (i)->tick;
+        tempo_mark current_marker = *(i);
+        
+        if(m_moving)
+        {
+            if(current_marker.tick == m_move_marker.tick)
+            {
+                /* then we use the motion notify marker instead of the list one */
+                current_marker = m_current_mark;
+            }
+        }
+
+        long tempo_marker = current_marker.tick;
         tempo_marker -= (m_4bar_offset * 16 * c_ppqn);
         tempo_marker /= m_perf_scale_x;
 
@@ -218,7 +231,7 @@ tempo::draw_background()
             // Load the xpm image
             char str[10];
 
-            if((i)->bpm == STOP_MARKER)         // Stop marker
+            if(current_marker.bpm == STOP_MARKER)         // Stop marker
             {
                 m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(stop_marker_xpm);
                 m_window->draw_pixbuf(m_pixbuf,0,0,tempo_marker -4,0, -1,-1,Gdk::RGB_DITHER_NONE, 0, 0);
@@ -239,7 +252,7 @@ tempo::draw_background()
                 (
                     str, sizeof(str),
                     "[%0.2f]",
-                    (i)->bpm
+                    current_marker.bpm
                 );
             }
 
@@ -297,6 +310,7 @@ tempo::on_button_release_event(GdkEventButton* p0)
         {
             /* Clear the move marker */
             m_move_marker.tick = 0; 
+            queue_draw();
             return false;
         }
         
@@ -310,6 +324,7 @@ tempo::on_button_release_event(GdkEventButton* p0)
         {
             /* Clear the move marker */
             m_move_marker.tick = 0; 
+            queue_draw();
             return false;
         }
         
@@ -346,6 +361,9 @@ tempo::on_motion_notify_event(GdkEventMotion* a_ev)
             m_init_move = true;
         
         this->get_window()->set_cursor( Gdk::Cursor( Gdk::CENTER_PTR ));
+        m_current_mark = m_move_marker;
+        m_current_mark.tick = tick;
+        queue_draw();
     }
     else
     {
@@ -353,6 +371,15 @@ tempo::on_motion_notify_event(GdkEventMotion* a_ev)
         m_move_marker.tick = 0;  // clear the move marker
         this->get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
     }
+    
+    return false;
+}
+
+bool
+tempo::on_leave_notify_event(GdkEventCrossing* a_ev)
+{
+    if(!m_moving)
+        m_move_marker.tick = 0;
     
     return false;
 }
