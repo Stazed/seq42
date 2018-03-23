@@ -145,7 +145,7 @@ main (int argc, char *argv[])
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long (argc, argv, "Chi:jJkmM:pPsSuU:vx:X:n:", long_options, &option_index);
+        c = getopt_long (argc, argv, "Chi:jJkmM:pPsSU:vx:X:n:", long_options, &option_index);
 
         /* Detect the end of the options. */
         if (c == -1)
@@ -163,7 +163,9 @@ main (int argc, char *argv[])
             printf( "   -s, --showmidi: dumps incoming midi events to screen\n" );
             printf( "   -p, --priority: runs higher priority with FIFO scheduler (must be root)\n" );
             printf( "   -P, --pass_sysex: passes any incoming sysex messages to all outputs \n" );
-            printf( "   -u, --use_sysex: currently only limited support for transport control\n" );            
+#ifdef USE_SYSEX
+            printf( "   -u, --use_sysex: currently only limited support for transport control\n" );   
+#endif // USE_SYSEX
             printf( "   -i, --ignore <number>: ignore ALSA device\n" );
             printf( "   -k, --show_keys: prints pressed key value\n" );
             printf( "   -x, --interaction_method <number>: see .seq42rc for methods to use\n" );
@@ -243,11 +245,11 @@ main (int argc, char *argv[])
             printf("%s", versiontext);
             return EXIT_SUCCESS;
             break;
-
+#ifdef USE_SYSEX
         case 'u':
             global_use_sysex = true; // only supports YPT-300 (Yamaha)
             break;
-            
+#endif // USE_SYSEX
         case 'U':
             global_jack_session_uuid = Glib::ustring(optarg);
             break;
