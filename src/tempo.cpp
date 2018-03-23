@@ -716,6 +716,71 @@ tempo::print_marker_info(list<tempo_mark> a_list)
     printf("\n\n");
 }
 
+double
+tempo::pulse_length_us (double bpm, int ppqn)
+{
+    double bw = (double) m_mainwnd->get_bw();
+    return 60000000.0 / ppqn / bpm * ( bw / 4.0 );
+}
+
+/* called by motion notify and when right mouse click for delete */
+bool
+tempo::check_above_marker(uint64_t mouse_tick, bool a_delete, bool exact )
+{
+    bool ret = false;
+    lock();
+    
+    list<tempo_mark>::iterator i;
+    for ( i = m_list_marker.begin(); i != m_list_marker.end(); i++ )
+    {
+        uint64_t start_marker = (i)->tick - (60.0 * (float) (m_perf_scale_x / 32.0) );
+        uint64_t end_marker = (i)->tick + (260.0 * (float) (m_perf_scale_x / 32.0) );
+        
+        /* exact: used when deleting for move. We have the exact marker location from the 
+           held m_move_marker so do not use range because it is inaccurate for delete
+           of markers that are very close together and the ranges overlap. */
+        if(exact)
+        {
+            start_marker = (i)->tick;
+            end_marker = (i)->tick;
+        }
+
+        if(mouse_tick >= start_marker && mouse_tick <= end_marker)
+        {
+            /* Don't allow delete or move of first marker (STARTING_MARKER) */
+            if((i)->tick != STARTING_MARKER)
+            {
+                /* If !a_delete, context sensitive mouse (on_motion_notify_event */
+                if(!a_delete)
+                {
+                    /* we may be moving the marker - so hold it if we do not already have a hold */
+                    if(!m_move_marker.tick)
+                    {
+                        m_move_marker = *(i);
+                    }
+                    /* return true which tells motion_notify to change the mouse pointer */
+                    ret = true;
+                    break;
+                }
+                
+                /* Deleting the marker (on_button_press_event - right click on marker) 
+                   or when moving and released left button for landing location */
+                push_undo();
+                m_list_marker.erase(i);
+                reset_tempo_list();
+                queue_draw();
+                ret = true;
+                break;
+            }
+            break;
+        }
+    }
+    /* we are not above any existing markers */
+    
+    unlock();
+    return ret;
+}
+
 
 /* Modified spinbutton for using the mainwnd bpm spinner to allow for better undo support.
  * This allows user to spin and won't push to undo on every changed value, but will only
@@ -811,68 +876,3 @@ Bpm_spinbutton::get_hold_bpm()
     return m_hold_bpm;
 }
 
-
-double
-tempo::pulse_length_us (double bpm, int ppqn)
-{
-    double bw = (double) m_mainwnd->get_bw();
-    return 60000000.0 / ppqn / bpm * ( bw / 4.0 );
-}
-
-/* called by motion notify and when right mouse click for delete */
-bool
-tempo::check_above_marker(uint64_t mouse_tick, bool a_delete, bool exact )
-{
-    bool ret = false;
-    lock();
-    
-    list<tempo_mark>::iterator i;
-    for ( i = m_list_marker.begin(); i != m_list_marker.end(); i++ )
-    {
-        uint64_t start_marker = (i)->tick - (60.0 * (float) (m_perf_scale_x / 32.0) );
-        uint64_t end_marker = (i)->tick + (260.0 * (float) (m_perf_scale_x / 32.0) );
-        
-        /* exact: used when deleting for move. We have the exact marker location from the 
-           held m_move_marker so do not use range because it is inaccurate for delete
-           of markers that are very close together and the ranges overlap. */
-        if(exact)
-        {
-            start_marker = (i)->tick;
-            end_marker = (i)->tick;
-        }
-
-        if(mouse_tick >= start_marker && mouse_tick <= end_marker)
-        {
-            /* Don't allow delete or move of first marker (STARTING_MARKER) */
-            if((i)->tick != STARTING_MARKER)
-            {
-                /* If !a_delete, context sensitive mouse (on_motion_notify_event */
-                if(!a_delete)
-                {
-                    /* we may be moving the marker - so hold it if we do not already have a hold */
-                    if(!m_move_marker.tick)
-                    {
-                        m_move_marker = *(i);
-                    }
-                    /* return true which tells motion_notify to change the mouse pointer */
-                    ret = true;
-                    break;
-                }
-                
-                /* Deleting the marker (on_button_press_event - right click on marker) 
-                   or when moving and released left button for landing location */
-                push_undo();
-                m_list_marker.erase(i);
-                reset_tempo_list();
-                queue_draw();
-                ret = true;
-                break;
-            }
-            break;
-        }
-    }
-    /* we are not above any existing markers */
-    
-    unlock();
-    return ret;
-}
