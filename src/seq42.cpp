@@ -57,7 +57,9 @@ static struct
     {"jack_session_uuid", required_argument, 0, 'U'},
     {"manual_alsa_ports", 0, 0, 'm' },
     {"pass_sysex", 0, 0, 'P'},
+#ifdef USE_SYSEX
     {"use_sysex", 0, 0, 'u'},
+#endif // USE_SYSEX
     {"version", 0, 0, 'v'},
     {"client_name", required_argument, 0, 'n'},
     {0, 0, 0, 0}
@@ -72,7 +74,9 @@ bool global_device_ignore = false;
 int global_device_ignore_num = 0;
 bool global_stats = false;
 bool global_pass_sysex = false;
+#ifdef USE_SYSEX
 bool global_use_sysex = false;
+#endif // USE_SYSEX
 Glib::ustring global_filename = "";
 Glib::ustring last_used_dir ="/";
 Glib::ustring last_midi_dir ="/";
