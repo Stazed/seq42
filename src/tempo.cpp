@@ -284,6 +284,7 @@ tempo::on_button_press_event(GdkEventButton* p0)
          * than popping up the bpm window. */
         if(check_above_marker(tick, false, false))
         {
+            this->get_window()->set_cursor( Gdk::Cursor( Gdk::CENTER_PTR ));
             m_current_mark = m_move_marker;
             m_current_mark.tick = tick;
             m_init_move = false;
@@ -349,7 +350,12 @@ tempo::on_button_release_event(GdkEventButton* p0)
         /* add the moved marker */
         add_marker(current_mark);
         /* Clear the moved marker */
-        m_move_marker.tick = 0; 
+        m_move_marker.tick = 0;
+        /* If user releases the button while off the tempo grid then
+         * motion notify is not triggered to update the pointer. When
+         * they return to the grid, the previous cursor state is still
+         * active, so we adjust it here. */
+        this->get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
     }
     
     return true;
