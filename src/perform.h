@@ -148,15 +148,15 @@ struct time_sig
 #ifdef USE_MIDI_CTRL
 
 const int c_midi_total_ctrl = 0;
-const int c_midi_control_play       = c_midi_total_ctrl + 1;
-const int c_midi_control_stop       = c_midi_total_ctrl + 2;
-const int c_midi_control_FF         = c_midi_total_ctrl + 3;
-const int c_midi_control_rewind     = c_midi_total_ctrl + 4;
-const int c_midi_control_top        = c_midi_total_ctrl + 5;
-const int c_midi_control_record     = c_midi_total_ctrl + 6;
-const int c_midi_control_playlist   = c_midi_total_ctrl + 7;
-const int c_midi_control_reserved   = c_midi_total_ctrl + 8;
-const int c_midi_controls           = c_midi_total_ctrl + 9;
+const int c_midi_control_play       = c_midi_total_ctrl;
+const int c_midi_control_stop       = c_midi_total_ctrl + 1;
+const int c_midi_control_FF         = c_midi_total_ctrl + 2;
+const int c_midi_control_rewind     = c_midi_total_ctrl + 3;
+const int c_midi_control_top        = c_midi_total_ctrl + 4;
+const int c_midi_control_record     = c_midi_total_ctrl + 5;
+const int c_midi_control_playlist   = c_midi_total_ctrl + 6;
+const int c_midi_control_reserved   = c_midi_total_ctrl + 7;
+const int c_midi_controls           = c_midi_total_ctrl + 8;
 
 #endif // USE_MIDI_CTRL
 
