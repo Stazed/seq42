@@ -60,6 +60,10 @@ public:
     long m_min_value;
     long m_max_value;
 };
+
+#define NONE -1
+#define INVERSE_TOGGLE 2
+
 #endif // USE_MIDI_CTRL
 
 
@@ -433,7 +437,7 @@ public:
     midi_control *get_midi_control_on( unsigned int a_seq );
     midi_control *get_midi_control_off( unsigned int a_seq );
     
-    void handle_midi_control( int a_control, bool a_state );        // FIXME handle value
+    void handle_midi_control( int a_control, uint a_state, int a_value = NONE );
 #endif // USE_MIDI_CTRL
     
     void start( bool a_state );

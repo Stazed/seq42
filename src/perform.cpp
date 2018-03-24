@@ -2743,18 +2743,33 @@ void* input_thread_func(void *a_pef )
 }
 
 #ifdef USE_MIDI_CTRL
-void perform::handle_midi_control( int a_control, bool a_state )
+void perform::handle_midi_control( int a_control, uint a_state, int a_value )
 {
-    // FIXME state - true = in range, false = inverse
-    
+    /* INVERSE_TOGGLE is used for special cases. Currently only used by 
+     * c_midi_control_play. For play, we need a flag to indicate when 
+     * we should toggle play/stop, but we cannot use the true/false 
+     * since it is used by on/off for out of range values on inverse. 
+     * So for play we set INVERSE_TOGGLE when the user uses the toggle group.
+     * This means the user must set the inverse flag for toggle to work 
+     * from the toggle group. 
+     * For the playlist, we support both an adjustment by single increment,
+     * forward and back, using on/off. The toggle group supports a value
+     * adjustment and if a_value is != NONE then we use the value. */
     switch (a_control)
     {
     case c_midi_control_play:
         //printf ( "play\n" );
-        if(a_state)
+        if(a_state == true)
             start_playing();
-        else
+        else if (a_state == false)
             stop_playing();
+        else if (a_state == INVERSE_TOGGLE)
+        {
+            if(global_is_running)
+                stop_playing();
+            else
+                start_playing();
+        }
         break;
         
     case c_midi_control_stop:
@@ -2768,8 +2783,7 @@ void perform::handle_midi_control( int a_control, bool a_state )
             if(FF_RW_button_type != FF_RW_FORWARD)
             {
                 FF_RW_button_type = FF_RW_FORWARD;
-                guint id = gtk_timeout_add(120,FF_RW_timeout,this);
-                //printf("timer id %d\n", id);
+                gtk_timeout_add(120,FF_RW_timeout,this);
             }
         }
         else
@@ -2808,13 +2822,28 @@ void perform::handle_midi_control( int a_control, bool a_state )
         break;
         
     case c_midi_control_record:
-        
+        break;
         
     case c_midi_control_playlist:
+        if(a_value)
+        {
+            set_playlist_index(a_value);
+            // FIXME need flag to tell mainwnd to trigger playlist_jump(0);
+        }
+        else if (a_state)   // true
+        {
+            // FIXME need flag to tell mainwnd to trigger playlist_jump(1);
+        }
+        else                // false
+        {
+            // FIXME need flag to tell mainwnd to trigger playlist_jump(-1);
+        }
         
+        break;
         
     case c_midi_control_reserved:
-          
+        break;
+        
     default:
         break;
     }
@@ -2925,7 +2954,17 @@ void perform::input_func()
                                     if (data[1] >= get_midi_control_toggle(i)->m_min_value &&
                                             data[1] <= get_midi_control_toggle(i)->m_max_value )
                                     {
-                                        handle_midi_control( i, true );         // FIXME handle toggle or value
+                                        /* The only time toggle uses inverse is for play and playlist.
+                                         * For playlist, we must use the inverse flag to indicate
+                                         * that we want to send and use the actual data value. */
+                                        if(get_midi_control_toggle(i)->m_inverse_active)
+                                        {
+                                            handle_midi_control( i, INVERSE_TOGGLE, data[1]);
+                                        }
+                                        else
+                                        {
+                                            handle_midi_control( i, true );
+                                        }
                                     }
                                 }
 
