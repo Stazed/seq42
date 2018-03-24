@@ -193,7 +193,7 @@ extern bool global_priority;
 extern bool global_stats;
 extern bool global_pass_sysex;
 
-#define USE_MIDI_CTRL 1
+//#define USE_MIDI_CTRL 1
 /* USE_SYSEX is going to be replaced by midi control for generic use */
 #undef USE_SYSEX
 #ifdef USE_SYSEX

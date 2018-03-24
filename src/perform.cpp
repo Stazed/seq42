@@ -2735,7 +2735,10 @@ void perform::handle_midi_control( int a_control, bool a_state )
     {
     case c_midi_control_play:
         //printf ( "play\n" );
-        start_playing();
+        if(a_state)
+            start_playing();
+        else
+            stop_playing();
         break;
         
     case c_midi_control_stop:
@@ -2744,13 +2747,31 @@ void perform::handle_midi_control( int a_control, bool a_state )
         break;
         
     case c_midi_control_FF:
-        FF_RW_button_type = FF_RW_FORWARD;
-        gtk_timeout_add(120,FF_RW_timeout,this);
+        if(a_state)
+        {
+            if(FF_RW_button_type != FF_RW_FORWARD)
+            {
+                FF_RW_button_type = FF_RW_FORWARD;
+                guint id = gtk_timeout_add(120,FF_RW_timeout,this);
+                //printf("timer id %d\n", id);
+            }
+        }
+        else
+            FF_RW_button_type = FF_RW_RELEASE;
+            
         break;
         
     case c_midi_control_rewind:
-        FF_RW_button_type = FF_RW_REWIND;
-        gtk_timeout_add(120,FF_RW_timeout,this);
+        if(a_state)
+        {
+            if(FF_RW_button_type != FF_RW_REWIND)
+            {
+                FF_RW_button_type = FF_RW_REWIND;
+                gtk_timeout_add(120,FF_RW_timeout,this);
+            }
+        }
+        else
+            FF_RW_button_type = FF_RW_RELEASE;
         break;
         
     case c_midi_control_top:                    // beginning of song or left marker
