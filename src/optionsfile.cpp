@@ -54,19 +54,38 @@ optionsfile::parse( perform *a_perf )
     for (unsigned int i = 0; i < controls; ++i)
     {
         int control = 0;
-        int ctl[6];
+        int tog[6], on[6], off[6];
         sscanf(m_line,
-               "%d [ %d %d %d %d %d %d ]",
+               "%d [ %d %d %d %d %d %d ]"
+                 " [ %d %d %d %d %d %d ]"
+                 " [ %d %d %d %d %d %d ]",
+               
                 &control,
-                &ctl[0], &ctl[1], &ctl[2], &ctl[3], &ctl[4], &ctl[5]
+                &tog[0], &tog[1], &tog[2], &tog[3], &tog[4], &tog[5],
+                &on[0], &on[1], &on[2], &on[3], &on[4], &on[5],
+                &off[0], &off[1], &off[2], &off[3], &off[4], &off[5]
             );
         
-        a_perf->get_midi_control(i)->m_active            =  ctl[0];
-        a_perf->get_midi_control(i)->m_inverse_active    =  ctl[1];
-        a_perf->get_midi_control(i)->m_status            =  ctl[2];
-        a_perf->get_midi_control(i)->m_data              =  ctl[3];
-        a_perf->get_midi_control(i)->m_min_value         =  ctl[4];
-        a_perf->get_midi_control(i)->m_max_value         =  ctl[5];
+        a_perf->get_midi_control_toggle(i)->m_active            =  tog[0];
+        a_perf->get_midi_control_toggle(i)->m_inverse_active    =  tog[1];
+        a_perf->get_midi_control_toggle(i)->m_status            =  tog[2];
+        a_perf->get_midi_control_toggle(i)->m_data              =  tog[3];
+        a_perf->get_midi_control_toggle(i)->m_min_value         =  tog[4];
+        a_perf->get_midi_control_toggle(i)->m_max_value         =  tog[5];
+        
+        a_perf->get_midi_control_on(i)->m_active                =  on[0];
+        a_perf->get_midi_control_on(i)->m_inverse_active        =  on[1];
+        a_perf->get_midi_control_on(i)->m_status                =  on[2];
+        a_perf->get_midi_control_on(i)->m_data                  =  on[3];
+        a_perf->get_midi_control_on(i)->m_min_value             =  on[4];
+        a_perf->get_midi_control_on(i)->m_max_value             =  on[5];
+        
+        a_perf->get_midi_control_off(i)->m_active               =  off[0];
+        a_perf->get_midi_control_off(i)->m_inverse_active       =  off[1];
+        a_perf->get_midi_control_off(i)->m_status               =  off[2];
+        a_perf->get_midi_control_off(i)->m_data                 =  off[3];
+        a_perf->get_midi_control_off(i)->m_min_value            =  off[4];
+        a_perf->get_midi_control_off(i)->m_max_value            =  off[5];
         
         next_data_line(&file);
     }
@@ -263,14 +282,30 @@ optionsfile::write( perform *a_perf  )
             break;
         }
 
-        snprintf( outs, sizeof(outs), "%d [%1d %1d %3ld %3ld %3ld %3ld]",
+        snprintf( outs, sizeof(outs), "%d [%1d %1d %3ld %3ld %3ld %3ld]"
+                  " [%1d %1d %3ld %3ld %3ld %3ld]"
+                  " [%1d %1d %3ld %3ld %3ld %3ld]",
                   i,
-                  a_perf->get_midi_control(i)->m_active,
-                  a_perf->get_midi_control(i)->m_inverse_active,
-                  a_perf->get_midi_control(i)->m_status,
-                  a_perf->get_midi_control(i)->m_data,
-                  a_perf->get_midi_control(i)->m_min_value,
-                  a_perf->get_midi_control(i)->m_max_value);
+                  a_perf->get_midi_control_toggle(i)->m_active,
+                  a_perf->get_midi_control_toggle(i)->m_inverse_active,
+                  a_perf->get_midi_control_toggle(i)->m_status,
+                  a_perf->get_midi_control_toggle(i)->m_data,
+                  a_perf->get_midi_control_toggle(i)->m_min_value,
+                  a_perf->get_midi_control_toggle(i)->m_max_value,
+
+                  a_perf->get_midi_control_on(i)->m_active,
+                  a_perf->get_midi_control_on(i)->m_inverse_active,
+                  a_perf->get_midi_control_on(i)->m_status,
+                  a_perf->get_midi_control_on(i)->m_data,
+                  a_perf->get_midi_control_on(i)->m_min_value,
+                  a_perf->get_midi_control_on(i)->m_max_value,
+
+                  a_perf->get_midi_control_off(i)->m_active,
+                  a_perf->get_midi_control_off(i)->m_inverse_active,
+                  a_perf->get_midi_control_off(i)->m_status,
+                  a_perf->get_midi_control_off(i)->m_data,
+                  a_perf->get_midi_control_off(i)->m_min_value,
+                  a_perf->get_midi_control_off(i)->m_max_value );
 
         file << string(outs) << "\n";
     }

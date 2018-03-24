@@ -240,7 +240,9 @@ private:
     int m_bw;
     
 #ifdef USE_MIDI_CTRL
-    midi_control m_midi_cc[ c_midi_controls ];
+    midi_control m_midi_cc_toggle[ c_midi_controls ];
+    midi_control m_midi_cc_on[ c_midi_controls ];
+    midi_control m_midi_cc_off[ c_midi_controls ];
 #endif // USE_MIDI_CTRL
 
     seq42::condition_var m_condition_var;
@@ -427,8 +429,11 @@ public:
     void error_message_gtk( Glib::ustring message);
     
 #ifdef USE_MIDI_CTRL
-    midi_control *get_midi_control( unsigned int a_seq );       // FIXME not seq
-    void handle_midi_control( int a_control, bool a_state );
+    midi_control *get_midi_control_toggle( unsigned int a_seq );    // FIXME not seq
+    midi_control *get_midi_control_on( unsigned int a_seq );
+    midi_control *get_midi_control_off( unsigned int a_seq );
+    
+    void handle_midi_control( int a_control, bool a_state );        // FIXME handle value
 #endif // USE_MIDI_CTRL
     
     void start( bool a_state );

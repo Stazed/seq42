@@ -75,7 +75,9 @@ perform::perform()
 
     for ( int i = 0; i < c_midi_controls; i++ )
     {
-        m_midi_cc[i] = zero;
+        m_midi_cc_toggle[i] = zero;
+        m_midi_cc_on[i] = zero;
+        m_midi_cc_off[i] = zero;
     }
 
 #endif // USE_MIDI_CTRL
@@ -750,11 +752,25 @@ void perform::new_track( int a_track )
 }
 
 #ifdef USE_MIDI_CTRL    // FIXME - a_seq
-midi_control * perform::get_midi_control( unsigned int a_seq )
+midi_control * perform::get_midi_control_toggle( unsigned int a_seq )
 {
     if ( a_seq >= (unsigned int) c_midi_controls )
         return NULL;
-    return &m_midi_cc[a_seq];
+    return &m_midi_cc_toggle[a_seq];
+}
+
+midi_control * perform::get_midi_control_on( unsigned int a_seq )
+{
+    if ( a_seq >= (unsigned int) c_midi_controls )
+        return NULL;
+    return &m_midi_cc_on[a_seq];
+}
+
+midi_control* perform::get_midi_control_off( unsigned int a_seq )
+{
+    if ( a_seq >= (unsigned int) c_midi_controls )
+        return NULL;
+    return &m_midi_cc_off[a_seq];
 }
 #endif // USE_MIDI_CTRL
 
@@ -2902,18 +2918,44 @@ void perform::input_func()
 
                                 ev.get_data( &data[0], &data[1] );
 
-                                if (get_midi_control(i)->m_active &&
-                                        status  == get_midi_control(i)->m_status &&
-                                        data[0] == get_midi_control(i)->m_data )
+                                if (get_midi_control_toggle(i)->m_active &&
+                                        status  == get_midi_control_toggle(i)->m_status &&
+                                        data[0] == get_midi_control_toggle(i)->m_data )
                                 {
-                                    if (data[1] >= get_midi_control(i)->m_min_value &&
-                                            data[1] <= get_midi_control(i)->m_max_value )
+                                    if (data[1] >= get_midi_control_toggle(i)->m_min_value &&
+                                            data[1] <= get_midi_control_toggle(i)->m_max_value )
                                     {
-                                        handle_midi_control( i, true );     // true = in range
+                                        handle_midi_control( i, true );         // FIXME handle toggle or value
                                     }
-                                    else if (  get_midi_control(i)->m_inverse_active )
+                                }
+
+                                if ( get_midi_control_on(i)->m_active &&
+                                        status  == get_midi_control_on(i)->m_status &&
+                                        data[0] == get_midi_control_on(i)->m_data )
+                                {
+                                    if ( data[1] >= get_midi_control_on(i)->m_min_value &&
+                                            data[1] <= get_midi_control_on(i)->m_max_value )
                                     {
-                                        handle_midi_control( i, false );    // false = inverse
+                                        handle_midi_control( i, true );
+                                    }
+                                    else if ( get_midi_control_on(i)->m_inverse_active )
+                                    {
+                                        handle_midi_control( i, false );
+                                    }
+                                }
+
+                                if ( get_midi_control_off(i)->m_active &&
+                                        status  == get_midi_control_off(i)->m_status &&
+                                        data[0] == get_midi_control_off(i)->m_data )
+                                {
+                                    if ( data[1] >= get_midi_control_off(i)->m_min_value &&
+                                            data[1] <= get_midi_control_off(i)->m_max_value )
+                                    {
+                                        handle_midi_control( i, false );
+                                    }
+                                    else if ( get_midi_control_off(i)->m_inverse_active )
+                                    {
+                                        handle_midi_control( i, true );
                                     }
                                 }
                             }
