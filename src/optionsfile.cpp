@@ -44,6 +44,34 @@ optionsfile::parse( perform *a_perf )
     /* run to start */
     file.seekg( 0, ios::beg );
 
+#ifdef USE_MIDI_CTRL
+    line_after( &file, "[midi-control]" );
+
+    unsigned int controls = 0;
+    sscanf( m_line, "%u", &controls );
+    next_data_line( &file );
+
+    for (unsigned int i = 0; i < controls; ++i)
+    {
+        int control = 0;
+        int ctl[6];
+        sscanf(m_line,
+               "%d [ %d %d %d %d %d %d ]",
+                &control,
+                &ctl[0], &ctl[1], &ctl[2], &ctl[3], &ctl[4], &ctl[5]
+            );
+        
+        a_perf->get_midi_control(i)->m_active            =  ctl[0];
+        a_perf->get_midi_control(i)->m_inverse_active    =  ctl[1];
+        a_perf->get_midi_control(i)->m_status            =  ctl[2];
+        a_perf->get_midi_control(i)->m_data              =  ctl[3];
+        a_perf->get_midi_control(i)->m_min_value         =  ctl[4];
+        a_perf->get_midi_control(i)->m_max_value         =  ctl[5];
+        
+        next_data_line(&file);
+    }
+#endif // USE_MIDI_CTRL
+    
     line_after( &file, "[midi-clock]" );
     long buses = 0;
     sscanf( m_line, "%ld", &buses );
@@ -196,6 +224,57 @@ optionsfile::write( perform *a_perf  )
     file << "#\n";
     file << "# Seq 42 Init File\n";
     file << "#\n\n\n";
+
+#ifdef USE_MIDI_CTRL
+    file << "[midi-control]\n";
+    file <<  c_midi_controls << "\n";
+
+    for (int i=0; i< c_midi_controls; i++ )
+    {
+        switch( i )
+        {
+
+        case c_midi_control_play               :
+            file << "# start playing\n";
+            break;
+        case c_midi_control_stop       :
+            file << "# stop playing\n";
+            break;
+        case c_midi_control_FF       :
+            file << "# fast forward\n";
+            break;
+        case c_midi_control_rewind        :
+            file << "# rewind\n";
+            break;
+        case c_midi_control_top        :
+            file << "# beginning of song \n";
+            break;
+        case c_midi_control_record  :
+            file << "# record\n";
+            break;
+        case c_midi_control_playlist :
+            file << "# playlist\n";
+            break;
+        case c_midi_control_reserved    :
+            file << "# reserved for expansion\n";
+            break;
+ 
+        default:
+            break;
+        }
+
+        snprintf( outs, sizeof(outs), "%d [%1d %1d %3ld %3ld %3ld %3ld]",
+                  i,
+                  a_perf->get_midi_control(i)->m_active,
+                  a_perf->get_midi_control(i)->m_inverse_active,
+                  a_perf->get_midi_control(i)->m_status,
+                  a_perf->get_midi_control(i)->m_data,
+                  a_perf->get_midi_control(i)->m_min_value,
+                  a_perf->get_midi_control(i)->m_max_value);
+
+        file << string(outs) << "\n";
+    }
+#endif // USE_MIDI_CTRL
 
     int buses = a_perf->get_master_midi_bus( )->get_num_out_buses();
 

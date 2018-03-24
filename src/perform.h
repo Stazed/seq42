@@ -48,6 +48,21 @@ class perform;
 #undef USE_MODIFIABLE_JACK_TEMPO            // EXPERIMENTAL SEQUENCER64 - won't work with tempo markers
 #undef USE_JACK_BBT_POSITION                // old code could be used for debug
 
+#ifdef USE_MIDI_CTRL
+class midi_control
+{
+public:
+
+    bool m_active;
+    bool m_inverse_active;
+    long m_status;
+    long m_data;
+    long m_min_value;
+    long m_max_value;
+};
+#endif // USE_MIDI_CTRL
+
+
 enum mute_op
 {
     MUTE_TOGGLE     = -1,
@@ -130,6 +145,21 @@ struct time_sig
 #define STOP_MARKER         0.0
 #define STARTING_MARKER     0
 
+#ifdef USE_MIDI_CTRL
+
+const int c_midi_total_ctrl = 0;
+const int c_midi_control_play       = c_midi_total_ctrl + 1;
+const int c_midi_control_stop       = c_midi_total_ctrl + 2;
+const int c_midi_control_FF         = c_midi_total_ctrl + 3;
+const int c_midi_control_rewind     = c_midi_total_ctrl + 4;
+const int c_midi_control_top        = c_midi_total_ctrl + 5;
+const int c_midi_control_record     = c_midi_total_ctrl + 6;
+const int c_midi_control_playlist   = c_midi_total_ctrl + 7;
+const int c_midi_control_reserved   = c_midi_total_ctrl + 8;
+const int c_midi_controls           = c_midi_total_ctrl + 9;
+
+#endif // USE_MIDI_CTRL
+
 class perform
 {
 public:
@@ -208,6 +238,10 @@ private:
 
     int m_bp_measure;
     int m_bw;
+    
+#ifdef USE_MIDI_CTRL
+    midi_control m_midi_cc[ c_midi_controls ];
+#endif // USE_MIDI_CTRL
 
     seq42::condition_var m_condition_var;
     seq42::mutex m_mutex;
@@ -391,7 +425,12 @@ public:
 
     void print();
     void error_message_gtk( Glib::ustring message);
-
+    
+#ifdef USE_MIDI_CTRL
+    midi_control *get_midi_control( unsigned int a_seq );       // FIXME not seq
+    void handle_midi_control( int a_control, bool a_state );
+#endif // USE_MIDI_CTRL
+    
     void start( bool a_state );
     void stop();
 

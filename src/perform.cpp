@@ -69,7 +69,17 @@ perform::perform()
     m_left_tick = 0;
     m_right_tick = c_ppqn * 16;
     m_starting_tick = 0;
+    
+#ifdef USE_MIDI_CTRL
+    midi_control zero = {false,false,0,0,0};
 
+    for ( int i = 0; i < c_midi_controls; i++ )
+    {
+        m_midi_cc[i] = zero;
+    }
+
+#endif // USE_MIDI_CTRL
+    
     m_key_bpm_up = GDK_apostrophe;
     m_key_bpm_dn = GDK_semicolon;
     m_key_tap_bpm = GDK_F9;
@@ -738,6 +748,15 @@ void perform::new_track( int a_track )
     m_tracks[ a_track ]->set_master_midi_bus( &m_master_bus );
     set_active(a_track, true);
 }
+
+#ifdef USE_MIDI_CTRL    // FIXME - a_seq
+midi_control * perform::get_midi_control( unsigned int a_seq )
+{
+    if ( a_seq >= (unsigned int) c_midi_controls )
+        return NULL;
+    return &m_midi_cc[a_seq];
+}
+#endif // USE_MIDI_CTRL
 
 void perform::print()
 {
@@ -2707,6 +2726,64 @@ void* input_thread_func(void *a_pef )
     return 0;
 }
 
+#ifdef USE_MIDI_CTRL
+void perform::handle_midi_control( int a_control, bool a_state )
+{
+    // FIXME state - true = in range, false = inverse
+    
+    switch (a_control)
+    {
+    case c_midi_control_play:
+        //printf ( "play\n" );
+        start_playing();
+        break;
+        
+    case c_midi_control_stop:
+        //printf ( "stop\n );
+        stop_playing();
+        break;
+        
+    case c_midi_control_FF:
+        FF_RW_button_type = FF_RW_FORWARD;
+        gtk_timeout_add(120,FF_RW_timeout,this);
+        break;
+        
+    case c_midi_control_rewind:
+        FF_RW_button_type = FF_RW_REWIND;
+        gtk_timeout_add(120,FF_RW_timeout,this);
+        break;
+        
+    case c_midi_control_top:                    // beginning of song or left marker
+        if(global_song_start_mode)              // don't bother reposition in 'Live' mode
+        {
+            if(is_jack_running())
+            {
+                set_reposition();
+                set_starting_tick(m_left_tick);
+                position_jack(true, m_left_tick);
+            }
+            else
+            {
+                set_reposition();
+                set_starting_tick(m_left_tick);
+            }
+        }
+        break;
+        
+    case c_midi_control_record:
+        
+        
+    case c_midi_control_playlist:
+        
+        
+    case c_midi_control_reserved:
+          
+    default:
+        break;
+    }
+}
+#endif // USE_MIDI_CTRL
+
 void perform::input_func()
 {
     event ev;
@@ -2793,6 +2870,36 @@ void perform::input_func()
                             /* dump to it - possibly multiple sequences set */
                             m_master_bus.dump_midi_input(ev);
                         }
+#ifdef USE_MIDI_CTRL
+                        /* use it to control our sequencer */
+                        else
+                        {
+                            for (int i = 0; i < c_midi_controls; i++)
+                            {
+                                unsigned char data[2] = {0,0};
+                                unsigned char status = ev.get_status();
+
+                                ev.get_data( &data[0], &data[1] );
+
+                                if (get_midi_control(i)->m_active &&
+                                        status  == get_midi_control(i)->m_status &&
+                                        data[0] == get_midi_control(i)->m_data )
+                                {
+                                    if (data[1] >= get_midi_control(i)->m_min_value &&
+                                            data[1] <= get_midi_control(i)->m_max_value )
+                                    {
+                                        handle_midi_control( i, true );     // true = in range
+                                    }
+                                    else if (  get_midi_control(i)->m_inverse_active )
+                                    {
+                                        handle_midi_control( i, false );    // false = inverse
+                                    }
+                                }
+                            }
+                        }
+
+#endif // USE_MIDI_CTRL
+                        
 #ifdef USE_SYSEX
                         /* To fix the FF/RW sysex on the YPT that only sends on - this is the off key */
                         if (global_use_sysex)
