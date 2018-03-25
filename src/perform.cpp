@@ -753,26 +753,26 @@ void perform::new_track( int a_track )
     set_active(a_track, true);
 }
 
-#ifdef USE_MIDI_CTRL    // FIXME - a_seq
-midi_control * perform::get_midi_control_toggle( unsigned int a_seq )
+#ifdef USE_MIDI_CTRL
+midi_control * perform::get_midi_control_toggle( unsigned int a_control )
 {
-    if ( a_seq >= (unsigned int) c_midi_controls )
+    if ( a_control >= (unsigned int) c_midi_controls )
         return NULL;
-    return &m_midi_cc_toggle[a_seq];
+    return &m_midi_cc_toggle[a_control];
 }
 
-midi_control * perform::get_midi_control_on( unsigned int a_seq )
+midi_control * perform::get_midi_control_on( unsigned int a_control )
 {
-    if ( a_seq >= (unsigned int) c_midi_controls )
+    if ( a_control >= (unsigned int) c_midi_controls )
         return NULL;
-    return &m_midi_cc_on[a_seq];
+    return &m_midi_cc_on[a_control];
 }
 
-midi_control* perform::get_midi_control_off( unsigned int a_seq )
+midi_control* perform::get_midi_control_off( unsigned int a_control )
 {
-    if ( a_seq >= (unsigned int) c_midi_controls )
+    if ( a_control >= (unsigned int) c_midi_controls )
         return NULL;
-    return &m_midi_cc_off[a_seq];
+    return &m_midi_cc_off[a_control];
 }
 #endif // USE_MIDI_CTRL
 

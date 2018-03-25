@@ -439,9 +439,9 @@ public:
     void error_message_gtk( Glib::ustring message);
     
 #ifdef USE_MIDI_CTRL
-    midi_control *get_midi_control_toggle( unsigned int a_seq );    // FIXME not seq
-    midi_control *get_midi_control_on( unsigned int a_seq );
-    midi_control *get_midi_control_off( unsigned int a_seq );
+    midi_control *get_midi_control_toggle( unsigned int a_control );
+    midi_control *get_midi_control_on( unsigned int a_control );
+    midi_control *get_midi_control_off( unsigned int a_control );
     
     void handle_midi_control( int a_control, uint a_state, int a_value = NONE );
 #endif // USE_MIDI_CTRL
