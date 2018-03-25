@@ -709,12 +709,12 @@ mainwnd::playlist_verify()
 {
     bool result = false;
     
-    result = playlist_jump(0,true);             // true is verify mode
+    result = playlist_jump(PLAYLIST_ZERO,true);             // true is verify mode
     
     if(result)                                  // everything loaded ok
     {
-        m_mainperf->set_playlist_index(0);      // set to start
-        playlist_jump(0);                       // load the first file
+        m_mainperf->set_playlist_index(PLAYLIST_ZERO);      // set to start
+        playlist_jump(PLAYLIST_ZERO);                       // load the first file
         printf("Playlist verification was successful!\n");
     }
     else                                        // verify failed somewhere
@@ -835,7 +835,14 @@ mainwnd::timer_callback(  )
     if(m_mainperf->m_playlist_stop_mark && !global_is_running)
     {
         m_mainperf->m_playlist_stop_mark = false;
-        playlist_jump(1);    // next file
+        playlist_jump(PLAYLIST_NEXT);    // next file
+    }
+    
+    if(m_mainperf->m_playlist_midi_control_set && !global_is_running)
+    {
+        m_mainperf->m_playlist_midi_control_set = false;
+        playlist_jump(m_mainperf->m_playlist_midi_jump_value);
+        m_mainperf->m_playlist_midi_jump_value = PLAYLIST_ZERO;
     }
     
     /* Calculate the current time/BBT, and display it. */
@@ -1755,7 +1762,7 @@ void mainwnd::choose_file(const bool playlist_mode)
                 }
                 else
                 {
-                    playlist_jump(0);
+                    playlist_jump(PLAYLIST_ZERO);
                 }
             
                 update_window_title();
@@ -2249,12 +2256,12 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
         {
             if ( a_ev->keyval == m_mainperf->m_key_playlist_prev )
             {
-            	playlist_jump(-1);
+            	playlist_jump(PLAYLIST_PREVIOUS);
                 return true;
             }
             if ( a_ev->keyval == m_mainperf->m_key_playlist_next )
             {
-            	playlist_jump(1);
+            	playlist_jump(PLAYLIST_NEXT);
                 return true;
             }
         }

@@ -46,6 +46,8 @@ perform::perform()
         m_was_active_names[i]   = false;
     }
 
+    m_playlist_midi_jump_value = 0;
+    m_playlist_midi_control_set = false;
     m_playlist_stop_mark = false;
     m_playlist_mode = false;
     m_playlist_file = "";
@@ -2825,18 +2827,26 @@ void perform::handle_midi_control( int a_control, uint a_state, int a_value )
         break;
         
     case c_midi_control_playlist:
-        if(a_value)
+        if(!get_playlist_mode())                        // ignore if not in playlist mode
+            break;
+        
+        if(a_value != NONE)                             // toggle group sends data value
         {
-            set_playlist_index(a_value);
-            // FIXME need flag to tell mainwnd to trigger playlist_jump(0);
+            if(!set_playlist_index(a_value - 1))        // offset for user (returns validity check)
+                break;
+            
+            m_playlist_midi_jump_value = PLAYLIST_ZERO; // jump value is set to zero since we just set the correct index above.
+            m_playlist_midi_control_set = true;         // this is used in mainwnd timeout to trigger playlist_jump(0)
         }
-        else if (a_state)   // true
+        else if (a_state)                               // On group in range, Off inverse
         {
-            // FIXME need flag to tell mainwnd to trigger playlist_jump(1);
+            m_playlist_midi_jump_value = PLAYLIST_NEXT; // this is the value used by mainwnd to use for playlist_jump(1)
+            m_playlist_midi_control_set = true;         // this is used in mainwnd timeout to trigger playlist_jump(1)
         }
-        else                // false
+        else                                            // Off group in range, On inverse
         {
-            // FIXME need flag to tell mainwnd to trigger playlist_jump(-1);
+            m_playlist_midi_jump_value = PLAYLIST_PREVIOUS; // this is the value used by mainwnd to use for playlist_jump(-1)
+            m_playlist_midi_control_set = true;         // this is used in mainwnd timeout to trigger playlist_jump(-1)
         }
         
         break;
@@ -2954,16 +2964,17 @@ void perform::input_func()
                                     if (data[1] >= get_midi_control_toggle(i)->m_min_value &&
                                             data[1] <= get_midi_control_toggle(i)->m_max_value )
                                     {
-                                        /* The only time toggle uses inverse is for play and playlist.
-                                         * For playlist, we must use the inverse flag to indicate
-                                         * that we want to send and use the actual data value. */
+                                        /* The only time toggle uses inverse is for start/stop
+                                         * to indicate that we should toggle play mode.
+                                         * For playlist, we want to send and use the actual data value. 
+                                         * For all other cases, the data is ignored. */
                                         if(get_midi_control_toggle(i)->m_inverse_active)
                                         {
                                             handle_midi_control( i, INVERSE_TOGGLE, data[1]);
                                         }
                                         else
                                         {
-                                            handle_midi_control( i, true );
+                                            handle_midi_control( i, true, data[1]);
                                         }
                                     }
                                 }

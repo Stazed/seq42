@@ -341,7 +341,7 @@ main (int argc, char *argv[])
             }
             else
             {
-                seq42_window.playlist_jump(0);
+                seq42_window.playlist_jump(PLAYLIST_ZERO);
             }
         }
     }

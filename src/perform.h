@@ -149,6 +149,10 @@ struct time_sig
 #define STOP_MARKER         0.0
 #define STARTING_MARKER     0
 
+#define PLAYLIST_ZERO       0
+#define PLAYLIST_NEXT       1
+#define PLAYLIST_PREVIOUS   -1
+
 #ifdef USE_MIDI_CTRL
 
 const int c_midi_total_ctrl = 0;
@@ -178,6 +182,8 @@ public:
 
     unsigned int 	m_key_playlist_next;
     unsigned int 	m_key_playlist_prev;
+    unsigned int        m_playlist_midi_jump_value;
+    bool                m_playlist_midi_control_set;
     bool                m_playlist_stop_mark;
     // end playlist public
 private:
