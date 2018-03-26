@@ -253,6 +253,8 @@ private:
     midi_control m_midi_cc_toggle[ c_midi_controls ];
     midi_control m_midi_cc_on[ c_midi_controls ];
     midi_control m_midi_cc_off[ c_midi_controls ];
+    
+    bool m_recording_set;
 #endif // USE_MIDI_CTRL
 
     seq42::condition_var m_condition_var;
@@ -443,7 +445,10 @@ public:
     midi_control *get_midi_control_on( unsigned int a_control );
     midi_control *get_midi_control_off( unsigned int a_control );
     
+    bool check_midi_control(event ev);
     void handle_midi_control( int a_control, uint a_state, int a_value = NONE );
+    void set_sequence_record(bool a_record);
+    bool get_sequence_record();
 #endif // USE_MIDI_CTRL
     
     void start( bool a_state );

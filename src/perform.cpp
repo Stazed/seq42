@@ -121,6 +121,10 @@ perform::perform()
 
     m_bp_measure = 4;
     m_bw = 4;
+    
+#ifdef USE_MIDI_CTRL
+    m_recording_set = false;
+#endif
     m_excell_FF_RW = 1.0;
 
     m_have_undo = false; // for button sensitive
@@ -2745,6 +2749,81 @@ void* input_thread_func(void *a_pef )
 }
 
 #ifdef USE_MIDI_CTRL
+
+bool perform::check_midi_control(event ev)
+{
+    bool was_control_used = false;
+    
+    for (int i = 0; i < c_midi_controls; i++)
+    {
+        unsigned char data[2] = {0,0};
+        unsigned char status = ev.get_status();
+
+        ev.get_data( &data[0], &data[1] );
+
+        if (get_midi_control_toggle(i)->m_active &&
+                status  == get_midi_control_toggle(i)->m_status &&
+                data[0] == get_midi_control_toggle(i)->m_data )
+        {
+            was_control_used = true;
+            
+            if (data[1] >= get_midi_control_toggle(i)->m_min_value &&
+                    data[1] <= get_midi_control_toggle(i)->m_max_value )
+            {
+                /* The only time toggle uses inverse is for start/stop
+                 * to indicate that we should toggle play mode.
+                 * For playlist, we want to send and use the actual data value. 
+                 * For all other cases, the data is ignored. */
+                if(get_midi_control_toggle(i)->m_inverse_active)
+                {
+                    handle_midi_control( i, INVERSE_TOGGLE, data[1]);
+                }
+                else
+                {
+                    handle_midi_control( i, true, data[1]);
+                }
+            }
+        }
+
+        if ( get_midi_control_on(i)->m_active &&
+                status  == get_midi_control_on(i)->m_status &&
+                data[0] == get_midi_control_on(i)->m_data )
+        {
+            was_control_used = true;
+            
+            if ( data[1] >= get_midi_control_on(i)->m_min_value &&
+                    data[1] <= get_midi_control_on(i)->m_max_value )
+            {
+                handle_midi_control( i, true );
+            }
+            else if ( get_midi_control_on(i)->m_inverse_active )
+            {
+                handle_midi_control( i, false );
+            }
+        }
+
+        if ( get_midi_control_off(i)->m_active &&
+                status  == get_midi_control_off(i)->m_status &&
+                data[0] == get_midi_control_off(i)->m_data )
+        {
+            was_control_used = true;
+            
+            if ( data[1] >= get_midi_control_off(i)->m_min_value &&
+                    data[1] <= get_midi_control_off(i)->m_max_value )
+            {
+                handle_midi_control( i, false );
+            }
+            else if ( get_midi_control_off(i)->m_inverse_active )
+            {
+                handle_midi_control( i, true );
+            }
+        }
+    }
+    
+    
+    return was_control_used;
+}
+
 void perform::handle_midi_control( int a_control, uint a_state, int a_value )
 {
     /* INVERSE_TOGGLE is used for special cases. Currently only used by 
@@ -2824,6 +2903,7 @@ void perform::handle_midi_control( int a_control, uint a_state, int a_value )
         break;
         
     case c_midi_control_record:
+        set_sequence_record(true);                      // this will toggle on/off always
         break;
         
     case c_midi_control_playlist:
@@ -2858,6 +2938,16 @@ void perform::handle_midi_control( int a_control, uint a_state, int a_value )
         break;
     }
 }
+
+void perform::set_sequence_record(bool a_record)
+{
+    m_recording_set = a_record;
+}
+bool perform::get_sequence_record()
+{
+    return m_recording_set;
+}
+
 #endif // USE_MIDI_CTRL
 
 void perform::input_func()
@@ -2941,76 +3031,22 @@ void perform::input_func()
                         /* is there at least one sequence set ? */
                         if (m_master_bus.is_dumping())
                         {
-                            ev.set_timestamp(m_tick);
+#ifdef USE_MIDI_CTRL    
+                            if(!check_midi_control(ev))     // FIXME not gonna work if note on used, but not note off.. etc
+                            {
+#endif // USE_MIDI_CTRL
+                                ev.set_timestamp(m_tick);
 
-                            /* dump to it - possibly multiple sequences set */
-                            m_master_bus.dump_midi_input(ev);
+                                /* dump to it - possibly multiple sequences set */
+                                m_master_bus.dump_midi_input(ev);
+#ifdef USE_MIDI_CTRL
+                            }
+#endif // USE_MIDI_CTRL
                         }
 #ifdef USE_MIDI_CTRL
                         /* use it to control our sequencer */
                         else
-                        {
-                            for (int i = 0; i < c_midi_controls; i++)
-                            {
-                                unsigned char data[2] = {0,0};
-                                unsigned char status = ev.get_status();
-
-                                ev.get_data( &data[0], &data[1] );
-
-                                if (get_midi_control_toggle(i)->m_active &&
-                                        status  == get_midi_control_toggle(i)->m_status &&
-                                        data[0] == get_midi_control_toggle(i)->m_data )
-                                {
-                                    if (data[1] >= get_midi_control_toggle(i)->m_min_value &&
-                                            data[1] <= get_midi_control_toggle(i)->m_max_value )
-                                    {
-                                        /* The only time toggle uses inverse is for start/stop
-                                         * to indicate that we should toggle play mode.
-                                         * For playlist, we want to send and use the actual data value. 
-                                         * For all other cases, the data is ignored. */
-                                        if(get_midi_control_toggle(i)->m_inverse_active)
-                                        {
-                                            handle_midi_control( i, INVERSE_TOGGLE, data[1]);
-                                        }
-                                        else
-                                        {
-                                            handle_midi_control( i, true, data[1]);
-                                        }
-                                    }
-                                }
-
-                                if ( get_midi_control_on(i)->m_active &&
-                                        status  == get_midi_control_on(i)->m_status &&
-                                        data[0] == get_midi_control_on(i)->m_data )
-                                {
-                                    if ( data[1] >= get_midi_control_on(i)->m_min_value &&
-                                            data[1] <= get_midi_control_on(i)->m_max_value )
-                                    {
-                                        handle_midi_control( i, true );
-                                    }
-                                    else if ( get_midi_control_on(i)->m_inverse_active )
-                                    {
-                                        handle_midi_control( i, false );
-                                    }
-                                }
-
-                                if ( get_midi_control_off(i)->m_active &&
-                                        status  == get_midi_control_off(i)->m_status &&
-                                        data[0] == get_midi_control_off(i)->m_data )
-                                {
-                                    if ( data[1] >= get_midi_control_off(i)->m_min_value &&
-                                            data[1] <= get_midi_control_off(i)->m_max_value )
-                                    {
-                                        handle_midi_control( i, false );
-                                    }
-                                    else if ( get_midi_control_off(i)->m_inverse_active )
-                                    {
-                                        handle_midi_control( i, true );
-                                    }
-                                }
-                            }
-                        }
-
+                            (void)check_midi_control(ev);
 #endif // USE_MIDI_CTRL
                         
 #ifdef USE_SYSEX

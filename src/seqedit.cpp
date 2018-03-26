@@ -1600,6 +1600,14 @@ seqedit::timeout()
     }
 
     m_seqroll_wid->draw_progress_on_window();
+    
+#ifdef USE_MIDI_CTRL
+    if(m_mainperf->get_sequence_record())
+    {
+        m_mainperf->set_sequence_record(false);
+        m_toggle_record->set_active(!m_toggle_record->get_active());    // this triggers the button callback
+    }
+#endif // USE_MIDI_CTRL
 
     if(m_seq->get_recording() &&  m_seqroll_wid->get_expanded_record() && 
             (m_seq->get_last_tick() >= ( m_seq->get_length() - ( m_seq->get_unit_measure()/4 ) )))
