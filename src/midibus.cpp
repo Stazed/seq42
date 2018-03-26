@@ -1652,10 +1652,10 @@ mastermidibus::set_sequence_input( bool a_state, sequence *a_seq )
             m_vector_sequence.push_back(a_seq);
     }
 
-    unsigned v_size = m_vector_sequence.size();
-
-    if(v_size > 0)
+    if(m_vector_sequence.size() != 0)
         m_dumping_input = true;
+    else
+        m_dumping_input = false;
 
     unlock();
 }
