@@ -48,7 +48,7 @@ class perform;
 #undef USE_MODIFIABLE_JACK_TEMPO            // EXPERIMENTAL SEQUENCER64 - won't work with tempo markers
 #undef USE_JACK_BBT_POSITION                // old code could be used for debug
 
-#ifdef USE_MIDI_CTRL
+#ifdef MIDI_CONTROL_SUPPORT
 class midi_control
 {
 public:
@@ -64,7 +64,7 @@ public:
 #define NONE -1
 #define INVERSE_TOGGLE 2
 
-#endif // USE_MIDI_CTRL
+#endif // MIDI_CONTROL_SUPPORT
 
 
 enum mute_op
@@ -153,7 +153,7 @@ struct time_sig
 #define PLAYLIST_NEXT       1
 #define PLAYLIST_PREVIOUS   -1
 
-#ifdef USE_MIDI_CTRL
+#ifdef MIDI_CONTROL_SUPPORT
 
 const int c_midi_total_ctrl = 0;
 const int c_midi_control_play       = c_midi_total_ctrl;
@@ -167,7 +167,7 @@ const int c_midi_control_reserved1  = c_midi_total_ctrl + 7;    // if this becom
 const int c_midi_control_reserved2  = c_midi_total_ctrl + 8;    // if this becomes used, you must adjust the offset in check_midi_control()
 const int c_midi_controls           = c_midi_total_ctrl + 9;
 
-#endif // USE_MIDI_CTRL
+#endif // MIDI_CONTROL_SUPPORT
 
 class perform
 {
@@ -250,13 +250,13 @@ private:
     int m_bp_measure;
     int m_bw;
     
-#ifdef USE_MIDI_CTRL
+#ifdef MIDI_CONTROL_SUPPORT
     midi_control m_midi_cc_toggle[ c_midi_controls ];
     midi_control m_midi_cc_on[ c_midi_controls ];
     midi_control m_midi_cc_off[ c_midi_controls ];
     
     bool m_recording_set;
-#endif // USE_MIDI_CTRL
+#endif // MIDI_CONTROL_SUPPORT
 
     seq42::condition_var m_condition_var;
     seq42::mutex m_mutex;
@@ -441,7 +441,7 @@ public:
     void print();
     void error_message_gtk( Glib::ustring message);
     
-#ifdef USE_MIDI_CTRL
+#ifdef MIDI_CONTROL_SUPPORT
     midi_control *get_midi_control_toggle( unsigned int a_control );
     midi_control *get_midi_control_on( unsigned int a_control );
     midi_control *get_midi_control_off( unsigned int a_control );
@@ -450,7 +450,7 @@ public:
     void handle_midi_control( int a_control, uint a_state, int a_value = NONE );
     void set_sequence_record(bool a_record);
     bool get_sequence_record();
-#endif // USE_MIDI_CTRL
+#endif // MIDI_CONTROL_SUPPORT
     
     void start( bool a_state );
     void stop();

@@ -126,6 +126,19 @@ else
 	AC_MSG_WARN([ *** LASH support not enabled.]);
 fi
 
+dnl
+dnl    MIDI CONTROL SUPPORT
+dnl
+midi_control="yes"
+
+AC_ARG_ENABLE(midi_control, [AS_HELP_STRING(--disable-midi-control, [Disable MIDI transport control support])], [midi_control=$enableval])
+
+if test "$midi_control" = "yes"; then
+		AC_DEFINE(MIDI_CONTROL_SUPPORT, 1, [Define to enable MIDI transport control support])
+else
+    AC_MSG_WARN([ *** MIDI control support not enabled.]);
+fi
+
 
 AC_OUTPUT(Makefile man/Makefile icons/Makefile src/Makefile src/pixmaps/Makefile)
 

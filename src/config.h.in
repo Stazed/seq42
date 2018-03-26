@@ -54,6 +54,9 @@
 /* Define to enable LASH support */
 #undef LASH_SUPPORT
 
+/* Define to enable MIDI transport control support */
+#undef MIDI_CONTROL_SUPPORT
+
 /* Name of package */
 #undef PACKAGE
 

@@ -72,7 +72,7 @@ perform::perform()
     m_right_tick = c_ppqn * 16;
     m_starting_tick = 0;
     
-#ifdef USE_MIDI_CTRL
+#ifdef MIDI_CONTROL_SUPPORT
     midi_control zero = {false,false,0,0,0};
 
     for ( int i = 0; i < c_midi_controls; i++ )
@@ -82,7 +82,7 @@ perform::perform()
         m_midi_cc_off[i] = zero;
     }
 
-#endif // USE_MIDI_CTRL
+#endif // MIDI_CONTROL_SUPPORT
     
     m_key_bpm_up = GDK_apostrophe;
     m_key_bpm_dn = GDK_semicolon;
@@ -122,7 +122,7 @@ perform::perform()
     m_bp_measure = 4;
     m_bw = 4;
     
-#ifdef USE_MIDI_CTRL
+#ifdef MIDI_CONTROL_SUPPORT
     m_recording_set = false;
 #endif
     m_excell_FF_RW = 1.0;
@@ -757,7 +757,7 @@ void perform::new_track( int a_track )
     set_active(a_track, true);
 }
 
-#ifdef USE_MIDI_CTRL
+#ifdef MIDI_CONTROL_SUPPORT
 midi_control * perform::get_midi_control_toggle( unsigned int a_control )
 {
     if ( a_control >= (unsigned int) c_midi_controls )
@@ -778,7 +778,7 @@ midi_control* perform::get_midi_control_off( unsigned int a_control )
         return NULL;
     return &m_midi_cc_off[a_control];
 }
-#endif // USE_MIDI_CTRL
+#endif // MIDI_CONTROL_SUPPORT
 
 void perform::print()
 {
@@ -2748,7 +2748,7 @@ void* input_thread_func(void *a_pef )
     return 0;
 }
 
-#ifdef USE_MIDI_CTRL
+#ifdef MIDI_CONTROL_SUPPORT
 
 bool perform::check_midi_control(event ev, bool is_recording)
 {
@@ -2959,7 +2959,7 @@ bool perform::get_sequence_record()
     return m_recording_set;
 }
 
-#endif // USE_MIDI_CTRL
+#endif // MIDI_CONTROL_SUPPORT
 
 void perform::input_func()
 {
@@ -3042,7 +3042,7 @@ void perform::input_func()
                         /* is there at least one sequence set ? */
                         if (m_master_bus.is_dumping())
                         {
-#ifdef USE_MIDI_CTRL
+#ifdef MIDI_CONTROL_SUPPORT
                             /* The true flag will limit the controls to start, stop
                              * and  record only. The function returns a a bool flag
                              * indicating whether the event was used or not. The flag
@@ -3050,17 +3050,17 @@ void perform::input_func()
                              * could work for CC but not for linked events, i.e. notes. */
                             check_midi_control(ev, true);
                             
-#endif // USE_MIDI_CTRL
+#endif // MIDI_CONTROL_SUPPORT
                             ev.set_timestamp(m_tick);
 
                             /* dump to it - possibly multiple sequences set */
                             m_master_bus.dump_midi_input(ev);
                         }
-#ifdef USE_MIDI_CTRL
+#ifdef MIDI_CONTROL_SUPPORT
                         /* use it to control our sequencer */
                         else
                             (void)check_midi_control(ev, false);
-#endif // USE_MIDI_CTRL
+#endif // MIDI_CONTROL_SUPPORT
                         
 #ifdef USE_SYSEX
                         /* To fix the FF/RW sysex on the YPT that only sends on - this is the off key */

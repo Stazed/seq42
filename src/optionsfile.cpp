@@ -44,7 +44,7 @@ optionsfile::parse( perform *a_perf )
     /* run to start */
     file.seekg( 0, ios::beg );
 
-#ifdef USE_MIDI_CTRL
+#ifdef MIDI_CONTROL_SUPPORT
     line_after( &file, "[midi-control]" );
 
     unsigned int controls = 0;
@@ -89,7 +89,7 @@ optionsfile::parse( perform *a_perf )
         
         next_data_line(&file);
     }
-#endif // USE_MIDI_CTRL
+#endif // MIDI_CONTROL_SUPPORT
     
     line_after( &file, "[midi-clock]" );
     long buses = 0;
@@ -244,7 +244,7 @@ optionsfile::write( perform *a_perf  )
     file << "# Seq 42 Init File\n";
     file << "#\n\n\n";
 
-#ifdef USE_MIDI_CTRL
+#ifdef MIDI_CONTROL_SUPPORT
     file << "[midi-control]\n";
     file <<  c_midi_controls << "\n";
 
@@ -312,7 +312,7 @@ optionsfile::write( perform *a_perf  )
 
         file << string(outs) << "\n";
     }
-#endif // USE_MIDI_CTRL
+#endif // MIDI_CONTROL_SUPPORT
 
     int buses = a_perf->get_master_midi_bus( )->get_num_out_buses();
 
