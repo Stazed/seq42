@@ -2753,7 +2753,10 @@ void* input_thread_func(void *a_pef )
 bool perform::check_midi_control(event ev, bool is_recording)
 {
     bool was_control_used = false;
-    int midi_controls = c_midi_controls;
+    
+    /* Adjusted midi controls offset -2 for the two reserved and not used. 
+     * If the reserved controls are used then this offset must be changed. */
+    int midi_controls = c_midi_controls - 2;
     
     /* If we are recording, we only need start, stop and record controls 
        so we skip the controls after record */
@@ -2826,7 +2829,6 @@ bool perform::check_midi_control(event ev, bool is_recording)
         }
     }
     
-    
     return was_control_used;
 }
 
@@ -2895,8 +2897,8 @@ void perform::handle_midi_control( int a_control, uint a_state, int a_value )
             FF_RW_button_type = FF_RW_RELEASE;
         break;
         
-    case c_midi_control_top:                    // beginning of song or left marker
-        if(global_song_start_mode)              // don't bother reposition in 'Live' mode
+    case c_midi_control_top:                            // beginning of song or left marker
+        if(global_song_start_mode)                      // don't bother reposition in 'Live' mode
         {
             if(is_jack_running())
             {
@@ -2937,7 +2939,10 @@ void perform::handle_midi_control( int a_control, uint a_state, int a_value )
         
         break;
         
-    case c_midi_control_reserved:
+    case c_midi_control_reserved1:
+        break;
+        
+    case c_midi_control_reserved2:
         break;
         
     default:

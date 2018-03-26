@@ -274,7 +274,10 @@ optionsfile::write( perform *a_perf  )
         case c_midi_control_playlist :
             file << "# playlist\n";
             break;
-        case c_midi_control_reserved    :
+        case c_midi_control_reserved1   :
+            file << "# reserved for expansion\n";
+            break;
+        case c_midi_control_reserved2   :
             file << "# reserved for expansion\n";
             break;
  
