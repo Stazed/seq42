@@ -158,10 +158,10 @@ struct time_sig
 const int c_midi_total_ctrl = 0;
 const int c_midi_control_play       = c_midi_total_ctrl;
 const int c_midi_control_stop       = c_midi_total_ctrl + 1;
-const int c_midi_control_FF         = c_midi_total_ctrl + 2;
-const int c_midi_control_rewind     = c_midi_total_ctrl + 3;
-const int c_midi_control_top        = c_midi_total_ctrl + 4;
-const int c_midi_control_record     = c_midi_total_ctrl + 5;
+const int c_midi_control_record     = c_midi_total_ctrl + 2;
+const int c_midi_control_FF         = c_midi_total_ctrl + 3;
+const int c_midi_control_rewind     = c_midi_total_ctrl + 4;
+const int c_midi_control_top        = c_midi_total_ctrl + 5;
 const int c_midi_control_playlist   = c_midi_total_ctrl + 6;
 const int c_midi_control_reserved   = c_midi_total_ctrl + 7;
 const int c_midi_controls           = c_midi_total_ctrl + 8;
@@ -445,7 +445,7 @@ public:
     midi_control *get_midi_control_on( unsigned int a_control );
     midi_control *get_midi_control_off( unsigned int a_control );
     
-    bool check_midi_control(event ev);
+    bool check_midi_control(event ev, bool is_recording);
     void handle_midi_control( int a_control, uint a_state, int a_value = NONE );
     void set_sequence_record(bool a_record);
     bool get_sequence_record();

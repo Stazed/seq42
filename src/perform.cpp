@@ -2750,11 +2750,17 @@ void* input_thread_func(void *a_pef )
 
 #ifdef USE_MIDI_CTRL
 
-bool perform::check_midi_control(event ev)
+bool perform::check_midi_control(event ev, bool is_recording)
 {
     bool was_control_used = false;
+    int midi_controls = c_midi_controls;
     
-    for (int i = 0; i < c_midi_controls; i++)
+    /* If we are recording, we only need start, stop and record controls 
+       so we skip the controls after record */
+    if(is_recording)
+        midi_controls = c_midi_control_record + 1;
+    
+    for (int i = 0; i < midi_controls; i++)
     {
         unsigned char data[2] = {0,0};
         unsigned char status = ev.get_status();
@@ -2857,7 +2863,11 @@ void perform::handle_midi_control( int a_control, uint a_state, int a_value )
         //printf ( "stop\n );
         stop_playing();
         break;
-        
+
+    case c_midi_control_record:
+        set_sequence_record(true);                      // this will toggle on/off always
+        break;
+
     case c_midi_control_FF:
         if(a_state)
         {
@@ -2900,10 +2910,6 @@ void perform::handle_midi_control( int a_control, uint a_state, int a_value )
                 set_starting_tick(m_left_tick);
             }
         }
-        break;
-        
-    case c_midi_control_record:
-        set_sequence_record(true);                      // this will toggle on/off always
         break;
         
     case c_midi_control_playlist:
@@ -3031,22 +3037,24 @@ void perform::input_func()
                         /* is there at least one sequence set ? */
                         if (m_master_bus.is_dumping())
                         {
-#ifdef USE_MIDI_CTRL    
-                            if(!check_midi_control(ev))     // FIXME not gonna work if note on used, but not note off.. etc
-                            {
-#endif // USE_MIDI_CTRL
-                                ev.set_timestamp(m_tick);
-
-                                /* dump to it - possibly multiple sequences set */
-                                m_master_bus.dump_midi_input(ev);
 #ifdef USE_MIDI_CTRL
-                            }
+                            /* The true flag will limit the controls to start, stop
+                             * and  record only. The function returns a a bool flag
+                             * indicating whether the event was used or not. The flag
+                             * could be used to exclude from recording (dumping). This
+                             * could work for CC but not for linked events, i.e. notes. */
+                            check_midi_control(ev, true);
+                            
 #endif // USE_MIDI_CTRL
+                            ev.set_timestamp(m_tick);
+
+                            /* dump to it - possibly multiple sequences set */
+                            m_master_bus.dump_midi_input(ev);
                         }
 #ifdef USE_MIDI_CTRL
                         /* use it to control our sequencer */
                         else
-                            (void)check_midi_control(ev);
+                            (void)check_midi_control(ev, false);
 #endif // USE_MIDI_CTRL
                         
 #ifdef USE_SYSEX
