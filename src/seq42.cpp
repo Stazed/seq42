@@ -57,9 +57,6 @@ static struct
     {"jack_session_uuid", required_argument, 0, 'U'},
     {"manual_alsa_ports", 0, 0, 'm' },
     {"pass_sysex", 0, 0, 'P'},
-#ifdef USE_SYSEX
-    {"use_sysex", 0, 0, 'u'},
-#endif // USE_SYSEX
     {"version", 0, 0, 'v'},
     {"client_name", required_argument, 0, 'n'},
     {0, 0, 0, 0}
@@ -74,9 +71,6 @@ bool global_device_ignore = false;
 int global_device_ignore_num = 0;
 bool global_stats = false;
 bool global_pass_sysex = false;
-#ifdef USE_SYSEX
-bool global_use_sysex = false;
-#endif // USE_SYSEX
 Glib::ustring global_filename = "";
 Glib::ustring last_used_dir ="/";
 Glib::ustring last_midi_dir ="/";
@@ -167,9 +161,6 @@ main (int argc, char *argv[])
             printf( "   -s, --showmidi: dumps incoming midi events to screen\n" );
             printf( "   -p, --priority: runs higher priority with FIFO scheduler (must be root)\n" );
             printf( "   -P, --pass_sysex: passes any incoming sysex messages to all outputs \n" );
-#ifdef USE_SYSEX
-            printf( "   -u, --use_sysex: currently only limited support for transport control\n" );   
-#endif // USE_SYSEX
             printf( "   -i, --ignore <number>: ignore ALSA device\n" );
             printf( "   -k, --show_keys: prints pressed key value\n" );
             printf( "   -x, --interaction_method <number>: see .seq42rc for methods to use\n" );
@@ -249,11 +240,6 @@ main (int argc, char *argv[])
             printf("%s", versiontext);
             return EXIT_SUCCESS;
             break;
-#ifdef USE_SYSEX
-        case 'u':
-            global_use_sysex = true; // only supports YPT-300 (Yamaha)
-            break;
-#endif // USE_SYSEX
         case 'U':
             global_jack_session_uuid = Glib::ustring(optarg);
             break;

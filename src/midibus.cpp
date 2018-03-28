@@ -1576,13 +1576,9 @@ mastermidibus::get_midi_event( event *a_in )
     /* we will only get EVENT_SYSEX on the first
        packet of midi data, the rest we have
        to poll for */
-#ifdef USE_SYSEX
-    if (global_use_sysex && buffer[0] == EVENT_SYSEX )
-    {
-#else
+
     if ((global_pass_sysex || global_showmidi) && buffer[0] == EVENT_SYSEX )
     {
-#endif // USE_SYSEX
         /* set up for sysex if needed */
         a_in->start_sysex( );
         sysex = a_in->append_sysex( buffer, bytes );

@@ -3054,29 +3054,10 @@ void perform::input_func()
                             (void)check_midi_control(ev, false);
 #endif // MIDI_CONTROL_SUPPORT
                         
-#ifdef USE_SYSEX
-                        /* To fix the FF/RW sysex on the YPT that only sends on - this is the off key */
-                        if (global_use_sysex)
-                        {
-                            if(FF_RW_button_type != FF_RW_RELEASE)
-                            {
-                                if(ev.is_note_off())
-                                {
-                                    /* notes 91 G5 & 96 C6 on YPT are the FF/RW keys */
-                                    if(ev.get_note() == 91 || ev.get_note() == 96)
-                                        FF_RW_button_type = FF_RW_RELEASE;
-                                }
-                            }
-                        }
-#endif // USE_SYSEX
                     }
 
                     if (ev.get_status() == EVENT_SYSEX)
                     {
-#ifdef USE_SYSEX
-                        if (global_use_sysex)
-                            parse_sysex(ev);
-#endif // USE_SYSEX
                         if (global_showmidi)
                             ev.print();
 
@@ -3109,112 +3090,6 @@ unsigned short perform::combine_bytes(unsigned char First, unsigned char Second)
    _14bit |= (unsigned short)First;
    return(_14bit);
 }
-
-#ifdef USE_SYSEX
-void perform::parse_sysex(event a_e)
-{
-/*  http://www.indiana.edu/~emusic/etext/MIDI/chapter3_MIDI9.shtml
- *  A System Exclusive code set begins with 11110000 (240 decimal or F0 hex),
- *  followed by the manufacturer ID#, then by an unspecified number of
- *  data bytes of any ranges from 0-127) and ends with 11110111
- *  (decimal 247 or F7 hex), meaning End of SysEx message. No other coded
- *  are to be transmitted during a SysEx message (except a system real time
- *  message). Normally, after the manufacturer ID, each maker will have its
- *  own instrument model subcode, so a Yamaha DX7 will ignore a Yamaha SY77's
- *  patch dump. In addition, most instruments have a SysEx ID # setting so
- *  more than one of the same instruments can be on a network but not
- *  necessarily respond to a patch dump not intended for it.
- */
-
-    enum sysex_YPT
-    {
-        SYS_YPT300_START,
-        SYS_YPT300_STOP,
-        SYS_YPT300_TOP,             //  Beginning of song
-        SYS_YPT300_FAST_FORWARD,
-        SYS_YPT300_REWIND,
-        SYS_YPT300_METRONOME        //  or anything else
-    };
-
-    /* layout of YPT-300 sysex messages */
-    //  EVENT_SYSEX                                         // byte 0 0xF0
-    const unsigned char c_yamaha_ID         = 0x43;         // byte 1
-    const unsigned long c_YPT_model_subcode = 0x73015015;   // bytes 2 - 5
-    // 0x00                                                 // byte 6
-    // the message we are looking for - enum 0 to 5         // byte 7
-    // 0x00                                                 // byte 8
-    // end sysex 0xF7                                       // byte 9
-
-    unsigned char *data = a_e.get_sysex();
-    long data_size =  a_e.get_size();
-
-    if(data_size < 10)               // sanity check
-        return;
-
-    /* Check the manufacturer ID */
-    if(data[1] != c_yamaha_ID)                      // could use others here
-        return;
-
-    /* Check the model subcode */
-    unsigned long subcode = 0;
-
-    subcode += (data[2] << 24);
-    subcode += (data[3] << 16);
-    subcode += (data[4] << 8);
-    subcode += (data[5]);
-
-    if(subcode != c_YPT_model_subcode)
-        return;
-
-/*    for(int i = 0; i < data_size; i++)
-    {
-        printf( "%02X \n", data[i]);
-    }
- */
-
-    /* We are good to go */
-    switch(data[7])
-    {
-    case SYS_YPT300_START:
-        start_playing();
-        break;
-
-    case SYS_YPT300_STOP:
-        stop_playing();
-        break;
-
-    case SYS_YPT300_TOP:                        // beginning of song or left marker
-        if(global_song_start_mode)              // don't bother reposition in 'Live' mode
-        {
-            if(is_jack_running())
-            {
-                set_reposition();
-                set_starting_tick(m_left_tick);
-                position_jack(true, m_left_tick);
-            }
-            else
-            {
-                set_reposition();
-                set_starting_tick(m_left_tick);
-            }
-        }
-        break;
-
-    case SYS_YPT300_FAST_FORWARD:
-        FF_RW_button_type = FF_RW_FORWARD;
-        gtk_timeout_add(120,FF_RW_timeout,this);
-        break;
-
-    case SYS_YPT300_REWIND:
-        FF_RW_button_type = FF_RW_REWIND;
-        gtk_timeout_add(120,FF_RW_timeout,this);
-        break;
-
-    default:
-        break;
-    }
-}
-#endif // 
 
 #ifdef JACK_SUPPORT
 #ifdef USE_JACK_BBT_POSITION
