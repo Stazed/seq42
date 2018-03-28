@@ -61,9 +61,7 @@ public:
     long m_max_value;
 };
 
-#define NONE -1
-#define INVERSE_TOGGLE 2
-
+#define NONE -1                             // indicates no data value sent when using midi control toggle group
 #endif // MIDI_CONTROL_SUPPORT
 
 
@@ -447,7 +445,7 @@ public:
     midi_control *get_midi_control_off( unsigned int a_control );
     
     bool check_midi_control(event ev, bool is_recording);
-    void handle_midi_control( int a_control, uint a_state, int a_value = NONE );
+    void handle_midi_control( int a_control, bool a_state, int a_value = NONE );
     void set_sequence_record(bool a_record);
     bool get_sequence_record();
 #endif // MIDI_CONTROL_SUPPORT
