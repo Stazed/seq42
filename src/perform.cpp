@@ -124,6 +124,8 @@ perform::perform()
     
 #ifdef MIDI_CONTROL_SUPPORT
     m_recording_set = false;
+    m_list_sequence_editing = 0;
+    m_list_sequence_recording_set = 0;
 #endif
     m_excell_FF_RW = 1.0;
 
@@ -2942,10 +2944,37 @@ void perform::handle_midi_control( int a_control, bool a_state, int a_value )
     }
 }
 
+/* This is used to keep track of the open sequences to set recording
+ * when using midi control record set */
+void perform::set_sequence_editing_list(bool a_set)
+{
+    if(a_set)
+        ++m_list_sequence_editing;
+    else
+        --m_list_sequence_editing;
+}
+
+/* Sets the flag to tell each open sequence to trigger the recording. The 
+ * m_list_sequence_recording_set variable is incremented each time a
+ * sequence sets or un-sets the recording. It is compared to the total open sequences
+ * and when they equal, the recording set is shut off. This allows all open
+ * sequences to toggle on or off. */
 void perform::set_sequence_record(bool a_record)
 {
-    m_recording_set = a_record;
+    if(! a_record)
+    {
+        m_list_sequence_recording_set++;
+    
+        if(m_list_sequence_recording_set >= m_list_sequence_editing)
+        {
+            m_recording_set = a_record; // false unset since we set them all
+            m_list_sequence_recording_set = 0;
+        }
+    }
+    else
+        m_recording_set = a_record;     // true
 }
+
 bool perform::get_sequence_record()
 {
     return m_recording_set;

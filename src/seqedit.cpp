@@ -341,6 +341,8 @@ seqedit::seqedit( sequence *a_seq,
 
     set_track_info();
     m_seqroll_wid->redraw();
+    
+    m_mainperf->set_sequence_editing_list(true);
 }
 
 void
@@ -1657,6 +1659,8 @@ seqedit::on_delete_event(GdkEventAny *a_event)
     m_seq->set_recording( false );
     m_mainperf->get_master_midi_bus()->set_sequence_input( false, m_seq );
     m_seq->set_editing( false );
+    
+    m_mainperf->set_sequence_editing_list(false);
 
     delete m_lfo_wnd;
     delete this;
