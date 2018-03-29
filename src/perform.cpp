@@ -81,6 +81,10 @@ perform::perform()
         m_midi_cc_on[i] = zero;
         m_midi_cc_off[i] = zero;
     }
+    
+    /* initialize to off */
+    for (int i=0; i< c_midi_notes; i++ )
+        m_note_is_used[i] = 0;
 
 #endif // MIDI_CONTROL_SUPPORT
     
@@ -2754,7 +2758,9 @@ void* input_thread_func(void *a_pef )
 
 bool perform::check_midi_control(event ev, bool is_recording)
 {
+    /* For excluding midi control events from being recorded */
     bool was_control_used = false;
+    unsigned char note = ev.get_note();
     
     /* Adjusted midi controls offset -2 for the two reserved and not used. 
      * If the reserved controls are used then this offset must be changed. */
@@ -2764,6 +2770,17 @@ bool perform::check_midi_control(event ev, bool is_recording)
        so we skip the controls after record */
     if(is_recording)
         midi_controls = c_midi_control_record + 1;
+    
+    /* If it is a note off that had a note on used, 
+     * then we also exclude the linked note off. */
+    if ( ev.is_note_off() )
+    {
+        if ( m_note_is_used[note] >= 1 )
+        {
+            was_control_used = true;
+            m_note_is_used[note]--;
+        }
+    }
     
     for (int i = 0; i < midi_controls; i++)
     {
@@ -2776,6 +2793,11 @@ bool perform::check_midi_control(event ev, bool is_recording)
                 status  == get_midi_control_toggle(i)->m_status &&
                 data[0] == get_midi_control_toggle(i)->m_data )
         {
+            if ( ev.is_note_on() )
+            {
+                m_note_is_used[note]++;       // save the note for linked off note
+            }
+            
             was_control_used = true;
             
             if (data[1] >= get_midi_control_toggle(i)->m_min_value &&
@@ -2794,8 +2816,13 @@ bool perform::check_midi_control(event ev, bool is_recording)
                 status  == get_midi_control_on(i)->m_status &&
                 data[0] == get_midi_control_on(i)->m_data )
         {
+            if ( ev.is_note_on() )
+            {
+                m_note_is_used[note]++;       // save the note for linked off note
+            }
+
             was_control_used = true;
-            
+                        
             if ( data[1] >= get_midi_control_on(i)->m_min_value &&
                     data[1] <= get_midi_control_on(i)->m_max_value )
             {
@@ -2811,6 +2838,12 @@ bool perform::check_midi_control(event ev, bool is_recording)
                 status  == get_midi_control_off(i)->m_status &&
                 data[0] == get_midi_control_off(i)->m_data )
         {
+
+            if ( ev.is_note_on() )
+            {
+                m_note_is_used[note]++;       // save the note for linked off note
+            }
+            
             was_control_used = true;
             
             if ( data[1] >= get_midi_control_off(i)->m_min_value &&
@@ -2825,6 +2858,7 @@ bool perform::check_midi_control(event ev, bool is_recording)
         }
     }
     
+    /* All used events are excluded from dumping. */
     return was_control_used;
 }
 
@@ -3067,15 +3101,20 @@ void perform::input_func()
                             /* The true flag will limit the controls to start, stop
                              * and  record only. The function returns a a bool flag
                              * indicating whether the event was used or not. The flag
-                             * could be used to exclude from recording (dumping). This
-                             * could work for CC but not for linked events, i.e. notes. */
-                            check_midi_control(ev, true);
-                            
+                             * is used to exclude from recording the events that 
+                             * are used for control purposes and should not be 
+                             * recorded (dumping).  If the used event is a note on,
+                             * then the linked note off will also be excluded. */
+                            if(!check_midi_control(ev, true))
+                            {
 #endif // MIDI_CONTROL_SUPPORT
-                            ev.set_timestamp(m_tick);
+                                ev.set_timestamp(m_tick);
 
-                            /* dump to it - possibly multiple sequences set */
-                            m_master_bus.dump_midi_input(ev);
+                                /* dump to it - possibly multiple sequences set */
+                                m_master_bus.dump_midi_input(ev);
+#ifdef MIDI_CONTROL_SUPPORT
+                            }
+#endif // MIDI_CONTROL_SUPPORT
                         }
 #ifdef MIDI_CONTROL_SUPPORT
                         /* use it to control our sequencer */
