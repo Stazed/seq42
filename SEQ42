@@ -1,7 +1,60 @@
 SEQ42 - Midi Sequencer
 ======================
 
-release-1.0.9
+release-1.1.2
+
+Midi Control:
+
+Midi control had been re-introduced to seq42 for transport control, recording, and 
+playlist adjustment. The implementation follows the original seq24 method with some
+minor modification.  For transport control, start, stop, fast forward, rewind
+and beginning of song are supported. To implement the midi control for existing
+users, start seq42 then quit to generate the midi control grid for existing .seq42rc
+files. For new users, the file will be created after quitting the program for the 
+first time. All transport controls are channel specific. 
+
+For midi specifications, the channels are numbered from 0 to 15 and for seq42, 
+the channels are displayed from 1 to 16 (remember to offset by -1 when setting).
+
+Note On              = 144 + channel (0 to 15)
+Note Off             = 128 + channel (0 to 15)
+Control Code (CC)    = 178 + channel (0 to 15)
+
+The following would set play to toggle start/stop with note press C8 (midi note 108)
+on channel 1; to start only with A#7 (note 106); to stop only with A7 (note 105):
+    # start playing (toggle, start, stop)
+    0 [1 0 144 108   0 127] [1 0 144 106   0 127] [1 0 144 105   0 127]
+
+The stop groupings will only stop the transport when playing and work similar
+to the above play off section.
+
+The record group will only toggle recording on/off.
+Example to set record to toggle with A0 (note 21). The toggle group and off
+group work for record and can also be used and will always toggle:
+    # record
+    2 [0 0   0   0   0   0] [1 0 144  21   0 127] [0 0   0   0   0   0]
+
+
+Example to set Fast forward with note-on (144) B7 (note 107) when pressed, and to stop when
+the key is released note-off (128):
+    # fast forward (forward, forward, stop)
+    3 [0 0   0   0   0   0] [1 0 144 107   0 127] [1 0 128 107   0 127]
+
+Rewind works similar to fast forward.
+
+Beginning of song will move the transport to the beginning of the song or the 
+left (L) grid marker. Each section can be used and will only set to the marker.
+Following will use A#7 (note 106) to set:
+    # beginning of song 
+    5 [0 0   0   0   0   0] [1 0 144 106   0 127] [0 0   0   0   0   0]
+
+For playlist, the toggle group can be used to send by CC value, the on group for next, 
+and off group for previous.
+Example to set playlist to adjust by value, CC (178), CC number 7. Playlist Next is set
+to note A0 (21) and previous is set to A#0 (22):
+
+    6 [1 0 178   7   0 127] [1 0 144  21   0 127] [1 0 144  22   0 127]
+
 
 Tempo Changes:
 
@@ -10,7 +63,12 @@ in which you can type, use the spin button, use the bpm key-binding or use tap b
 to set the BPM value. Press enter or return to accept the value. Press escape to abandon
 the value. Upon acceptance, a blue tempo mark will be set at the location of the left click
 location, grid snapped. Also, to the right of the marker, the tempo value will be indicated.
-Tempo values range from 1 to 600.
+Tempo values range from 1 to 600. You can move a created marker by placing the mouse pointer
+above an existing marker. The pointer will change to an up arrow, then left click and drag
+the marker to the desired location. The markers will move based on the grid snapping that
+is selected. You cannot move the first start marker and any attempt to move to the beginning
+start location will be ignored. Use the BPM spinner to the left of the first marker to
+adjust the starting BPM.
 
 To delete a tempo marker, right click above the marker.
 
