@@ -2766,7 +2766,7 @@ bool perform::check_midi_control(event ev, bool is_recording)
      * If the reserved controls are used then this offset must be changed. */
     int midi_controls = c_midi_controls - 2;
     
-    /* If we are recording, we only need start, stop and record controls 
+    /* If we are recording, we only need start/stop and record controls 
        so we skip the controls after record */
     if(is_recording)
         midi_controls = c_midi_control_record + 1;

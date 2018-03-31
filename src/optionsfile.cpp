@@ -261,6 +261,9 @@ optionsfile::write( perform *a_perf  )
         case c_midi_control_play               :
             file << "# start/stop playing (toggle, start, stop)\n";
             break;
+        case c_midi_control_record  :
+            file << "# record\n";
+            break;
         case c_midi_control_FF       :
             file << "# fast forward (forward, forward, stop)\n";
             break;
@@ -269,9 +272,6 @@ optionsfile::write( perform *a_perf  )
             break;
         case c_midi_control_top        :
             file << "# beginning of song \n";
-            break;
-        case c_midi_control_record  :
-            file << "# record\n";
             break;
         case c_midi_control_playlist :
             file << "# playlist (value, next, previous)\n";
