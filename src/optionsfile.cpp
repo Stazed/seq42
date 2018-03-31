@@ -49,6 +49,11 @@ optionsfile::parse( perform *a_perf )
 
     unsigned int controls = 0;
     sscanf( m_line, "%u", &controls );
+    
+    /* Sanity check. */
+    if (controls > c_midi_controls)
+        controls = c_midi_controls;
+    
     next_data_line( &file );
 
     for (unsigned int i = 0; i < controls; ++i)
@@ -254,10 +259,7 @@ optionsfile::write( perform *a_perf  )
         {
 
         case c_midi_control_play               :
-            file << "# start playing (toggle, start, stop)\n";
-            break;
-        case c_midi_control_stop       :
-            file << "# stop playing\n";
+            file << "# start/stop playing (toggle, start, stop)\n";
             break;
         case c_midi_control_FF       :
             file << "# fast forward (forward, forward, stop)\n";

@@ -25,9 +25,6 @@ on channel 1; to start only with A#7 (note 106); to stop only with A7 (note 105)
     # start playing (toggle, start, stop)
     0 [1 0 144 108   0 127] [1 0 144 106   0 127] [1 0 144 105   0 127]
 
-The stop groupings will only stop the transport when playing and work similar
-to the above play off section.
-
 The record group will only toggle recording on/off.
 Example to set record to toggle with A0 (note 21). The toggle group and off
 group work for record and can also be used and will always toggle:

@@ -2889,11 +2889,6 @@ void perform::handle_midi_control( int a_control, bool a_state, int a_value )
 
         break;
         
-    case c_midi_control_stop:
-        //printf ( "stop\n );
-        stop_playing();
-        break;
-
     case c_midi_control_record:
         set_sequence_record(true);                      // this will toggle on/off always
         break;

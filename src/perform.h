@@ -155,15 +155,14 @@ struct time_sig
 
 const int c_midi_total_ctrl = 0;
 const int c_midi_control_play       = c_midi_total_ctrl;
-const int c_midi_control_stop       = c_midi_total_ctrl + 1;
-const int c_midi_control_record     = c_midi_total_ctrl + 2;
-const int c_midi_control_FF         = c_midi_total_ctrl + 3;
-const int c_midi_control_rewind     = c_midi_total_ctrl + 4;
-const int c_midi_control_top        = c_midi_total_ctrl + 5;
-const int c_midi_control_playlist   = c_midi_total_ctrl + 6;
-const int c_midi_control_reserved1  = c_midi_total_ctrl + 7;    // if this becomes used, you must adjust the offset in check_midi_control()
-const int c_midi_control_reserved2  = c_midi_total_ctrl + 8;    // if this becomes used, you must adjust the offset in check_midi_control()
-const int c_midi_controls           = c_midi_total_ctrl + 9;
+const int c_midi_control_record     = c_midi_total_ctrl + 1;
+const int c_midi_control_FF         = c_midi_total_ctrl + 2;
+const int c_midi_control_rewind     = c_midi_total_ctrl + 3;
+const int c_midi_control_top        = c_midi_total_ctrl + 4;
+const int c_midi_control_playlist   = c_midi_total_ctrl + 5;
+const int c_midi_control_reserved1  = c_midi_total_ctrl + 6;    // if this becomes used, you must adjust the offset in check_midi_control()
+const int c_midi_control_reserved2  = c_midi_total_ctrl + 7;    // if this becomes used, you must adjust the offset in check_midi_control()
+const int c_midi_controls           = c_midi_total_ctrl + 8;
 
 #endif // MIDI_CONTROL_SUPPORT
 
