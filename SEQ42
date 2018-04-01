@@ -25,7 +25,10 @@ on channel 1; to start only with A#7 (note 106); to stop only with A7 (note 105)
     # start playing (toggle, start, stop)
     0 [1 0 144 108   0 127] [1 0 144 106   0 127] [1 0 144 105   0 127]
 
-The record group will only toggle recording on/off.
+The record group will toggle recording on/off for all sequences in which
+the sequence editor is open. When recording, the only midi controls that
+are available are start/stop and record. Also, the midi events used by these
+controls will not be passed thru or used by recording.
 Example to set record to toggle with A0 (note 21). The toggle group and off
 group work for record and can also be used and will always toggle:
     # record
@@ -45,12 +48,17 @@ Following will use A#7 (note 106) to set:
     # beginning of song 
     5 [0 0   0   0   0   0] [1 0 144 106   0 127] [0 0   0   0   0   0]
 
+Midi control for playlist will only be active when seq42 transport is stopped. You
+can set the playlist value while running but the selected file will not be loaded
+until the sequencer stops. If the sequencer is stopped by a stop marker, then
+the playlist will set the file at the next file past the selected value. The program
+will range check for validity, and the file list starts at 1.
 For playlist, the toggle group can be used to send by CC value, the on group for next, 
 and off group for previous.
 Example to set playlist to adjust by value, CC (178), CC number 7. Playlist Next is set
 to note A0 (21) and previous is set to A#0 (22):
 
-    6 [1 0 178   7   0 127] [1 0 144  21   0 127] [1 0 144  22   0 127]
+    6 [1 0 178   7   1 127] [1 0 144  21   0 127] [1 0 144  22   0 127]
 
 
 Tempo Changes:
