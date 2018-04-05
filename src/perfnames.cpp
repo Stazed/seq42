@@ -33,12 +33,13 @@ perfnames::perfnames( perform *a_perf, mainwnd *a_main, Adjustment *a_vadjust ):
 {
     add_events( Gdk::BUTTON_PRESS_MASK |
                 Gdk::BUTTON_RELEASE_MASK |
+                Gdk::BUTTON_MOTION_MASK |
                 Gdk::SCROLL_MASK );
 
     /* set default size */
     set_size_request( c_names_x, 100 );
 
-    // in the construor you can only allocate colors,
+    // in the constructor you can only allocate colors,
     // get_window() returns 0 because we have not be realized
     Glib::RefPtr<Gdk::Colormap>  colormap= get_default_colormap();
     colormap->alloc_color( m_black );
@@ -242,8 +243,6 @@ bool
 perfnames::on_button_press_event(GdkEventButton *a_e)
 {
     int track;
-
-    /*int x = (int) a_e->x;*/
     int y = (int) a_e->y;
 
     convert_y( y, &track );
@@ -251,30 +250,104 @@ perfnames::on_button_press_event(GdkEventButton *a_e)
     m_current_trk = track;
 
     /*      left mouse button     */
-    if ( a_e->button == 1 )
+    if ( a_e->button == 1 &&  m_mainperf->is_active_track( track ) )
     {
-        if ( m_mainperf->is_active_track( track ))
-        {
-            bool muted = m_mainperf->get_track(track)->get_song_mute();
-            m_mainperf->get_track(track)->set_song_mute( !muted );
-            global_is_modified = true;
-            queue_draw();
-        }
+        m_button_down = true;
     }
-
+    
     return true;
 }
 
 bool
 perfnames::on_button_release_event(GdkEventButton* p0)
 {
-    /*     right mouse button      */
+    int track;
+    int y = (int) p0->y;
+    convert_y( y, &track );
+
+    m_current_trk = track;
+    m_button_down = false;
+    
+    /* left mouse button & not moving - toggle mute  */
+    if ( p0->button == 1 && m_mainperf->is_active_track( m_current_trk ) && !m_moving )
+    {
+        bool muted = m_mainperf->get_track(m_current_trk)->get_song_mute();
+        m_mainperf->get_track(m_current_trk)->set_song_mute( !muted );
+        global_is_modified = true;
+        queue_draw();
+    }
+    
+    /* Left button and moving */
+    if ( p0->button == 1 && m_moving )
+    {
+        m_moving = false;
+        
+        /* If we did not land on another active track, then move to new location */
+        if ( ! m_mainperf->is_active_track( m_current_trk ) )
+        {
+            m_mainperf->new_track( m_current_trk  );
+            *(m_mainperf->get_track( m_current_trk )) = m_moving_track;
+            m_mainperf->get_track(m_current_trk)->set_dirty();
+        }
+        /* If we did land on an active track and it is not being edited, then swap places. */
+        else if ( !m_mainperf->is_track_in_edit( m_current_trk ) )
+        {
+            m_clipboard = *(m_mainperf->get_track( m_current_trk ));        // hold the current for swap to old location
+            m_mainperf->new_track( m_old_track  );                          // The old location
+            *(m_mainperf->get_track( m_old_track )) = m_clipboard;          // put the current track into the old location
+            m_mainperf->get_track(m_old_track)->set_dirty();
+
+            m_mainperf->delete_track( m_current_trk );                      // delete the current for replacement
+            m_mainperf->new_track( m_current_trk  );                        // add a new blank one
+            *(m_mainperf->get_track( m_current_trk )) = m_moving_track;     // replace with the old
+            m_mainperf->get_track(m_current_trk)->set_dirty();
+        }
+       /* They landed on another track but it is being edited, so ignore the move 
+         * and put the old track back to original location. */
+        else
+        {
+            m_mainperf->new_track( m_old_track  );
+            *(m_mainperf->get_track( m_old_track )) = m_moving_track;
+            m_mainperf->get_track(m_old_track)->set_dirty();
+        }  
+    }
+    
+    /*  launch menu - right mouse button   */
     if ( p0->button == 3 )
     {
         popup_menu();
     }
 
     return false;
+}
+
+bool
+perfnames::on_motion_notify_event(GdkEventMotion* a_ev)
+{
+    int track;
+    int y = (int) a_ev->y;
+
+    convert_y( y, &track );
+    
+    /* If we are dragging off the original track then we are trying to move. */
+    if ( m_button_down )
+    {
+        if ( track != m_current_trk && !m_moving &&
+                !m_mainperf->is_track_in_edit( m_current_trk ) )
+        {
+            if ( m_mainperf->is_active_track( m_current_trk ))
+            {
+                m_mainperf->push_perf_undo();
+                m_old_track = m_current_trk;
+                m_moving = true;
+
+                m_moving_track = *(m_mainperf->get_track( m_current_trk ));
+                m_mainperf->delete_track( m_current_trk );
+            }
+        }
+    }  
+
+    return true;
 }
 
 bool

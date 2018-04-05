@@ -66,11 +66,15 @@ private:
     int          m_track_offset;
 
     bool         m_track_active[c_max_track];
+    
+    bool         m_button_down;
+    bool         m_moving;
 
     void on_realize();
     bool on_expose_event(GdkEventExpose* a_ev);
     bool on_button_press_event(GdkEventButton* a_ev);
     bool on_button_release_event(GdkEventButton* a_ev);
+    bool on_motion_notify_event(GdkEventMotion* a_ev);
     void on_size_allocate(Gtk::Allocation& );
     bool on_scroll_event( GdkEventScroll* a_ev ) ;
 

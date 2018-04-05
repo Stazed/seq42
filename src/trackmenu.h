@@ -54,7 +54,6 @@ private:
     Menu        *m_menu;
     perform     *m_mainperf;
     mainwnd     *m_mainwnd;
-    track       m_clipboard;
     bool m_something_to_paste;
 
     void on_realize();
@@ -75,13 +74,17 @@ private:
     void trk_export();
 
     void set_bus_and_midi_channel( int a_bus, int a_ch );
-    void mute_all_tracks();
+//    void mute_all_tracks();
 
     virtual void redraw( int a_track ) = 0;
 
 protected:
 
-    int m_current_trk;
+    track       m_moving_track;
+    track       m_clipboard;
+    int         m_current_trk;
+    int         m_old_track;
+    
     void popup_menu();
 
 public:
