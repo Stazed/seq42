@@ -26,9 +26,8 @@ perfnames::perfnames( perform *a_perf, mainwnd *a_main, Adjustment *a_vadjust ):
     m_black(Gdk::Color( "black" )),
     m_white(Gdk::Color( "white" )),
     m_grey(Gdk::Color( "SteelBlue1" )),
-    m_red(Gdk::Color( "red" )), // Mute
-    m_orange(Gdk::Color( "Orange Red")),
-    m_green(Gdk::Color( "Green")),
+    m_orange(Gdk::Color( "Orange Red")),    // mute
+    m_green(Gdk::Color( "Lawn Green")),     // solo
     m_mainperf(a_perf),
     m_vadjust(a_vadjust),
     m_track_offset(0)
@@ -47,7 +46,6 @@ perfnames::perfnames( perform *a_perf, mainwnd *a_main, Adjustment *a_vadjust ):
     colormap->alloc_color( m_black );
     colormap->alloc_color( m_white );
     colormap->alloc_color( m_grey );
-    colormap->alloc_color( m_red );
     colormap->alloc_color( m_orange );
     colormap->alloc_color( m_green );
 
