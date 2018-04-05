@@ -27,6 +27,8 @@ perfnames::perfnames( perform *a_perf, mainwnd *a_main, Adjustment *a_vadjust ):
     m_white(Gdk::Color( "white" )),
     m_grey(Gdk::Color( "SteelBlue1" )),
     m_red(Gdk::Color( "red" )), // Mute
+    m_orange(Gdk::Color( "Orange Red")),
+    m_green(Gdk::Color( "Green")),
     m_mainperf(a_perf),
     m_vadjust(a_vadjust),
     m_track_offset(0)
@@ -46,6 +48,8 @@ perfnames::perfnames( perform *a_perf, mainwnd *a_main, Adjustment *a_vadjust ):
     colormap->alloc_color( m_white );
     colormap->alloc_color( m_grey );
     colormap->alloc_color( m_red );
+    colormap->alloc_color( m_orange );
+    colormap->alloc_color( m_green );
 
     m_vadjust->signal_value_changed().connect( mem_fun( *(this), &perfnames::change_vert ));
 
@@ -166,7 +170,7 @@ perfnames::draw_track( int track )
 
             m_gc->set_foreground(m_black);
             if(muted)
-                m_gc->set_foreground(m_red);
+                m_gc->set_foreground(m_orange);
 
             m_window->draw_rectangle
             (

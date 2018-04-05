@@ -53,7 +53,7 @@ private:
 
     Glib::RefPtr<Gdk::GC>       m_gc;
     Glib::RefPtr<Gdk::Window>   m_window;
-    Gdk::Color    m_black, m_white, m_grey, m_red;
+    Gdk::Color    m_black, m_white, m_grey, m_red, m_orange, m_green;
 
     Glib::RefPtr<Gdk::Pixmap>   m_pixmap;
 
