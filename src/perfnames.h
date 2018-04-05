@@ -88,6 +88,8 @@ private:
     void change_vert();
 
     void redraw( int a_track );
+    
+    void check_global_solo_tracks();
 
 public:
 

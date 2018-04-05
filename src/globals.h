@@ -209,6 +209,7 @@ extern bool global_manual_alsa_ports;
 extern bool global_is_running;
 extern bool global_is_modified;
 extern bool global_seqlist_need_update;
+extern bool global_solo_track_set;
 
 extern Glib::ustring global_filename;
 extern Glib::ustring global_jack_session_uuid;

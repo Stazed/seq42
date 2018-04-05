@@ -68,8 +68,9 @@ private:
     char m_midi_channel;
     char m_bus;
 
-    /* song playback mode mute */
+    /* song playback mode solo/mute */
     bool m_song_mute;
+    bool m_song_solo;
 
     bool m_transposable;
 
@@ -122,6 +123,9 @@ public:
 
     void set_song_mute (bool a_mute);
     bool get_song_mute ();
+    
+    void set_song_solo (bool a_solo);
+    bool get_song_solo ();
 
     void set_transposable (bool a_xpose);
     bool get_transposable ();

@@ -30,6 +30,7 @@ track::track()
     m_bus = 0;
     m_midi_channel = 0;
     m_song_mute = false;
+    m_song_solo = false;
     m_transposable = true;
     m_trigger_copied = false;
     m_trigger_export = nullptr;
@@ -363,6 +364,19 @@ track::get_song_mute()
 }
 
 void
+track::set_song_solo( bool a_solo )
+{
+    m_song_solo = a_solo;
+    m_dirty_names = true;
+}
+
+bool
+track::get_song_solo()
+{
+    return m_song_solo;
+}
+
+void
 track::set_transposable( bool a_xpose )
 {
     m_transposable = a_xpose;
@@ -450,8 +464,16 @@ track::play( long a_tick, bool a_playback_mode )
         {
             if(m_vector_sequence[i] == trigger_seq)
             {
-                m_vector_sequence[i]->set_playing(! m_song_mute);
-                m_vector_sequence[i]->play(a_tick, active_trigger);
+                if(global_solo_track_set)
+                {
+                    m_vector_sequence[i]->set_playing( m_song_solo );
+                    m_vector_sequence[i]->play(a_tick, active_trigger);
+                }
+                else
+                {
+                    m_vector_sequence[i]->set_playing(! m_song_mute);
+                    m_vector_sequence[i]->play(a_tick, active_trigger);
+                }
             }
             else
             {

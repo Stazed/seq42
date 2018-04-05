@@ -35,6 +35,8 @@
 
 using namespace Gtk;
 
+bool global_solo_track_set = false;
+
 perform::perform()
 {
     for (int i=0; i< c_max_track; i++)

@@ -166,15 +166,23 @@ perfnames::draw_track( int track )
                     c_names_y * i + 12,
                     m_window, name, font::BLACK );
 
+            bool fill = false;
+            bool solo = m_mainperf->get_track(track)->get_song_solo();
             bool muted = m_mainperf->get_track(track)->get_song_mute();
+            
+            if(solo || muted)
+                fill = true;
 
             m_gc->set_foreground(m_black);
+            
             if(muted)
                 m_gc->set_foreground(m_orange);
-
+            if(solo)
+                m_gc->set_foreground(m_green);
+            
             m_window->draw_rectangle
             (
-                m_gc,muted,
+                m_gc,fill,
                 104,
                 (c_names_y * i),
                 10,
@@ -191,6 +199,16 @@ perfnames::draw_track( int track )
                     m_window, "M", font::WHITE
                 );
             }
+            else if ( solo )
+            {
+                p_font_renderer->render_string_on_drawable
+                (
+                    m_gc,
+                    107,
+                    c_names_y * i + 2,
+                    m_window, "S", font::WHITE
+                );
+            }
             else
             {
                 p_font_renderer->render_string_on_drawable
@@ -198,7 +216,7 @@ perfnames::draw_track( int track )
                     m_gc,
                     107,
                     c_names_y * i + 2,
-                    m_window, "M", font::BLACK
+                    m_window, "P", font::BLACK
                 );
             }
         }
@@ -259,6 +277,20 @@ perfnames::on_button_press_event(GdkEventButton *a_e)
         m_button_down = true;
     }
     
+    /* Middle mouse button toggle solo track */
+    if ( a_e->button == 2 &&  m_mainperf->is_active_track( track ) )
+    {
+        bool solo = m_mainperf->get_track(m_current_trk)->get_song_solo();
+        m_mainperf->get_track(m_current_trk)->set_song_solo( !solo );
+        /* we want to shut off mute if we are setting solo, so if solo was
+         * off (false) then we are turning it on(toggle), so unset the mute. */
+        if (!solo)
+            m_mainperf->get_track(m_current_trk)->set_song_mute( solo );
+        
+        check_global_solo_tracks();
+        queue_draw();
+    }
+    
     return true;
 }
 
@@ -277,6 +309,12 @@ perfnames::on_button_release_event(GdkEventButton* p0)
     {
         bool muted = m_mainperf->get_track(m_current_trk)->get_song_mute();
         m_mainperf->get_track(m_current_trk)->set_song_mute( !muted );
+       /* we want to shut off solo if we are setting mute, so if mute was
+         * off (false) then we are turning it on(toggle), so unset the solo. */
+        if (!muted)
+            m_mainperf->get_track(m_current_trk)->set_song_solo( muted );
+        
+        check_global_solo_tracks();
         global_is_modified = true;
         queue_draw();
     }
@@ -398,6 +436,23 @@ perfnames::redraw_dirty_tracks()
             if (dirty)
             {
                 draw_track( trk );
+            }
+        }
+    }
+}
+
+void
+perfnames::check_global_solo_tracks()
+{
+    global_solo_track_set = false;
+    for (int i = 0; i < c_max_track; i++)
+    {
+        if (m_mainperf->is_active_track(i))
+        {
+            if (m_mainperf->get_track(i)->get_song_solo())
+            {
+                global_solo_track_set = true;
+                break;
             }
         }
     }
