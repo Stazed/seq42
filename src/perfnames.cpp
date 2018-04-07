@@ -30,7 +30,9 @@ perfnames::perfnames( perform *a_perf, mainwnd *a_main, Adjustment *a_vadjust ):
     m_green(Gdk::Color( "Lawn Green")),     // solo
     m_mainperf(a_perf),
     m_vadjust(a_vadjust),
-    m_track_offset(0)
+    m_track_offset(0),
+    m_button_down(false),
+    m_moving(false)
 {
     add_events( Gdk::BUTTON_PRESS_MASK |
                 Gdk::BUTTON_RELEASE_MASK |
