@@ -96,7 +96,7 @@ the track edit items (name,channel,bus,transpose,mute)... except when undo/redo 
 * NEW - Fix midi song position change when sync midiclock (no jack).
 * NEW - Add Tempo change to song editor (See SEQ42 document for details).
 * NEW - Add Stop markers to tempo change (See SEQ42 document for details).
-* NEW - Add setlist file support (See SEQ42 document for details).
+* NEW - Add playlist file support (See SEQ42 document for details).
 * NEW - BPM, tempo changes added to undo/redo.
 * NEW - Clean up and beautify the LFO window.
 * NEW - Add recent files list to menu.
@@ -104,13 +104,19 @@ the track edit items (name,channel,bus,transpose,mute)... except when undo/redo 
 * NEW - Add seq42 logo to main window (with modified colors for playlist mode).
 * NEW - Add pause/stop toggle button.
 * NEW - Add .desktop and seq42 icon to install.
+* NEW - Tempo markers can now be moved (left mouse button and drag). See SEQ42 document for additional information.
+* NEW - Midi control added for play/stop, record, and playlist (see SEQ42 document).
+* NEW - Tracks can now be moved by left mouse button drag on track name. Moves to existing active tracks will swap the track positions. Track name/bus editor, and all track sequence editors must be closed for any moved or swapped tracks.
+* New - Add Solo track playing. Middle mouse button on track name will will toggle solo play. Multiple tracks can be soloed.
 
 
 What to do with a fresh repository checkout?
 --------------------------------------------
 Apply "autoreconf -i" to get a configure script, then:
-Run the usual "./configure" then "make".  Finally copy the "seq42" binary (in the "src" directory) wherever you like.
+Run the usual "./configure" then "make".
 
+To install: As root, "make install".
+Or you can copy the "seq42" binary (in the "src" directory) wherever you like.
 
 Re: macro `AM_PATH_ALSA' not found in library
 
