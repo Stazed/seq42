@@ -324,6 +324,36 @@ perfnames::on_button_release_event(GdkEventButton* p0)
     {
         m_moving = false;
         
+        /* merge and NO delete  */
+        if ( p0->state & GDK_SHIFT_MASK )    // shift key
+        {
+            merge_tracks( &m_moving_track );
+                        
+            /* Put the merged track back to original position */
+            m_mainperf->new_track( m_old_track  );
+            *(m_mainperf->get_track( m_old_track )) = m_moving_track;
+            m_mainperf->get_track(m_old_track)->set_dirty();
+            
+            return false;
+        } 
+        
+        /* merge and delete  */
+        if ( p0->state & GDK_CONTROL_MASK )     // control key
+        {
+            bool valid = merge_tracks( &m_moving_track );
+            
+            /* we do not have a valid merge (i.e. they tried to merge into a track being edited or
+             * did a merge to an inactive track) then just ignore everything */
+            if(!valid)
+            {
+                /* Put the merged track back to original position */
+                m_mainperf->new_track( m_old_track  );
+                *(m_mainperf->get_track( m_old_track )) = m_moving_track;
+                m_mainperf->get_track(m_old_track)->set_dirty();
+            }
+            return false;
+        }
+        
         /* If we did not land on another active track, then move to new location */
         if ( ! m_mainperf->is_active_track( m_current_trk ) )
         {
@@ -456,4 +486,56 @@ perfnames::check_global_solo_tracks()
             }
         }
     }
+}
+
+bool
+perfnames::merge_tracks( track *a_merge_track )
+{
+    bool is_merge_valid = false;
+    
+    if ( m_mainperf->is_active_track( m_current_trk ) && !m_mainperf->is_track_in_edit( m_current_trk ))
+    {
+        is_merge_valid = true;
+        m_mainperf->push_track_undo(m_current_trk);
+
+        std::vector<trigger> trig_vect;
+        a_merge_track->get_trak_triggers(trig_vect); // all triggers for the track
+        
+        uint number_of_merged_sequences = a_merge_track->get_number_of_sequences();
+
+        trigger *a_trig = NULL;
+
+        for (uint jj = 0; jj < number_of_merged_sequences; ++jj )
+        {
+            /* For each sequence of the merged track get the sequence index */
+            int seq_idx = m_mainperf->get_track( m_current_trk )->new_sequence();
+            
+            /* Create a landing sequence for the merging sequence */
+            sequence *seq = m_mainperf->get_track( m_current_trk )->get_sequence(seq_idx);
+            
+            /* Put the merging sequence into the new landing sequence location */
+            sequence *a_merge_sequence = a_merge_track->get_sequence(jj);
+            *seq = *a_merge_sequence;
+            
+            /* Put the new landing sequence onto the current track */
+            seq->set_track(m_mainperf->get_track( m_current_trk ));
+
+            /* For each trigger of the current merging sequence - add it to the track */
+            for(unsigned ii = 0; ii < trig_vect.size(); ii++)
+            {
+                a_trig = &trig_vect[ii];
+
+                if(a_trig->m_sequence == a_merge_track->get_sequence_index(a_merge_sequence))
+                {
+                    m_mainperf->get_track( m_current_trk )->add_trigger(a_trig->m_tick_start,
+                            a_trig->m_tick_end - a_trig->m_tick_start,a_trig->m_offset,
+                            seq_idx);
+                }
+                a_trig = NULL;
+            }
+        }
+        m_mainperf->get_track( m_current_trk )->set_dirty();
+    }
+    
+    return is_merge_valid;
 }
