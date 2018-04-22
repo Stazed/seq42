@@ -231,7 +231,6 @@ public:
     
     /* for solo / muting of notes */
     bool check_any_solo_notes();
-    bool get_have_solo();
     void set_solo_note(int a_note);
     void set_mute_note(int a_note);
     bool is_note_solo(int a_note);
@@ -263,6 +262,8 @@ public:
     /* dumps notes from tick and prebuffers to
        ahead.  Called by sequencer thread - performance */
     void play (long a_tick, trigger *a_trigger);
+    void send_note_to_bus(int transpose, event transposed_event, event note);
+    
     void set_orig_tick (long a_tick);
 
     //

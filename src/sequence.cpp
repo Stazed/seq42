@@ -387,24 +387,30 @@ sequence::play(long a_tick, trigger *a_trigger)
                 // printf("orig_event_timestamp=%06ld swung_event_timestamp=%06ld offset_timestamp=%06ld  start_tick_offset=%06ld  end_tick_offset=%06ld\n",
                 //        orig_event_timestamp, swung_event_timestamp, offset_timestamp, start_tick_offset, end_tick_offset);
                 
-                /* Check for note on/off and compare to mute/solo (*e).get_note().
+                /* Check for note on/off and compare to mute/solo.
                  * If we have any solo for this seq, then only solo notes are sent. 
                  * Otherwise only notes without mute are sent*/
                 
-                
-                if( transpose && 
-                  ((*e).is_note_on() ||(*e).is_note_off() ||
-                  ((*e).get_status() == EVENT_AFTERTOUCH))
-                )
+                if((*e).is_note_on() ||(*e).is_note_off())
                 {
-                    transposed_event.set_timestamp((*e).get_timestamp());
-                    transposed_event.set_status((*e).get_status());
-                    transposed_event.set_note((*e).get_note()+transpose);
-                    transposed_event.set_note_velocity((*e).get_note_velocity());
-                    put_event_on_bus( &transposed_event );
-                    //printf( "transposed_event: ");transposed_event.print();
+                    unsigned char note = (*e).get_note();
+                    if(m_have_solo)
+                    {
+                        if(m_mute_solo_notes[ (int)note ] == NOTE_SOLO )
+                        {
+                            send_note_to_bus(transpose, transposed_event, (*e));
+                        }
+                    }
+                    else if(m_mute_solo_notes[ (int)note ] != NOTE_MUTE )
+                    {
+                        send_note_to_bus(transpose, transposed_event, (*e));
+                    }   
                 }
-                else
+                else if((*e).get_status() == EVENT_AFTERTOUCH)
+                {
+                    send_note_to_bus(transpose, transposed_event, (*e));
+                }
+                else    /* Not a note or aftertouch - just send it */
                 {
                     put_event_on_bus( &(*e) );
                     //printf( "event: ");(*e).print();
@@ -431,6 +437,22 @@ sequence::play(long a_tick, trigger *a_trigger)
     m_last_tick = end_tick + 1;
 
     unlock();
+}
+
+/* Also used for aftertouch */
+void
+sequence::send_note_to_bus(int transpose, event transposed_event, event note)
+{
+    if(transpose)
+    {
+        transposed_event.set_timestamp(note.get_timestamp());
+        transposed_event.set_status(note.get_status());
+        transposed_event.set_note(note.get_note()+transpose);
+        transposed_event.set_note_velocity(note.get_note_velocity());
+        put_event_on_bus( &transposed_event );
+    }
+    else
+        put_event_on_bus( &note );
 }
 
 void
@@ -2663,12 +2685,6 @@ sequence::check_any_solo_notes()
             return true;
         }
     }
-    return m_have_solo;
-}
-
-bool
-sequence::get_have_solo()
-{
     return m_have_solo;
 }
 

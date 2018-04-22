@@ -137,15 +137,14 @@ seqkeys::update_pixmap()
     for ( int i=0; i<c_num_keys; i++ )
     {
         Gdk::Color note_color = m_white;
+        
         if(m_seq->is_note_mute(c_num_keys - i - 1))
         {
-//            printf("mute note red key %d\n", i);
-            note_color = m_red;  // red for mute
+            note_color = m_red;     /* red for mute */
         }
         else if(m_seq->is_note_solo(c_num_keys - i - 1))
         {
-//            printf("solo note green key %d\n", i);
-            note_color = m_green;  // green for mute
+            note_color = m_green;   /* green for solo */
         }
         
         
@@ -160,15 +159,16 @@ seqkeys::update_pixmap()
         /* the the key in the octave */
         int key = (c_num_keys - i - 1) % 12;
 
+        /* These are the black keys */
         if ( key == 1 ||
                 key == 3 ||
                 key == 6 ||
                 key == 8 ||
                 key == 10 )
         {
-            if(note_color == m_white)
+            if(note_color == m_white)               /* Not a muted or solo note so set it to black */
                 m_gc->set_foreground(m_black);
-            else
+            else                                    /* We have a mute or solo so use the appropriate color */
                 m_gc->set_foreground(note_color);
             
             m_pixmap->draw_rectangle(m_gc,true,
@@ -178,7 +178,7 @@ seqkeys::update_pixmap()
                                      c_key_y - 3 );
             
         }
-        else if( note_color  != m_white)
+        else if( note_color  != m_white)            /* We have a mute or solo so use the appropriate color */
         {
             m_gc->set_foreground(note_color);
             m_pixmap->draw_rectangle(m_gc,true,
@@ -404,11 +404,11 @@ seqkeys::draw_key( int a_key, bool a_state )
     /* Mute or solo keys */
     if(m_seq->is_note_mute(base_key))
     {
-        m_gc->set_foreground(m_red);  // red for mute
+        m_gc->set_foreground(m_red);    /* red for mute   */
     }
     else if(m_seq->is_note_solo(base_key))
     {
-        m_gc->set_foreground(m_green);  // green for solo
+        m_gc->set_foreground(m_green);  /* green for solo */
     }
 
     m_window->draw_rectangle(m_gc,true,
