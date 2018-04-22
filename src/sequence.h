@@ -42,6 +42,13 @@ enum draw_type
     DRAW_NOTE_OFF
 };
 
+enum note_play_state
+{
+    NOTE_PLAY = 0,
+    NOTE_MUTE,
+    NOTE_SOLO
+};
+
 using std::list;
 
 class sequence
@@ -70,6 +77,10 @@ private:
     /* map for noteon, used when muting, to shut off current
        messages */
     int m_playing_notes[c_midi_notes];
+    
+    /* flags for solo/mute notes */
+    bool m_have_solo;
+    note_play_state m_mute_solo_notes[c_midi_notes];
 
     /* states */
     bool m_playing;
@@ -217,6 +228,14 @@ public:
     void set_playing (bool a_p, bool set_dirty_seqlist=true);
     bool get_playing ();
     void toggle_playing ();
+    
+    /* for solo / muting of notes */
+    bool check_any_solo_notes();
+    bool get_have_solo();
+    void set_solo_note(int a_note);
+    void set_mute_note(int a_note);
+    bool is_note_solo(int a_note);
+    bool is_note_mute(int a_note);
 
     void set_recording (bool);
     bool get_recording ();

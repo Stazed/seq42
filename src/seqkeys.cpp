@@ -25,7 +25,9 @@ seqkeys::seqkeys(sequence *a_seq,
                  Gtk::Adjustment *a_vadjust ):
     m_black(Gdk::Color("black")),
     m_white(Gdk::Color("white")),
-    m_red(Gdk::Color("red")),  // piano roll note hint
+    m_red(Gdk::Color("red")),  // mute
+    m_green(Gdk::Color("green")), // solo
+    m_blue(Gdk::Color("blue")), // hint
     m_seq(a_seq),
     m_vadjust(a_vadjust),
     m_scroll_offset_key(0),
@@ -56,6 +58,8 @@ seqkeys::seqkeys(sequence *a_seq,
     colormap->alloc_color( m_black );
     colormap->alloc_color( m_white );
     colormap->alloc_color( m_red );
+    colormap->alloc_color( m_green );
+    colormap->alloc_color( m_blue );
 
     set_double_buffered( false );
 }
@@ -132,7 +136,21 @@ seqkeys::update_pixmap()
 
     for ( int i=0; i<c_num_keys; i++ )
     {
+        Gdk::Color note_color = m_white;
+        if(m_seq->is_note_mute(c_num_keys - i - 1))
+        {
+//            printf("mute note red key %d\n", i);
+            note_color = m_red;  // red for mute
+        }
+        else if(m_seq->is_note_solo(c_num_keys - i - 1))
+        {
+//            printf("solo note green key %d\n", i);
+            note_color = m_green;  // green for mute
+        }
+        
+        
         m_gc->set_foreground(m_white);
+        
         m_pixmap->draw_rectangle(m_gc,true,
                                  c_keyoffset_x + 1,
                                  (c_key_y * i) + 1,
@@ -148,12 +166,26 @@ seqkeys::update_pixmap()
                 key == 8 ||
                 key == 10 )
         {
-            m_gc->set_foreground(m_black);
+            if(note_color == m_white)
+                m_gc->set_foreground(m_black);
+            else
+                m_gc->set_foreground(note_color);
+            
             m_pixmap->draw_rectangle(m_gc,true,
                                      c_keyoffset_x + 1,
                                      (c_key_y * i) + 2,
                                      c_key_x - 3,
                                      c_key_y - 3 );
+            
+        }
+        else if( note_color  != m_white)
+        {
+            m_gc->set_foreground(note_color);
+            m_pixmap->draw_rectangle(m_gc,true,
+                         c_keyoffset_x + 1,
+                         (c_key_y * i) + 2,
+                         c_key_x - 3,
+                         c_key_y - 3 );
         }
 
         char notes[20];
@@ -237,6 +269,7 @@ seqkeys::on_button_press_event(GdkEventButton *a_e)
     {
         y = (int) a_e->y + m_scroll_offset_y;
 
+        /* Left mouse button - play the note */
         if ( a_e->button == 1 )
         {
             m_keying = true;
@@ -245,6 +278,22 @@ seqkeys::on_button_press_event(GdkEventButton *a_e)
             m_seq->play_note_on(  note );
 
             m_keying_note = note;
+        }
+        
+        /* Right mouse button - mute the note */
+        if ( a_e->button == 3 )
+        {
+            convert_y( y,&note );
+            m_seq->set_mute_note( note );
+            update_pixmap();
+        }
+        
+        /* Middle mouse button - solo the note */
+        if ( a_e->button == 2 )
+        {
+            convert_y( y,&note );
+            m_seq->set_solo_note( note );
+            update_pixmap();
         }
     }
     return true;
@@ -329,10 +378,12 @@ seqkeys::set_hint_state( bool a_state )
         draw_key( m_hint_key, false );
 }
 
-/* a_state, false = normal, true = red */
+/* a_state, false = normal, true = blue */
 void
 seqkeys::draw_key( int a_key, bool a_state )
 {
+    int base_key = a_key;
+//    printf("base key %d\n", base_key);
     /* the the key in the octave */
     int key = a_key % 12;
 
@@ -349,6 +400,17 @@ seqkeys::draw_key( int a_key, bool a_state )
     else
         m_gc->set_foreground(m_white);
 
+   
+    /* Mute or solo keys */
+    if(m_seq->is_note_mute(base_key))
+    {
+        m_gc->set_foreground(m_red);  // red for mute
+    }
+    else if(m_seq->is_note_solo(base_key))
+    {
+        m_gc->set_foreground(m_green);  // green for solo
+    }
+
     m_window->draw_rectangle(m_gc,true,
                              c_keyoffset_x + 1,
                              (c_key_y * a_key) + 2 -  m_scroll_offset_y,
@@ -357,7 +419,7 @@ seqkeys::draw_key( int a_key, bool a_state )
 
     if ( a_state ) // piano hint key
     {
-        m_gc->set_foreground(m_red);
+        m_gc->set_foreground(m_blue);
 
         m_window->draw_rectangle(m_gc,true,
                                  c_keyoffset_x + 1,
