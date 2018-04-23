@@ -75,6 +75,7 @@ private:
 
     bool m_hint_state;
     int m_hint_key;
+    bool m_enter_piano_roll;
 
     bool m_keying;
     int m_keying_note;

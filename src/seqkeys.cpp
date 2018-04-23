@@ -34,6 +34,7 @@ seqkeys::seqkeys(sequence *a_seq,
     m_scroll_offset_y(0),
     m_hint_state(false),
     m_hint_key(0),
+    m_enter_piano_roll(false),
     m_keying(false),
     m_scale(0),
     m_key(0)
@@ -281,15 +282,16 @@ seqkeys::on_button_press_event(GdkEventButton *a_e)
         }
         
         /* Right mouse button - mute the note */
-        if ( a_e->button == 3 )
+        if (m_enter_piano_roll &&  a_e->button == 3 )
         {
             convert_y( y,&note );
             m_seq->set_mute_note( note );
             update_pixmap();
         }
         
-        /* Middle mouse button - solo the note */
-        if ( a_e->button == 2 )
+        /* middle mouse button, or left-ctrl click (for 2 button mice) */
+        if ( m_enter_piano_roll && (a_e->button == 2   ||
+                            (a_e->button == 1 && (a_e->state & GDK_CONTROL_MASK))))
         {
             convert_y( y,&note );
             m_seq->set_solo_note( note );
@@ -339,6 +341,7 @@ seqkeys::on_motion_notify_event(GdkEventMotion* a_p0)
 bool
 seqkeys::on_enter_notify_event(GdkEventCrossing* a_p0)
 {
+    m_enter_piano_roll = true;
     set_hint_state( true );
     return false;
 }
@@ -346,6 +349,7 @@ seqkeys::on_enter_notify_event(GdkEventCrossing* a_p0)
 bool
 seqkeys::on_leave_notify_event(GdkEventCrossing* p0)
 {
+    m_enter_piano_roll = false;
     if ( m_keying )
     {
         m_keying = false;
@@ -383,7 +387,7 @@ void
 seqkeys::draw_key( int a_key, bool a_state )
 {
     int base_key = a_key;
-//    printf("base key %d\n", base_key);
+
     /* the the key in the octave */
     int key = a_key % 12;
 
