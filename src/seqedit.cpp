@@ -732,33 +732,29 @@ seqedit::do_action( int a_action, int a_var )
         break;
 
     case quantize_notes:
-        m_seq->push_undo();
         m_seq->quanize_events(EVENT_NOTE_ON, 0, m_snap, 1, true);
         break;
 
     case quantize_events:
-        m_seq->push_undo();
         m_seq->quanize_events(m_editing_status, m_editing_cc, m_snap, 1);
         break;
 
     case tighten_notes:
-        m_seq->push_undo();
         m_seq->quanize_events(EVENT_NOTE_ON, 0, m_snap, 2, true);
         break;
 
     case tighten_events:
-        m_seq->push_undo();
         m_seq->quanize_events(m_editing_status, m_editing_cc, m_snap, 2);
         break;
 
     case transpose:
-        m_seq->push_undo();
         m_seq->transpose_notes(a_var, 0);
+        m_seq->set_dirty();     // update mainwnd
         break;
 
     case transpose_h:
-        m_seq->push_undo();
         m_seq->transpose_notes(a_var, m_scale);
+        m_seq->set_dirty();     // update mainwnd
         break;
 
     case expand_pattern:

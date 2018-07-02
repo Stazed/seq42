@@ -3216,6 +3216,8 @@ sequence::quanize_events( unsigned char a_status, unsigned char a_cc,
     m_list_event.merge(quantized_events);
     verify_and_link();
     unlock();
+    
+    set_dirty(); /* update mainwnd */
 }
 
 void
@@ -3258,6 +3260,8 @@ sequence::multiply_pattern( float a_multiplier )
     {
         set_length(new_length);
     }
+    
+    set_dirty(); /* update mainwnd */
 }
 
 
@@ -3314,6 +3318,8 @@ sequence::reverse_pattern()
     m_list_event.merge(reversed_events);
     verify_and_link();
     unlock();
+    
+    set_dirty(); /* update mainwnd */
 }
 
 void
