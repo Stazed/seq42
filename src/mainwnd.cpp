@@ -2316,22 +2316,23 @@ mainwnd::update_window_title()
     	char num[20];
     	sprintf(num,"%02d",m_mainperf->get_playlist_index() +1);
     	title =
-    		( PACKAGE )
-			+ string(" - Playlist, Song ")
-			+ num
-			+ string(" - [")
+            ( PACKAGE )
+            + string(" - Playlist, Song ")
+            + num
+            + string(" - [")
             + Glib::filename_to_utf8(global_filename)
             + string( "]" );
     }
     else
     {
         if (global_filename == "")
-            title = ( PACKAGE ) + string( " - song - unsaved" );
+            title = ( PACKAGE ) + string( " - [unnamed]" );
         else
             title =
                 ( PACKAGE )
-                + string( " - song - " )
-                + Glib::filename_to_utf8(global_filename);
+                + string( " - [" )
+                + Glib::filename_to_utf8(global_filename)
+                + string( "]" );
     }
     
     set_title ( title.c_str());
