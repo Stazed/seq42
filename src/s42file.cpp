@@ -263,8 +263,7 @@ s42file::load(const Glib::ustring& a_filename, perform *a_perf, mainwnd *a_main)
 std::string
 s42file::current_date_time()
 {
-    std::string mystring;
-    std::string strTemp;
+    std::string time_string;
 
     time_t now = time(0);
     struct tm tstruct;
@@ -274,8 +273,8 @@ s42file::current_date_time()
     // for more information about date/time format
     strftime(buf, sizeof (buf), "%Y-%m-%d.%X", &tstruct);
 
-    mystring = std::string(buf);
+    time_string = std::string(buf);
 
-    // Format: = "2012-05-06.01:03:59 PM" of mystring Does NOT use military time
-    return mystring;
+    // Format: = "2012-05-06.01:03:59 PM" of time_string. Does NOT use military time.
+    return time_string;
 }

@@ -107,7 +107,7 @@ the track edit items (name,channel,bus,transpose,mute)... except when undo/redo 
 * NEW - Tempo markers can now be moved (left mouse button and drag). See SEQ42 document for additional information.
 * NEW - Midi control added for play/stop, record, and playlist (see SEQ42 document).
 * NEW - Tracks can now be moved by left mouse button drag on track name. Moves to existing active tracks will swap the track positions. Track name/bus editor, and all track sequence editors must be closed for any moved or swapped tracks.
-* New - Add Solo track playing. Middle mouse button on track name will will toggle solo play. Multiple tracks can be soloed.
+* NEW - Add Solo track playing. Middle mouse button on track name will toggle solo play. Multiple tracks can be soloed.
 
 
 What to do with a fresh repository checkout?
