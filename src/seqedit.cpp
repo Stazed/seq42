@@ -270,16 +270,18 @@ seqedit::seqedit( sequence *a_seq,
     add_tooltip( m_toggle_q_rec, "Quantized Record." );
 
     /* Record button */
-    m_button_rec_type = manage( new Button( "Rec" ));
+    m_button_rec_type = manage( new Button( "Merge" ));
     m_button_rec_type->signal_clicked().connect(
           mem_fun( *this, &seqedit::popup_record_menu));
-    add_tooltip( m_button_rec_type, "Select record type" );
+    add_tooltip( m_button_rec_type,
+        "Select recording type for patterns: merge events; overwrite events; "
+        "or expand the pattern size while recording." );
 
     m_button_rec_vol = manage( new Button());
-    m_button_rec_vol->add( *manage( new Label("Vol")));
+    m_button_rec_vol->add( *manage( new Label("Free")));
     m_button_rec_vol->signal_clicked().connect(
         sigc::bind<Menu *>( mem_fun( *this, &seqedit::popup_menu), m_menu_rec_vol  ));
-    add_tooltip( m_button_rec_vol, "Select volume" );
+    add_tooltip( m_button_rec_vol, "Select recording/generation volume." );
 
     m_toggle_thru = manage( new ToggleButton(  ));
     m_toggle_thru->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( thru_xpm ))));
@@ -1223,15 +1225,15 @@ seqedit::popup_record_menu()
     /* record type */
     m_menu_rec_type->items().push_back( ImageMenuElem( "Legacy merge looped recording",
                                     *create_menu_image( legacy ),
-                                    sigc::bind(mem_fun(*this, &seqedit::set_rec_type), 0 )));
+                                    sigc::bind(mem_fun(*this, &seqedit::set_rec_type), LOOP_RECORD_LEGACY)));
     
     m_menu_rec_type->items().push_back(ImageMenuElem("Overwrite looped recording",
                                     *create_menu_image( m_seq->get_overwrite_rec() ),
-                                    sigc::bind(mem_fun(*this, &seqedit::set_rec_type), 1)));
+                                    sigc::bind(mem_fun(*this, &seqedit::set_rec_type), LOOP_RECORD_OVERWRITE)));
     
     m_menu_rec_type->items().push_back(ImageMenuElem("Expand sequence length to fit recording",
                                     *create_menu_image( m_seqroll_wid->get_expanded_record() ),
-                                    sigc::bind(mem_fun(*this, &seqedit::set_rec_type), 2)));
+                                    sigc::bind(mem_fun(*this, &seqedit::set_rec_type), LOOP_RECORD_EXPAND)));
     m_menu_rec_type->popup(0,0);
 }
 //m_option_midich->set_history( m_seq->getMidiChannel() );
@@ -1781,27 +1783,68 @@ seqedit::trk_edit()
 void
 seqedit::set_rec_vol( int a_rec_vol  )
 {
+    char selection[16];
+    if (a_rec_vol == 0)
+    {
+        snprintf(selection, sizeof selection, "Free");
+    }
+    else
+    {
+        snprintf(selection, sizeof selection, "%d", a_rec_vol);
+    }
+
+    Gtk::Label * label(dynamic_cast<Gtk::Label *>(m_button_rec_vol->get_child()));
+    
+    if (label != nullptr)
+    {
+        label->set_text(selection);
+    }
+    
     m_seq->get_track()->set_default_velocity( a_rec_vol );
 }
 
 void
-seqedit::set_rec_type( int a_rec_type )
+seqedit::set_rec_type( loop_record_t a_rec_type )
 {
-    if(a_rec_type == 0)
+    std::string label = "Merge";
+    
+    switch (a_rec_type)
     {
+    case LOOP_RECORD_LEGACY:
+
         m_seqroll_wid->set_expanded_recording(false);
         m_seq->set_overwrite_rec(false); 
-        return;
-    }
-    if(a_rec_type == 1)
-    {
+        break;
+
+    case LOOP_RECORD_OVERWRITE:
+        
         m_seq->set_overwrite_rec(true);
         m_seqroll_wid->set_expanded_recording(false);
-    }
-    if(a_rec_type == 2)
-    {
+        label = "Replace";
+        break;
+
+    case LOOP_RECORD_EXPAND:
+
         m_seqroll_wid->set_expanded_recording(true);
         m_seq->set_overwrite_rec(false); 
-        return;
+        label = "Expand";
+        break;
+
+    default:
+
+        /*
+         * Could offer a true-true setting to overwrite and expand.  :-)
+         */
+
+        break;
+    }
+
+    Gtk::Label * ptr(dynamic_cast<Gtk::Label *>(m_button_rec_type->get_child()));
+    
+    if (ptr != nullptr)
+    {
+        char temp[8];
+        snprintf(temp, sizeof(temp), "%s", label.c_str());
+        ptr->set_text(temp);
     }
 }

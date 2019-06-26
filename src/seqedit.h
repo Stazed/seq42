@@ -40,6 +40,20 @@
 
 using namespace Gtk;
 
+/**
+ *  From Sequencer64 - Chris Ahlstrom
+ *  Provides the supported looping recording modes.  These values are used by
+ *  the seqedit class, which provides a button with a popup menu to select one
+ *  of these recording modes.
+ */
+
+enum loop_record_t
+{
+    LOOP_RECORD_LEGACY = 0, /**< Incoming events are merged into the loop.  */
+    LOOP_RECORD_OVERWRITE,  /**< Incoming events overwrite the loop.        */
+    LOOP_RECORD_EXPAND      /**< Incoming events increase size of loop.     */
+};
+
 /* has a seqroll and paino roll */
 class seqedit : public Gtk::Window
 {
@@ -207,7 +221,7 @@ private:
     void set_bp_measure( int a_beats_per_measure );
     void set_bw( int a_beat_width );
     void set_rec_vol( int a_rec_vol );
-    void set_rec_type( int a_rec_type );
+    void set_rec_type( loop_record_t a_rec_type );
     void set_measures( int a_length_measures, bool a_adjust_triggers  );
     void apply_length( int a_bp_measure, int a_bw, int a_measures, bool a_adjust_triggers );
     long get_measures();
