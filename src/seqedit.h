@@ -51,7 +51,8 @@ enum loop_record_t
 {
     LOOP_RECORD_LEGACY = 0, /**< Incoming events are merged into the loop.  */
     LOOP_RECORD_OVERWRITE,  /**< Incoming events overwrite the loop.        */
-    LOOP_RECORD_EXPAND      /**< Incoming events increase size of loop.     */
+    LOOP_RECORD_EXPAND,     /**< Incoming events increase size of loop.     */
+    LOOP_RECORD_EXP_OVR     /**< Incoming events increase size and overwrite the loop   */
 };
 
 /* has a seqroll and paino roll */

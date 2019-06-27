@@ -275,7 +275,7 @@ seqedit::seqedit( sequence *a_seq,
           mem_fun( *this, &seqedit::popup_record_menu));
     add_tooltip( m_button_rec_type,
         "Select recording type for patterns: merge events; overwrite events; "
-        "or expand the pattern size while recording." );
+        "expand the pattern size while recording; or expand and replace while recording." );
 
     m_button_rec_vol = manage( new Button());
     m_button_rec_vol->add( *manage( new Label("Free")));
@@ -1218,22 +1218,19 @@ seqedit::popup_record_menu()
     
     m_menu_rec_type = manage( new Menu());
     
-    bool legacy = true;
-    if(m_seq->get_overwrite_rec() == true || m_seqroll_wid->get_expanded_record() == true )
-        legacy = false;
-    
     /* record type */
-    m_menu_rec_type->items().push_back( ImageMenuElem( "Legacy merge looped recording",
-                                    *create_menu_image( legacy ),
+    m_menu_rec_type->items().push_back(MenuElem("Legacy merge looped recording",
                                     sigc::bind(mem_fun(*this, &seqedit::set_rec_type), LOOP_RECORD_LEGACY)));
     
-    m_menu_rec_type->items().push_back(ImageMenuElem("Overwrite looped recording",
-                                    *create_menu_image( m_seq->get_overwrite_rec() ),
+    m_menu_rec_type->items().push_back(MenuElem("Overwrite looped recording",
                                     sigc::bind(mem_fun(*this, &seqedit::set_rec_type), LOOP_RECORD_OVERWRITE)));
     
-    m_menu_rec_type->items().push_back(ImageMenuElem("Expand sequence length to fit recording",
-                                    *create_menu_image( m_seqroll_wid->get_expanded_record() ),
+    m_menu_rec_type->items().push_back(MenuElem("Expand sequence length to fit recording",
                                     sigc::bind(mem_fun(*this, &seqedit::set_rec_type), LOOP_RECORD_EXPAND)));
+    
+    m_menu_rec_type->items().push_back(MenuElem("Expand sequence length and overwrite",
+                                    sigc::bind(mem_fun(*this, &seqedit::set_rec_type), LOOP_RECORD_EXP_OVR)));
+    
     m_menu_rec_type->popup(0,0);
 }
 //m_option_midich->set_history( m_seq->getMidiChannel() );
@@ -1829,13 +1826,14 @@ seqedit::set_rec_type( loop_record_t a_rec_type )
         m_seq->set_overwrite_rec(false); 
         label = "Expand";
         break;
+        
+    case LOOP_RECORD_EXP_OVR:
+        m_seqroll_wid->set_expanded_recording(true);
+        m_seq->set_overwrite_rec(true); 
+        label = "Exp/Rep";
+        break;
 
     default:
-
-        /*
-         * Could offer a true-true setting to overwrite and expand.  :-)
-         */
-
         break;
     }
 
