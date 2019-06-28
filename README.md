@@ -108,6 +108,9 @@ the track edit items (name,channel,bus,transpose,mute)... except when undo/redo 
 * NEW - Midi control added for play/stop, record, and playlist (see SEQ42 document).
 * NEW - Tracks can now be moved by left mouse button drag on track name. Moves to existing active tracks will swap the track positions. Track name/bus editor, and all track sequence editors must be closed for any moved or swapped tracks.
 * NEW - Add Solo track playing. Middle mouse button on track name will toggle solo play. Multiple tracks can be soloed.
+* NEW - Added merge track from mouse dragging. To merge tracks from mouse, position mouse on track name and shift drag to existing active track. Use CTRL drag to delete the originating (dragged) track upon merge.
+* NEW - Add mute and solo individual notes on sequence editor. Right mouse button click on piano roll will mute, middle mouse button to solo. Muted keys will change color to red, and solo to green. These settings will NOT be saved to file.
+* NEW - Add expand and replace midi recording as additional record option.
 
 
 What to do with a fresh repository checkout?

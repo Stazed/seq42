@@ -1,7 +1,7 @@
 # Maintainer: stazed<stazed@mapson.com>
 _pkgbasename=seq42
 pkgname=${_pkgbasename}-git
-pkgver=Release.1.1.2.
+pkgver=Release.1.1.3.
 pkgrel=1
 pkgdesc="A MIDI sequencer"
 arch=('i686' 'x86_64')
