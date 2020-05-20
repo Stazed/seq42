@@ -65,7 +65,8 @@ midibus::midibus( int a_localclient,
 
     /* copy names */
     char tmp[60];
-    snprintf
+    int trunc = 0;
+    trunc = snprintf
     (
         tmp, 59, "[%d] %d:%d %s",
         m_id,
@@ -74,6 +75,11 @@ midibus::midibus( int a_localclient,
         name
     );
 
+    if(trunc)
+    {
+        printf("Midibus name truncated by %d characters\n", trunc);
+    }
+    
     m_name = tmp;
 }
 
