@@ -83,6 +83,10 @@ struct undo_type
 {
     char type;
     int track;
+    
+    undo_type() :
+        type(0),
+        track(-1) {}
 };
 
 struct undo_redo_perf_tracks
@@ -99,9 +103,13 @@ struct tempo_mark
     uint32_t start;         // calculated frame offset start - jack_nframes_t
     double microseconds_start; // calculated offset for clock display
     
-    tempo_mark ( ) : tick ( 0 ), bpm ( 0.0 ), bw ( 0 ), bp_measure ( 0 ), start ( 0 ), microseconds_start( 0.0 )
-        {
-        }
+    tempo_mark () :
+        tick (0),
+        bpm (0.0),
+        bw (0),
+        bp_measure (0),
+        start (0),
+        microseconds_start(0.0) {}
 };
 
 #ifdef JACK_SUPPORT
@@ -112,9 +120,10 @@ struct BBT
     unsigned char beat;
     unsigned short tick;
 
-    BBT ( ) : bar( 0 ), beat( 0 ), tick( 0 )
-        {
-        }
+    BBT () :
+        bar(0),
+        beat(0),
+        tick(0) {}
 };
 
 
@@ -125,8 +134,13 @@ struct position_info
     float tempo;
     int beats_per_bar;
     int beat_type;
-
     BBT bbt;
+    
+    position_info() :
+        tempo(0.0),
+        beats_per_bar(0),
+        beat_type(0),
+        bbt() {}
 };
 
 struct time_sig
@@ -134,14 +148,15 @@ struct time_sig
     int beats_per_bar;
     int beat_type;
 
-    time_sig ( ) : beats_per_bar( 0 ), beat_type( 0 )
-        {
-        }
+    time_sig () :
+        beats_per_bar(0),
+        beat_type(0) {}
 
-    time_sig ( int bpb, int note ) : beats_per_bar( bpb ), beat_type( note )
-        {
-        }
+    time_sig ( int bpb, int note ) :
+        beats_per_bar(bpb),
+        beat_type(note) {}
 };
+
 #endif // JACK_SUPPORT
 
 #define STOP_MARKER         0.0

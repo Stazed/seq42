@@ -1487,7 +1487,6 @@ position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void
     const jack_nframes_t end = start + length;
 
     position_info pos;
-    memset( &pos, 0, sizeof( pos ) );
 
     BBT &bbt = pos.bbt;
 
