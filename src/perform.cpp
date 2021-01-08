@@ -214,9 +214,7 @@ void perform::init_jack()
             jack_set_process_callback(m_jack_client, jack_process_callback, (void *) this);
 
 #ifdef JACK_SESSION
-            if (jack_set_session_callback)
-                jack_set_session_callback(m_jack_client, jack_session_callback,
-                                          (void *) this );
+            jack_set_session_callback(m_jack_client, jack_session_callback, (void *) this);
 #endif
             /* true if we want to fail if there is already a master */
             bool cond = global_with_jack_master_cond;

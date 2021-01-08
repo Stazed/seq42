@@ -211,7 +211,7 @@ seqtime::update_pixmap()
                             base_line -  m_scroll_offset_x,
                             m_window_y );
 
-        char bar[5];
+        char bar[16];
         snprintf(bar, sizeof(bar), "%d", (i/ ticks_per_measure ) + 1);
 
         m_gc->set_foreground(m_black);

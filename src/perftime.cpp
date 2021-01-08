@@ -194,7 +194,7 @@ perftime::draw_background()
                             x_pos,
                             m_window_y );
 
-        char bar[5];
+        char bar[16];
         snprintf( bar, sizeof(bar), "%d", i + 1 ); // bar numbers
 
         m_gc->set_foreground(m_black);

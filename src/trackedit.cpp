@@ -224,7 +224,7 @@ trackedit::midi_channel_button_callback( int a_midichannel )
 void
 trackedit::set_midi_channel( int a_midichannel  )
 {
-    char b[10];
+    char b[16];
     sprintf( b, "%d", a_midichannel+1 );
     m_entry_channel->set_text(b);
     m_track->set_midi_channel( a_midichannel );

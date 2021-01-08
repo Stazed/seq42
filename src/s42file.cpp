@@ -48,7 +48,7 @@ s42file::save(const Glib::ustring& a_filename, perform *a_perf)
 
     char time[global_time_array_size];
     std::string s_time = current_date_time();
-    strncpy(time, s_time.c_str(), global_time_array_size);
+    (strncpy(time, s_time.c_str(), global_time_array_size));
     file.write(time, sizeof (char)* global_time_array_size);
 
     /* end file version 5 */

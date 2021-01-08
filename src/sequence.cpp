@@ -3757,7 +3757,7 @@ bool
 sequence::save(ofstream *file)
 {
     char name[c_max_seq_name];
-    strncpy(name, m_name.c_str(), c_max_seq_name);
+    (strncpy(name, m_name.c_str(), c_max_seq_name));
     file->write(name, sizeof(char)*c_max_seq_name);
 
     file->write((const char *) &m_length, global_file_long_int_size);

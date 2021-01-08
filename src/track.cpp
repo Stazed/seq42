@@ -1405,7 +1405,7 @@ bool
 track::save(ofstream *file)
 {
     char name[c_max_track_name];
-    strncpy(name, m_name.c_str(), c_max_track_name);
+    (strncpy(name, m_name.c_str(), c_max_track_name));
     file->write(name, sizeof(char)*c_max_track_name);
 
     file->write((const char *) &m_bus, sizeof(char));
