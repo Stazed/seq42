@@ -150,6 +150,34 @@ else
     AC_MSG_WARN([ *** MIDI control support not enabled.]);
 fi
 
+dnl Enable NSM support.
+
+AC_ARG_ENABLE(nsm,
+  AS_HELP_STRING([--enable-nsm], [Enable NSM support (default=yes)]),
+  [ac_nsm=$enableval],
+  [ac_nsm=yes])
+
+dnl Check for NSM support.
+
+if test "$ac_nsm" != "no"; then
+    AC_DEFINE(NSM_SUPPORT, 1, [Define if NSM support is available.])
+    AC_DEFINE(NSM_SUPPORT, 1, [Define to enable NSM])
+    AC_MSG_RESULT([Sessions/NSM support enabled.]);
+fi
+
+dnl Check for now-required LIBLO library, needed for NSM support.
+
+PKG_CHECK_MODULES([LIBLO], [liblo], [ac_liblo="yes"], [ac_liblo="no"])
+if test "x$ac_liblo" = "xyes"; then
+    AC_DEFINE(LIBLO_SUPPORT, 1, [Define if LIBLO library is available.])
+    AC_SUBST(LIBLO_CFLAGS)
+    AC_SUBST(LIBLO_LIBS)
+    AC_MSG_RESULT([LIBLO support enabled.]);
+else
+    AC_MSG_ERROR([LIBLO library not found, OSC dev package required.])
+    ac_nsm="no"
+fi
+
 
 AC_OUTPUT(Makefile man/Makefile icons/Makefile src/Makefile src/pixmaps/Makefile)
 

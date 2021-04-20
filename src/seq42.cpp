@@ -38,6 +38,51 @@
 #include "perform.h"
 #include "userfile.h"
 
+//#define NSM_SUPPORT 1
+
+Glib::ustring global_client_name = "seq42"; // default
+Glib::ustring global_filename = "";
+
+#ifdef NSM_SUPPORT
+#include "nsm.h"
+
+static nsm_client_t *nsm = 0;
+static int wait_nsm = 1;
+
+int                                                                  
+cb_nsm_open ( const char *save_file_path,   // See API Docs 2.2.2 
+              const char *,                 // display_name
+              const char *client_id,        // Use as JACK Client Name
+              char **,                      // out_msg
+              void *)                       // userdata
+{
+    global_filename = save_file_path;
+    global_filename += ".s42";
+    global_client_name = strdup(client_id);
+    wait_nsm = 0;
+    return ERR_OK;
+}                                                                    
+                                                                     
+int
+cb_nsm_save ( char **,  void *userdata)
+{
+    mainwnd *seq42_window =  (mainwnd*) userdata;
+    seq42_window->file_save();
+
+    return ERR_OK;
+}
+                                                                  
+void
+poll_nsm(void *)                // userdata
+{
+    if ( nsm )
+    {
+        nsm_check_nowait( nsm );
+        return;
+    }
+}
+#endif  // NSM_SUPPORT
+
 /* struct for command parsing */
 static struct
     option long_options[] =
@@ -71,12 +116,10 @@ bool global_device_ignore = false;
 int global_device_ignore_num = 0;
 bool global_stats = false;
 bool global_pass_sysex = false;
-Glib::ustring global_filename = "";
 Glib::ustring last_used_dir ="/";
 Glib::ustring last_midi_dir ="/";
 std::string config_filename = ".seq42rc";
 std::string user_filename = ".seq42usr";
-Glib::ustring global_client_name = "seq42"; // default
 Glib::ustring playlist_file = "";
 bool global_print_keys = false;
 interaction_method_e global_interactionmethod = e_seq42_interaction;
@@ -306,6 +349,38 @@ main (int argc, char *argv[])
 
     mainwnd seq42_window( &p );
 
+#ifdef NSM_SUPPORT
+    const char *nsm_url = getenv( "NSM_URL" );
+    
+    if ( nsm_url )
+    {
+        nsm = nsm_new();
+
+        nsm_set_open_callback( nsm, cb_nsm_open, 0 );
+        nsm_set_save_callback( nsm, cb_nsm_save, &seq42_window );
+
+        if ( 0 == nsm_init( nsm, nsm_url ) )
+        {
+            
+            nsm_set_save_callback( nsm, cb_nsm_save, &seq42_window );
+            nsm_send_announce( nsm, global_client_name.c_str(), NULL, argv[0] );
+        }
+
+        int timeout = 0;
+        while ( wait_nsm )
+        {
+            nsm_check_wait( nsm, 500 );
+            timeout += 1;
+
+            if ( timeout > 200 )
+                exit ( 1 );
+        }
+        
+        // Set poll nsm funtion to mainwindow and use timeout to poll
+    }
+
+#endif // NSM_SUPPORT
+
     if (optind < argc)
     {
         if (Glib::file_test(argv[optind], Glib::FILE_TEST_EXISTS))
@@ -361,6 +436,14 @@ main (int argc, char *argv[])
 
 #ifdef LASH_SUPPORT
     delete lash_driver;
+#endif
+
+#ifdef NSM_SUPPORT
+    if(nsm)
+    {
+        nsm_free( nsm );
+        nsm = NULL;
+    }
 #endif
 
     return 0;

@@ -54,8 +54,14 @@
 /* Define to enable LASH support */
 #undef LASH_SUPPORT
 
+/* Define if LIBLO library is available. */
+#undef LIBLO_SUPPORT
+
 /* Define to enable MIDI transport control support */
 #undef MIDI_CONTROL_SUPPORT
+
+/* Define to enable NSM */
+#undef NSM_SUPPORT
 
 /* Name of package */
 #undef PACKAGE

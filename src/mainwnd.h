@@ -198,7 +198,9 @@ private:
     void file_new();
     void file_open();
     void file_open_playlist();
+public:
     void file_save();
+private:
     void file_save_as(file_type_e type, void *a_seq_or_track = nullptr);
     void export_midi(const Glib::ustring&, file_type_e type, void *a_seq_or_track = nullptr);
 

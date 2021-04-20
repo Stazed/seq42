@@ -2,8 +2,8 @@
 
 SUBDIRS = pixmaps
 
-AM_CXXFLAGS = $(GTKMM_CFLAGS) $(JACK_CFLAGS) $(LASH_CFLAGS) -Wall
-seq42_LDADD = $(GTKMM_LIBS) $(ALSA_LIBS) $(JACK_LIBS) $(LASH_LIBS)
+AM_CXXFLAGS = $(GTKMM_CFLAGS) $(JACK_CFLAGS) $(LASH_CFLAGS) $(LIBLO_LIBS) -Wall
+seq42_LDADD = $(GTKMM_LIBS) $(ALSA_LIBS) $(JACK_LIBS) $(LASH_LIBS) $(LIBLO_LIBS)
 
 bin_PROGRAMS = seq42
 
@@ -44,7 +44,8 @@ seq42_SOURCES = \
 	track.cpp track.h \
 	trackedit.cpp trackedit.h \
 	trackmenu.cpp trackmenu.h \
-	userfile.cpp userfile.h
+	userfile.cpp userfile.h \
+	nsm.h
 
 EXTRA_DIST = configwin32.h
 
