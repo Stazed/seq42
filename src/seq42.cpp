@@ -336,17 +336,10 @@ main (int argc, char *argv[])
     else
         printf( "Error calling getenv( \"%s\" )\n", HOME );
 
-    p.init();
-
-    p.launch_input_thread();
-    p.launch_output_thread();
-    p.init_jack();
-
-    p_font_renderer = new font();
-
-    mainwnd seq42_window( &p );
-
 #ifdef NSM_SUPPORT
+    // Initialize NSM before creation of alsa ports with p.init()
+    // so we can get the global_client_name for setting the port names.
+    // Also gets the global_filename so it can be loaded or created on startup.
     const char *nsm_url = getenv( "NSM_URL" );
     
     if ( nsm_url )
@@ -354,11 +347,10 @@ main (int argc, char *argv[])
         nsm = nsm_new();
 
         nsm_set_open_callback( nsm, cb_nsm_open, 0 );
-        nsm_set_save_callback( nsm, cb_nsm_save, (void*) &seq42_window );
 
         if ( 0 == nsm_init( nsm, nsm_url ) )
         {
-            nsm_send_announce( nsm, global_client_name.c_str(), "", argv[0] );
+            nsm_send_announce( nsm, "seq42", "", argv[0] );
         }
 
         int timeout = 0;
@@ -370,18 +362,49 @@ main (int argc, char *argv[])
             if ( timeout > 200 )
                 exit ( 1 );
         }
-        
-        seq42_window.set_nsm_client(nsm);
     }
-
 #endif // NSM_SUPPORT
 
-    if (optind < argc)
+    p.init();
+
+    p.launch_input_thread();
+    p.launch_output_thread();
+    p.init_jack();
+
+    p_font_renderer = new font();
+
+    mainwnd seq42_window( &p );
+
+#ifdef NSM_SUPPORT
+    if ( nsm_url )
     {
-        if (Glib::file_test(argv[optind], Glib::FILE_TEST_EXISTS))
-            seq42_window.open_file(argv[optind]);
-        else
-            printf("File not found: %s\n", argv[optind]);
+        // Set the save callback and nsm client now that the mainwnd is created.
+        nsm_set_save_callback( nsm, cb_nsm_save, (void*) &seq42_window );
+        seq42_window.set_nsm_client(nsm);
+        
+        // Open the NSM session file
+        if (Glib::file_test(global_filename, Glib::FILE_TEST_EXISTS))
+        {
+            seq42_window.open_file(global_filename);
+        }
+        else    // file does not exists, so create it.
+        {
+            seq42_window.file_save();
+            seq42_window.update_window_title();
+        }
+    }
+#endif // NSM_SUPPORT
+
+    // Do not use command line file if using NSM
+    if(!nsm)
+    {
+        if (optind < argc)
+        {
+            if (Glib::file_test(argv[optind], Glib::FILE_TEST_EXISTS))
+                seq42_window.open_file(argv[optind]);
+            else
+                printf("File not found: %s\n", argv[optind]);
+        }
     }
 
     if(playlist_mode)

@@ -195,7 +195,9 @@ private:
     void stop_playing();
     void rewind(bool a_press);
     void fast_forward(bool a_press);
+public:
     void update_window_title();
+private:
     void update_window_xpm();
     void toLower(basic_string<char>&);
     void new_open_error_dialog();
