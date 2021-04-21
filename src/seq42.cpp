@@ -38,7 +38,6 @@
 #include "perform.h"
 #include "userfile.h"
 
-//#define NSM_SUPPORT 1
 
 Glib::ustring global_client_name = "seq42"; // default
 Glib::ustring global_filename = "";
@@ -58,6 +57,11 @@ cb_nsm_open ( const char *save_file_path,   // See API Docs 2.2.2
 {
     global_filename = save_file_path;
     global_filename += ".s42";
+    
+   // fprintf(stderr, "FilenameXXX %s\n",global_filename.c_str() );
+   // mainwnd *seq42_window =  (mainwnd*) userdata;
+   // seq42_window->open_file(global_filename);
+
     global_client_name = strdup(client_id);
     wait_nsm = 0;
     return ERR_OK;
@@ -67,20 +71,13 @@ int
 cb_nsm_save ( char **,  void *userdata)
 {
     mainwnd *seq42_window =  (mainwnd*) userdata;
+    
+    // fprintf(stderr, "Seq42 cb save file\n" );
     seq42_window->file_save();
 
     return ERR_OK;
 }
                                                                   
-void
-poll_nsm(void *)                // userdata
-{
-    if ( nsm )
-    {
-        nsm_check_nowait( nsm );
-        return;
-    }
-}
 #endif  // NSM_SUPPORT
 
 /* struct for command parsing */
@@ -357,13 +354,11 @@ main (int argc, char *argv[])
         nsm = nsm_new();
 
         nsm_set_open_callback( nsm, cb_nsm_open, 0 );
-        nsm_set_save_callback( nsm, cb_nsm_save, &seq42_window );
+        nsm_set_save_callback( nsm, cb_nsm_save, (void*) &seq42_window );
 
         if ( 0 == nsm_init( nsm, nsm_url ) )
         {
-            
-            nsm_set_save_callback( nsm, cb_nsm_save, &seq42_window );
-            nsm_send_announce( nsm, global_client_name.c_str(), NULL, argv[0] );
+            nsm_send_announce( nsm, global_client_name.c_str(), "", argv[0] );
         }
 
         int timeout = 0;
@@ -376,7 +371,7 @@ main (int argc, char *argv[])
                 exit ( 1 );
         }
         
-        // Set poll nsm funtion to mainwindow and use timeout to poll
+        seq42_window.set_nsm_client(nsm);
     }
 
 #endif // NSM_SUPPORT

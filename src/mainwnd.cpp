@@ -82,6 +82,9 @@ mainwnd::mainwnd(perform *a_p):
     m_bw(4),
     m_tick_time_as_bbt(false),
     m_toggle_time_type(false)
+#ifdef NSM_SUPPORT
+    ,m_nsm(NULL)
+#endif
 {
     using namespace Menu_Helpers;
 
@@ -762,6 +765,13 @@ mainwnd::timer_callback(  )
         m_button_jack->set_sensitive(true);
     }
 #endif // JACK_SUPPORT
+    
+#ifdef NSM_SUPPORT
+    if(m_nsm != NULL)
+    {
+        poll_nsm(0);
+    }
+#endif
 
     if(global_is_running && m_button_mode->get_sensitive())
     {
@@ -2588,3 +2598,15 @@ FF_RW_timeout(void *arg)
     p->m_excell_FF_RW = 1.0;
     return (FALSE);
 }
+
+#ifdef NSM_SUPPORT
+void
+mainwnd::poll_nsm(void *)
+{
+    if ( m_nsm )
+    {
+        nsm_check_nowait( m_nsm );
+        return;
+    }
+}
+#endif

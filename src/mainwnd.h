@@ -31,6 +31,10 @@
 #include "perftime.h"
 #include "tempo.h"
 
+#ifdef NSM_SUPPORT
+#include "nsm.h"
+#endif
+
 #include <map>
 #include <gtkmm.h>
 #include <string>
@@ -198,6 +202,15 @@ private:
     void file_new();
     void file_open();
     void file_open_playlist();
+    
+#ifdef NSM_SUPPORT
+    nsm_client_t *m_nsm;
+    void poll_nsm(void *);
+public:
+    void set_nsm_client(nsm_client_t *nsm){m_nsm = nsm;};
+private:
+#endif
+
 public:
     void file_save();
 private:
