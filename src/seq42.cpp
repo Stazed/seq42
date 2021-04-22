@@ -381,6 +381,8 @@ main (int argc, char *argv[])
         // Set the save callback and nsm client now that the mainwnd is created.
         nsm_set_save_callback( nsm, cb_nsm_save, (void*) &seq42_window );
         seq42_window.set_nsm_client(nsm);
+        
+        // Set limited file menu for session
         seq42_window.set_nsm_menu();
         
         // Open the NSM session file

@@ -116,7 +116,6 @@ mainwnd::mainwnd(perform *a_p):
     m_menu_file->items().push_back(MenuElem("_New",
                                             Gtk::AccelKey("<control>N"),
                                             mem_fun(*this, &mainwnd::file_new)));
-    //m_menu_file->
     
     m_menu_file->items().push_back(MenuElem("_Open...",
                                             Gtk::AccelKey("<control>O"),
@@ -2630,8 +2629,8 @@ mainwnd::set_nsm_menu()
         m_menubar->items().push_front(MenuElem("_File", *m_menu_file));
     }
 
-    m_menu_file->items().push_back(MenuElem("Open _playlist...",
-                                            mem_fun(*this, &mainwnd::file_open_playlist)));
+//    m_menu_file->items().push_back(MenuElem("Open _playlist...",
+//                                            mem_fun(*this, &mainwnd::file_open_playlist)));
 
     m_menu_file->items().push_back(MenuElem("_Save",
                                             Gtk::AccelKey("<control>S"),
