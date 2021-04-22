@@ -116,6 +116,8 @@ mainwnd::mainwnd(perform *a_p):
     m_menu_file->items().push_back(MenuElem("_New",
                                             Gtk::AccelKey("<control>N"),
                                             mem_fun(*this, &mainwnd::file_new)));
+    //m_menu_file->
+    
     m_menu_file->items().push_back(MenuElem("_Open...",
                                             Gtk::AccelKey("<control>O"),
                                             mem_fun(*this, &mainwnd::file_open)));
@@ -1892,6 +1894,11 @@ bool mainwnd::is_save()
 void
 mainwnd::update_recent_files_menu ()
 {
+#ifdef NSM_SUPPORT
+    if(m_nsm != NULL)
+        return;
+#endif
+
     if (m_menu_recent != nullptr)
     {
         /*
@@ -2603,10 +2610,39 @@ FF_RW_timeout(void *arg)
 void
 mainwnd::poll_nsm(void *)
 {
-    if ( m_nsm )
+    if ( m_nsm != NULL )
     {
         nsm_check_nowait( m_nsm );
         return;
     }
+}
+
+void
+mainwnd::set_nsm_menu()
+{
+    if(m_menu_file != nullptr)
+    {
+        m_menu_file->items().clear();
+    }
+    else
+    {
+        m_menu_file = manage(new Gtk::Menu());
+        m_menubar->items().push_front(MenuElem("_File", *m_menu_file));
+    }
+
+    m_menu_file->items().push_back(MenuElem("Open _playlist...",
+                                            mem_fun(*this, &mainwnd::file_open_playlist)));
+
+    m_menu_file->items().push_back(MenuElem("_Save",
+                                            Gtk::AccelKey("<control>S"),
+                                            mem_fun(*this, &mainwnd::file_save)));
+
+    m_menu_file->items().push_back(MenuElem("O_ptions...",
+                                            mem_fun(*this,&mainwnd::options_dialog)));
+
+    m_menu_file->items().push_back(SeparatorElem());
+    m_menu_file->items().push_back(MenuElem("E_xit",
+                                            Gtk::AccelKey("<control>Q"),
+                                            mem_fun(*this, &mainwnd::file_exit)));      
 }
 #endif

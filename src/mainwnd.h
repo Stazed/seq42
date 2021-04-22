@@ -210,6 +210,7 @@ private:
     void poll_nsm(void *);
 public:
     void set_nsm_client(nsm_client_t *nsm){m_nsm = nsm;};
+    void set_nsm_menu();
 private:
 #endif
 
