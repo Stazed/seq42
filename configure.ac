@@ -83,31 +83,12 @@ AC_ARG_ENABLE(jack,
     [jack=$enableval],
     [jack=yes])
 
-dnl
-dnl JACK_SESSION is disabled by default - Deprecated
-dnl
-AC_ARG_ENABLE(jack-session,
-    [AS_HELP_STRING(--disable-jack-session, [Disable JACK session support])],
-    [jack_session=$enableval],
-    [jack_session=no])
-
 if test "$jack" != "no"; then
     PKG_CHECK_MODULES(JACK, jack >= 0.90.0, jack_found="yes", jack_found="no")
     if test "$jack_found" = "yes"; then
         AC_DEFINE(JACK_SUPPORT, 1, [Define to enable JACK driver])
         AC_SUBST(JACK_CFLAGS)
         AC_SUBST(JACK_LIBS)
-
-        dnl JACK session        
-        if test "$jack_session" != "no"; then
-            AC_CHECK_HEADER(jack/session.h, jack_session_found="yes",
-                            jack_session_found="no")
-            if test "$jack_session_found" = "yes"; then
-                AC_DEFINE(JACK_SESSION, 1,
-                          [Define to enable JACK session support])
-            fi
-        fi
-
     else
         AC_MSG_WARN([*** Could not find JACK library, disabling JACK support])
     fi
