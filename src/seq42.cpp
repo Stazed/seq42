@@ -398,9 +398,11 @@ main (int argc, char *argv[])
     }
 #endif // NSM_SUPPORT
 
-    // Do not use command line file if using NSM
+    // Do not use command line file if if in NSM session
+#ifdef NSM_SUPPORT
     if(!nsm)
     {
+#endif
         if (optind < argc)
         {
             if (Glib::file_test(argv[optind], Glib::FILE_TEST_EXISTS))
@@ -408,25 +410,27 @@ main (int argc, char *argv[])
             else
                 printf("File not found: %s\n", argv[optind]);
         }
-    }
 
-    if(playlist_mode)
-    {
-        p.set_playlist_mode(playlist_mode);
-        p.set_playlist_file(playlist_file);
-        
-        if(p.get_playlist_mode())    // true means file load with no errors
+        if(playlist_mode)
         {
-            if(seq42_window.verify_playlist_dialog())
+            p.set_playlist_mode(playlist_mode);
+            p.set_playlist_file(playlist_file);
+
+            if(p.get_playlist_mode())    // true means file load with no errors
             {
-                seq42_window.playlist_verify();
-            }
-            else
-            {
-                seq42_window.playlist_jump(PLAYLIST_ZERO);
+                if(seq42_window.verify_playlist_dialog())
+                {
+                    seq42_window.playlist_verify();
+                }
+                else
+                {
+                    seq42_window.playlist_jump(PLAYLIST_ZERO);
+                }
             }
         }
+#ifdef NSM_SUPPORT
     }
+#endif
     
     /* connect to lash daemon and poll events*/
 #ifdef LASH_SUPPORT
