@@ -111,6 +111,8 @@ the track edit items (name,channel,bus,transpose,mute)... except when undo/redo 
 * NEW - Added merge track from mouse dragging. To merge tracks from mouse, position mouse on track name and shift drag to existing active track. Use CTRL drag to delete the originating (dragged) track upon merge.
 * NEW - Add mute and solo individual notes on sequence editor. Right mouse button click on piano roll will mute, middle mouse button to solo. Muted keys will change color to red, and solo to green. These settings will NOT be saved to file.
 * NEW - Add expand and replace midi recording as additional record option.
+* NEW - Add NSM session support.
+* NEW - Remove deprecated jack session support.
 
 
 What to do with a fresh repository checkout?
