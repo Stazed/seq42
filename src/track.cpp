@@ -20,7 +20,11 @@
 #include "track.h"
 #include <stdlib.h>
 #include <fstream>
+
+_Pragma("GCC diagnostic push")
+_Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 #include <gtkmm.h>
+_Pragma("GCC diagnostic pop")
 
 track::track()
 {
