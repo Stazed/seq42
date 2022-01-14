@@ -48,7 +48,12 @@ s42file::save(const Glib::ustring& a_filename, perform *a_perf)
 
     char time[global_time_array_size];
     std::string s_time = current_date_time();
+
+_Pragma("GCC diagnostic push")
+_Pragma("GCC diagnostic ignored \"-Wstringop-truncation\"")
     (strncpy(time, s_time.c_str(), global_time_array_size));
+_Pragma("GCC diagnostic pop")
+
     file.write(time, sizeof (char)* global_time_array_size);
 
     /* end file version 5 */

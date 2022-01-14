@@ -1409,7 +1409,12 @@ bool
 track::save(ofstream *file)
 {
     char name[c_max_track_name];
+
+_Pragma("GCC diagnostic push")
+_Pragma("GCC diagnostic ignored \"-Wstringop-truncation\"")
     (strncpy(name, m_name.c_str(), c_max_track_name));
+_Pragma("GCC diagnostic pop")
+
     file->write(name, sizeof(char)*c_max_track_name);
 
     file->write((const char *) &m_bus, sizeof(char));
