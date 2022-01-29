@@ -177,9 +177,6 @@ private:
     /* Flag used when time type is toggled when stopped to update gui */
     bool m_toggle_time_type;
 
-    /* Flag for holding the global_is_modified flag and checking for changes to notify NSM dirty, clean */
-    bool m_dirty_flag;
-
     void file_import_dialog();
     void options_dialog();
     void about_dialog();
@@ -209,6 +206,8 @@ private:
     void file_open_playlist();
     
 #ifdef NSM_SUPPORT
+    /* Flag for holding the global_is_modified flag and checking for changes to notify NSM dirty, clean */
+    bool m_dirty_flag;
     nsm_client_t *m_nsm;
     void poll_nsm(void *);
 public:
