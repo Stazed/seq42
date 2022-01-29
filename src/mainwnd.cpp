@@ -81,7 +81,8 @@ mainwnd::mainwnd(perform *a_p):
     m_bp_measure(4),
     m_bw(4),
     m_tick_time_as_bbt(false),
-    m_toggle_time_type(false)
+    m_toggle_time_type(false),
+    m_dirty_flag(false)
 #ifdef NSM_SUPPORT
     ,m_nsm(NULL)
 #endif
@@ -770,6 +771,19 @@ mainwnd::timer_callback(  )
 #ifdef NSM_SUPPORT
     if(m_nsm != NULL)
     {
+        if (m_dirty_flag != global_is_modified)
+        {
+            m_dirty_flag = global_is_modified;
+            if (m_dirty_flag)
+            {
+                nsm_send_is_dirty ( m_nsm );
+            }
+            else
+            {
+                nsm_send_is_clean ( m_nsm );
+            }
+        }
+        
         poll_nsm(0);
     }
 #endif
