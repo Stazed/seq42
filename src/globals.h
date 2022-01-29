@@ -27,12 +27,8 @@
 #endif
 
 #include <string>
-
-_Pragma("GCC diagnostic push")
-_Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 #include <gtkmm/main.h>
 #include <gtkmm/drawingarea.h>
-_Pragma("GCC diagnostic pop")
 //For keys
 #include <gtkmm/accelkey.h>
 

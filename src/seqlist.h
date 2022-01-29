@@ -20,11 +20,7 @@
 
 #pragma once
 
-_Pragma("GCC diagnostic push")
-_Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 #include <gtkmm.h>
-_Pragma("GCC diagnostic pop")
-
 #include <sigc++/bind.h>
 #include "globals.h"
 #include "track.h"

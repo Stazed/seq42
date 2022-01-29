@@ -20,12 +20,9 @@
 
 #pragma once
 
-_Pragma("GCC diagnostic push")
-_Pragma("GCC diagnostic ignored \"-Wdeprecated-declarations\"")
 #include <gtkmm/image.h>
 #include <gtkmm/widget.h>
 #include <gtkmm/drawingarea.h>
-_Pragma("GCC diagnostic pop")
 
 #include <string>
 
