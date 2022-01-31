@@ -113,6 +113,7 @@ the track edit items (name,channel,bus,transpose,mute)... except when undo/redo 
 * NEW - Add expand and replace midi recording as additional record option.
 * NEW - Add NSM session support.
 * NEW - Remove deprecated jack session support.
+* NEW - Add NSM dirty option.
 
 
 What to do with a fresh repository checkout?
