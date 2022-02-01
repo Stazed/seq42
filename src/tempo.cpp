@@ -827,7 +827,7 @@ Bpm_spinbutton::on_leave_notify_event(GdkEventCrossing* event)
 bool
 Bpm_spinbutton::on_key_press_event( GdkEventKey* a_ev )
 {
-    if (a_ev->keyval == GDK_Return || a_ev->keyval == GDK_KP_Enter)
+    if (a_ev->keyval == GDK_KEY_Return || a_ev->keyval == GDK_KEY_KP_Enter)
     {
         m_is_typing = true;
         m_hold_bpm = 0.0;

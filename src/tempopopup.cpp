@@ -150,14 +150,14 @@ tempopopup::on_key_press_event( GdkEventKey* a_ev )
         return true;
     }
     
-    if (a_ev->keyval == GDK_Escape)
+    if (a_ev->keyval == GDK_KEY_Escape)
     {
         m_escape = true;
         hide();
         return true;
     }
     
-    if (a_ev->keyval == GDK_Return || a_ev->keyval == GDK_KP_Enter)
+    if (a_ev->keyval == GDK_KEY_Return || a_ev->keyval == GDK_KEY_KP_Enter)
     {
         // Typed value sends 2 callbacks - really ugly
         /* The desired behavior is to only set the marker after 'return' or 'enter'
