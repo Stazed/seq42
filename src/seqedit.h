@@ -153,8 +153,6 @@ private:
     Button      *m_button_chord;
     Entry       *m_entry_chord;
 
-    Tooltips    *m_tooltips;
-
     Button       *m_button_data;
     Entry        *m_entry_data;
 

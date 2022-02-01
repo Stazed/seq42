@@ -119,7 +119,7 @@ seqevent::idle_redraw()
 void
 seqevent::update_sizes()
 {
-    if( is_realized() )
+    if( get_realized() )
     {
         /* create pixmaps with window dimentions */
 

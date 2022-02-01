@@ -210,7 +210,7 @@ seqroll::update_sizes()
     }
 
     /* create pixmaps with window dimensions */
-    if( is_realized() )
+    if( get_realized() )
     {
         m_pixmap = Gdk::Pixmap::create( m_window,
                                         m_window_x,

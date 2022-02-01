@@ -47,7 +47,6 @@ private:
 
     track *m_track;
 
-    Tooltips *m_tooltips;
     VBox *m_vbox;
     HBox *m_hbox;
     HBox *m_hbox2;

@@ -95,9 +95,6 @@ mainwnd::mainwnd(perform *a_p):
     update_window_title();
     set_size_request(860, 322);
 
-#if GTK_MINOR_VERSION < 12
-    m_tooltips = manage( new Tooltips() );
-#endif
     m_main_time = manage( new maintime( ));
 
     m_menubar = manage(new MenuBar());

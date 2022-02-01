@@ -55,7 +55,7 @@ void
 seqtime::update_sizes()
 {
     /* set these for later */
-    if( is_realized() )
+    if( get_realized() )
     {
         m_pixmap = Gdk::Pixmap::create( m_window,
                                         m_window_x,

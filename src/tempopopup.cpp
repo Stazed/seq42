@@ -21,13 +21,7 @@
 #include "tempopopup.h"
 #include "tempo.h"
 
-// tooltip helper, for old vs new gtk...
-#if GTK_MINOR_VERSION >= 12
 #   define add_tooltip( obj, text ) obj->set_tooltip_text( text);
-#else
-#   define add_tooltip( obj, text ) m_tooltips->set_tip( *obj, text );
-#endif
-
 
 tempopopup::tempopopup(tempo *a_tempo) :
     m_tempo(a_tempo),
@@ -41,11 +35,7 @@ tempopopup::tempopopup(tempo *a_tempo) :
  //   std::string title = "BPM";
  //   set_title(title);
     set_size_request(150, 50);
-    
-#if GTK_MINOR_VERSION < 12
-    m_tooltips = manage( new Tooltips() );
-#endif
-    
+
     /* bpm spin button */
     m_adjust_bpm = manage(new Adjustment(m_tempo->m_mainperf->get_bpm(), c_bpm_minimum -1, c_bpm_maximum, 1));
     m_spinbutton_bpm = manage( new SpinButton( *m_adjust_bpm ));

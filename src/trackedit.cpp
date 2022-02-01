@@ -23,12 +23,7 @@
 #include "pixmaps/midi.xpm"
 #include "pixmaps/transpose.xpm"
 
-// tooltip helper, for old vs new gtk...
-#if GTK_MINOR_VERSION >= 12
 #   define add_tooltip( obj, text ) obj->set_tooltip_text( text);
-#else
-#   define add_tooltip( obj, text ) tooltips->set_tip( *obj, text );
-#endif
 
 trackedit::trackedit (track *a_track)
 {
@@ -45,9 +40,6 @@ trackedit::trackedit (track *a_track)
 
     m_track->set_editing(true);
 
-#if GTK_MINOR_VERSION < 12
-    m_tooltips = manage( new Tooltips() );
-#endif
     m_vbox = manage( new VBox( false, 2 ));
     m_vbox->set_border_width( 2 );
 

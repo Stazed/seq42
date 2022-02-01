@@ -182,11 +182,6 @@ seqedit::seqedit( sequence *a_seq,
 
     create_menus();
 
-    /* tooltips */
-#if GTK_MINOR_VERSION < 12
-    m_tooltips = manage( new Tooltips() );
-#endif
-
     /* init table, viewports and scroll bars */
     m_table     = manage( new Table( 7, 4, false));
     m_vbox      = manage( new VBox( false, 2 ));

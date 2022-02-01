@@ -56,17 +56,11 @@ class options : public Gtk::Dialog
 
 private:
 
-#if GTK_MINOR_VERSION < 12
-    Tooltips *m_tooltips;
-#endif
-
     perform *m_perf;
 
     Button  *m_button_ok;
     Label* interaction_method_label;
     Label* interaction_method_desc_label;
-
-    Table   *m_table;
 
     Notebook *m_notebook;
 
