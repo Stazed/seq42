@@ -22,7 +22,6 @@
 #include <csignal>
 #include <cerrno>
 #include <cstring>
-#include <gtk/gtkversion.h>
 
 #include "mainwnd.h"
 #include "perform.h"

@@ -30,7 +30,6 @@
 #include <gtkmm/table.h>
 #include <gtkmm/label.h>
 #include <gtkmm/entry.h>
-#include <gtkmm/tooltips.h>
 #include <gtkmm/checkbutton.h>
 
 #include <sigc++/bind.h>
