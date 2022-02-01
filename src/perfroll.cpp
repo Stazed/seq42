@@ -121,7 +121,7 @@ perfroll::on_realize()
     // we need to do the default realize
     Gtk::DrawingArea::on_realize();
 
-    set_flags( Gtk::CAN_FOCUS );
+    set_can_focus();
 
     // Now we can allocate any additional resources we need
     m_window = get_window();
@@ -1011,14 +1011,14 @@ perfroll::convert_xy( int a_x, int a_y, long *a_tick, int *a_track)
 bool
 perfroll::on_focus_in_event(GdkEventFocus*)
 {
-    set_flags(Gtk::HAS_FOCUS);
+    grab_focus();
     return false;
 }
 
 bool
 perfroll::on_focus_out_event(GdkEventFocus*)
 {
-    unset_flags(Gtk::HAS_FOCUS);
+    //unset_flags(Gtk::HAS_FOCUS);
     return false;
 }
 

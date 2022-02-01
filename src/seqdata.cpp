@@ -57,7 +57,7 @@ seqdata::seqdata(sequence *a_seq, int a_zoom, Gtk::Adjustment *a_hadjust):
     colormap->alloc_color( m_blue );
     colormap->alloc_color( m_red );
 
-    set_flags(Gtk::CAN_FOCUS );
+    set_can_focus();
     set_double_buffered( false );
 
     set_size_request( 10,  c_dataarea_y );

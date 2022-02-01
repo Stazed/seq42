@@ -147,7 +147,7 @@ seqroll::on_realize()
     // we need to do the default realize
     Gtk::DrawingArea::on_realize();
 
-    set_flags( Gtk::CAN_FOCUS );
+    set_can_focus();
 
     // Now we can allocate any additional resources we need
     m_window = get_window();
@@ -1092,7 +1092,7 @@ seqroll::on_leave_notify_event(GdkEventCrossing* a_p0)
 bool
 seqroll::on_focus_in_event(GdkEventFocus*)
 {
-    set_flags(Gtk::HAS_FOCUS);
+    grab_focus();
     //m_seq->clear_clipboard();
     return false;
 }
@@ -1100,7 +1100,7 @@ seqroll::on_focus_in_event(GdkEventFocus*)
 bool
 seqroll::on_focus_out_event(GdkEventFocus*)
 {
-    unset_flags(Gtk::HAS_FOCUS);
+    //unset_flags(Gtk::HAS_FOCUS);
     return false;
 }
 
