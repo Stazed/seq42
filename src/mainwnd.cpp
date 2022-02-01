@@ -64,14 +64,7 @@ bool global_is_modified = false;
 bool global_seqlist_need_update = false;
 ff_rw_type_e FF_RW_button_type = FF_RW_RELEASE;
 
-// tooltip helper, for old vs new gtk...
-#if GTK_MINOR_VERSION >= 12
-#   define add_tooltip( obj, text ) obj->set_tooltip_text( text);
-#else
-#   define add_tooltip( obj, text ) m_tooltips->set_tip( *obj, text );
-#endif
-
-
+#define add_tooltip( obj, text ) obj->set_tooltip_text( text);
 
 mainwnd::mainwnd(perform *a_p):
     m_mainperf(a_p),
