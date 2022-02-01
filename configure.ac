@@ -1,8 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(seq42, [1.1.5], [stazed@mapson.com])
+AC_INIT([seq42],[1.1.5],[stazed@mapson.com])
 
 AC_CONFIG_SRCDIR([src/event.cpp])
-AC_CONFIG_HEADER([src/config.h])
+AC_CONFIG_HEADERS([src/config.h])
 AC_CONFIG_MACRO_DIRS([m4])
 
 AM_INIT_AUTOMAKE([dist-bzip2])
@@ -32,11 +32,7 @@ AC_ARG_ENABLE(as_needed,[ --enable-as-needed enable -Wl,--as-needed],
 if test x"${as_needed}" = x"unknown"; then
     ac_old_ldflags="${LDFLAGS}"
     LDFLAGS="-Wl,--as-needed"
-    AC_TRY_LINK(
-                [],
-                [],
-                [as_needed="1"],
-                [as_needed=""])
+    AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[as_needed="1"],[as_needed=""])
     LDFLAGS="${ac_old_ldflags}" 
 fi
 if test -n "$as_needed"; then
@@ -57,7 +53,6 @@ AC_CHECK_LIB(asound, snd_pcm_open,,
              AC_MSG_ERROR(Essential library asound not found))
 
 dnl Checks for header files.
-AC_HEADER_STDC
 AC_CHECK_HEADERS(unistd.h)
 
 dnl Checks for typedefs, structures, and compiler characteristics.
@@ -160,5 +155,6 @@ else
 fi
 
 
-AC_OUTPUT(Makefile man/Makefile icons/Makefile src/Makefile src/pixmaps/Makefile)
+AC_CONFIG_FILES([Makefile man/Makefile icons/Makefile src/Makefile src/pixmaps/Makefile])
+AC_OUTPUT
 

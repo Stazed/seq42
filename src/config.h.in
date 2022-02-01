@@ -9,6 +9,9 @@
 /* Define to 1 if you have the `asound' library (-lasound). */
 #undef HAVE_LIBASOUND
 
+/* Define to 1 if you have the `atopology' library (-latopology). */
+#undef HAVE_LIBATOPOLOGY
+
 /* Define to 1 if you have the `gtkmm-2.4' library (-lgtkmm-2.4). */
 #undef HAVE_LIBGTKMM_2_4
 
@@ -18,14 +21,14 @@
 /* Define to 1 if you have the `sigc-2.0' library (-lsigc-2.0). */
 #undef HAVE_LIBSIGC_2_0
 
-/* Define to 1 if you have the <memory.h> header file. */
-#undef HAVE_MEMORY_H
-
 /* Define to 1 if you have the `select' function. */
 #undef HAVE_SELECT
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
@@ -81,7 +84,9 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
-/* Define to 1 if you have the ANSI C header files. */
+/* Define to 1 if all of the C90 standard headers exist (not just the ones
+   required in a freestanding environment). This macro is provided for
+   backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
 
 /* Version number of package */
