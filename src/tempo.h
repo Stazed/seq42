@@ -39,6 +39,7 @@
 #include <gtkmm/drawingarea.h>
 #include <gtkmm/widget.h>
 #include <gtkmm/adjustment.h>
+#include <cairo.h>
 
 #include "globals.h"
 #include "tempopopup.h"
@@ -55,7 +56,6 @@ class tempo: public Gtk::DrawingArea
 
 private:
 
-    Glib::RefPtr<Gdk::GC> m_gc;
     Glib::RefPtr<Gdk::Window>   m_window;
     Gdk::Color    m_black, m_white, m_grey;
 

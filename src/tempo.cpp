@@ -108,7 +108,6 @@ tempo::on_realize()
 
     // Now we can allocate any additional resources we need
     m_window = get_window();
-    m_gc = Gdk::GC::create( m_window );
     m_window->clear();
 
     set_size_request( 10, c_timearea_y );
@@ -166,23 +165,22 @@ void
 tempo::draw_background()
 {
     /* clear background */
-    m_gc->set_foreground(m_white);
-    m_window->draw_rectangle(m_gc,true,
-                             0,
-                             0,
-                             m_window_x,
-                             m_window_y );
-
-    m_gc->set_foreground(m_black);
-    m_window->draw_line(m_gc,
-                        0,
-                        m_window_y - 1,
-                        m_window_x,
-                        m_window_y - 1 );
-
-
-    /* draw vert lines */
-    m_gc->set_foreground(m_grey);
+    cairo_t *cr = gdk_cairo_create (m_window->gobj());
+    cairo_set_source_rgb(cr, 255.0, 255.0, 255.0);      // white FIXME
+    cairo_set_line_width(cr, 1);
+    cairo_rectangle(cr, 0, 0, m_window_x, m_window_y);
+    cairo_stroke_preserve(cr);
+    cairo_fill(cr);
+    
+    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);            // black  FIXME
+    cairo_set_line_width(cr, 2.0);
+    cairo_move_to(cr, 0, m_window_y - 1);
+    cairo_line_to(cr, m_window_x, m_window_y - 1);
+    cairo_stroke(cr);
+    
+    /* draw vertical lines */
+    cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);            // Grey  FIXME
+    cairo_set_line_width(cr, 1);
 
     long tick_offset = (m_4bar_offset * 16 * c_ppqn);
     long first_measure = tick_offset / m_measure_length;
@@ -193,12 +191,9 @@ tempo::draw_background()
         int x_pos = ((i * m_measure_length) - tick_offset) / m_perf_scale_x;
 
         /* beat */
-        m_window->draw_line(m_gc,
-                            x_pos,
-                            0,
-                            x_pos,
-                            m_window_y );
-
+        cairo_move_to(cr, x_pos, 0);
+        cairo_line_to(cr, x_pos, m_window_y);
+        cairo_stroke(cr);
     }
     
     /* Draw the markers */
@@ -225,7 +220,7 @@ tempo::draw_background()
             // Load the xpm image
             char str[10];
 
-            if(current_marker.bpm == STOP_MARKER)         // Stop marker
+            if(current_marker.bpm == STOP_MARKER) // Stop marker
             {
                 m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(stop_marker_xpm);
                 m_window->draw_pixbuf(m_pixbuf,0,0,tempo_marker -4,0, -1,-1,Gdk::RGB_DITHER_NONE, 0, 0);
@@ -250,14 +245,24 @@ tempo::draw_background()
                 );
             }
 
-            // print the tempo or 'Stop'
-            m_gc->set_foreground(m_white);
-            p_font_renderer->render_string_on_drawable(m_gc,
-                    tempo_marker + 5,
-                    0,
-                    m_window, str, font::WHITE );
+            // set background for tempo labels to black
+            cairo_set_source_rgb(cr, 0, 0, 0);          // Black FIXME
+            
+            // draw the black background for the labels
+            cairo_rectangle(cr, tempo_marker + 5, 0, (strlen(str) * 5) + 1, 12.0);
+            cairo_stroke_preserve(cr);
+            cairo_fill(cr);
+            
+            // print the BPM or [Stop] label in white
+            cairo_set_source_rgb(cr, 255, 255, 255);    // White FIXME
+            cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+            cairo_set_font_size(cr, 9.0);
+            cairo_move_to(cr, tempo_marker + 5, 9.0);
+            cairo_show_text( cr, str);
         }
     }
+    
+    cairo_destroy (cr);
 }
 
 bool
