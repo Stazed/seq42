@@ -166,7 +166,7 @@ tempo::draw_background()
 {
     /* clear background */
     cairo_t *cr = gdk_cairo_create (m_window->gobj());
-    cairo_set_source_rgb(cr, 255.0, 255.0, 255.0);      // white FIXME
+    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);            // white FIXME
     cairo_set_line_width(cr, 1);
     cairo_rectangle(cr, 0, 0, m_window_x, m_window_y);
     cairo_stroke_preserve(cr);
@@ -246,7 +246,7 @@ tempo::draw_background()
             }
 
             // set background for tempo labels to black
-            cairo_set_source_rgb(cr, 0, 0, 0);          // Black FIXME
+            cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
             
             // draw the black background for the labels
             cairo_rectangle(cr, tempo_marker + 5, 0, (strlen(str) * 5) + 1, 12.0);
@@ -254,7 +254,7 @@ tempo::draw_background()
             cairo_fill(cr);
             
             // print the BPM or [Stop] label in white
-            cairo_set_source_rgb(cr, 255, 255, 255);    // White FIXME
+            cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
             cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
             cairo_set_font_size(cr, 9.0);
             cairo_move_to(cr, tempo_marker + 5, 9.0);
