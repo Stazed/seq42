@@ -33,7 +33,6 @@ class maintime: public Gtk::DrawingArea
 
 private:
 
-    Glib::RefPtr<Gdk::GC>       m_gc;
     Glib::RefPtr<Gdk::Window>   m_window;
     Gdk::Color    m_black, m_white, m_grey;
 

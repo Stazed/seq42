@@ -45,7 +45,6 @@ maintime::on_realize()
 
     // Now we can allocate any additional resources we need
     m_window = get_window();
-    m_gc = Gdk::GC::create( m_window );
     m_window->clear();
 
     /* set default size */
@@ -59,15 +58,11 @@ maintime::idle_progress( long a_ticks )
 
     m_window->clear();
 
-    m_gc->set_foreground(m_black);
-    m_window->draw_rectangle
-    (
-        m_gc,false,
-        0,
-        0,
-        c_maintime_x - 1,
-        c_maintime_y - 1
-    );
+    cairo_t *cr = gdk_cairo_create (m_window->gobj());
+    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);        // black FIXME
+    cairo_set_line_width(cr, 1.0);
+    cairo_rectangle(cr, 0.0, 0.0, (c_maintime_x - 1), (c_maintime_y - 1));
+    cairo_stroke(cr);
 
     int width = c_maintime_x - 1 - c_pill_width;
 
@@ -77,35 +72,20 @@ maintime::idle_progress( long a_ticks )
 
     if ( tick_x <= (c_maintime_x / 4 ))
     {
-        m_gc->set_foreground(m_grey);
-        m_window->draw_rectangle
-        (
-            m_gc,true,
-            2, //tick_x + 2,
-            2,
-            c_maintime_x - 4,
-            c_maintime_y - 4
-        );
+        cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);    // grey FIXME
+        cairo_rectangle(cr, 2.0, 2.0, (c_maintime_x - 4), (c_maintime_y - 4));
+        cairo_stroke_preserve(cr);
+        cairo_fill(cr);
     }
 
-    m_gc->set_foreground(m_black);
-    m_window->draw_rectangle
-    (
-        m_gc,true,
-        beat_x + 2,
-        2,
-        c_pill_width,
-        c_maintime_y - 4
-    );
+    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);        // black FIXME
+    cairo_rectangle(cr, (beat_x + 2), 2.0, c_pill_width, (c_maintime_y - 4));
+    cairo_stroke_preserve(cr);
+    cairo_fill(cr);
 
-    m_window->draw_rectangle
-    (
-        m_gc,true,
-        bar_x + 2,
-        2,
-        c_pill_width,
-        c_maintime_y - 4
-    );
+    cairo_rectangle(cr, (bar_x + 2), 2.0, c_pill_width, (c_maintime_y - 4));
+    cairo_stroke_preserve(cr);
+    cairo_fill(cr);
 
     return true;
 }
