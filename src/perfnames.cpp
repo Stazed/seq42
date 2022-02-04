@@ -67,7 +67,6 @@ perfnames::on_realize()
 
     // Now we can allocate any additional resources we need
     m_window = get_window();
-    m_gc = Gdk::GC::create( m_window );
     m_window->clear();
 
     m_pixmap = Gdk::Pixmap::create
@@ -111,37 +110,43 @@ void
 perfnames::draw_track( int track )
 {
     int i = track - m_track_offset;
+    cairo_t *cr = gdk_cairo_create (m_window->gobj());
+
+    cairo_set_line_width(cr, 1.0);
 
     if ( track < c_max_track )
     {
-        m_gc->set_foreground(m_black);
-        m_window->draw_rectangle
-        (
-            m_gc,true,
-            0,
+        cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);        // Black FIXME
+        cairo_rectangle(cr, 0,
             (c_names_y * i),
             c_names_x,
             c_names_y + 1
         );
+        cairo_stroke_preserve(cr);
+        cairo_fill(cr);
 
         if ( m_mainperf->is_active_track( track ))
-            m_gc->set_foreground(m_white);
+        {
+            cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
+        }
         else
-            m_gc->set_foreground(m_grey);
+        {
+            cairo_set_source_rgb(cr, 0.6, 0.8, 1.0);    // blue FIXME
+        }
 
-        m_window->draw_rectangle
-        (
-            m_gc,true,
-            1,
+        cairo_rectangle(cr, 1,
             (c_names_y * i) + 1,
             c_names_x-1,
             c_names_y - 1
         );
+        cairo_stroke_preserve(cr);
+        cairo_fill(cr);
 
         if ( m_mainperf->is_active_track( track ))
         {
             m_track_active[track]=true;
 
+            /* Track Bus */
             char str[30];
             snprintf
             (
@@ -152,87 +157,126 @@ perfnames::draw_track( int track )
                 m_mainperf->get_track(track)->get_midi_channel()+1
             );
 
-            p_font_renderer->render_string_on_drawable(m_gc,
-                    5,
-                    c_names_y * i + 2,
-                    m_window, str, font::BLACK );
+            // set background for bus
+            cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
+            
+            // draw the white background for the bus
+            cairo_rectangle(cr, 5, c_names_y * i + 2, (strlen(str) * 5) + 1, 6.0);
+            cairo_stroke_preserve(cr);
+            cairo_fill(cr);
+            
+            // print the string
+            cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
+            cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+            cairo_set_font_size(cr, 9.0);
+            cairo_move_to(cr, 5, c_names_y * i + 10);
+            cairo_show_text( cr, str);
 
+            /* Track name */
             char name[20];
             snprintf(name, sizeof(name), "%-16.16s",
                      m_mainperf->get_track(track)->get_name());
+            
+            // set background for name
+            cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
+            
+            // draw the white background for the name
+            cairo_rectangle(cr, 5, c_names_y * i + 12, (strlen(name) * 5) + 1, 10.0);
+            cairo_stroke_preserve(cr);
+            cairo_fill(cr);
 
-            p_font_renderer->render_string_on_drawable(m_gc,
-                    5,
-                    c_names_y * i + 12,
-                    m_window, name, font::BLACK );
+            // print the track name
+            cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
+            cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+            cairo_set_font_size(cr, 9.0);
+            cairo_move_to(cr, 5, c_names_y * i + 20);
+            cairo_show_text( cr, name);
 
+            /* The Play, Mute, Solo button */
             bool fill = false;
             bool solo = m_mainperf->get_track(track)->get_song_solo();
             bool muted = m_mainperf->get_track(track)->get_song_mute();
-            
+
+            // solo or muted we fill the background, play we do not
             if(solo || muted)
                 fill = true;
 
-            m_gc->set_foreground(m_black);
+            cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
             
             if(muted)
-                m_gc->set_foreground(m_orange);
-            if(solo)
-                m_gc->set_foreground(m_green);
-            
-            m_window->draw_rectangle
-            (
-                m_gc,fill,
-                104,
-                (c_names_y * i),
-                10,
-                c_names_y
-            );
-
-            if ( muted )
             {
-                p_font_renderer->render_string_on_drawable
-                (
-                    m_gc,
-                    107,
-                    c_names_y * i + 2,
-                    m_window, "M", font::WHITE
-                );
+                cairo_set_source_rgb(cr, 1.0, 0.27, 0.0);    // Red FIXME
             }
-            else if ( solo )
+            if(solo)
             {
-                p_font_renderer->render_string_on_drawable
-                (
-                    m_gc,
-                    107,
-                    c_names_y * i + 2,
-                    m_window, "S", font::WHITE
-                );
+                cairo_set_source_rgb(cr, 0.5, 0.988, 0.0);    // Green FIXME
+            }
+            
+            cairo_rectangle(cr, 104, (c_names_y * i) + 1, 10, c_names_y -1);
+            if ( fill )
+            {
+                cairo_stroke_preserve(cr);
+                cairo_fill(cr);
             }
             else
             {
-                p_font_renderer->render_string_on_drawable
-                (
-                    m_gc,
-                    107,
-                    c_names_y * i + 2,
-                    m_window, "P", font::BLACK
-                );
+                cairo_stroke(cr);
             }
+
+            /* Play, Mute, Solo label (P,M,S) */
+            char smute[5];
+ 
+            if ( muted )
+            {
+                snprintf(smute, sizeof(smute), "M" );
+                // background
+                cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
+            }
+            else if ( solo )
+            {
+                snprintf(smute, sizeof(smute), "S" );
+                // background
+                cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
+            }
+            else
+            {
+                snprintf(smute, sizeof(smute), "P" );
+                // background 
+                cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
+            }
+            
+            // draw the background for the mute label
+            cairo_rectangle(cr, 106, c_names_y * i + 7, (strlen(smute) * 5) + 2, 9.0);
+            cairo_stroke_preserve(cr);
+            cairo_fill(cr);
+
+            // print the mute label
+            if ( muted || solo )
+            {
+                cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
+            }
+            else
+            {
+                cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
+            }
+            cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+            cairo_set_font_size(cr, 9.0);
+            cairo_move_to(cr, 106, c_names_y * i + 15);
+            cairo_show_text( cr, smute);
         }
     }
     else
     {
-        m_gc->set_foreground(m_grey);
-        m_window->draw_rectangle
-        (
-            m_gc,true,
-            0,
+        cairo_set_source_rgb(cr, 0.6, 0.8, 1.0);    // blue FIXME
+        cairo_rectangle(cr, 0,
             (c_names_y * i) + 1,
             c_names_x,
-            c_names_y
-        );
+            c_names_y);
+        cairo_stroke_preserve(cr);
+        cairo_fill(cr);
     }
+
+    cairo_destroy(cr);
 }
 
 bool
