@@ -125,7 +125,6 @@ perfroll::on_realize()
 
     // Now we can allocate any additional resources we need
     m_window = get_window();
-    m_gc = Gdk::GC::create( m_window );
     m_window->clear();
 
     update_sizes();
@@ -213,67 +212,44 @@ void
 perfroll::fill_background_pixmap()
 {
     /* clear background */
-    m_gc->set_foreground(m_white);
-    m_background->draw_rectangle
-    (
-        m_gc,true,
-        0,
-        0,
-        c_perfroll_background_x,
-        c_names_y
-    );
+    cairo_t *cr = gdk_cairo_create (m_background->gobj());
+    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
+    cairo_set_line_width(cr, 1.0);
+    cairo_rectangle(cr, 0.0, 0.0, c_perfroll_background_x, c_names_y);
+    cairo_stroke_preserve(cr);
+    cairo_fill(cr);
 
-    /* draw horz grey lines */
-    m_gc->set_foreground(m_grey);
+    /* draw horizontal grey lines */
+    cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);    // Grey  FIXME
+    static const double dashed[] = {1.0};
+    cairo_set_line_width(cr, 1.5);
+    cairo_set_dash(cr, dashed, 1, 0.0);
+    cairo_set_line_join(cr, CAIRO_LINE_JOIN_MITER);
+    cairo_move_to(cr, 0.0, 0.0);
+    cairo_line_to(cr, c_perfroll_background_x, 0.0);
+    cairo_stroke(cr);
 
-    gint8 dash = 1;
-    m_gc->set_dashes( 0, &dash, 1 );
-
-    m_gc->set_line_attributes( 1,
-                               Gdk::LINE_ON_OFF_DASH,
-                               Gdk::CAP_NOT_LAST,
-                               Gdk::JOIN_MITER );
-
-    m_background->draw_line
-    (
-        m_gc,
-        0,
-        0,
-        c_perfroll_background_x,
-        0
-    );
-
+    /* draw vertical lines */
     int beats = m_measure_length / m_beat_length;
-
-    /* draw vert lines */
-    for ( int i=0; i< beats ; )
+    for ( int i = 0; i < beats ; )
     {
         if ( i == 0 )
         {
-            m_gc->set_line_attributes( 1,
-                                       Gdk::LINE_SOLID,
-                                       Gdk::CAP_NOT_LAST,
-                                       Gdk::JOIN_MITER );
+            cairo_set_dash(cr, 0, 0, 0);        // Clear the dashes
+            cairo_set_line_width(cr, 2.0);
+            cairo_set_line_join(cr, CAIRO_LINE_JOIN_MITER);
         }
         else
         {
-            m_gc->set_line_attributes( 1,
-                                       Gdk::LINE_ON_OFF_DASH,
-                                       Gdk::CAP_NOT_LAST,
-                                       Gdk::JOIN_MITER );
+            cairo_set_line_width(cr, 1.0);
+            cairo_set_dash(cr, dashed, 1, 0.0);
+            cairo_set_line_join(cr, CAIRO_LINE_JOIN_MITER);
         }
 
-        m_gc->set_foreground(m_grey);
-
         /* solid line on every beat */
-        m_background->draw_line
-        (
-            m_gc,
-            i * m_beat_length / m_perf_scale_x,
-            0,
-            i * m_beat_length / m_perf_scale_x,
-            c_names_y
-        );
+        cairo_move_to(cr, i * m_beat_length / m_perf_scale_x, 0.0);
+        cairo_line_to(cr, i * m_beat_length / m_perf_scale_x, c_names_y);
+        cairo_stroke(cr);
 
         // jump 2 if 16th notes
         if ( m_beat_length < c_ppqn/2 )
@@ -286,12 +262,7 @@ perfroll::fill_background_pixmap()
         }
     }
 
-    /* reset line style */
-
-    m_gc->set_line_attributes( 1,
-                               Gdk::LINE_SOLID,
-                               Gdk::CAP_NOT_LAST,
-                               Gdk::JOIN_MITER );
+    cairo_destroy(cr);
 }
 
 
@@ -320,34 +291,21 @@ perfroll::draw_progress()
     int progress_x =     ( tick - tick_offset ) / m_perf_scale_x ;
     int old_progress_x = ( m_old_progress_ticks - tick_offset ) / m_perf_scale_x ;
 
+    cairo_t *cr = gdk_cairo_create (m_window->gobj());
+
     /* draw old */
-    m_window->draw_drawable
-    (
-        m_gc,
-        m_pixmap,
-        old_progress_x-1, 0,
-        old_progress_x-1, 0,
-        2, m_window_y
-    );
+    gdk_cairo_set_source_pixmap(cr, m_pixmap->gobj(), 0.0, 0.0);
+    cairo_rectangle(cr, old_progress_x-1, 0.0, 2.0, m_window_y);
+    cairo_fill(cr);
+    
+    /* draw progress line */
+    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);            // Black  FIXME
+    cairo_set_line_width(cr, 2.0);
+    cairo_move_to(cr, progress_x, 0.0);
+    cairo_line_to(cr, progress_x, m_window_y);
+    cairo_stroke(cr);
+    cairo_destroy(cr);
 
-    m_gc->set_line_attributes( 2,
-                           Gdk::LINE_SOLID,
-                           Gdk::CAP_NOT_LAST,
-                           Gdk::JOIN_MITER );
-
-    m_gc->set_foreground(m_black);
-
-    m_window->draw_line
-    (
-        m_gc,
-        progress_x, 0,
-        progress_x, m_window_y
-    );
-    // reset
-    m_gc->set_line_attributes( 1,
-                           Gdk::LINE_SOLID,
-                           Gdk::CAP_NOT_LAST,
-                           Gdk::JOIN_MITER );
     m_old_progress_ticks = tick;
 
     auto_scroll_horz();
@@ -363,6 +321,9 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
     bool selected;
     int seq_idx;
     sequence *seq;
+    
+    cairo_t *cr = gdk_cairo_create (a_draw->gobj());
+    cairo_set_line_width(cr, 1.0);
 
     long tick_offset = m_4bar_offset * c_ppqn * 16;
     long x_offset = tick_offset / m_perf_scale_x;
@@ -389,53 +350,50 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
                     int y = c_names_y * a_track + 1;  // + 2
                     int h = c_names_y - 2; // - 4
 
-                    // adjust to screen corrids
+                    // adjust to screen coordinates
                     x = x - x_offset;
 
                     if ( selected )
-                        m_gc->set_foreground(m_blue);
+                    {
+                        cairo_set_source_rgb(cr, 0.6, 0.8, 1.0);    // blue FIXME
+                    }
                     else
-                        m_gc->set_foreground(m_white);
+                    {
+                        cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
+                    }
 
                     /* trigger background */
-                    a_draw->draw_rectangle(m_gc,true,
-                                           x,
-                                           y,
-                                           w,
-                                           h );
+                    cairo_rectangle(cr, x, y, w, h);
+                    cairo_fill(cr);
+
                     /* trigger outline */
-                    m_gc->set_foreground(m_black);
-                    a_draw->draw_rectangle(m_gc,false,
-                                           x,
-                                           y,
-                                           w,
-                                           h );
+                    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);        // black FIXME
+                    cairo_rectangle(cr, x, y, w, h);
+                    cairo_stroke(cr);
+
                     /* resize handle - top left */
-                    m_gc->set_foreground(m_black);
-                    a_draw->draw_rectangle(m_gc,false,
-                                           x,
-                                           y,
-                                           c_perfroll_size_box_w,
-                                           c_perfroll_size_box_w );
+                    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);        // black FIXME
+                    cairo_rectangle(cr, x, y, c_perfroll_size_box_w, c_perfroll_size_box_w);
+                    cairo_stroke(cr);
+
                     /* resize handle - bottom right */
-                    a_draw->draw_rectangle(m_gc,false,
-                                           x+w-c_perfroll_size_box_w,
-                                           y+h-c_perfroll_size_box_w,
-                                           c_perfroll_size_box_w,
-                                           c_perfroll_size_box_w );
+                    cairo_rectangle(cr, x+w-c_perfroll_size_box_w, y+h-c_perfroll_size_box_w, c_perfroll_size_box_w, c_perfroll_size_box_w);
+                    cairo_stroke(cr);
 
-                    m_gc->set_foreground(m_black);
+                    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);        // black FIXME
 
+                    /* sequence label and notes */
                     char label[40];
-                    int max_label = (w / 6)-1;
+                    int max_label = (w / 6) - 1;
                     if(max_label < 0) max_label = 0;
                     if(max_label > 39) max_label = 39;
                     seq = trk->get_sequence(seq_idx);
+
                     if(seq == NULL)
                     {
                         strncpy(label, "Empty", max_label);
                     }
-                    else
+                    else    // sequence notes
                     {
                         strncpy(label, seq->get_name(), max_label);
                         long sequence_length = seq->get_length();
@@ -451,15 +409,16 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
                             if ( tick_marker > tick_on ) // sequence end marker
                             {
                                 if ( selected )
-                                    m_gc->set_foreground(m_white);
+                                {
+                                    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
+                                }
                                 else
-                                    m_gc->set_foreground(m_grey);
+                                {
+                                    cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);    // grey FIXME
+                                }
 
-                                a_draw->draw_rectangle(m_gc,true,
-                                                       tick_marker_x,
-                                                       y+4,
-                                                       1,
-                                                       h-8 );
+                                cairo_rectangle(cr, tick_marker_x, (y + 4), 1.0, (h - 8) );
+                                cairo_fill(cr);
                             }
 
                             int lowest_note = seq->get_lowest_note_event( );
@@ -481,7 +440,8 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
 
                             seq->reset_draw_marker();
 
-                            m_gc->set_foreground(m_black); // notes
+                            cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);      // black FIXME
+
                             while ( (dt = seq->get_next_note_event( &tick_s, &tick_f, &note,
                                                                     &selected, &velocity )) != DRAW_FIN )
                             {
@@ -518,24 +478,38 @@ void perfroll::draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
                                 //printf("tick_f_x [%d]: tick_s_x[%d]\n", tick_f_x, tick_s_x);
 
                                 if ( tick_f_x >= x && tick_s_x <= x+w )
-                                    m_pixmap->draw_line(m_gc, tick_s_x,
-                                                        y + note_y,
-                                                        tick_f_x,
-                                                        y + note_y );
+                                {
+                                    cairo_move_to(cr, tick_s_x, y + note_y);
+                                    cairo_line_to(cr, tick_f_x, y + note_y);
+                                    cairo_stroke(cr);
+                                }
                             }
 
                             tick_marker += sequence_length;
                         }
                     }
                     label[max_label] = '\0';
-                    p_font_renderer->render_string_on_drawable(m_gc,
-                            x+5,
-                            y+2,
-                            a_draw, label, font::BLACK );
+                    
+                    /* set background for labels to white */
+                    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);        // White FIXME
+
+                    /* draw the white background for the labels */
+                    cairo_rectangle(cr, x + 7, y + 2, (strlen(label) * 5), 10.0);
+                    cairo_stroke_preserve(cr);
+                    cairo_fill(cr);
+
+                    /* print the sequence label */ 
+                    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);        // Black FIXME
+                    cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+                    cairo_set_font_size(cr, 8.0);
+                    cairo_move_to(cr, x + 7, y + 10);
+                    cairo_show_text(cr, label);
                 }
             }
         }
     }
+
+    cairo_destroy(cr);
 }
 
 void perfroll::draw_background_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track )
@@ -548,28 +522,25 @@ void perfroll::draw_background_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_tra
     int y = c_names_y * a_track;
     int h = c_names_y;
 
-    m_gc->set_foreground(m_white);
-    a_draw->draw_rectangle(m_gc,true,
-                           0,
-                           y,
-                           m_window_x,
-                           h );
+    /* clear background */
+    cairo_t *cr = gdk_cairo_create (a_draw->gobj());
+    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
+    cairo_set_line_width(cr, 1.0);
+    cairo_rectangle(cr, 0.0, y, m_window_x, h);
+    cairo_fill(cr);
 
-    m_gc->set_foreground(m_black);
-
+    /* apply the background grid - lines, etc */
     for ( int i = first_measure;
             i < first_measure + (m_window_x * m_perf_scale_x / (m_measure_length)) + 1; i++ )
     {
         int x_pos = ((i * m_measure_length) - tick_offset) / m_perf_scale_x;
 
-        a_draw->draw_drawable(m_gc, m_background,
-                              0,
-                              0,
-                              x_pos,
-                              y,
-                              c_perfroll_background_x,
-                              c_names_y);
+        gdk_cairo_set_source_pixmap(cr, m_background->gobj(), x_pos, y);
+        cairo_rectangle(cr, x_pos, y, c_perfroll_background_x, c_names_y);
+        cairo_fill(cr);
     }
+
+    cairo_destroy(cr);
 }
 
 bool
@@ -583,14 +554,16 @@ perfroll::on_expose_event(GdkEventExpose* e)
         draw_background_on(m_pixmap, y + m_track_offset );
         draw_track_on(m_pixmap, y + m_track_offset );
     }
+    
+    cairo_t *cr = gdk_cairo_create (m_window->gobj());
+    gdk_cairo_set_source_pixmap(cr, m_pixmap->gobj(), 0.0, 0.0);
+    cairo_rectangle(cr, e->area.x,
+                        e->area.y,
+                        e->area.width,
+                        e->area.height);
+    cairo_fill(cr);
+    cairo_destroy(cr);
 
-    m_window->draw_drawable( m_gc, m_pixmap,
-                             e->area.x,
-                             e->area.y,
-                             e->area.x,
-                             e->area.y,
-                             e->area.width,
-                             e->area.height );
     return true;
 }
 
@@ -618,17 +591,13 @@ perfroll::redraw_dirty_tracks()
     }
 
     if ( draw )
-        m_window->draw_drawable
-        (
-            m_gc,
-            m_pixmap,
-            0,
-            0,
-            0,
-            0,
-            m_window_x,
-            m_window_y
-        );
+    {
+        cairo_t *cr = gdk_cairo_create (m_window->gobj());
+        gdk_cairo_set_source_pixmap(cr, m_pixmap->gobj(), 0.0, 0.0);
+        cairo_rectangle(cr, 0.0, 0.0, m_window_x, m_window_y);
+        cairo_fill(cr);
+        cairo_destroy(cr);
+    }
 }
 
 void
@@ -638,18 +607,12 @@ perfroll::draw_drawable_row( Glib::RefPtr<Gdk::Drawable> a_dest, Glib::RefPtr<Gd
         return;
 
     int s = a_y / c_names_y;
-
-    a_dest->draw_drawable
-    (
-        m_gc,
-        a_src,
-        0,
-        c_names_y * s,
-        0,
-        c_names_y * s,
-        m_window_x,
-        c_names_y
-    );
+    
+    cairo_t *cr = gdk_cairo_create (a_dest->gobj());
+    gdk_cairo_set_source_pixmap(cr, a_src->gobj(), 0.0, 0.0);
+    cairo_rectangle(cr, 0.0, c_names_y * s, m_window_x, c_names_y);
+    cairo_fill(cr);
+    cairo_destroy(cr);
 }
 
 bool
