@@ -51,11 +51,8 @@ class perftime: public Gtk::DrawingArea
 
 private:
 
-    Glib::RefPtr<Gdk::GC> m_gc;
     Glib::RefPtr<Gdk::Window>   m_window;
     Gdk::Color    m_black, m_white, m_grey;
-
-    Glib::RefPtr<Gdk::Pixmap> m_pixmap;
 
     perform      * const m_mainperf;
     mainwnd      * const m_mainwnd;

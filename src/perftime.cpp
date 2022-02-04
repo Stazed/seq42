@@ -84,7 +84,6 @@ perftime::on_realize()
 
     // Now we can allocate any additional resources we need
     m_window = get_window();
-    m_gc = Gdk::GC::create( m_window );
     m_window->clear();
 
     set_size_request( 10, c_timearea_y );
@@ -137,24 +136,20 @@ void
 perftime::draw_background()
 {
     /* clear background */
-    m_gc->set_foreground(m_white);
-    m_window->draw_rectangle(m_gc,true,
-                             0,
-                             0,
-                             m_window_x,
-                             m_window_y );
+    cairo_t *cr = gdk_cairo_create (m_window->gobj());
+    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);            // white FIXME
+    cairo_set_line_width(cr, 1.0);
+    cairo_rectangle(cr, 0, 0, m_window_x, m_window_y);
+    cairo_stroke_preserve(cr);
+    cairo_fill(cr);
 
-    m_gc->set_foreground(m_black);
-    m_window->draw_line(m_gc,
-                        0,
-                        m_window_y - 1,
-                        m_window_x,
-                        m_window_y - 1 );
+    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);            // black  FIXME
+    cairo_set_line_width(cr, 1.0);
+    cairo_move_to(cr, 0, m_window_y - 1);
+    cairo_line_to(cr, m_window_x, m_window_y - 1);
+    cairo_stroke(cr);
 
-
-    /* draw vert lines */
-    m_gc->set_foreground(m_grey);
-
+    /* draw vertical lines */
     long tick_offset = (m_4bar_offset * 16 * c_ppqn);
     long first_measure = tick_offset / m_measure_length;
 
@@ -181,6 +176,8 @@ perftime::draw_background()
     0    1    2    3    4    5
 
 #endif
+    cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);            // Grey  FIXME
+    cairo_set_line_width(cr, 1);
 
     for ( int i=first_measure;
             i<first_measure+(m_window_x * m_perf_scale_x / (m_measure_length)) + 1; i += bar_skip  )
@@ -188,23 +185,22 @@ perftime::draw_background()
         int x_pos = ((i * m_measure_length) - tick_offset) / m_perf_scale_x;
 
         /* beat */
-        m_window->draw_line(m_gc,
-                            x_pos,
-                            0,
-                            x_pos,
-                            m_window_y );
+        cairo_move_to(cr, x_pos, 0);
+        cairo_line_to(cr, x_pos, m_window_y);
+        cairo_stroke(cr);
 
+        /* bar numbers */
         char bar[16];
-        snprintf( bar, sizeof(bar), "%d", i + 1 ); // bar numbers
+        snprintf( bar, sizeof(bar), "%d", i + 1 );
 
-        m_gc->set_foreground(m_black);
-
-        p_font_renderer->render_string_on_drawable(m_gc,
-                x_pos + 2,
-                0,
-                m_window, bar, font::BLACK );
+        cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
+        cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+        cairo_set_font_size(cr, 9.0);
+        cairo_move_to(cr, x_pos + 2, 8.0);
+        cairo_show_text( cr, bar);
     }
 
+    /* The 'L' and 'R' markers */
     long left = m_mainperf->get_left_tick( );
     long right = m_mainperf->get_right_tick( );
 
@@ -215,33 +211,41 @@ perftime::draw_background()
 
     if ( left >=0 && left <= m_window_x )
     {
-        m_gc->set_foreground(m_black);
-        m_window->draw_rectangle(m_gc,true,
-                                 left, m_window_y - 9,
-                                 7,
-                                 10 );
+        // set background for tempo labels to black
+        cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
 
-        m_gc->set_foreground(m_white);
-        p_font_renderer->render_string_on_drawable(m_gc,
-                left + 1,
-                9,
-                m_window, "L", font::WHITE );
+        // draw the black background for the labels
+        cairo_rectangle(cr, left, m_window_y - 9, 7, 10);
+        cairo_stroke_preserve(cr);
+        cairo_fill(cr);
+
+        // print the 'L' label in white
+        cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
+        cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+        cairo_set_font_size(cr, 9.0);
+        cairo_move_to(cr, left + 1, 17.0);
+        cairo_show_text( cr, "L");
     }
 
     if ( right >=0 && right <= m_window_x )
     {
-        m_gc->set_foreground(m_black);
-        m_window->draw_rectangle(m_gc,true,
-                                 right - 6, m_window_y - 9,
-                                 7,
-                                 10 );
+        // set background for tempo labels to black
+        cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
 
-        m_gc->set_foreground(m_white);
-        p_font_renderer->render_string_on_drawable(m_gc,
-                right - 6 + 1,
-                9,
-                m_window, "R", font::WHITE );
+        // draw the black background for the labels
+        cairo_rectangle(cr, right - 6, m_window_y - 9, 7, 10);
+        cairo_stroke_preserve(cr);
+        cairo_fill(cr);
+
+        // print the 'R' label in white
+        cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
+        cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+        cairo_set_font_size(cr, 9.0);
+        cairo_move_to(cr, right - 6, 17.0);
+        cairo_show_text( cr, "R");
     }
+
+    cairo_destroy(cr);
 }
 
 bool
