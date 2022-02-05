@@ -76,7 +76,6 @@ seqtime::on_realize()
 
     // Now we can allocate any additional resources we need
     m_window = get_window();
-    m_gc = Gdk::GC::create( m_window );
     m_window->clear();
 
     m_hadjust->signal_value_changed().connect( mem_fun( *this, &seqtime::change_horz ));
@@ -146,19 +145,17 @@ void
 seqtime::update_pixmap()
 {
     /* clear background */
-    m_gc->set_foreground(m_white);
-    m_pixmap->draw_rectangle(m_gc,true,
-                             0,
-                             0,
-                             m_window_x,
-                             m_window_y );
-
-    m_gc->set_foreground(m_black);
-    m_pixmap->draw_line(m_gc,
-                        0,
-                        m_window_y - 1,
-                        m_window_x,
-                        m_window_y - 1 );
+    cairo_t *cr = gdk_cairo_create (m_pixmap->gobj());
+    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
+    cairo_set_line_width(cr, 1.0);
+    cairo_rectangle(cr, 0.0, 0.0, m_window_x, m_window_y );
+    cairo_stroke_preserve(cr);
+    cairo_fill(cr);
+    
+    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
+    cairo_move_to(cr, 0.0, m_window_y - 1);
+    cairo_line_to(cr, m_window_x,  m_window_y - 1 );
+    cairo_stroke(cr);
 
     // at 32, a bar every measure
     // at 16
@@ -198,73 +195,69 @@ seqtime::update_pixmap()
     //printf ( "ticks_per_step[%d] start_tick[%d] end_tick[%d]\n",
     //         ticks_per_step, start_tick, end_tick );
 
-    /* draw vert lines */
-    m_gc->set_foreground(m_black);
-    for ( int i=start_tick; i<end_tick; i += ticks_per_step )
+    /* draw vertical lines */
+    for ( int i = start_tick; i < end_tick; i += ticks_per_step )
     {
         int base_line = i / m_zoom;
 
         /* beat */
-        m_pixmap->draw_line(m_gc,
-                            base_line -  m_scroll_offset_x,
-                            0,
-                            base_line -  m_scroll_offset_x,
-                            m_window_y );
+        cairo_move_to(cr, base_line -  m_scroll_offset_x, 0);
+        cairo_line_to(cr, base_line -  m_scroll_offset_x, m_window_y );
+        cairo_stroke(cr);
 
+        /* The bar numbers */
         char bar[16];
         snprintf(bar, sizeof(bar), "%d", (i/ ticks_per_measure ) + 1);
 
-        m_gc->set_foreground(m_black);
-
-        p_font_renderer->render_string_on_drawable(m_gc,
-                base_line + 2 -  m_scroll_offset_x,
-                0,
-                m_pixmap, bar, font::BLACK );
+        cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+        cairo_set_font_size(cr, 9.0);
+        cairo_move_to(cr, base_line + 2 -  m_scroll_offset_x, 7);
+        cairo_show_text( cr, bar);
     }
 
     long end_x = m_seq->get_length() / m_zoom - m_scroll_offset_x;
 
-    m_gc->set_foreground(m_black);
-    m_pixmap->draw_rectangle(m_gc,true,
-                             end_x,
-                             9,
-                             19,
-                             8 );
+    // set background for label to black
+    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
 
-    p_font_renderer->render_string_on_drawable(m_gc,
-            end_x + 1,
-            9,
-            m_pixmap, "END", font::WHITE );
+    // draw the black background for the 'END' label
+    cairo_rectangle(cr, end_x, 9, 22, 8 );
+    cairo_stroke_preserve(cr);
+    cairo_fill(cr);
+
+    // print the 'END' label in white
+    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
+    cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+    cairo_set_font_size(cr, 9.0);
+    cairo_move_to(cr, end_x, 16);
+    cairo_show_text( cr, "END");
+
+    cairo_destroy(cr);
 }
 
 void
 seqtime::draw_pixmap_on_window()
 {
-    m_window->draw_drawable
-    (
-        m_gc,
-        m_pixmap,
-        0,0,
-        0,0,
-        m_window_x,
-        m_window_y
-    );
+    cairo_t *cr = gdk_cairo_create (m_window->gobj());
+    gdk_cairo_set_source_pixmap(cr, m_pixmap->gobj(), 0.0, 0.0);
+    cairo_rectangle(cr, 0.0, 0.0, m_window_x, m_window_y);
+    cairo_fill(cr);
+
+    cairo_destroy(cr);
 }
 
 bool
 seqtime::on_expose_event(GdkEventExpose* a_e)
 {
-    m_window->draw_drawable
-    (
-        m_gc,
-        m_pixmap,
-        a_e->area.x,
-        a_e->area.y,
-        a_e->area.x,
+    cairo_t *cr = gdk_cairo_create (m_window->gobj());
+    gdk_cairo_set_source_pixmap(cr, m_pixmap->gobj(), a_e->area.x, a_e->area.y);
+    cairo_rectangle(cr, a_e->area.x,
         a_e->area.y,
         a_e->area.width,
-        a_e->area.height
-    );
+        a_e->area.height);
+    cairo_fill(cr);
+
+    cairo_destroy(cr);
 
     return true;
 }
@@ -272,15 +265,12 @@ seqtime::on_expose_event(GdkEventExpose* a_e)
 void
 seqtime::force_draw()
 {
-    m_window->draw_drawable
-    (
-        m_gc,
-        m_pixmap,
-        0,0,
-        0,0,
-        m_window_x,
-        m_window_y
-    );
+    cairo_t *cr = gdk_cairo_create (m_window->gobj());
+    gdk_cairo_set_source_pixmap(cr, m_pixmap->gobj(), 0.0, 0.0);
+    cairo_rectangle(cr, 0.0, 0.0, m_window_x,  m_window_y);
+    cairo_fill(cr);
+
+    cairo_destroy(cr);
 }
 
 bool
