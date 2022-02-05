@@ -70,7 +70,9 @@ struct Seq42SeqEventInput
     bool m_adding;
 };
 
-/* piano event */
+/* The small event grid below the note editor and above the velocity editor
+ * shows the vertical event notes and CCs.
+ */
 class seqevent : public Gtk::DrawingArea
 {
 
@@ -81,7 +83,6 @@ private:
     friend struct Seq42SeqEventInput;
     Seq42SeqEventInput m_seq42_interaction;
 
-    Glib::RefPtr<Gdk::GC> m_gc;
     Glib::RefPtr<Gdk::Window> m_window;
     Gdk::Color m_dk_blue, m_white, m_grey, m_dk_grey, m_red;
 
