@@ -90,25 +90,25 @@ perform::perform()
 
 #endif // MIDI_CONTROL_SUPPORT
     
-    m_key_bpm_up = GDK_apostrophe;
-    m_key_bpm_dn = GDK_semicolon;
-    m_key_tap_bpm = GDK_F9;
+    m_key_bpm_up = GDK_KEY_apostrophe;
+    m_key_bpm_dn = GDK_KEY_semicolon;
+    m_key_tap_bpm = GDK_KEY_F9;
 
-    m_key_start  = GDK_space;
-    m_key_stop   = GDK_Escape;
-    m_key_forward   = GDK_f;
-    m_key_rewind   = GDK_r;
-    m_key_pointer   = GDK_p;
+    m_key_start  = GDK_KEY_space;
+    m_key_stop   = GDK_KEY_Escape;
+    m_key_forward   = GDK_KEY_f;
+    m_key_rewind   = GDK_KEY_r;
+    m_key_pointer   = GDK_KEY_p;
 
-    m_key_loop   = GDK_quoteleft;
-    m_key_song   = GDK_F1;
-    m_key_jack   = GDK_F2;
-    m_key_seqlist   = GDK_F3;
-    m_key_follow_trans  = GDK_F4;
+    m_key_loop   = GDK_KEY_quoteleft;
+    m_key_song   = GDK_KEY_F1;
+    m_key_jack   = GDK_KEY_F2;
+    m_key_seqlist   = GDK_KEY_F3;
+    m_key_follow_trans  = GDK_KEY_F4;
     
     //playlist next/prev keys:
-    m_key_playlist_next = GDK_Right;
-    m_key_playlist_prev = GDK_Left;
+    m_key_playlist_next = GDK_KEY_Right;
+    m_key_playlist_prev = GDK_KEY_Left;
     
     m_jack_stop_tick = 0;
     m_load_tempo_list = false;

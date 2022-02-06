@@ -132,7 +132,7 @@ Glib::ustring global_jack_session_uuid = "";
 user_midi_bus_definition   global_user_midi_bus_definitions[c_maxBuses];
 user_instrument_definition global_user_instrument_definitions[c_max_instruments];
 
-font *p_font_renderer;
+//font *p_font_renderer;
 
 #ifdef LASH_SUPPORT
 lash *lash_driver = NULL;
@@ -371,7 +371,7 @@ main (int argc, char *argv[])
     p.launch_output_thread();
     p.init_jack();
 
-    p_font_renderer = new font();
+//    p_font_renderer = new font();
 
     mainwnd seq42_window( &p );
 

@@ -591,7 +591,7 @@ mainwnd::mainwnd(perform *a_p):
 
     /* show everything */
     show_all();
-    p_font_renderer->init( this->get_window() );
+//    p_font_renderer->init( this->get_window() );
 
     add_events( Gdk::KEY_PRESS_MASK | Gdk::KEY_RELEASE_MASK );
 
@@ -2166,13 +2166,13 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
     if ( a_ev->state & GDK_CONTROL_MASK )
     {
         /* Ctrl-Z: Undo */
-        if ( a_ev->keyval == GDK_z || a_ev->keyval == GDK_Z )
+        if ( a_ev->keyval == GDK_KEY_z || a_ev->keyval == GDK_KEY_Z )
         {
             undo_type();
             return true;
         }
         /* Ctrl-R: Redo */
-        if ( a_ev->keyval == GDK_r || a_ev->keyval == GDK_R )
+        if ( a_ev->keyval == GDK_KEY_r || a_ev->keyval == GDK_KEY_R )
         {
             redo_type();
             return true;
@@ -2261,13 +2261,13 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
         if ( a_ev->keyval == m_mainperf->m_key_start && (dont_toggle || !global_is_running) )
         {
             start_playing();
-            if(a_ev->keyval == GDK_space)
+            if(a_ev->keyval == GDK_KEY_space)
                 return true;
         }
         else if ( a_ev->keyval == m_mainperf->m_key_stop && (dont_toggle || global_is_running) )
         {
             stop_playing();
-            if(a_ev->keyval == GDK_space)
+            if(a_ev->keyval == GDK_KEY_space)
                 return true;
         }
         
@@ -2285,7 +2285,7 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
             }
         }
         
-        if (a_ev->keyval == GDK_F12)
+        if (a_ev->keyval == GDK_KEY_F12)
         {
             m_mainperf->print();
             fflush( stdout );
