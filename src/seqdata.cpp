@@ -257,11 +257,11 @@ seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
                               c_dataarea_y);
             cairo_stroke(cr);
 
-            /* draw handle */   // FIXME make circle
-            cairo_rectangle(cr, event_x -  m_scroll_offset_x -3,
-                              c_dataarea_y - event_height ,
-                              c_data_handle_x,
-                              c_data_handle_y);
+            /* draw handle */
+            cairo_arc(cr, event_x -  m_scroll_offset_x + 1,
+                                c_dataarea_y - event_height + 2,
+                                c_data_handle_radius,
+                                0, 2 * M_PI);
             cairo_stroke_preserve(cr);
             cairo_fill(cr);
 
