@@ -177,7 +177,7 @@ perftime::draw_background()
 
 #endif
     cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);            // Grey  FIXME
-    cairo_set_line_width(cr, 1);
+    cairo_set_line_width(cr, 1.0);
 
     for ( int i=first_measure;
             i<first_measure+(m_window_x * m_perf_scale_x / (m_measure_length)) + 1; i += bar_skip  )
@@ -221,7 +221,7 @@ perftime::draw_background()
 
         // print the 'L' label in white
         cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
-        cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+        cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
         cairo_set_font_size(cr, 9.0);
         cairo_move_to(cr, left + 1, 17.0);
         cairo_show_text( cr, "L");
@@ -233,15 +233,15 @@ perftime::draw_background()
         cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
 
         // draw the black background for the labels
-        cairo_rectangle(cr, right - 6, m_window_y - 9, 7, 10);
+        cairo_rectangle(cr, right - 7, m_window_y - 9, 7, 10);
         cairo_stroke_preserve(cr);
         cairo_fill(cr);
 
         // print the 'R' label in white
         cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
-        cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
+        cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
         cairo_set_font_size(cr, 9.0);
-        cairo_move_to(cr, right - 6, 17.0);
+        cairo_move_to(cr, right - 7, 17.0);
         cairo_show_text( cr, "R");
     }
 
