@@ -73,7 +73,6 @@ seqkeys::on_realize()
 
     // Now we can allocate any additional resources we need
     m_window = get_window();
-    m_gc = Gdk::GC::create( m_window );
     m_window->clear();
 
     m_pixmap = Gdk::Pixmap::create(m_window,
@@ -120,42 +119,38 @@ seqkeys::reset()
 void
 seqkeys::update_pixmap()
 {
-    m_gc->set_foreground(m_black);
-    m_pixmap->draw_rectangle(m_gc,true,
-                             0,
-                             0,
-                             c_keyarea_x,
-                             c_keyarea_y  );
+    cairo_t *cr = gdk_cairo_create (m_pixmap->gobj());
+    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
+    cairo_set_line_width(cr, 1.0);
+    cairo_rectangle(cr, 0.0, 0.0, c_keyarea_x, c_keyarea_y);
+    cairo_stroke_preserve(cr);
+    cairo_fill(cr);
 
-    m_gc->set_foreground(m_white);
-    m_pixmap->draw_rectangle(m_gc,true,
-                             1,
-                             1,
-                             c_keyoffset_x - 1,
-                             c_keyarea_y - 2  );
+    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
+    cairo_rectangle(cr, 1.0, 1.0, c_keyoffset_x - 1, c_keyarea_y - 2);
+    cairo_stroke_preserve(cr);
+    cairo_fill(cr);
 
-
-    for ( int i=0; i<c_num_keys; i++ )
+    for ( int i = 0; i < c_num_keys; i++ )
     {
-        Gdk::Color note_color = m_white;
+        int note_color = White_Note;
         
         if(m_seq->is_note_mute(c_num_keys - i - 1))
         {
-            note_color = m_red;     /* red for mute */
+            note_color = Red_Note;      /* red for mute */
         }
         else if(m_seq->is_note_solo(c_num_keys - i - 1))
         {
-            note_color = m_green;   /* green for solo */
+            note_color = Green_Note;    /* green for solo */
         }
         
-        
-        m_gc->set_foreground(m_white);
-        
-        m_pixmap->draw_rectangle(m_gc,true,
-                                 c_keyoffset_x + 1,
+        cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
+        cairo_rectangle(cr, c_keyoffset_x + 1,
                                  (c_key_y * i) + 1,
                                  c_key_x - 2,
                                  c_key_y - 1 );
+        cairo_stroke_preserve(cr);
+        cairo_fill(cr);
 
         /* the the key in the octave */
         int key = (c_num_keys - i - 1) % 12;
@@ -167,28 +162,46 @@ seqkeys::update_pixmap()
                 key == 8 ||
                 key == 10 )
         {
-            if(note_color == m_white)               /* Not a muted or solo note so set it to black */
-                m_gc->set_foreground(m_black);
-            else                                    /* We have a mute or solo so use the appropriate color */
-                m_gc->set_foreground(note_color);
+            if(note_color == White_Note)    // Not a muted or solo note so set it to black 
+            {
+                cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);        // Black FIXME
+            }
+            else if (note_color == Green_Note)
+            {
+                cairo_set_source_rgb(cr, 0.0, 0.4, 0.0);        // Green FIXME
+            }
+            else
+            {
+                cairo_set_source_rgb(cr, 1.0, 0.27, 0.0);       // Red FIXME
+            }
             
-            m_pixmap->draw_rectangle(m_gc,true,
-                                     c_keyoffset_x + 1,
+            cairo_rectangle(cr, c_keyoffset_x + 1,
                                      (c_key_y * i) + 2,
                                      c_key_x - 3,
                                      c_key_y - 3 );
-            
+            cairo_stroke_preserve(cr);
+            cairo_fill(cr);
         }
-        else if( note_color  != m_white)            /* We have a mute or solo so use the appropriate color */
+        else if( note_color  != White_Note) // We have a mute or solo so use the appropriate color
         {
-            m_gc->set_foreground(note_color);
-            m_pixmap->draw_rectangle(m_gc,true,
-                         c_keyoffset_x + 1,
+            if( note_color == Green_Note)
+            {
+                cairo_set_source_rgb(cr, 0.0, 0.4, 0.0);        // Green FIXME
+            }
+            else
+            {
+                cairo_set_source_rgb(cr, 1.0, 0.27, 0.0);       // Red FIXME
+            }
+
+            cairo_rectangle(cr, c_keyoffset_x + 1,
                          (c_key_y * i) + 2,
                          c_key_x - 3,
                          c_key_y - 3 );
+            cairo_stroke_preserve(cr);
+            cairo_fill(cr);
         }
 
+        /* The key letter to the left of the piano roll */
         char notes[20];
 
         if ( key == m_key  )
@@ -200,10 +213,11 @@ seqkeys::update_pixmap()
 
             snprintf(notes, sizeof(notes), "%2s%1d", c_key_text[key], octave);
 
-            p_font_renderer->render_string_on_drawable(m_gc,
-                    2,
-                    c_key_y * i - 1,
-                    m_pixmap, notes, font::BLACK );
+            cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
+            cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+            cairo_set_font_size(cr, 9.0);
+            cairo_move_to(cr, 2,  ((c_key_y * i) - 1) + 7);
+            cairo_show_text( cr, notes);
         }
 
         //snprintf(notes, sizeof(notes), "%c %d", c_scales_symbol[m_scale][key], m_scale );
@@ -213,45 +227,56 @@ seqkeys::update_pixmap()
         //                                             c_key_y * i - 1,
         //                                             m_pixmap, notes, font::BLACK );
     }
+
+    cairo_destroy(cr);
 }
 
+/**
+ * This is never called
+ */
 void
 seqkeys::draw_area()
 {
     update_pixmap();
-    m_window->draw_drawable(m_gc,
-                            m_pixmap,
-                            0,
-                            m_scroll_offset_y,
-                            0,
-                            0,
-                            c_keyarea_x,
-                            c_keyarea_y );
+    
+    cairo_t *cr = gdk_cairo_create (m_window->gobj());
+    gdk_cairo_set_source_pixmap(cr,
+                                m_pixmap->gobj(),
+                                0,
+                                -m_scroll_offset_y);
+    cairo_rectangle(cr, 0,
+                        0,
+                        c_keyarea_x,
+                        c_keyarea_y );
+    cairo_fill(cr);
+    cairo_destroy(cr);
 }
 
 bool
 seqkeys::on_expose_event(GdkEventExpose* a_e)
 {
-    m_window->draw_drawable(m_gc,
-                            m_pixmap,
-                            a_e->area.x,
-                            a_e->area.y + m_scroll_offset_y,
-                            a_e->area.x,
+    cairo_t *cr = gdk_cairo_create (m_window->gobj());
+    gdk_cairo_set_source_pixmap(cr,
+                                m_pixmap->gobj(), 0.0,
+                                -m_scroll_offset_y);
+    cairo_rectangle(cr, a_e->area.x,
                             a_e->area.y,
                             a_e->area.width,
                             a_e->area.height );
+    cairo_fill(cr);
+    cairo_destroy(cr);
+
     return true;
 }
 
 void
 seqkeys::force_draw()
 {
-    m_window->draw_drawable(m_gc,
-                            m_pixmap,
-                            0,m_scroll_offset_y,
-                            0,0,
-                            m_window_x,
-                            m_window_y );
+    cairo_t *cr = gdk_cairo_create (m_window->gobj());
+    gdk_cairo_set_source_pixmap(cr, m_pixmap->gobj(), 0.0, -m_scroll_offset_y);
+    cairo_rectangle(cr, 0.0, 0.0, m_window_x, m_window_y);
+    cairo_fill(cr);
+    cairo_destroy(cr);
 }
 
 /* takes screen corrdinates, give us notes and ticks */
@@ -386,6 +411,9 @@ seqkeys::set_hint_state( bool a_state )
 void
 seqkeys::draw_key( int a_key, bool a_state )
 {
+    cairo_t *cr = gdk_cairo_create (m_window->gobj());
+    cairo_set_line_width(cr, 1.0);
+
     int base_key = a_key;
 
     /* the the key in the octave */
@@ -399,39 +427,43 @@ seqkeys::draw_key( int a_key, bool a_state )
             key == 8 ||
             key == 10 )
     {
-        m_gc->set_foreground(m_black);
+        cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);            // Black  FIXME
     }
     else
-        m_gc->set_foreground(m_white);
+    {
+        cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);            // White  FIXME
+    }
 
    
     /* Mute or solo keys */
     if(m_seq->is_note_mute(base_key))
     {
-        m_gc->set_foreground(m_red);    /* red for mute   */
+        cairo_set_source_rgb(cr, 1.0, 0.27, 0.0);       // Red FIXME
     }
     else if(m_seq->is_note_solo(base_key))
     {
-        m_gc->set_foreground(m_green);  /* green for solo */
+        cairo_set_source_rgb(cr, 0.0, 0.4, 0.0);        // Green FIXME
     }
 
-    m_window->draw_rectangle(m_gc,true,
-                             c_keyoffset_x + 1,
+    cairo_rectangle(cr, c_keyoffset_x + 1,
                              (c_key_y * a_key) + 2 -  m_scroll_offset_y,
                              c_key_x - 3,
                              c_key_y - 3 );
+    cairo_stroke_preserve(cr);
+    cairo_fill(cr);
 
     if ( a_state ) // piano hint key
     {
-        m_gc->set_foreground(m_blue);
-
-        m_window->draw_rectangle(m_gc,true,
-                                 c_keyoffset_x + 1,
-                                 (c_key_y * a_key) + 2 - m_scroll_offset_y,
-                                 c_key_x - 3,
-                                 c_key_y - 3 );
-
+        cairo_set_source_rgb(cr, 0.0, 0.0, 0.6);    // Dark blue  FIXME
+        cairo_rectangle(cr, c_keyoffset_x + 1,
+                             (c_key_y * a_key) + 2 -  m_scroll_offset_y,
+                             c_key_x - 3,
+                             c_key_y - 3 );
+        cairo_stroke_preserve(cr);
+        cairo_fill(cr);
     }
+
+    cairo_destroy(cr);
 }
 
 void

@@ -39,12 +39,18 @@
 
 #include "globals.h"
 
+enum
+{
+    White_Note = 0,
+    Green_Note,
+    Red_Note
+};
+
 /* holds the left side piano */
 class seqkeys : public Gtk::DrawingArea
 {
 private:
 
-    Glib::RefPtr<Gdk::GC> m_gc;
     Glib::RefPtr<Gdk::Window> m_window;
     Gdk::Color    m_black, m_white, m_red, m_green, m_blue;
 
@@ -69,7 +75,7 @@ private:
     bool on_enter_notify_event(GdkEventCrossing* p0);
     bool on_scroll_event( GdkEventScroll* a_ev);
 
-    void draw_area();
+    void draw_area();   // never used
     void update_pixmap();
     void convert_y( int a_y, int *a_note);
 
