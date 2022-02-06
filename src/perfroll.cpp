@@ -222,7 +222,7 @@ perfroll::fill_background_pixmap()
     /* draw horizontal grey lines */
     cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);    // Grey  FIXME
     static const double dashed[] = {1.0};
-    cairo_set_line_width(cr, 1.5);
+    cairo_set_line_width(cr, 1.0);
     cairo_set_dash(cr, dashed, 1, 0.0);
     cairo_set_line_join(cr, CAIRO_LINE_JOIN_MITER);
     cairo_move_to(cr, 0.0, 0.0);
