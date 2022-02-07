@@ -22,13 +22,6 @@
 #include "font.h"
 
 seqdata::seqdata(sequence *a_seq, int a_zoom, Gtk::Adjustment *a_hadjust):
-    //m_text_font_5_7(Gdk_Font( c_font_5_7 )),
-    m_black(Gdk::Color("black")),
-    m_white(Gdk::Color("white")),
-    m_grey(Gdk::Color("grey")),
-    m_blue(Gdk::Color("blue")),
-    m_red(Gdk::Color("red")),
-
     m_seq(a_seq),
 
     m_zoom(a_zoom),
@@ -47,15 +40,6 @@ seqdata::seqdata(sequence *a_seq, int a_zoom, Gtk::Adjustment *a_hadjust):
                 Gdk::POINTER_MOTION_MASK |
                 Gdk::LEAVE_NOTIFY_MASK |
                 Gdk::SCROLL_MASK );
-
-    // in the constructor you can only allocate colors,
-    // get_window() returns 0 because we have not be realized
-    Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
-    colormap->alloc_color( m_black );
-    colormap->alloc_color( m_white );
-    colormap->alloc_color( m_grey );
-    colormap->alloc_color( m_blue );
-    colormap->alloc_color( m_red );
 
     set_can_focus();
     set_double_buffered( false );
