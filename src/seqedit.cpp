@@ -1592,6 +1592,7 @@ seqedit::timeout()
     }
 
     m_seqroll_wid->draw_progress_on_window();
+    m_seqdata_wid->idle_redraw();
     
 #ifdef MIDI_CONTROL_SUPPORT
     if(m_mainperf->get_sequence_record())

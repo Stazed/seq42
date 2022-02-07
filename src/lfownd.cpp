@@ -185,8 +185,8 @@ void lfownd::scale_lfo_change()
         m_seqdata->m_status,
         m_seqdata->m_cc
     );
-    m_seqdata->update_pixmap();
-    m_seqdata->draw_pixmap_on_window();
+    
+    m_seqdata->queue_draw_background();
 }
 
 bool lfownd::on_focus_out_event(GdkEventFocus* p0 )

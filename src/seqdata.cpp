@@ -17,6 +17,8 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 //-----------------------------------------------------------------------------
+#include <cairomm-1.0/cairomm/context.h>
+
 #include "event.h"
 #include "seqdata.h"
 #include "font.h"
@@ -33,8 +35,16 @@ seqdata::seqdata(sequence *a_seq, int a_zoom, Gtk::Adjustment *a_hadjust):
     m_status(0x00),
 
     m_dragging(false),
-    m_drag_handle(false)
+    m_drag_handle(false),
+    m_background_draw(false)
 {
+    Gtk::Allocation allocation = get_allocation();
+    m_surface = Cairo::ImageSurface::create(
+        Cairo::Format::FORMAT_ARGB32,
+        allocation.get_width(),
+        allocation.get_height()
+    );
+
     add_events( Gdk::BUTTON_PRESS_MASK |
                 Gdk::BUTTON_RELEASE_MASK |
                 Gdk::POINTER_MOTION_MASK |
@@ -52,13 +62,8 @@ seqdata::update_sizes()
 {
     if( get_realized() )
     {
-        /* create pixmaps with window dimensions */
-
-        m_pixmap = Gdk::Pixmap::create( m_window,
-                                        m_window_x,
-                                        m_window_y, -1  );
-        update_pixmap();
-        queue_draw();
+        m_surface_window = m_window->create_cairo_context();
+        m_background_draw = true;
     }
 }
 
@@ -69,15 +74,12 @@ seqdata::reset()
     m_scroll_offset_x = m_scroll_offset_ticks / m_zoom;
 
     update_sizes();
-    update_pixmap();
-    queue_draw();
 }
 
 void
 seqdata::redraw()
 {
-    update_pixmap();
-    queue_draw();
+    m_background_draw = true;
 }
 
 void
@@ -89,44 +91,10 @@ seqdata::on_realize()
     // Now we can allocate any additional resources we need
     m_window = get_window();
     m_window->clear();
+    m_surface_window = m_window->create_cairo_context();
 
     m_hadjust->signal_value_changed().connect( mem_fun( *this, &seqdata::change_horz ));
 
-    for( int i=0; i<c_dataarea_y; ++i )
-    {
-        m_numbers[i] = Gdk::Pixmap::create( m_window,
-                                            6,
-                                            30, -1  );
-        
-        cairo_t *cr = gdk_cairo_create (m_numbers[i]->gobj());
-        cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);            // white FIXME
-        cairo_rectangle(cr, 0.0, 0.0, 6.0, 30.0);
-        cairo_fill(cr);
-
-        /* The velocity amount - numbers for events */
-        char val[5];
-        snprintf(val, sizeof(val), "%3d\n", i);
-        char num[6];
-        memset( num, 0, 6);
-        num[0] = val[0];
-        num[2] = val[1];
-        num[4] = val[2];
-
-        cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
-        cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-        cairo_set_font_size(cr, 9.0);
-
-        cairo_move_to(cr, 0.0, 8.0);
-        cairo_show_text( cr, &num[0]);
-
-        cairo_move_to(cr, 0.0, 16.0);
-        cairo_show_text( cr, &num[2]);
-
-        cairo_move_to(cr, 0.0, 24.0);
-        cairo_show_text( cr, &num[4]);
-
-        cairo_destroy(cr);
-    }
     update_sizes();
 }
 
@@ -149,15 +117,30 @@ seqdata::set_data_type( unsigned char a_status, unsigned char a_control = 0  )
     this->redraw();
 }
 
-void
-seqdata::update_pixmap()
-{
-    draw_events_on_pixmap();
-}
 
 void
 seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
 {
+    m_background_draw = false;
+    Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
+
+    Gtk::Allocation allocation = get_allocation();
+    const int width = allocation.get_width();
+    const int height = allocation.get_height();
+
+    cr->set_operator(Cairo::OPERATOR_CLEAR);
+    cr->rectangle(-1, -1, width + 2, height + 2);
+    cr->paint_with_alpha(1.0);
+    cr->set_operator(Cairo::OPERATOR_OVER);
+
+    Pango::FontDescription font;
+    int text_width;
+    int text_height;
+
+    font.set_family(c_font);
+    font.set_size(c_key_fontsize * Pango::SCALE);
+    font.set_weight(Pango::WEIGHT_NORMAL);
+
     long tick;
 
     unsigned char d0,d1;
@@ -191,14 +174,6 @@ seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
     int start_tick = m_scroll_offset_ticks ;
     int end_tick = (m_window_x * m_zoom) + m_scroll_offset_ticks;
 
-    //printf( "draw_events_on\n" );
-
-    cairo_t *cr = gdk_cairo_create (a_draw->gobj());
-    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);            // white FIXME
-    cairo_rectangle(cr, 0.0, 0.0, m_window_x, m_window_y );
-    cairo_stroke_preserve(cr);
-    cairo_fill(cr);
-
     SECOND_PASS_NOTE_ON: // yes this is a goto... yikes!!!!
 
     m_seq->reset_draw_marker();
@@ -210,17 +185,24 @@ seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
     {
         if ( tick >= start_tick && tick <= end_tick )
         {
+            /* turn into screen corrids */
+            event_x = tick / m_zoom;
+            
+            /* Background of event velocity labels */
+            cr->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
+            cr->rectangle(event_x + 3 - m_scroll_offset_x,
+                                  c_dataarea_y - 40,
+                                  6, 40);
+            cr->fill();
+
             if(selected)
             {
-                cairo_set_source_rgb(cr, 1.0, 0.27, 0.0);    // Red FIXME
+                cr->set_source_rgb(1.0, 0.27, 0.0);    // Red FIXME);
             }
             else
             {
-                cairo_set_source_rgb(cr, 0.0, 0.0, 1.0);    // blue FIXME
+                cr->set_source_rgb(0.0, 0.0, 1.0);    // blue FIXME
             }
-
-            /* turn into screen corrids */
-            event_x = tick / m_zoom;
 
             /* generate the value */
             event_height = d1;
@@ -231,33 +213,42 @@ seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
                 event_height = d0;
             }
 
-            cairo_set_line_width(cr, 2.0);
-            cairo_set_line_join(cr, CAIRO_LINE_JOIN_MITER);
-
             /* draw vert lines */
-            cairo_move_to(cr, event_x -  m_scroll_offset_x +1,
-                              c_dataarea_y - event_height);
-            cairo_line_to(cr, event_x -  m_scroll_offset_x +1,
-                              c_dataarea_y);
-            cairo_stroke(cr);
+            cr->move_to(event_x -  m_scroll_offset_x +1, c_dataarea_y - event_height);
+            cr->line_to(event_x -  m_scroll_offset_x +1, c_dataarea_y);
+            cr->stroke();
 
             /* draw handle */
-            cairo_arc(cr, event_x -  m_scroll_offset_x + 1,
+
+            cr->arc(event_x -  m_scroll_offset_x + 1,
                                 c_dataarea_y - event_height + 2,
                                 c_data_handle_radius,
                                 0, 2 * M_PI);
-            cairo_stroke_preserve(cr);
-            cairo_fill(cr);
+            cr->stroke_preserve();
+            cr->fill();
 
             /* event numbers */
-            gdk_cairo_set_source_pixmap(cr, 
-                                        m_numbers[event_height]->gobj(),
-                                        event_x + 3 - m_scroll_offset_x,
-                                        c_dataarea_y - 25);
-            cairo_rectangle(cr, event_x + 3 - m_scroll_offset_x,
-                                  c_dataarea_y - 25,
-                                  6,30);
-            cairo_fill(cr);
+            auto t = create_pango_layout(to_string(event_height));
+            t->set_font_description(font);
+            t->set_justify(Pango::ALIGN_CENTER);
+            t->set_width(0);
+            t->set_wrap(Pango::WRAP_CHAR);
+            t->get_pixel_size(text_width, text_height);
+            
+            /* Volume label level */
+            int height_offset = 13;
+            
+            if (event_height > 9)
+            {
+                height_offset = 26;
+                if (event_height > 99)
+                    height_offset = 40;
+            }
+
+            cr->set_source_rgb(0.0, 0.0, 0.0);  // Black FIXME
+            cr->move_to(event_x + 3 - m_scroll_offset_x,
+                                  c_dataarea_y - height_offset);
+            t->show_in_cairo_context(cr);
         }
     }
 
@@ -267,48 +258,43 @@ seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
         goto SECOND_PASS_NOTE_ON;
     }
 
-    cairo_destroy(cr);
-}
-
-void
-seqdata::draw_events_on_pixmap()
-{
-    draw_events_on( m_pixmap );
-}
-
-void
-seqdata::draw_pixmap_on_window()
-{
-    queue_draw();
+    /* Clear previous background */
+    m_surface_window->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
+    m_surface_window->rectangle (0.0, 0.0, width, height);
+    m_surface_window->stroke_preserve();
+    m_surface_window->fill();
+    
+    /* Draw the new background */
+    m_surface_window->set_source(m_surface, 0.0, 0.0);
+    m_surface_window->paint();
 }
 
 int
 seqdata::idle_redraw()
 {
+    Gtk::Allocation allocation = get_allocation();
+    const int width = allocation.get_width();
+    const int height = allocation.get_height();
+
+    // resize handler
+    if (width != m_surface->get_width() || height != m_surface->get_height())
+    {
+        m_surface = Cairo::ImageSurface::create(
+            Cairo::Format::FORMAT_ARGB32,
+            allocation.get_width(),
+            allocation.get_height()
+        );
+        m_background_draw = true;
+    }
+
     /* no flicker, redraw */
-    if ( !m_dragging )
+    if ( m_background_draw )
     {
         draw_events_on( m_window );
-        draw_events_on( m_pixmap );
     }
-    return true;
-}
 
-bool
-seqdata::on_expose_event(GdkEventExpose* a_e)
-{
-    cairo_t *cr = gdk_cairo_create (m_window->gobj());
-    gdk_cairo_set_source_pixmap(cr,
-                                m_pixmap->gobj(),
-                                a_e->area.x,
-                                a_e->area.y);
-    cairo_rectangle(cr, a_e->area.x,
-                            a_e->area.y,
-                            a_e->area.width,
-                            a_e->area.height );
-    cairo_fill(cr);
-    cairo_destroy(cr);
-
+    draw_line_on_window();
+    
     return true;
 }
 
@@ -340,8 +326,7 @@ seqdata::on_scroll_event( GdkEventScroll* a_ev )
         m_seq->decrement_selected( m_status, m_cc );
     }
 
-    update_pixmap();
-    queue_draw();
+    m_background_draw = true;
 
     return true;
 }
@@ -423,8 +408,7 @@ seqdata::on_button_release_event(GdkEventButton* a_p0)
         m_seq->set_hold_undo(false);
     }
 
-    update_pixmap();
-    queue_draw();
+    m_background_draw = true;
     return true;
 }
 
@@ -478,8 +462,7 @@ seqdata::on_motion_notify_event(GdkEventMotion* a_p0)
 
         m_seq->adjust_data_handle(m_status, m_current_y );
 
-        update_pixmap();
-        draw_events_on( m_window );
+        m_background_draw = true;
     }
 
     if ( m_dragging )
@@ -517,10 +500,7 @@ seqdata::on_motion_notify_event(GdkEventMotion* a_p0)
                                         c_dataarea_y - adj_y_max -1 );
 
         /* convert x,y to ticks, then set events in range */
-        update_pixmap();
-
-        draw_events_on( m_window );
-        draw_line_on_window();
+        m_background_draw = true;
     }
 
     return true;
@@ -529,8 +509,7 @@ seqdata::on_motion_notify_event(GdkEventMotion* a_p0)
 bool
 seqdata::on_leave_notify_event(GdkEventCrossing* p0)
 {
-    update_pixmap();
-    queue_draw();
+    m_background_draw = true;
     return true;
 }
 
@@ -540,38 +519,13 @@ seqdata::on_leave_notify_event(GdkEventCrossing* p0)
 void
 seqdata::draw_line_on_window()
 {
-    int x,y,w,h;
-    cairo_t *cr = gdk_cairo_create (m_window->gobj());
-
-    /* replace old */
-    gdk_cairo_set_source_pixmap(cr, m_pixmap->gobj(), 0.0, 0.0);
-    cairo_rectangle(cr, m_old.x,
-                            m_old.y,
-                            m_old.width + 1,
-                            m_old.height + 1 );
-    cairo_fill(cr);
-
-    xy_to_rect ( m_drop_x,
-                 m_drop_y,
-                 m_current_x,
-                 m_current_y,
-                 &x, &y,
-                 &w, &h );
-
-    x -= m_scroll_offset_x;
-
-    m_old.x = x;
-    m_old.y = y;
-    m_old.width = w;
-    m_old.height = h;
-
-    /* Draw the line */
-    cairo_set_source_rgb(cr, 1.0, 0.27, 0.0);    // Red FIXME
-    cairo_move_to(cr, m_current_x - m_scroll_offset_x, m_current_y);
-    cairo_line_to(cr, m_drop_x - m_scroll_offset_x, m_drop_y);
-    cairo_stroke(cr);
-
-    cairo_destroy(cr);
+    if (m_dragging)
+    {
+        m_surface_window->set_source_rgb(1.0, 0.27, 0.0);    // Red FIXME
+        m_surface_window->move_to(m_current_x - m_scroll_offset_x, m_current_y);
+        m_surface_window->line_to( m_drop_x - m_scroll_offset_x, m_drop_y);
+        m_surface_window->stroke();
+    }
 }
 
 void
@@ -580,8 +534,7 @@ seqdata::change_horz( )
     m_scroll_offset_ticks = (int) m_hadjust->get_value();
     m_scroll_offset_x = m_scroll_offset_ticks / m_zoom;
 
-    update_pixmap();
-    force_draw();
+    m_background_draw = true;
 }
 
 void
@@ -595,12 +548,3 @@ seqdata::on_size_allocate(Gtk::Allocation& a_r )
     update_sizes();
 }
 
-void
-seqdata::force_draw()
-{
-    cairo_t *cr = gdk_cairo_create (m_window->gobj());
-    gdk_cairo_set_source_pixmap(cr, m_pixmap->gobj(), 0.0, 0.0);
-    cairo_rectangle(cr, 0.0, 0.0, m_window_x, m_window_y );
-    cairo_fill(cr);
-    cairo_destroy(cr);
-}

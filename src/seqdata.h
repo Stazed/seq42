@@ -47,9 +47,10 @@ class seqdata : public Gtk::DrawingArea
 private:
 
     Glib::RefPtr<Gdk::Window> m_window;
-
-    Glib::RefPtr<Gdk::Pixmap>   m_pixmap;
-    Glib::RefPtr<Gdk::Pixmap>   m_numbers[c_dataarea_y];
+    
+    Cairo::RefPtr<Cairo::ImageSurface> m_surface;
+    
+    Cairo::RefPtr<Cairo::Context>  m_surface_window;
     
     sequence     * const m_seq;
 
@@ -77,9 +78,10 @@ private:
 
     bool m_dragging;
     bool m_drag_handle;
+    bool m_background_draw;
+    
 
     void on_realize();
-    bool on_expose_event(GdkEventExpose* a_ev);
 
     bool on_button_press_event(GdkEventButton* a_ev);
     bool on_button_release_event(GdkEventButton* a_ev);
@@ -88,9 +90,6 @@ private:
     bool on_scroll_event( GdkEventScroll* a_ev ) ;
 
     void update_sizes();
-    void draw_events_on_pixmap();
-    void draw_pixmap_on_window();
-    void update_pixmap();
     void draw_line_on_window();
 
     void convert_x( int a_x, long *a_tick );
@@ -105,8 +104,6 @@ private:
     void on_size_allocate(Gtk::Allocation& );
     void change_horz();
 
-    void force_draw();
-
 public:
 
     seqdata( sequence *a_seq, int a_zoom,  Gtk::Adjustment   *a_hadjust );
@@ -117,6 +114,7 @@ public:
     void set_data_type( unsigned char a_status, unsigned char a_control  );
 
     int idle_redraw();
+    void queue_draw_background() {m_background_draw = true;} ;
 
     friend class seqroll;
     friend class seqevent;
