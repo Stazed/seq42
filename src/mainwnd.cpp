@@ -1379,7 +1379,6 @@ void
 mainwnd::grow()
 {
     m_perfroll->increment_size();
-    m_perftime->increment_size();
 }
 
 void

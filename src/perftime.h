@@ -45,14 +45,13 @@ using namespace Gtk;
 
 class mainwnd;
 
-/* piano time*/
+/* The 'L' and 'R' marker track for setting loops and edit markers */
 class perftime: public Gtk::DrawingArea
 {
 
 private:
 
     Glib::RefPtr<Gdk::Window>   m_window;
-    Gdk::Color    m_black, m_white, m_grey;
 
     perform      * const m_mainperf;
     mainwnd      * const m_mainwnd;
@@ -72,11 +71,6 @@ private:
     void on_size_allocate(Gtk::Allocation &a_r );
 
     void draw_background();
-    void update_sizes();
-    void draw_pixmap_on_window();
-    void draw_progress_on_window();
-    void update_pixmap();
-
     int idle_progress();
 
     void change_horz();
@@ -90,7 +84,5 @@ public:
     void reset();
     void set_scale( int a_scale );
     void set_guides( int a_snap, int a_measure );
-
-    void increment_size();
 };
 

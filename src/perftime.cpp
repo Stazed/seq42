@@ -23,10 +23,6 @@
 
 
 perftime::perftime( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
-    m_black(Gdk::Color("black")),
-    m_white(Gdk::Color("white")),
-    m_grey(Gdk::Color("green")),
-    //m_grey(Gdk::Color("grey")),
 
     m_mainperf(a_perf),
     m_mainwnd(a_main),
@@ -42,28 +38,9 @@ perftime::perftime( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
     add_events( Gdk::BUTTON_PRESS_MASK |
                 Gdk::BUTTON_RELEASE_MASK );
 
-    // in the constructor you can only allocate colors,
-    // get_window() returns 0 because we have not been realized
-    Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
-    colormap->alloc_color( m_black );
-    colormap->alloc_color( m_white );
-    colormap->alloc_color( m_grey );
-
     m_hadjust->signal_value_changed().connect( mem_fun( *this, &perftime::change_horz ));
 
     set_double_buffered( false );
-}
-
-void
-perftime::increment_size()
-{
-
-}
-
-void
-perftime::update_sizes()
-{
-
 }
 
 void
@@ -111,18 +88,6 @@ int
 perftime::idle_progress( )
 {
     return true;
-}
-
-void
-perftime::update_pixmap()
-{
-
-}
-
-void
-perftime::draw_pixmap_on_window()
-{
-
 }
 
 bool
