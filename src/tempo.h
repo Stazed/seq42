@@ -101,10 +101,6 @@ private:
     void on_size_allocate(Gtk::Allocation &a_r );
     
     void draw_background();
-    void update_sizes();
-    void draw_pixmap_on_window();
-    void draw_progress_on_window();
-    void update_pixmap();
 
     void change_horz();
     void set_tempo_marker(long a_tick);
@@ -127,11 +123,8 @@ public:
     void idle_progress();
     void set_zoom (int a_zoom);
 
-    void reset();
-    void set_scale( int a_scale );
     void set_guides( int a_snap, int a_measure );
 
-    void increment_size();
     void set_BPM(double a_bpm);
     static bool sort_tempo_mark(const tempo_mark &a, const tempo_mark &b);
     static bool reverse_sort_tempo_mark(const tempo_mark &a, const tempo_mark &b);

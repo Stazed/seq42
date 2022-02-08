@@ -76,18 +76,6 @@ tempo::unlock( )
 }
 
 void
-tempo::increment_size()
-{
-
-}
-
-void
-tempo::update_sizes()
-{
-
-}
-
-void
 tempo::set_zoom (int a_zoom)
 {
     if (m_mainwnd->zoom_check(a_zoom))
@@ -155,18 +143,6 @@ tempo::idle_progress( )
 {
     if (m_draw_background)
         draw_background();
-}
-
-void
-tempo::update_pixmap()
-{
-
-}
-
-void
-tempo::draw_pixmap_on_window()
-{
-
 }
 
 bool
