@@ -27,14 +27,13 @@ const int c_maintime_x = 300;
 const int c_maintime_y = 10;
 const int c_pill_width = 8;
 
-/* main time*/
+/* main time pill at top right of main window */
 class maintime: public Gtk::DrawingArea
 {
 
 private:
 
     Glib::RefPtr<Gdk::Window>   m_window;
-    Gdk::Color    m_black, m_white, m_grey;
 
     void on_realize();
     bool on_expose_event(GdkEventExpose* a_ev);

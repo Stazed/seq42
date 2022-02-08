@@ -22,18 +22,8 @@
 
 
 maintime::maintime( ):
-    m_black(Gdk::Color("black")),
-    m_white(Gdk::Color("white")),
-    m_grey(Gdk::Color("grey")),
     m_tick(0)
 {
-    // in the construor you can only allocate colors,
-    // get_window() returns 0 because we have not be realized
-    Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
-
-    colormap->alloc_color( m_black );
-    colormap->alloc_color( m_white );
-    colormap->alloc_color( m_grey );
 }
 
 void
@@ -46,7 +36,7 @@ maintime::on_realize()
     // Now we can allocate any additional resources we need
     m_window = get_window();
     m_window->clear();
-
+    
     /* set default size */
     set_size_request( c_maintime_x, c_maintime_y );
 }
@@ -58,11 +48,21 @@ maintime::idle_progress( long a_ticks )
 
     m_window->clear();
 
-    cairo_t *cr = gdk_cairo_create (m_window->gobj());
-    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);        // black FIXME
-    cairo_set_line_width(cr, 1.0);
-    cairo_rectangle(cr, 0.0, 0.0, (c_maintime_x - 1), (c_maintime_y - 1));
-    cairo_stroke(cr);
+    Gtk::Allocation allocation = get_allocation();
+    const int s_width = allocation.get_width();
+    const int s_height = allocation.get_height();
+    
+    Cairo::RefPtr<Cairo::Context> cr =  m_window->create_cairo_context();
+
+    cr->set_operator(Cairo::OPERATOR_CLEAR);
+    cr->rectangle(-1, -1, s_width + 2, s_height + 2);
+    cr->paint_with_alpha(0.0);
+    cr->set_operator(Cairo::OPERATOR_OVER);
+    
+    cr->set_source_rgb(0.0, 0.0, 0.0);        // black FIXME
+    cr->set_line_width(1.0);
+    cr->rectangle(0.0, 0.0, (c_maintime_x - 1), (c_maintime_y - 1));
+    cr->stroke();
 
     int width = c_maintime_x - 1 - c_pill_width;
 
@@ -72,20 +72,20 @@ maintime::idle_progress( long a_ticks )
 
     if ( tick_x <= (c_maintime_x / 4 ))
     {
-        cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);    // grey FIXME
-        cairo_rectangle(cr, 2.0, 2.0, (c_maintime_x - 4), (c_maintime_y - 4));
-        cairo_stroke_preserve(cr);
-        cairo_fill(cr);
+        cr->set_source_rgb(0.6, 0.6, 0.6);    // grey FIXME
+        cr->rectangle(2.0, 2.0, (c_maintime_x - 4), (c_maintime_y - 4));
+        cr->stroke_preserve();
+        cr->fill();
     }
 
-    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);        // black FIXME
-    cairo_rectangle(cr, (beat_x + 2), 2.0, c_pill_width, (c_maintime_y - 4));
-    cairo_stroke_preserve(cr);
-    cairo_fill(cr);
+    cr->set_source_rgb(0.0, 0.0, 0.0);        // black FIXME
+    cr->rectangle((beat_x + 2), 2.0, c_pill_width, (c_maintime_y - 4));
+    cr->stroke_preserve();
+    cr->fill();
 
-    cairo_rectangle(cr, (bar_x + 2), 2.0, c_pill_width, (c_maintime_y - 4));
-    cairo_stroke_preserve(cr);
-    cairo_fill(cr);
+    cr->rectangle((bar_x + 2), 2.0, c_pill_width, (c_maintime_y - 4));
+    cr->stroke_preserve();
+    cr->fill();
 
     return true;
 }
