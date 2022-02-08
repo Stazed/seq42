@@ -67,19 +67,13 @@ private:
     int m_scroll_offset_ticks;
     int m_scroll_offset_x;
 
-    int m_background_tile_x;
-    int m_background_tile_y;
-
     /* what is the data window currently editing ? */
     unsigned char m_status;
     unsigned char m_cc;
 
-    GdkRectangle m_old;
-
     bool m_dragging;
     bool m_drag_handle;
     bool m_background_draw;
-    
 
     void on_realize();
 

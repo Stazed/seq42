@@ -187,12 +187,13 @@ seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
         {
             /* turn into screen corrids */
             event_x = tick / m_zoom;
-            
-            /* Background of event velocity labels */
+
+            /* Clear background of event velocity labels - we need
+             * to do this before the handles or they get cropped */
             cr->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
             cr->rectangle(event_x + 3 - m_scroll_offset_x,
                                   c_dataarea_y - 40,
-                                  6, 40);
+                                  8, 40);
             cr->fill();
 
             if(selected)
@@ -219,7 +220,6 @@ seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
             cr->stroke();
 
             /* draw handle */
-
             cr->arc(event_x -  m_scroll_offset_x + 1,
                                 c_dataarea_y - event_height + 2,
                                 c_data_handle_radius,
@@ -234,7 +234,7 @@ seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
             t->set_width(0);
             t->set_wrap(Pango::WRAP_CHAR);
             t->get_pixel_size(text_width, text_height);
-            
+
             /* Volume label level */
             int height_offset = 13;
             
@@ -263,7 +263,7 @@ seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
     m_surface_window->rectangle (0.0, 0.0, width, height);
     m_surface_window->stroke_preserve();
     m_surface_window->fill();
-    
+
     /* Draw the new background */
     m_surface_window->set_source(m_surface, 0.0, 0.0);
     m_surface_window->paint();
@@ -294,7 +294,7 @@ seqdata::idle_redraw()
     }
 
     draw_line_on_window();
-    
+
     return true;
 }
 
@@ -351,14 +351,15 @@ seqdata::on_button_press_event(GdkEventButton* a_p0)
                                               c_dataarea_y - m_drop_y +3);
 
         if(m_drag_handle)
+        {
             if(!m_seq->get_hold_undo()) // if they used line draw but did not leave...
                 m_seq->push_undo();
-
-        /* reset box that holds dirty redraw spot */
-        m_old.x = 0;
-        m_old.y = 0;
-        m_old.width = 0;
-        m_old.height = 0;
+        }
+        else    // dragging - set starting point
+        {
+            m_current_x = (int) a_p0->x;
+            m_current_y = (int) a_p0->y;
+        }
 
         m_dragging = !m_drag_handle;
     }
@@ -401,7 +402,7 @@ seqdata::on_button_release_event(GdkEventButton* a_p0)
         m_seq->unselect();
         m_seq->set_dirty();
     }
-    
+
     if(m_seq->get_hold_undo())
     {
         m_seq->push_undo(true);
