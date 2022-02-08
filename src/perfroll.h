@@ -66,7 +66,6 @@ private:
     Seq42PerfInput m_seq42_interaction;
 
     Glib::RefPtr<Gdk::Window> m_window;
-    Gdk::Color    m_black, m_white, m_blue, m_grey, m_lt_grey;
 
     Glib::RefPtr<Gdk::Pixmap> m_pixmap;
     Glib::RefPtr<Gdk::Pixmap> m_background;

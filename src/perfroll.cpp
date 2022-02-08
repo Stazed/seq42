@@ -28,11 +28,6 @@ perfroll::perfroll( perform *a_perf,
                     Adjustment * a_hadjust,
                     Adjustment * a_vadjust  ) :
     m_window(NULL),
-    m_black(Gdk::Color("black")),
-    m_white(Gdk::Color("white")),
-    m_blue(Gdk::Color("SteelBlue1")),
-    m_grey(Gdk::Color("grey")),
-    m_lt_grey(Gdk::Color("light grey")),
     m_pixmap(NULL),
     m_mainperf(a_perf),
     m_mainwnd(a_main),
@@ -59,14 +54,6 @@ perfroll::perfroll( perform *a_perf,
     transport_follow(true),
     trans_button_press(false)
 {
-    Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
-    colormap->alloc_color( m_black );
-    colormap->alloc_color( m_white );
-    colormap->alloc_color( m_blue );
-    colormap->alloc_color( m_grey );
-    colormap->alloc_color( m_lt_grey );
-
-    //m_text_font_6_12 = Gdk_Font( c_font_6_12 );
 
     add_events( Gdk::BUTTON_PRESS_MASK |
                 Gdk::BUTTON_RELEASE_MASK |
