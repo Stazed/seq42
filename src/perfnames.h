@@ -52,6 +52,8 @@ class perfnames : public virtual Gtk::DrawingArea, public virtual trackmenu
 private:
 
     Glib::RefPtr<Gdk::Window>   m_window;
+    Cairo::RefPtr<Cairo::ImageSurface> m_surface;
+    Cairo::RefPtr<Cairo::Context>  m_surface_window;
 
     perform      *m_mainperf;
 
