@@ -57,6 +57,8 @@ class tempo: public Gtk::DrawingArea
 private:
 
     Glib::RefPtr<Gdk::Window>   m_window;
+    Cairo::RefPtr<Cairo::ImageSurface> m_surface;
+    Cairo::RefPtr<Cairo::Context>  m_surface_window;
 
     Glib::RefPtr<Gdk::Pixbuf> m_pixbuf;
 
@@ -82,6 +84,7 @@ private:
     
     bool m_init_move;
     bool m_moving;
+    bool m_draw_background;
     tempo_mark m_move_marker;
     
     /* locking */
@@ -103,8 +106,6 @@ private:
     void draw_progress_on_window();
     void update_pixmap();
 
-    int idle_progress();
-
     void change_horz();
     void set_tempo_marker(long a_tick);
     
@@ -123,6 +124,7 @@ public:
     tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust );
     ~tempo();
 
+    void idle_progress();
     void set_zoom (int a_zoom);
 
     void reset();
