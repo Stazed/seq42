@@ -25,10 +25,6 @@
 
 
 tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
-    m_black(Gdk::Color("black")),
-    m_white(Gdk::Color("white")),
-    m_grey(Gdk::Color("green")),
-    //m_grey(Gdk::Color("grey")),
 
     m_mainperf(a_perf),
     m_mainwnd(a_main),
@@ -47,13 +43,6 @@ tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
                 Gdk::BUTTON_RELEASE_MASK |
                 Gdk::POINTER_MOTION_MASK |
                 Gdk::LEAVE_NOTIFY_MASK );
-
-    // in the constructor you can only allocate colors,
-    // get_window() returns 0 because we have not been realized
-    Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
-    colormap->alloc_color( m_black );
-    colormap->alloc_color( m_white );
-    colormap->alloc_color( m_grey );
 
     m_popup_tempo_wnd =  new tempopopup(this);
     m_hadjust->signal_value_changed().connect( mem_fun( *this, &tempo::change_horz ));
