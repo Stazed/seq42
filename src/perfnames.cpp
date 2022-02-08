@@ -23,11 +23,6 @@
 
 perfnames::perfnames( perform *a_perf, mainwnd *a_main, Adjustment *a_vadjust ):
     trackmenu(a_perf, a_main),
-    m_black(Gdk::Color( "black" )),
-    m_white(Gdk::Color( "white" )),
-    m_grey(Gdk::Color( "SteelBlue1" )),
-    m_orange(Gdk::Color( "Orange Red")),    // mute
-    m_green(Gdk::Color( "Lawn Green")),     // solo
     m_mainperf(a_perf),
     m_vadjust(a_vadjust),
     m_track_offset(0),
@@ -41,15 +36,6 @@ perfnames::perfnames( perform *a_perf, mainwnd *a_main, Adjustment *a_vadjust ):
 
     /* set default size */
     set_size_request( c_names_x, 100 );
-
-    // in the constructor you can only allocate colors,
-    // get_window() returns 0 because we have not be realized
-    Glib::RefPtr<Gdk::Colormap>  colormap= get_default_colormap();
-    colormap->alloc_color( m_black );
-    colormap->alloc_color( m_white );
-    colormap->alloc_color( m_grey );
-    colormap->alloc_color( m_orange );
-    colormap->alloc_color( m_green );
 
     m_vadjust->signal_value_changed().connect( mem_fun( *(this), &perfnames::change_vert ));
 
@@ -69,13 +55,6 @@ perfnames::on_realize()
     m_window = get_window();
     m_window->clear();
 
-    m_pixmap = Gdk::Pixmap::create
-    (
-        m_window,
-        c_names_x,
-        c_names_y  * c_max_track + 1,
-        -1
-    );
 }
 
 void
@@ -86,18 +65,6 @@ perfnames::change_vert( )
         m_track_offset = (int) m_vadjust->get_value();
         queue_draw();
     }
-}
-
-void
-perfnames::update_pixmap()
-{
-
-}
-
-void
-perfnames::draw_area()
-{
-
 }
 
 void

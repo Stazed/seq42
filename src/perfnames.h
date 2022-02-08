@@ -52,9 +52,6 @@ class perfnames : public virtual Gtk::DrawingArea, public virtual trackmenu
 private:
 
     Glib::RefPtr<Gdk::Window>   m_window;
-    Gdk::Color    m_black, m_white, m_grey, m_orange, m_green;
-
-    Glib::RefPtr<Gdk::Pixmap>   m_pixmap;
 
     perform      *m_mainperf;
 
@@ -76,9 +73,6 @@ private:
     bool on_motion_notify_event(GdkEventMotion* a_ev);
     void on_size_allocate(Gtk::Allocation& );
     bool on_scroll_event( GdkEventScroll* a_ev ) ;
-
-    void draw_area();
-    void update_pixmap();
 
     void convert_y( int a_y, int *a_note);
 
