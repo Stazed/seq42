@@ -33,8 +33,16 @@ perftime::perftime( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
     m_4bar_offset(0),
 
     m_snap(c_ppqn),
-    m_measure_length(c_ppqn * 4)
+    m_measure_length(c_ppqn * 4),
+    m_draw_background(false)
 {
+    Gtk::Allocation allocation = get_allocation();
+    m_surface = Cairo::ImageSurface::create(
+        Cairo::Format::FORMAT_ARGB32,
+        allocation.get_width(),
+        allocation.get_height()
+    );
+
     add_events( Gdk::BUTTON_PRESS_MASK |
                 Gdk::BUTTON_RELEASE_MASK );
 
@@ -63,6 +71,7 @@ perftime::on_realize()
     m_window = get_window();
     m_window->clear();
 
+    m_surface_window = m_window->create_cairo_context();
     set_size_request( 10, c_timearea_y );
 }
 
@@ -72,7 +81,21 @@ perftime::change_horz( )
     if ( m_4bar_offset != (int) m_hadjust->get_value() )
     {
         m_4bar_offset = (int) m_hadjust->get_value();
-        queue_draw();
+        Gtk::Allocation allocation = get_allocation();
+        const int width = allocation.get_width();
+        const int height = allocation.get_height();
+
+        // resize handler
+        if (width != m_surface->get_width() || height != m_surface->get_height())
+        {
+            m_surface = Cairo::ImageSurface::create(
+                Cairo::Format::FORMAT_ARGB32,
+                allocation.get_width(),
+                allocation.get_height()
+            );
+        }
+
+        m_draw_background = true;
     }
 }
 
@@ -81,38 +104,65 @@ perftime::set_guides( int a_snap, int a_measure )
 {
     m_snap = a_snap;
     m_measure_length = a_measure;
-    queue_draw();
+    m_draw_background = true;
 }
 
-int
+void
 perftime::idle_progress( )
 {
-    return true;
+    if (m_draw_background)
+        draw_background();
 }
 
 bool
 perftime::on_expose_event (GdkEventExpose * /* ev */ )
 {
-    draw_background();
+    Gtk::Allocation allocation = get_allocation();
+    const int width = allocation.get_width();
+    const int height = allocation.get_height();
+
+    // resize handler
+    if (width != m_surface->get_width() || height != m_surface->get_height())
+    {
+        m_surface = Cairo::ImageSurface::create(
+            Cairo::Format::FORMAT_ARGB32,
+            allocation.get_width(),
+            allocation.get_height()
+        );
+        m_surface_window = m_window->create_cairo_context();
+        m_draw_background = true;
+    }
+
     return true;
 }
 
 void
 perftime::draw_background()
 {
-    /* clear background */
-    cairo_t *cr = gdk_cairo_create (m_window->gobj());
-    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);            // white FIXME
-    cairo_set_line_width(cr, 1.0);
-    cairo_rectangle(cr, 0, 0, m_window_x, m_window_y);
-    cairo_stroke_preserve(cr);
-    cairo_fill(cr);
+    m_draw_background = false;
+    Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
 
-    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);            // black  FIXME
-    cairo_set_line_width(cr, 1.0);
-    cairo_move_to(cr, 0, m_window_y - 1);
-    cairo_line_to(cr, m_window_x, m_window_y - 1);
-    cairo_stroke(cr);
+    Gtk::Allocation allocation = get_allocation();
+    const int width = allocation.get_width();
+    const int height = allocation.get_height();
+
+    cr->set_operator(Cairo::OPERATOR_CLEAR);
+    cr->rectangle(-1, -1, width + 2, height + 2);
+    cr->paint_with_alpha(0.0);
+    cr->set_operator(Cairo::OPERATOR_OVER);
+
+    /* clear background */
+    cr->set_source_rgb( 1.0, 1.0, 1.0);            // white FIXME
+    cr->set_line_width( 1.0);
+    cr->rectangle( 0, 0, m_window_x, m_window_y);
+    cr->stroke_preserve();
+    cr->fill();
+
+    cr->set_source_rgb( 0.0, 0.0, 0.0);            // black  FIXME
+    cr->set_line_width( 1.0);
+    cr->move_to( 0, m_window_y - 1);
+    cr->line_to( m_window_x, m_window_y - 1);
+    cr->stroke();
 
     /* draw vertical lines */
     long tick_offset = (m_4bar_offset * 16 * c_ppqn);
@@ -141,8 +191,8 @@ perftime::draw_background()
     0    1    2    3    4    5
 
 #endif
-    cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);            // Grey  FIXME
-    cairo_set_line_width(cr, 1.0);
+    cr->set_source_rgb( 0.6, 0.6, 0.6);            // Grey  FIXME
+    cr->set_line_width( 1.0);
 
     for ( int i=first_measure;
             i<first_measure+(m_window_x * m_perf_scale_x / (m_measure_length)) + 1; i += bar_skip  )
@@ -150,19 +200,19 @@ perftime::draw_background()
         int x_pos = ((i * m_measure_length) - tick_offset) / m_perf_scale_x;
 
         /* beat */
-        cairo_move_to(cr, x_pos, 0);
-        cairo_line_to(cr, x_pos, m_window_y);
-        cairo_stroke(cr);
+        cr->move_to( x_pos, 0);
+        cr->line_to( x_pos, m_window_y);
+        cr->stroke();
 
         /* bar numbers */
         char bar[16];
         snprintf( bar, sizeof(bar), "%d", i + 1 );
 
-        cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
-        cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-        cairo_set_font_size(cr, 9.0);
-        cairo_move_to(cr, x_pos + 2, 8.0);
-        cairo_show_text( cr, bar);
+        cr->set_source_rgb( 0.0, 0.0, 0.0);    // Black FIXME
+        cr->select_font_face( "Sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
+        cr->set_font_size(9.0);
+        cr->move_to( x_pos + 2, 8.0);
+        cr->show_text(bar);
     }
 
     /* The 'L' and 'R' markers */
@@ -177,40 +227,48 @@ perftime::draw_background()
     if ( left >=0 && left <= m_window_x )
     {
         // set background for tempo labels to black
-        cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
+        cr->set_source_rgb( 0.0, 0.0, 0.0);    // Black FIXME
 
         // draw the black background for the labels
-        cairo_rectangle(cr, left, m_window_y - 9, 7, 10);
-        cairo_stroke_preserve(cr);
-        cairo_fill(cr);
+        cr->rectangle( left, m_window_y - 9, 7, 10);
+        cr->stroke_preserve();
+        cr->fill();
 
         // print the 'L' label in white
-        cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
-        cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-        cairo_set_font_size(cr, 9.0);
-        cairo_move_to(cr, left + 1, 17.0);
-        cairo_show_text( cr, "L");
+        cr->set_source_rgb( 1.0, 1.0, 1.0);    // White FIXME
+        cr->select_font_face( "Sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
+        cr->set_font_size( 9.0);
+        cr->move_to( left + 1, 17.0);
+        cr->show_text("L");
     }
 
     if ( right >=0 && right <= m_window_x )
     {
         // set background for tempo labels to black
-        cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
+        cr->set_source_rgb( 0.0, 0.0, 0.0);    // Black FIXME
 
         // draw the black background for the labels
-        cairo_rectangle(cr, right - 7, m_window_y - 9, 7, 10);
-        cairo_stroke_preserve(cr);
-        cairo_fill(cr);
+        cr->rectangle( right - 7, m_window_y - 9, 7, 10);
+        cr->stroke_preserve();
+        cr->fill();
 
         // print the 'R' label in white
-        cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
-        cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-        cairo_set_font_size(cr, 9.0);
-        cairo_move_to(cr, right - 7, 17.0);
-        cairo_show_text( cr, "R");
+        cr->set_source_rgb( 1.0, 1.0, 1.0);    // White FIXME
+        cr->select_font_face( "Sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
+        cr->set_font_size( 9.0);
+        cr->move_to( right - 7, 17.0);
+        cr->show_text("R");
     }
 
-    cairo_destroy(cr);
+    /* Clear previous background */
+    m_surface_window->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
+    m_surface_window->rectangle (0.0, 0.0, width, height);
+    m_surface_window->stroke_preserve();
+    m_surface_window->fill();
+
+    /* Draw the new background */
+    m_surface_window->set_source(m_surface, 0.0, 0.0);
+    m_surface_window->paint();
 }
 
 bool
@@ -235,7 +293,7 @@ perftime::on_button_press_event(GdkEventButton* p0)
         m_mainperf->set_right_tick( tick + m_snap );
     }
 
-    queue_draw();
+    m_draw_background = true;
 
     return true;
 }

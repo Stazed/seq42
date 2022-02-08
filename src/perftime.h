@@ -52,6 +52,8 @@ class perftime: public Gtk::DrawingArea
 private:
 
     Glib::RefPtr<Gdk::Window>   m_window;
+    Cairo::RefPtr<Cairo::ImageSurface> m_surface;
+    Cairo::RefPtr<Cairo::Context>  m_surface_window;
 
     perform      * const m_mainperf;
     mainwnd      * const m_mainwnd;
@@ -63,6 +65,7 @@ private:
     int m_4bar_offset;
 
     int m_snap, m_measure_length;
+    bool m_draw_background;
 
     void on_realize();
     bool on_expose_event(GdkEventExpose* a_ev);
@@ -71,14 +74,13 @@ private:
     void on_size_allocate(Gtk::Allocation &a_r );
 
     void draw_background();
-    int idle_progress();
-
     void change_horz();
 
 public:
 
     perftime( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust );
 
+    void idle_progress();
     void set_zoom (int a_zoom);
 
     void reset();
