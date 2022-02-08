@@ -36,7 +36,7 @@ seqdata::seqdata(sequence *a_seq, int a_zoom, Gtk::Adjustment *a_hadjust):
 
     m_dragging(false),
     m_drag_handle(false),
-    m_background_draw(false)
+    m_redraw_events(false)
 {
     Gtk::Allocation allocation = get_allocation();
     m_surface = Cairo::ImageSurface::create(
@@ -63,7 +63,7 @@ seqdata::update_sizes()
     if( get_realized() )
     {
         m_surface_window = m_window->create_cairo_context();
-        m_background_draw = true;
+        m_redraw_events = true;
     }
 }
 
@@ -79,7 +79,7 @@ seqdata::reset()
 void
 seqdata::redraw()
 {
-    m_background_draw = true;
+    m_redraw_events = true;
 }
 
 void
@@ -119,9 +119,9 @@ seqdata::set_data_type( unsigned char a_status, unsigned char a_control = 0  )
 
 
 void
-seqdata::draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw  )
+seqdata::draw_events_on_window( )
 {
-    m_background_draw = false;
+    m_redraw_events = false;
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
 
     Gtk::Allocation allocation = get_allocation();
@@ -284,13 +284,13 @@ seqdata::idle_redraw()
             allocation.get_width(),
             allocation.get_height()
         );
-        m_background_draw = true;
+        m_redraw_events = true;
     }
 
     /* no flicker, redraw */
-    if ( m_background_draw )
+    if ( m_redraw_events )
     {
-        draw_events_on( m_window );
+        draw_events_on_window();
     }
 
     draw_line_on_window();
@@ -326,7 +326,7 @@ seqdata::on_scroll_event( GdkEventScroll* a_ev )
         m_seq->decrement_selected( m_status, m_cc );
     }
 
-    m_background_draw = true;
+    m_redraw_events = true;
 
     return true;
 }
@@ -409,7 +409,7 @@ seqdata::on_button_release_event(GdkEventButton* a_p0)
         m_seq->set_hold_undo(false);
     }
 
-    m_background_draw = true;
+    m_redraw_events = true;
     return true;
 }
 
@@ -463,7 +463,7 @@ seqdata::on_motion_notify_event(GdkEventMotion* a_p0)
 
         m_seq->adjust_data_handle(m_status, m_current_y );
 
-        m_background_draw = true;
+        m_redraw_events = true;
     }
 
     if ( m_dragging )
@@ -501,7 +501,7 @@ seqdata::on_motion_notify_event(GdkEventMotion* a_p0)
                                         c_dataarea_y - adj_y_max -1 );
 
         /* convert x,y to ticks, then set events in range */
-        m_background_draw = true;
+        m_redraw_events = true;
     }
 
     return true;
@@ -510,7 +510,7 @@ seqdata::on_motion_notify_event(GdkEventMotion* a_p0)
 bool
 seqdata::on_leave_notify_event(GdkEventCrossing* p0)
 {
-    m_background_draw = true;
+    m_redraw_events = true;
     return true;
 }
 
@@ -535,7 +535,7 @@ seqdata::change_horz( )
     m_scroll_offset_ticks = (int) m_hadjust->get_value();
     m_scroll_offset_x = m_scroll_offset_ticks / m_zoom;
 
-    m_background_draw = true;
+    m_redraw_events = true;
 }
 
 void

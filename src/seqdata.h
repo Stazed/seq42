@@ -73,7 +73,7 @@ private:
 
     bool m_dragging;
     bool m_drag_handle;
-    bool m_background_draw;
+    bool m_redraw_events;
 
     void on_realize();
 
@@ -93,7 +93,7 @@ private:
                      int *a_x,  int *a_y,
                      int *a_w,  int *a_h );
 
-    void draw_events_on( Glib::RefPtr<Gdk::Drawable> a_draw );
+    void draw_events_on_window();
 
     void on_size_allocate(Gtk::Allocation& );
     void change_horz();
@@ -108,7 +108,7 @@ public:
     void set_data_type( unsigned char a_status, unsigned char a_control  );
 
     int idle_redraw();
-    void queue_draw_background() {m_background_draw = true;} ;
+    void queue_draw_background() {m_redraw_events = true;} ;
 
     friend class seqroll;
     friend class seqevent;
