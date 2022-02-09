@@ -34,8 +34,6 @@ perfroll::perfroll( perform *a_perf,
     m_perf_scale_x(c_perf_scale_x),       // 32 ticks per pixel
     m_zoom(c_perf_scale_x),               // 32 ticks per pixel
 
-    m_old_progress_ticks(0),
-
     m_4bar_offset(0),
     m_track_offset(0),
     m_roll_length_ticks(0),
@@ -102,12 +100,6 @@ perfroll::change_vert( )
 {
     if ( m_track_offset != (int) m_vadjust->get_value() )
     {
-        /*   must adjust m_drop_y or perfroll_input unselect_triggers will not work if   */
-        /*   scrolled up or down to a new location - see note in on_button_press_event() */
-        /*   in perfroll_input.cpp */
-
-        m_drop_y += ((m_track_offset - (int) m_vadjust->get_value()) *c_names_y);
-
         m_track_offset = (int) m_vadjust->get_value();
         queue_draw();
     }
@@ -276,7 +268,6 @@ perfroll::fill_background_surface()
     }
 }
 
-
 /* simply sets the snap member */
 void
 perfroll::set_guides( int a_snap, int a_measure, int a_beat )
@@ -300,24 +291,16 @@ perfroll::draw_progress()
     long tick_offset = m_4bar_offset * c_ppqn * 16;
 
     int progress_x =     ( tick - tick_offset ) / m_perf_scale_x ;
-    int old_progress_x = ( m_old_progress_ticks - tick_offset ) / m_perf_scale_x ;
 
- //   cairo_t *cr = gdk_cairo_create (m_window->gobj());
+    m_surface_window->set_source(m_surface_track, 0.0, 0.0);
+    m_surface_window->paint();
 
-    /* draw old */
-/*    gdk_cairo_set_source_pixmap(cr, m_pixmap->gobj(), 0.0, 0.0);
-    cairo_rectangle(cr, old_progress_x-1, 0.0, 2.0, m_window_y);
-    cairo_fill(cr);*/
-    
     /* draw progress line */
- /*   cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);            // Black  FIXME
-    cairo_set_line_width(cr, 2.0);
-    cairo_move_to(cr, progress_x, 0.0);
-    cairo_line_to(cr, progress_x, m_window_y);
-    cairo_stroke(cr);
-    cairo_destroy(cr);*/
-
-    m_old_progress_ticks = tick;
+    m_surface_window->set_source_rgb(0.0, 0.0, 0.0);            // Black  FIXME
+    m_surface_window->set_line_width(2.0);
+    m_surface_window->move_to(progress_x, 0.0);
+    m_surface_window->line_to(progress_x, m_window_y);
+    m_surface_window->stroke();
 
     auto_scroll_horz();
 }
@@ -560,10 +543,6 @@ perfroll::on_expose_event(GdkEventExpose* e)
         draw_track_on( y + m_track_offset );
     }
 
-    /* Draw the new background */
-    m_surface_window->set_source(m_surface_track, 0.0, 0.0);
-    m_surface_window->paint();
-
     return true;
 }
 
@@ -571,8 +550,6 @@ perfroll::on_expose_event(GdkEventExpose* e)
 void
 perfroll::redraw_dirty_tracks()
 {
-    bool draw = false;
-
     int y_s = 0;
     int y_f = m_window_y / c_names_y;
 
@@ -586,27 +563,8 @@ perfroll::redraw_dirty_tracks()
         {
             draw_background_on(track );
             draw_track_on(track);
-            draw = true;
         }
     }
-
-    if ( draw )
-    {
-        /* Draw the new background */
-        m_surface_window->set_source(m_surface_track, 0.0, 0.0);
-        m_surface_window->paint();
-    }
-}
-
-void
-perfroll::draw_drawable_row( long a_y )
-{
-    if( a_y < 0) // if user scrolled up off the window
-        return;
-
-    /* Draw the new background */
-    m_surface_window->set_source(m_surface_track, 0.0, 0.0);
-    m_surface_window->paint();
 }
 
 bool

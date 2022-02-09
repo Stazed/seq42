@@ -83,8 +83,6 @@ private:
 
     int          m_window_x, m_window_y;
 
-    long         m_old_progress_ticks;
-
     int          m_4bar_offset;
     int          m_track_offset;
 
@@ -126,8 +124,6 @@ private:
 
     void draw_track_on( int a_track );
     void draw_background_on( int a_track );
-
-    void draw_drawable_row( long a_y );
 
     void change_horz();
     void change_vert();
