@@ -148,7 +148,7 @@ public:
 
     void update_sizes();
     void init_before_show( );
-    void fill_background_pixmap();
+    void fill_background_surface();
 
     void increment_size();
 

@@ -150,7 +150,7 @@ perfroll::on_realize()
     }
 
     /* and fill the background ( dotted lines n' such ) */
-    fill_background_pixmap();
+    fill_background_surface();
 }
 
 void
@@ -215,7 +215,7 @@ perfroll::increment_size()
 
 /* updates background */
 void
-perfroll::fill_background_pixmap()
+perfroll::fill_background_surface()
 {
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface_background);
 
@@ -287,7 +287,7 @@ perfroll::set_guides( int a_snap, int a_measure, int a_beat )
 
     if ( get_realized() )
     {
-        fill_background_pixmap();
+        fill_background_surface();
     }
 
     queue_draw();
@@ -915,7 +915,7 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
 
     if ( ret == true )
     {
-        fill_background_pixmap();
+        fill_background_surface();
         queue_draw();
         return true;
     }
@@ -1263,7 +1263,7 @@ perfroll::set_zoom (int a_zoom)
             m_perf_scale_x = 1;
 
         update_sizes();
-        fill_background_pixmap();
+        fill_background_surface();
     }
 }
 
