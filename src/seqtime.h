@@ -47,7 +47,6 @@ class seqtime: public Gtk::DrawingArea
 private:
 
     Glib::RefPtr<Gdk::Window>   m_window;
-    Gdk::Color m_black, m_white, m_grey;
 
     Glib::RefPtr<Gdk::Pixmap> m_pixmap;
 

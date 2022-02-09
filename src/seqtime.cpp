@@ -23,27 +23,14 @@
 
 seqtime::seqtime(sequence *a_seq, int a_zoom,
                  Gtk::Adjustment   *a_hadjust):
-    m_black(Gdk::Color("black")),
-    m_white(Gdk::Color("white")),
-    m_grey(Gdk::Color("grey")),
-
     m_hadjust(a_hadjust),
-
     m_scroll_offset_ticks(0),
     m_scroll_offset_x(0),
-
     m_seq(a_seq),
     m_zoom(a_zoom)
 {
     add_events( Gdk::BUTTON_PRESS_MASK |
                 Gdk::BUTTON_RELEASE_MASK );
-
-    // in the construor you can only allocate colors,
-    // get_window() returns 0 because we have not be realized
-    Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
-    colormap->alloc_color( m_black );
-    colormap->alloc_color( m_white );
-    colormap->alloc_color( m_grey );
 
     /* set default size */
     set_size_request( 10, c_timearea_y );
