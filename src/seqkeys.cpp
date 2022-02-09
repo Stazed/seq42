@@ -23,11 +23,6 @@
 
 seqkeys::seqkeys(sequence *a_seq,
                  Gtk::Adjustment *a_vadjust ):
-    m_black(Gdk::Color("black")),
-    m_white(Gdk::Color("white")),
-    m_red(Gdk::Color("red")),  // mute
-    m_green(Gdk::Color("green")), // solo
-    m_blue(Gdk::Color("blue")), // hint
     m_seq(a_seq),
     m_vadjust(a_vadjust),
     m_scroll_offset_key(0),
@@ -48,19 +43,6 @@ seqkeys::seqkeys(sequence *a_seq,
 
     /* set default size */
     set_size_request( c_keyarea_x +1, 10 );
-
-    //m_window_x = 10;
-    //m_window_y = c_keyarea_y;
-
-    // in the construor you can only allocate colors,
-    // get_window() returns 0 because we have not be realized
-    Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
-
-    colormap->alloc_color( m_black );
-    colormap->alloc_color( m_white );
-    colormap->alloc_color( m_red );
-    colormap->alloc_color( m_green );
-    colormap->alloc_color( m_blue );
 
     set_double_buffered( false );
 }
@@ -134,7 +116,7 @@ seqkeys::update_pixmap()
     for ( int i = 0; i < c_num_keys; i++ )
     {
         int note_color = White_Note;
-        
+
         if(m_seq->is_note_mute(c_num_keys - i - 1))
         {
             note_color = Red_Note;      /* red for mute */
@@ -143,7 +125,7 @@ seqkeys::update_pixmap()
         {
             note_color = Green_Note;    /* green for solo */
         }
-        
+
         cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
         cairo_rectangle(cr, c_keyoffset_x + 1,
                                  (c_key_y * i) + 1,
@@ -305,7 +287,7 @@ seqkeys::on_button_press_event(GdkEventButton *a_e)
 
             m_keying_note = note;
         }
-        
+
         /* Right mouse button - mute the note */
         if (m_enter_piano_roll &&  a_e->button == 3 )
         {
@@ -313,7 +295,7 @@ seqkeys::on_button_press_event(GdkEventButton *a_e)
             m_seq->set_mute_note( note );
             update_pixmap();
         }
-        
+
         /* middle mouse button, or left-ctrl click (for 2 button mice) */
         if ( m_enter_piano_roll && (a_e->button == 2   ||
                             (a_e->button == 1 && (a_e->state & GDK_CONTROL_MASK))))
@@ -434,7 +416,6 @@ seqkeys::draw_key( int a_key, bool a_state )
         cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);            // White  FIXME
     }
 
-   
     /* Mute or solo keys */
     if(m_seq->is_note_mute(base_key))
     {
