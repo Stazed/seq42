@@ -180,7 +180,7 @@ const int c_undo_import  = 5;
 #ifdef __WIN32__
 const int c_redraw_ms = 20;
 #else
-const int c_redraw_ms = 40;
+const int c_redraw_ms = 25;
 #endif
 
 /* consts for perform editor */

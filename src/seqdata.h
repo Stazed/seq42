@@ -47,9 +47,7 @@ class seqdata : public Gtk::DrawingArea
 private:
 
     Glib::RefPtr<Gdk::Window> m_window;
-    
     Cairo::RefPtr<Cairo::ImageSurface> m_surface;
-    
     Cairo::RefPtr<Cairo::Context>  m_surface_window;
     
     sequence     * const m_seq;

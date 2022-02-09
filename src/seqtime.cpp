@@ -27,8 +27,16 @@ seqtime::seqtime(sequence *a_seq, int a_zoom,
     m_scroll_offset_ticks(0),
     m_scroll_offset_x(0),
     m_seq(a_seq),
-    m_zoom(a_zoom)
+    m_zoom(a_zoom),
+    m_redraw_window(false)
 {
+    Gtk::Allocation allocation = get_allocation();
+    m_surface = Cairo::ImageSurface::create(
+        Cairo::Format::FORMAT_ARGB32,
+        allocation.get_width(),
+        allocation.get_height()
+    );
+
     add_events( Gdk::BUTTON_PRESS_MASK |
                 Gdk::BUTTON_RELEASE_MASK );
 
@@ -44,10 +52,18 @@ seqtime::update_sizes()
     /* set these for later */
     if( get_realized() )
     {
-        m_pixmap = Gdk::Pixmap::create( m_window,
-                                        m_window_x,
-                                        m_window_y, -1 );
-        update_pixmap();
+        if (m_window_x != m_surface->get_width() || m_window_y != m_surface->get_height())
+        {
+            m_surface = Cairo::ImageSurface::create(
+                Cairo::Format::FORMAT_ARGB32,
+                m_window_x,
+                m_window_y
+            );
+        }
+        
+        m_surface_window = m_window->create_cairo_context();
+
+        update_surface();
         queue_draw();
     }
 }
@@ -58,12 +74,13 @@ seqtime::on_realize()
     // we need to do the default realize
     Gtk::DrawingArea::on_realize();
 
-    //Gtk::Main::idle.connect(mem_fun(this,&seqtime::idleProgress));
-    Glib::signal_timeout().connect(mem_fun(*this,&seqtime::idle_progress), 50);
+    Glib::signal_timeout().connect(mem_fun(*this,&seqtime::idle_progress), c_redraw_ms);
 
     // Now we can allocate any additional resources we need
     m_window = get_window();
     m_window->clear();
+    
+    m_surface_window = m_window->create_cairo_context();
 
     m_hadjust->signal_value_changed().connect( mem_fun( *this, &seqtime::change_horz ));
 
@@ -76,8 +93,7 @@ seqtime::change_horz( )
     m_scroll_offset_ticks = (int) m_hadjust->get_value();
     m_scroll_offset_x = m_scroll_offset_ticks / m_zoom;
 
-    update_pixmap();
-    force_draw();
+    update_surface();
 }
 
 void
@@ -94,6 +110,11 @@ seqtime::on_size_allocate(Gtk::Allocation & a_r )
 bool
 seqtime::idle_progress( )
 {
+    if (m_redraw_window)
+    {
+        draw_surface_on_window();
+    }
+    
     return true;
 }
 
@@ -114,8 +135,7 @@ seqtime::reset()
     m_scroll_offset_x = m_scroll_offset_ticks / m_zoom;
 
     update_sizes();
-    update_pixmap();
-    draw_pixmap_on_window();
+    update_surface();
 }
 
 void
@@ -124,25 +144,27 @@ seqtime::redraw()
     m_scroll_offset_ticks = (int) m_hadjust->get_value();
     m_scroll_offset_x = m_scroll_offset_ticks / m_zoom;
 
-    update_pixmap();
-    draw_pixmap_on_window();
+    update_surface();
 }
 
 void
-seqtime::update_pixmap()
+seqtime::update_surface()
 {
-    /* clear background */
-    cairo_t *cr = gdk_cairo_create (m_pixmap->gobj());
-    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
-    cairo_set_line_width(cr, 1.0);
-    cairo_rectangle(cr, 0.0, 0.0, m_window_x, m_window_y );
-    cairo_stroke_preserve(cr);
-    cairo_fill(cr);
-    
-    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
-    cairo_move_to(cr, 0.0, m_window_y - 1);
-    cairo_line_to(cr, m_window_x,  m_window_y - 1 );
-    cairo_stroke(cr);
+    Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
+
+    Gtk::Allocation allocation = get_allocation();
+    const int width = allocation.get_width();
+    const int height = allocation.get_height();
+
+    cr->set_operator(Cairo::OPERATOR_CLEAR);
+    cr->rectangle(-1, -1, width + 2, height + 2);
+    cr->paint_with_alpha(1.0);
+    cr->set_operator(Cairo::OPERATOR_OVER);
+
+    cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
+    cr->move_to(0.0, m_window_y - 1);
+    cr->line_to(m_window_x,  m_window_y - 1 );
+    cr->stroke();
 
     // at 32, a bar every measure
     // at 16
@@ -188,76 +210,58 @@ seqtime::update_pixmap()
         int base_line = i / m_zoom;
 
         /* beat */
-        cairo_move_to(cr, base_line -  m_scroll_offset_x, 0);
-        cairo_line_to(cr, base_line -  m_scroll_offset_x, m_window_y );
-        cairo_stroke(cr);
+        cr->move_to(base_line -  m_scroll_offset_x, 0);
+        cr->line_to(base_line -  m_scroll_offset_x, m_window_y );
+        cr->stroke();
 
         /* The bar numbers */
         char bar[16];
         snprintf(bar, sizeof(bar), "%d", (i/ ticks_per_measure ) + 1);
 
-        cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
-        cairo_set_font_size(cr, 9.0);
-        cairo_move_to(cr, base_line + 2 -  m_scroll_offset_x, 7);
-        cairo_show_text( cr, bar);
+        cr->select_font_face("Sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
+        cr->set_font_size(9.0);
+        cr->move_to(base_line + 2 -  m_scroll_offset_x, 7);
+        cr->show_text( bar);
     }
 
     long end_x = m_seq->get_length() / m_zoom - m_scroll_offset_x;
 
     // set background for label to black
-    cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);    // Black FIXME
+    cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
 
     // draw the black background for the 'END' label
-    cairo_rectangle(cr, end_x, 9, 22, 8 );
-    cairo_stroke_preserve(cr);
-    cairo_fill(cr);
+    cr->rectangle(end_x, 9, 22, 8 );
+    cr->stroke_preserve();
+    cr->fill();
 
     // print the 'END' label in white
-    cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
-    cairo_select_font_face(cr, "Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
-    cairo_set_font_size(cr, 9.0);
-    cairo_move_to(cr, end_x, 16);
-    cairo_show_text( cr, "END");
-
-    cairo_destroy(cr);
+    cr->set_source_rgb(1.0, 1.0, 1.0);    // White FIXME
+    cr->select_font_face("Sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_BOLD);
+    cr->set_font_size(9.0);
+    cr->move_to(end_x, 16);
+    cr->show_text("END");
+    
+    m_redraw_window = true;
 }
 
 void
-seqtime::draw_pixmap_on_window()
+seqtime::draw_surface_on_window()
 {
-    cairo_t *cr = gdk_cairo_create (m_window->gobj());
-    gdk_cairo_set_source_pixmap(cr, m_pixmap->gobj(), 0.0, 0.0);
-    cairo_rectangle(cr, 0.0, 0.0, m_window_x, m_window_y);
-    cairo_fill(cr);
+    m_redraw_window = false;
 
-    cairo_destroy(cr);
+    m_surface_window->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
+    m_surface_window->rectangle (0.0, 0.0, m_window_x, m_window_y);
+    m_surface_window->stroke_preserve();
+    m_surface_window->fill();
+
+    m_surface_window->set_source(m_surface, 0.0, 0.0);
+    m_surface_window->paint();
 }
 
 bool
 seqtime::on_expose_event(GdkEventExpose* a_e)
 {
-    cairo_t *cr = gdk_cairo_create (m_window->gobj());
-    gdk_cairo_set_source_pixmap(cr, m_pixmap->gobj(), a_e->area.x, a_e->area.y);
-    cairo_rectangle(cr, a_e->area.x,
-        a_e->area.y,
-        a_e->area.width,
-        a_e->area.height);
-    cairo_fill(cr);
-
-    cairo_destroy(cr);
-
     return true;
-}
-
-void
-seqtime::force_draw()
-{
-    cairo_t *cr = gdk_cairo_create (m_window->gobj());
-    gdk_cairo_set_source_pixmap(cr, m_pixmap->gobj(), 0.0, 0.0);
-    cairo_rectangle(cr, 0.0, 0.0, m_window_x,  m_window_y);
-    cairo_fill(cr);
-
-    cairo_destroy(cr);
 }
 
 bool

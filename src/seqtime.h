@@ -47,8 +47,8 @@ class seqtime: public Gtk::DrawingArea
 private:
 
     Glib::RefPtr<Gdk::Window>   m_window;
-
-    Glib::RefPtr<Gdk::Pixmap> m_pixmap;
+    Cairo::RefPtr<Cairo::ImageSurface> m_surface;
+    Cairo::RefPtr<Cairo::Context>  m_surface_window;
 
     Gtk::Adjustment   *m_hadjust;
 
@@ -61,14 +61,15 @@ private:
     int          m_zoom;
 
     int m_window_x, m_window_y;
+    bool m_redraw_window;
 
     void on_realize();
     bool on_expose_event(GdkEventExpose* a_ev);
     bool on_button_press_event(GdkEventButton* a_ev);
     bool on_button_release_event(GdkEventButton* a_ev);
-    void draw_pixmap_on_window();
+    void draw_surface_on_window();
     void draw_progress_on_window();
-    void update_pixmap();
+    void update_surface();
 
     bool idle_progress();
 
@@ -77,8 +78,6 @@ private:
     void change_horz();
 
     void update_sizes();
-
-    void force_draw();
 
 public:
 

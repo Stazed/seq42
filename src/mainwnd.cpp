@@ -596,7 +596,7 @@ mainwnd::mainwnd(perform *a_p):
     add_events( Gdk::KEY_PRESS_MASK | Gdk::KEY_RELEASE_MASK );
 
     m_timeout_connect = Glib::signal_timeout().connect(
-                            mem_fun(*this, &mainwnd::timer_callback), 25);
+                            mem_fun(*this, &mainwnd::timer_callback), c_redraw_ms);
 
     m_sigpipe[0] = -1;
     m_sigpipe[1] = -1;
