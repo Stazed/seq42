@@ -46,15 +46,15 @@ bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
     if ( ths.m_mainperf->is_active_track( ths.m_drop_track ))
     {
         ths.m_mainperf->get_track( ths.m_drop_track )->unselect_triggers( );
-        ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
-        ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
+        ths.draw_background_on( ths.m_drop_track );
+        ths.draw_track_on( ths.m_drop_track );
 
         /* ths.m_drop_y will be adjusted by perfroll.cpp change_vert() for any        */
         /* scroll after it was originally selected. Below call to draw_drawable_row   */
         /* will have the wrong y location and un-select will not occur if the user    */
         /* scrolls the track up or down to a new y location if not adjusted.          */
 
-        ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
+        ths.draw_drawable_row( ths.m_drop_y);
     }
 
     ths.m_drop_x = (int) a_ev->x;
@@ -173,9 +173,9 @@ void FruityPerfInput::on_left_button_pressed(GdkEventButton* a_ev, perfroll& ths
                                                          get_selected_trigger_start_tick( );
                     }
 
-                    ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
-                    ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
-                    ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
+                    ths.draw_background_on( ths.m_drop_track );
+                    ths.draw_track_on( ths.m_drop_track );
+                    ths.draw_drawable_row( ths.m_drop_y);
                 }
 
                 // add an event:
@@ -185,9 +185,9 @@ void FruityPerfInput::on_left_button_pressed(GdkEventButton* a_ev, perfroll& ths
 
                     ths.m_mainperf->push_trigger_undo(ths.m_drop_track);
                     ths.m_mainperf->get_track( ths.m_drop_track )->add_trigger( tick, ths.get_default_trigger_length(ths));
-                    ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
-                    ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
-                    ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
+                    ths.draw_background_on( ths.m_drop_track );
+                    ths.draw_track_on( ths.m_drop_track );
+                    ths.draw_drawable_row( ths.m_drop_y);
                 }
             }
         }
@@ -233,9 +233,9 @@ bool FruityPerfInput::on_button_release_event(GdkEventButton* a_ev, perfroll& th
 
     if ( ths.m_mainperf->is_active_track( ths.m_drop_track  ))
     {
-        ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
-        ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
-        ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y );
+        ths.draw_background_on( ths.m_drop_track );
+        ths.draw_track_on( ths.m_drop_track );
+        ths.draw_drawable_row( ths.m_drop_y );
     }
 
     updateMousePtr( ths );
@@ -261,9 +261,9 @@ bool FruityPerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths
 
             ths.m_mainperf->get_track( ths.m_drop_track )
                         ->grow_trigger( ths.m_drop_tick, tick, ths.get_default_trigger_length(ths));
-            ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
-            ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
-            ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
+            ths.draw_background_on( ths.m_drop_track );
+            ths.draw_track_on( ths.m_drop_track );
+            ths.draw_drawable_row( ths.m_drop_y);
         }
     }
     else if ( ths.m_moving || ths.m_growing )
@@ -296,9 +296,9 @@ bool FruityPerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths
                     ->move_selected_triggers_to( tick-1, false, GROW_END );
             }
 
-            ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
-            ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
-            ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
+            ths.draw_background_on( ths.m_drop_track );
+            ths.draw_track_on( ths.m_drop_track );
+            ths.draw_drawable_row( ths.m_drop_y);
         }
     }
 
@@ -329,15 +329,15 @@ bool Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
     if ( ths.m_mainperf->is_active_track( ths.m_drop_track ))
     {
         ths.m_mainperf->get_track( ths.m_drop_track )->unselect_triggers( );
-        ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
-        ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
+        ths.draw_background_on( ths.m_drop_track );
+        ths.draw_track_on( ths.m_drop_track );
 
         /* ths.m_drop_y will be adjusted by perfroll.cpp change_vert() for any        */
         /* scroll after it was originally selected. Below call to draw_drawable_row   */
         /* will have the wrong y location and un-select will not occur if the user    */
         /* scrolls the track up or down to a new y location if not adjusted.          */
 
-        ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
+        ths.draw_drawable_row( ths.m_drop_y);
     }
 
     ths.m_drop_x = (int) a_ev->x;
@@ -370,9 +370,9 @@ bool Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 
                     ths.m_mainperf->push_trigger_undo(ths.m_drop_track);
                     ths.m_mainperf->get_track( ths.m_drop_track )->add_trigger( tick, ths.get_default_trigger_length(ths));
-                    ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
-                    ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
-                    ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
+                    ths.draw_background_on( ths.m_drop_track );
+                    ths.draw_track_on( ths.m_drop_track );
+                    ths.draw_drawable_row( ths.m_drop_y);
                 }
             }
         }
@@ -416,9 +416,9 @@ bool Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
                                                      get_selected_trigger_start_tick( );
                 }
 
-                ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
-                ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
-                ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
+                ths.draw_background_on( ths.m_drop_track );
+                ths.draw_track_on( ths.m_drop_track );
+                ths.draw_drawable_row( ths.m_drop_y);
             }
         }
     }
@@ -455,9 +455,9 @@ bool Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 
                 ths.m_mainperf->get_track( ths.m_drop_track )->split_trigger( tick );
 
-                ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
-                ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
-                ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
+                ths.draw_background_on( ths.m_drop_track );
+                ths.draw_track_on( ths.m_drop_track );
+                ths.draw_drawable_row( ths.m_drop_y);
             }
             else    // clicked off trigger for paste
             {
@@ -499,9 +499,9 @@ bool Seq42PerfInput::on_button_release_event(GdkEventButton* a_ev, perfroll& ths
 
     if ( ths.m_mainperf->is_active_track( ths.m_drop_track  ))
     {
-        ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
-        ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
-        ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y );
+        ths.draw_background_on( ths.m_drop_track );
+        ths.draw_track_on( ths.m_drop_track );
+        ths.draw_drawable_row( ths.m_drop_y );
     }
 
     return true;
@@ -523,9 +523,9 @@ bool Seq42PerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths)
             ths.m_mainperf->get_track( ths.m_drop_track )
                 ->grow_trigger( ths.m_drop_tick, tick, ths.get_default_trigger_length(ths));
 
-            ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
-            ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
-            ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
+            ths.draw_background_on( ths.m_drop_track );
+            ths.draw_track_on( ths.m_drop_track );
+            ths.draw_drawable_row( ths.m_drop_y);
         }
     }
     else if ( ths.m_moving || ths.m_growing )
@@ -560,9 +560,9 @@ bool Seq42PerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths)
                     ->move_selected_triggers_to( tick-1, false, GROW_END );
             }
 
-            ths.draw_background_on( ths.m_pixmap, ths.m_drop_track );
-            ths.draw_track_on( ths.m_pixmap, ths.m_drop_track );
-            ths.draw_drawable_row( ths.m_window, ths.m_pixmap, ths.m_drop_y);
+            ths.draw_background_on( ths.m_drop_track );
+            ths.draw_track_on( ths.m_drop_track );
+            ths.draw_drawable_row( ths.m_drop_y);
         }
     }
 

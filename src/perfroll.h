@@ -67,8 +67,9 @@ private:
 
     Glib::RefPtr<Gdk::Window> m_window;
 
-    Glib::RefPtr<Gdk::Pixmap> m_pixmap;
-    Glib::RefPtr<Gdk::Pixmap> m_background;
+    Cairo::RefPtr<Cairo::ImageSurface> m_surface_track;
+    Cairo::RefPtr<Cairo::ImageSurface> m_surface_background;
+    Cairo::RefPtr<Cairo::Context>  m_surface_window;
 
     perform        * const m_mainperf;
     mainwnd        * const m_mainwnd;
@@ -123,10 +124,10 @@ private:
     void convert_x( int a_x, long *a_ticks);
     void snap_x( int *a_x );
 
-    void draw_track_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track );
-    void draw_background_on( Glib::RefPtr<Gdk::Drawable> a_draw, int a_track );
+    void draw_track_on( int a_track );
+    void draw_background_on( int a_track );
 
-    void draw_drawable_row( Glib::RefPtr<Gdk::Drawable> a_dest, Glib::RefPtr<Gdk::Drawable> a_src,  long a_y );
+    void draw_drawable_row( long a_y );
 
     void change_horz();
     void change_vert();
