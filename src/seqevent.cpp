@@ -25,11 +25,6 @@ seqevent::seqevent(sequence *a_seq,
                    int a_snap,
                    seqdata *a_seqdata_wid,
                    Gtk::Adjustment   *a_hadjust):
-    m_dk_blue(Gdk::Color("dark blue")),   // event box outline
-    m_white(Gdk::Color("white")),
-    m_grey(Gdk::Color("grey")),
-    m_red(Gdk::Color("red")),             // selected event, selection box
-
     m_hadjust(a_hadjust),
 
     m_scroll_offset_ticks(0),
@@ -50,12 +45,6 @@ seqevent::seqevent(sequence *a_seq,
 
     m_status(EVENT_NOTE_ON)
 {
-    Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
-    colormap->alloc_color( m_dk_blue );
-    colormap->alloc_color( m_white );
-    colormap->alloc_color( m_grey );
-    colormap->alloc_color( m_red );
-
     add_events( Gdk::BUTTON_PRESS_MASK |
                 Gdk::BUTTON_RELEASE_MASK |
                 Gdk::POINTER_MOTION_MASK |
