@@ -52,8 +52,8 @@ class seqkeys : public Gtk::DrawingArea
 private:
 
     Glib::RefPtr<Gdk::Window> m_window;
-
-    Glib::RefPtr<Gdk::Pixmap> m_pixmap;
+    Cairo::RefPtr<Cairo::ImageSurface> m_surface;
+    Cairo::RefPtr<Cairo::Context>  m_surface_window;
 
     sequence *m_seq;
 
@@ -74,8 +74,9 @@ private:
     bool on_enter_notify_event(GdkEventCrossing* p0);
     bool on_scroll_event( GdkEventScroll* a_ev);
 
-    void draw_area();   // never used
-    void update_pixmap();
+    void update_surface();
+    void draw_surface_on_window();
+    bool idle_progress();
     void convert_y( int a_y, int *a_note);
 
     bool m_hint_state;
@@ -88,11 +89,12 @@ private:
     int          m_scale;
     int          m_key;
 
+    bool m_redraw_window;
+
     void draw_key( int a_key, bool a_state );
     void on_size_allocate(Gtk::Allocation&);
 
     void change_vert();
-    void force_draw();
 
     void update_sizes();
 
