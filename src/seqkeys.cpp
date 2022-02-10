@@ -387,11 +387,11 @@ seqkeys::set_hint_state( bool a_state )
 void
 seqkeys::draw_key( int a_key, bool a_state )
 {
+    Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
+    cr->set_operator(Cairo::OPERATOR_DEST);
+    cr->set_operator(Cairo::OPERATOR_OVER);
 
-    return; // FIXME
-
-    cairo_t *cr = gdk_cairo_create (m_window->gobj());
-    cairo_set_line_width(cr, 1.0);
+    cr->set_line_width(1.0);
 
     int base_key = a_key;
 
@@ -406,43 +406,41 @@ seqkeys::draw_key( int a_key, bool a_state )
             key == 8 ||
             key == 10 )
     {
-        cairo_set_source_rgb(cr, 0.0, 0.0, 0.0);            // Black  FIXME
+        cr->set_source_rgb(0.0, 0.0, 0.0);      // Black  FIXME
     }
     else
     {
-        cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);            // White  FIXME
+        cr->set_source_rgb(1.0, 1.0, 1.0);       // White  FIXME
     }
 
     /* Mute or solo keys */
     if(m_seq->is_note_mute(base_key))
     {
-        cairo_set_source_rgb(cr, 1.0, 0.27, 0.0);       // Red FIXME
+        cr->set_source_rgb(1.0, 0.27, 0.0);       // Red FIXME
     }
     else if(m_seq->is_note_solo(base_key))
     {
-        cairo_set_source_rgb(cr, 0.0, 0.4, 0.0);        // Green FIXME
+        cr->set_source_rgb(0.0, 0.4, 0.0);        // Green FIXME
     }
 
-    cairo_rectangle(cr, c_keyoffset_x + 1,
-                             (c_key_y * a_key) + 2 -  m_scroll_offset_y,
+    cr->rectangle(c_keyoffset_x + 1,
+                             (c_key_y * a_key) + 2 /* - m_scroll_offset_y*/,
                              c_key_x - 3,
                              c_key_y - 3 );
-    cairo_stroke_preserve(cr);
-    cairo_fill(cr);
+    cr->stroke_preserve();
+    cr->fill();
 
     if ( a_state ) // piano hint key
     {
-        cairo_set_source_rgb(cr, 0.0, 0.0, 0.6);    // Dark blue  FIXME
-        cairo_rectangle(cr, c_keyoffset_x + 1,
-                             (c_key_y * a_key) + 2 -  m_scroll_offset_y,
+        cr->set_source_rgb(0.0, 0.0, 1.0);          // Blue  FIXME
+        cr->rectangle(c_keyoffset_x + 1,
+                             (c_key_y * a_key) + 2 /* - m_scroll_offset_y*/,
                              c_key_x - 3,
                              c_key_y - 3 );
-        cairo_stroke_preserve(cr);
-        cairo_fill(cr);
+        cr->stroke_preserve();
+        cr->fill();
     }
 
-    cairo_destroy(cr);
-    
     m_redraw_window = true;
 }
 
