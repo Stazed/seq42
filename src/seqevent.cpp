@@ -257,7 +257,7 @@ seqevent::update_pixmap()
     draw_background();
     draw_events_on_pixmap();
 
-    m_seqdata_wid->queue_draw_background();
+    m_seqdata_wid->reset();
 }
 
 void
