@@ -35,7 +35,6 @@ maintime::on_realize()
 
     // Now we can allocate any additional resources we need
     m_window = get_window();
-    m_window->clear();
     
     /* set default size */
     set_size_request( c_maintime_x, c_maintime_y );
@@ -45,8 +44,6 @@ int
 maintime::idle_progress( long a_ticks )
 {
     m_tick = a_ticks;
-
-    m_window->clear();
 
     Gtk::Allocation allocation = get_allocation();
     const int s_width = allocation.get_width();
@@ -58,8 +55,14 @@ maintime::idle_progress( long a_ticks )
     cr->rectangle(-1, -1, s_width + 2, s_height + 2);
     cr->paint_with_alpha(0.0);
     cr->set_operator(Cairo::OPERATOR_OVER);
-    
-    cr->set_source_rgb(0.0, 0.0, 0.0);        // black FIXME
+
+    /* clear the window */
+    cr->set_source_rgb(0.8, 0.8, 0.8);          // light grey FIXME
+    cr->rectangle(0.0, 0.0, s_width, s_height);
+    cr->stroke_preserve();
+    cr->fill();
+
+    cr->set_source_rgb(0.0, 0.0, 0.0);          // black FIXME
     cr->set_line_width(1.0);
     cr->rectangle(0.0, 0.0, (c_maintime_x - 1), (c_maintime_y - 1));
     cr->stroke();
