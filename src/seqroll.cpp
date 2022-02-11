@@ -873,6 +873,8 @@ seqroll::force_draw()
     cairo_destroy(cr);
 
     draw_selection_on_window();
+    
+    m_seqevent_wid->reset();    // needed for final refresh to draw over above changes
 }
 
 /* takes screen corrdinates, give us notes and ticks */

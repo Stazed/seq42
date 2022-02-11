@@ -45,6 +45,13 @@ seqevent::seqevent(sequence *a_seq,
 
     m_status(EVENT_NOTE_ON)
 {
+    Gtk::Allocation allocation = get_allocation();
+    m_surface = Cairo::ImageSurface::create(
+        Cairo::Format::FORMAT_ARGB32,
+        allocation.get_width(),
+        allocation.get_height()
+    );
+
     add_events( Gdk::BUTTON_PRESS_MASK |
                 Gdk::BUTTON_RELEASE_MASK |
                 Gdk::POINTER_MOTION_MASK |
@@ -70,6 +77,8 @@ seqevent::on_realize()
     m_window = get_window();
     m_window->clear();
 
+    m_surface_window = m_window->create_cairo_context();
+
     m_hadjust->signal_value_changed().connect( mem_fun( *this, &seqevent::change_horz ));
 
     update_sizes();
@@ -81,7 +90,7 @@ seqevent::change_horz( )
     m_scroll_offset_ticks = (int) m_hadjust->get_value();
     m_scroll_offset_x = m_scroll_offset_ticks / m_zoom;
 
-    update_pixmap();
+    update_surface();
     force_draw();
 }
 
@@ -92,16 +101,14 @@ seqevent::on_size_allocate(Gtk::Allocation& a_r )
 
     m_window_x = a_r.get_width();
     m_window_y = a_r.get_height();
+    
+    m_surface = Cairo::ImageSurface::create(
+        Cairo::Format::FORMAT_ARGB32,
+        m_window_x,
+        m_window_y
+    );
 
     update_sizes();
-}
-
-int
-seqevent::idle_redraw()
-{
-    draw_events_on( m_window );
-    draw_events_on( m_pixmap );
-    return true;
 }
 
 void
@@ -109,17 +116,16 @@ seqevent::update_sizes()
 {
     if( get_realized() )
     {
-        /* create pixmaps with window dimentions */
+        /* create surface with window dimensions */
+        m_surface_window = m_window->create_cairo_context();
 
-        //printf( "update_sizes() m_window_x[%d] m_window_y[%d]\n",
-        //       m_window_x, m_window_y );
-
-        m_pixmap = Gdk::Pixmap::create( m_window,
-                                        m_window_x,
-                                        m_window_y, -1 );
+        m_surface = Cairo::ImageSurface::create(
+            Cairo::Format::FORMAT_ARGB32,
+            m_window_x,  m_window_y
+        );
 
         /* and fill the background ( dotted lines n' such ) */
-        update_pixmap();
+        update_surface();
         queue_draw();
     }
 }
@@ -132,8 +138,8 @@ seqevent::reset()
     m_scroll_offset_x = m_scroll_offset_ticks / m_zoom;
 
     update_sizes();
-    update_pixmap();
-    draw_pixmap_on_window();
+    update_surface();
+    draw_surface_on_window();
 }
 
 void
@@ -142,23 +148,27 @@ seqevent::redraw()
     m_scroll_offset_ticks = (int) m_hadjust->get_value();
     m_scroll_offset_x = m_scroll_offset_ticks / m_zoom;
 
-    update_pixmap();
-    draw_pixmap_on_window();
+    update_surface();
+    draw_surface_on_window();
 }
 
 /* updates background */
 void
 seqevent::draw_background()
 {
-    //printf ("draw_background()\n" );
+    Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
+
+    cr->set_operator(Cairo::OPERATOR_CLEAR);
+    cr->rectangle(0, 0, m_window_x, m_window_y);
+    cr->paint_with_alpha(1.0);
+    cr->set_operator(Cairo::OPERATOR_OVER);
 
     /* clear background */
-    cairo_t *cr = gdk_cairo_create (m_pixmap->gobj());
-    cairo_set_source_rgb(cr, 0.9, 0.9, 0.9);    // Light grey FIXME
-    cairo_set_line_width(cr, 1.0);
-    cairo_rectangle(cr, 0.0, 0.0, m_window_x, m_window_y );
-    cairo_stroke_preserve(cr);
-    cairo_fill(cr);
+    cr->set_source_rgb(0.9, 0.9, 0.9);    // Light grey FIXME
+    cr->set_line_width(1.0);
+    cr->rectangle(0.0, 0.0, m_window_x, m_window_y );
+    cr->stroke_preserve();
+    cr->fill();
 
     /*int measure_length_64ths =  m_seq->get_bp_measure() * 64 /
          m_seq->get_bw();*/
@@ -178,6 +188,9 @@ seqevent::draw_background()
     int start_tick = m_scroll_offset_ticks - (m_scroll_offset_ticks % ticks_per_step );
     int end_tick = (m_window_x * m_zoom) + m_scroll_offset_ticks;
 
+    /* empty vector to clear dashes */
+    static const std::vector<double> clear;
+
     //printf ( "ticks_per_step[%d] start_tick[%d] end_tick[%d]\n",
     //         ticks_per_step, start_tick, end_tick );
 
@@ -188,38 +201,36 @@ seqevent::draw_background()
         if ( i % ticks_per_m_line == 0 )
         {
             /* solid line on every beat */
-            cairo_set_source_rgb(cr, 0.0, 0.0, 0.6);    // Dark blue  FIXME
-            cairo_set_line_join(cr, CAIRO_LINE_JOIN_MITER);
-            cairo_set_dash(cr, 0, 0, 0);
+            cr->set_source_rgb(0.0, 0.0, 0.6);    // Dark blue  FIXME
+            cr->set_line_join(Cairo::LINE_JOIN_MITER);
+            cr->set_dash(clear, 0.0);
         }
         else if (i % ticks_per_beat == 0 )
         {
-            cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);    // Grey  FIXME
-            cairo_set_line_join(cr, CAIRO_LINE_JOIN_MITER);
-            cairo_set_dash(cr, 0, 0, 0);
+            cr->set_source_rgb(0.6, 0.6, 0.6);    // Grey  FIXME
+            cr->set_line_join(Cairo::LINE_JOIN_MITER);
+            cr->set_dash(clear, 0.0);
         }
         else
         {
-            cairo_set_source_rgb(cr, 0.6, 0.6, 0.6);    // Grey  FIXME
-            cairo_set_line_join(cr, CAIRO_LINE_JOIN_MITER);
-            static const double dashed[] = {1.0};
-            cairo_set_line_width(cr, 1.5);
-            cairo_set_dash(cr, dashed, 1, 0.0);
+            cr->set_source_rgb(0.6, 0.6, 0.6);    // Grey  FIXME
+            cr->set_line_join(Cairo::LINE_JOIN_MITER);
+            static const std::vector<double> dashed = {1.0};
+            cr->set_line_width(1.5);
+            cr->set_dash(dashed, 1.0);
         }
 
-        cairo_move_to(cr, base_line - m_scroll_offset_x, 0);
-        cairo_line_to(cr, base_line - m_scroll_offset_x, m_window_y);
-        cairo_stroke(cr);
+        cr->move_to(base_line - m_scroll_offset_x, 0);
+        cr->line_to(base_line - m_scroll_offset_x, m_window_y);
+        cr->stroke();
     }
 
     /* reset line style */
-    cairo_set_dash(cr, 0, 0, 0);
+    cr->set_dash(clear, 0.0);
 
-    cairo_set_source_rgb(cr, 0.0, 0.0, 0.6);    // Dark blue  FIXME
-    cairo_rectangle(cr, -1, 0.0, m_window_x + 1, m_window_y - 1 );
-    cairo_stroke(cr);
-
-    cairo_destroy(cr);
+    cr->set_source_rgb(0.0, 0.0, 0.6);    // Dark blue  FIXME
+    cr->rectangle(-1, 0.0, m_window_x + 1, m_window_y - 1 );
+    cr->stroke();
 }
 
 /* sets zoom, resets */
@@ -252,16 +263,16 @@ seqevent::set_data_type( unsigned char a_status, unsigned char a_control = 0 )
 /* draws background pixmap on main pixmap,
    then puts the events on */
 void
-seqevent::update_pixmap()
+seqevent::update_surface()
 {
     draw_background();
-    draw_events_on_pixmap();
+    draw_events_on();
 
     m_seqdata_wid->reset();
 }
 
 void
-seqevent::draw_events_on( Glib::RefPtr<Gdk::Drawable> a_draw )
+seqevent::draw_events_on()
 {
     long tick;
     int x;
@@ -269,7 +280,9 @@ seqevent::draw_events_on( Glib::RefPtr<Gdk::Drawable> a_draw )
     bool selected;
 
     /* draw boxes from sequence */
-    cairo_t *cr = gdk_cairo_create (a_draw->gobj());
+    Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
+    cr->set_operator(Cairo::OPERATOR_DEST);
+    cr->set_operator(Cairo::OPERATOR_OVER);
 
     int start_tick = m_scroll_offset_ticks ;
     int end_tick = (m_window_x * m_zoom) + m_scroll_offset_ticks;
@@ -286,55 +299,39 @@ seqevent::draw_events_on( Glib::RefPtr<Gdk::Drawable> a_draw )
             /* turn into screen corrids */
             x = tick / m_zoom;
 
-            cairo_set_source_rgb(cr, 0.0, 0.0, 0.6);    // Dark blue  FIXME
-            cairo_rectangle(cr, x -  m_scroll_offset_x,
+            cr->set_source_rgb(0.0, 0.0, 0.6);    // Dark blue  FIXME
+            cr->rectangle(x -  m_scroll_offset_x,
                                    (c_eventarea_y - c_eventevent_y)/2,
                                    c_eventevent_x,
                                    c_eventevent_y );
-            cairo_stroke_preserve(cr);
-            cairo_fill(cr);
+            cr->stroke_preserve();
+            cr->fill();
 
             if ( selected )
             {
-                cairo_set_source_rgb(cr, 1.0, 0.27, 0.0);    // Red FIXME
+                cr->set_source_rgb(1.0, 0.27, 0.0);    // Red FIXME
             }
             else
             {
-                cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);    // White FIXME
+                cr->set_source_rgb(1.0, 1.0, 1.0);    // White FIXME
             }
 
-            cairo_rectangle(cr, x -  m_scroll_offset_x + 1,
+            cr->rectangle(x -  m_scroll_offset_x + 1,
                                    (c_eventarea_y - c_eventevent_y)/2 + 1,
                                    c_eventevent_x - 3,
                                    c_eventevent_y - 3 );
-            cairo_stroke_preserve(cr);
-            cairo_fill(cr);
+            cr->stroke_preserve();
+            cr->fill();
         }
     }
-
-    cairo_destroy(cr);
-}
-
-/* fills main pixmap with events */
-void
-seqevent::draw_events_on_pixmap()
-{
-    draw_events_on( m_pixmap );
 }
 
 /* draws pixmap, tells event to do the same */
 void
-seqevent::draw_pixmap_on_window()
+seqevent::draw_surface_on_window()
 {
-    /* we changed something on this window, and chances are we
-       need to update the event widget as well */
-
-    queue_draw();
-
-    // and update our velocity window
-    //m_seqdata_wid->update_pixmap();
-    //m_seqdata_wid->draw_pixmap_on_window();
-    // RCB ??
+    m_surface_window->set_source(m_surface, 0.0, 0.0);
+    m_surface_window->paint();
 }
 
 /* checks mins / maxes..  the fills in x,y
@@ -366,15 +363,11 @@ seqevent::draw_selection_on_window()
     int y = (c_eventarea_y - c_eventevent_y)/2;
     int h =  c_eventevent_y;
 
-    cairo_t *cr = gdk_cairo_create (m_window->gobj());
-    
-    gdk_cairo_set_source_pixmap(cr, m_pixmap->gobj(), 0.0, 0.0);
-    cairo_rectangle(cr, m_old.x, y, m_old.width + 1, h + 1 );
-    cairo_stroke_preserve(cr);
-    cairo_fill(cr);
+    m_surface_window->set_source(m_surface, 0.0, 0.0);
+    m_surface_window->paint();
 
-    cairo_set_line_join(cr, CAIRO_LINE_JOIN_MITER);
-    cairo_set_source_rgb(cr, 1.0, 0.27, 0.0);    // Red FIXME
+    m_surface_window->set_line_join(Cairo::LINE_JOIN_MITER);
+    m_surface_window->set_source_rgb(1.0, 0.27, 0.0);    // Red FIXME
 
     if ( m_selecting )
     {
@@ -385,8 +378,8 @@ seqevent::draw_selection_on_window()
         m_old.x = x;
         m_old.width = w;
 
-        cairo_rectangle(cr, x, y, w, h );
-        cairo_stroke(cr);
+        m_surface_window->rectangle(x, y, w, h );
+        m_surface_window->stroke();
     }
 
     if ( m_moving || m_paste )
@@ -396,31 +389,18 @@ seqevent::draw_selection_on_window()
         x = m_selected.x + delta_x;
         x -= m_scroll_offset_x;
 
-        cairo_rectangle(cr, x, y, m_selected.width, h );
-        cairo_stroke(cr);
+        m_surface_window->rectangle(x, y, m_selected.width, h );
+        m_surface_window->stroke();
 
         m_old.x = x;
         m_old.width = m_selected.width;
     }
-
-    cairo_destroy(cr);
 }
 
 bool
 seqevent::on_expose_event(GdkEventExpose* e)
 {
-    cairo_t *cr = gdk_cairo_create (m_window->gobj());
-    gdk_cairo_set_source_pixmap(cr, m_pixmap->gobj(), 0.0, 0.0);
-    cairo_rectangle(cr, e->area.x,
-                            e->area.y,
-                            e->area.width,
-                            e->area.height );
-    cairo_stroke_preserve(cr);
-    cairo_fill(cr);
-
-    cairo_destroy(cr);
-
-    draw_selection_on_window();
+    draw_selection_on_window();     // needed for horizontal resize
     return true;
 }
 
@@ -430,14 +410,6 @@ seqevent::on_expose_event(GdkEventExpose* e)
 void
 seqevent::force_draw()
 {
-    cairo_t *cr = gdk_cairo_create (m_window->gobj());
-    gdk_cairo_set_source_pixmap(cr, m_pixmap->gobj(), 0.0, 0.0);
-    cairo_rectangle(cr, 0.0, 0.0, m_window_x, m_window_y );
-    cairo_stroke_preserve(cr);
-    cairo_fill(cr);
-
-    cairo_destroy(cr);
-
     draw_selection_on_window();
 }
 
@@ -908,8 +880,8 @@ bool FruitySeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& 
     }
 
     /* if they clicked, something changed */
-    ths.update_pixmap();
-    ths.draw_pixmap_on_window();
+    ths.update_surface();
+    ths.draw_surface_on_window();
 
     updateMousePtr( ths );
 
@@ -1026,8 +998,8 @@ bool FruitySeqEventInput::on_button_release_event(GdkEventButton* a_ev, seqevent
     ths.m_seq->unpaint_all();
 
     /* if they clicked, something changed */
-    ths.update_pixmap();
-    ths.draw_pixmap_on_window();
+    ths.update_surface();
+    ths.draw_surface_on_window();
 
     updateMousePtr(ths);
 
@@ -1238,8 +1210,8 @@ bool Seq42SeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& t
     }
 
     /* if they clicked, something changed */
-    ths.update_pixmap();
-    ths.draw_pixmap_on_window();
+    ths.update_surface();
+    ths.draw_surface_on_window();
 
     return true;
 }
@@ -1313,8 +1285,8 @@ bool Seq42SeqEventInput::on_button_release_event(GdkEventButton* a_ev, seqevent&
     ths.m_seq->unpaint_all();
 
     /* if they clicked, something changed */
-    ths.update_pixmap();
-    ths.draw_pixmap_on_window();
+    ths.update_surface();
+    ths.draw_surface_on_window();
 
     return true;
 }

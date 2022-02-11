@@ -84,8 +84,8 @@ private:
     Seq42SeqEventInput m_seq42_interaction;
 
     Glib::RefPtr<Gdk::Window> m_window;
-
-    Glib::RefPtr<Gdk::Pixmap> m_pixmap;
+    Cairo::RefPtr<Cairo::ImageSurface> m_surface;
+    Cairo::RefPtr<Cairo::Context>  m_surface_window;
 
     GdkRectangle m_old;
     GdkRectangle m_selected;
@@ -144,7 +144,7 @@ private:
                  int *a_x, int *a_w  );
 
     void drop_event( long a_tick );
-    void draw_events_on ( Glib::RefPtr<Gdk::Drawable> a_draw );
+    void draw_events_on ();
 
     void start_paste();
 
@@ -170,11 +170,9 @@ public:
 
     void update_sizes();
     void draw_background();
-    void draw_events_on_pixmap();
-    void draw_pixmap_on_window();
+    void draw_surface_on_window();
     void draw_selection_on_window();
-    void update_pixmap();
+    void update_surface();
 
-    int idle_redraw();
 };
 
