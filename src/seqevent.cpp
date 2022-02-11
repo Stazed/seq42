@@ -588,7 +588,7 @@ seqevent::on_key_press_event(GdkEventKey* a_p0)
 
     if ( a_p0->type == GDK_KEY_PRESS )
     {
-        if ( a_p0->keyval ==  GDK_Delete || a_p0->keyval == GDK_BackSpace )
+        if ( a_p0->keyval ==  GDK_KEY_Delete || a_p0->keyval == GDK_KEY_BackSpace )
         {
             if(m_seq->mark_selected())
             {
@@ -601,7 +601,7 @@ seqevent::on_key_press_event(GdkEventKey* a_p0)
         if ( a_p0->state & GDK_CONTROL_MASK )
         {
             /* cut */
-            if ( a_p0->keyval == GDK_x || a_p0->keyval == GDK_X )
+            if ( a_p0->keyval == GDK_KEY_x || a_p0->keyval == GDK_KEY_X )
             {
                 if(m_seq->mark_selected())
                 {
@@ -612,31 +612,31 @@ seqevent::on_key_press_event(GdkEventKey* a_p0)
                 }
             }
             /* copy */
-            if ( a_p0->keyval == GDK_c || a_p0->keyval == GDK_C )
+            if ( a_p0->keyval == GDK_KEY_c || a_p0->keyval == GDK_KEY_C )
             {
                 m_seq->copy_selected();
                 ret = true;
             }
             /* paste */
-            if ( a_p0->keyval == GDK_v || a_p0->keyval == GDK_V )
+            if ( a_p0->keyval == GDK_KEY_v || a_p0->keyval == GDK_KEY_V )
             {
                 start_paste();
                 ret = true;
             }
             /* Undo */
-            if ( a_p0->keyval == GDK_z || a_p0->keyval == GDK_Z )
+            if ( a_p0->keyval == GDK_KEY_z || a_p0->keyval == GDK_KEY_Z )
             {
                 m_seq->pop_undo();
                 ret = true;
             }
             /* Redo */
-            if ( a_p0->keyval == GDK_r || a_p0->keyval == GDK_R )
+            if ( a_p0->keyval == GDK_KEY_r || a_p0->keyval == GDK_KEY_R )
             {
                 m_seq->pop_redo();
                 ret = true;
             }
             /* select all events */
-            if ( a_p0->keyval == GDK_a || a_p0->keyval == GDK_A )
+            if ( a_p0->keyval == GDK_KEY_a || a_p0->keyval == GDK_KEY_A )
             {
                 m_seq->select_all();
                 ret = true;
