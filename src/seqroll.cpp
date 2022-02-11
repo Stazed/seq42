@@ -129,7 +129,7 @@ seqroll::set_background_sequence( bool a_state, int a_trk, int a_seq )
         return;
 
     update_background();
-    update_pixmap();
+    update_surface();
     queue_draw();
 }
 
@@ -150,7 +150,7 @@ seqroll::on_realize()
     m_window = get_window();
     m_window->clear();
 
-    m_surface_window = m_window->create_cairo_context();
+    m_window_context = m_window->create_cairo_context();
 
     m_hadjust->signal_value_changed().connect( mem_fun( *this,
             &seqroll::change_horz ));
@@ -207,10 +207,10 @@ seqroll::update_sizes()
         m_vadjust->set_value(v_max_value);
     }
 
-    /* create pixmaps with window dimensions */
+    /* create surfaces with window dimensions */
     if( get_realized() )
     {
-        m_surface_window = m_window->create_cairo_context();
+        m_window_context = m_window->create_cairo_context();
 
         // resize handler
         if (m_window_x != m_surface_background->get_width() || m_window_y != m_surface_background->get_height())
@@ -243,7 +243,7 @@ seqroll::change_horz( )
         return;
 
     update_background();
-    update_pixmap();
+    update_surface();
     force_draw();
 }
 
@@ -257,7 +257,7 @@ seqroll::change_vert( )
         return;
 
     update_background();
-    update_pixmap();
+    update_surface();
     force_draw();
 }
 
@@ -273,7 +273,7 @@ seqroll::reset()
 
     update_sizes();
     update_background();
-    update_pixmap();
+    update_surface();
     queue_draw();
 }
 
@@ -287,7 +287,7 @@ seqroll::redraw()
     m_scroll_offset_x = m_scroll_offset_ticks / m_zoom;
 
     update_background();
-    update_pixmap();
+    update_surface();
     force_draw();
 }
 
@@ -297,7 +297,7 @@ seqroll::redraw_events()
     if ( m_ignore_redraw )
         return;
 
-    update_pixmap();
+    update_surface();
     force_draw();
 }
 
@@ -308,7 +308,7 @@ seqroll::set_ignore_redraw(bool a_ignore)
 }
 
 void
-seqroll::draw_background_on_pixmap()
+seqroll::draw_background_on_surface()
 {
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface_edit);
 
@@ -507,13 +507,13 @@ seqroll::set_key( int a_key )
     }
 }
 
-/* draws background pixmap on main pixmap,
+/* draws background surface on main surface,
    then puts the events on */
 void
-seqroll::update_pixmap()
+seqroll::update_surface()
 {
-    draw_background_on_pixmap();
-    draw_events_on_pixmap();
+    draw_background_on_surface();
+    draw_events_on_surface();
 }
 
 void
@@ -522,8 +522,8 @@ seqroll::draw_progress_on_window()
     static int last_scroll = 0;
 
     /* draw old */
-    m_surface_window->set_source(m_surface_edit, 0.0, 0.0);
-    m_surface_window->paint();
+    m_window_context->set_source(m_surface_edit, 0.0, 0.0);
+    m_window_context->paint();
 
     long last_progress = m_old_progress_x;
     if(last_scroll < m_scroll_offset_x)
@@ -545,18 +545,20 @@ seqroll::draw_progress_on_window()
 
     if ( m_old_progress_x != 0 )
     {
-        m_surface_window->set_source_rgb(0.0, 0.0, 0.0);            // Black  FIXME
-        m_surface_window->set_line_width(2.0);
-        m_surface_window->move_to(m_old_progress_x, 0.0);
-        m_surface_window->line_to(m_old_progress_x, m_window_y);
-        m_surface_window->stroke();
+        m_window_context->set_source_rgb(0.0, 0.0, 0.0);            // Black  FIXME
+        m_window_context->set_line_width(2.0);
+        m_window_context->move_to(m_old_progress_x, 0.0);
+        m_window_context->line_to(m_old_progress_x, m_window_y);
+        m_window_context->stroke();
     }
     
     draw_selection_on_window();
     
 }
 
-void seqroll::draw_events_on()
+/* fills main surface with events */
+void
+seqroll::draw_events_on_surface()
 {
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface_edit);
     cr->set_operator(Cairo::OPERATOR_DEST);
@@ -746,13 +748,6 @@ void seqroll::draw_events_on()
     }
 }
 
-/* fills main pixmap with events */
-void
-seqroll::draw_events_on_pixmap()
-{
-    draw_events_on();
-}
-
 void
 seqroll::draw_selection_on_window()
 {
@@ -764,8 +759,8 @@ seqroll::draw_selection_on_window()
     int x,y,w,h;
 
     /* Set line attributes */
-    m_surface_window->set_line_join(Cairo::LINE_JOIN_MITER);
-    m_surface_window->set_source_rgb(1.0, 0.27, 0.0);    // Red FIXME
+    m_window_context->set_line_join(Cairo::LINE_JOIN_MITER);
+    m_window_context->set_source_rgb(1.0, 0.27, 0.0);    // Red FIXME
 
     if ( m_selecting )
     {
@@ -784,8 +779,8 @@ seqroll::draw_selection_on_window()
         m_old.width = w;
         m_old.height = h + c_key_y;
 
-        m_surface_window->rectangle(x, y, w, h + c_key_y );
-        m_surface_window->stroke();
+        m_window_context->rectangle(x, y, w, h + c_key_y );
+        m_window_context->stroke();
     }
 
     if ( m_moving || m_paste )
@@ -799,11 +794,11 @@ seqroll::draw_selection_on_window()
         x -= m_scroll_offset_x;
         y -= m_scroll_offset_y;
 
-        m_surface_window->rectangle(x,
+        m_window_context->rectangle(x,
                             y,
                             m_selected.width,
                             m_selected.height );
-        m_surface_window->stroke();
+        m_window_context->stroke();
 
         m_old.x = x;
         m_old.y = y;
@@ -825,11 +820,11 @@ seqroll::draw_selection_on_window()
         x -= m_scroll_offset_x;
         y -= m_scroll_offset_y;
 
-        m_surface_window->rectangle(x,
+        m_window_context->rectangle(x,
                             y,
                             width,
                             m_selected.height );
-        m_surface_window->stroke();
+        m_window_context->stroke();
 
         m_old.x = x;
         m_old.y = y;
@@ -845,7 +840,7 @@ seqroll::on_expose_event(GdkEventExpose* e)
     {
         m_initial_expose = true;
         /* needed when seqroll created from file loading */
-        m_surface_window = m_window->create_cairo_context();
+        m_window_context = m_window->create_cairo_context();
     }
 
     return true;
@@ -854,8 +849,8 @@ seqroll::on_expose_event(GdkEventExpose* e)
 void
 seqroll::force_draw()
 {
-    m_surface_window->set_source(m_surface_edit, 0.0, 0.0);
-    m_surface_window->paint();
+    m_window_context->set_source(m_surface_edit, 0.0, 0.0);
+    m_window_context->paint();
 
     m_seqevent_wid->reset();    // needed for final refresh to draw over above changes
 }

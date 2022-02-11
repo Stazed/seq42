@@ -88,10 +88,10 @@ private:
     Seq42SeqRollInput m_seq42_interaction;
 
     Glib::RefPtr<Gdk::Window>   m_window;
-    
+
     Cairo::RefPtr<Cairo::ImageSurface> m_surface_edit;
     Cairo::RefPtr<Cairo::ImageSurface> m_surface_background;
-    Cairo::RefPtr<Cairo::Context>  m_surface_window;
+    Cairo::RefPtr<Cairo::Context>  m_window_context;
 
     rect         m_old;
     rect         m_selected;
@@ -193,8 +193,6 @@ private:
                                  int *a_x, int *a_y,
                                  int *a_w, int *a_h );
 
-    void draw_events_on();
-
     void on_size_allocate(Gtk::Allocation& );
 
     void change_horz();
@@ -219,10 +217,10 @@ public:
 
     void update_sizes();
     void update_background();
-    void draw_background_on_pixmap();
-    void draw_events_on_pixmap();
+    void draw_background_on_surface();
+    void draw_events_on_surface();
     void draw_selection_on_window();
-    void update_pixmap();
+    void update_surface();
 
     void draw_progress_on_window();
 
