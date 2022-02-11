@@ -88,9 +88,10 @@ private:
     Seq42SeqRollInput m_seq42_interaction;
 
     Glib::RefPtr<Gdk::Window>   m_window;
-
-    Glib::RefPtr<Gdk::Pixmap> m_pixmap;
-    Glib::RefPtr<Gdk::Pixmap> m_background;
+    
+    Cairo::RefPtr<Cairo::ImageSurface> m_surface_edit;
+    Cairo::RefPtr<Cairo::ImageSurface> m_surface_background;
+    Cairo::RefPtr<Cairo::Context>  m_surface_window;
 
     rect         m_old;
     rect         m_selected;
@@ -162,6 +163,7 @@ private:
 
     bool m_ignore_redraw;
     bool m_expanded_recording;
+    bool m_initial_expose;
 
     void on_realize();
     bool on_expose_event(GdkEventExpose* a_ev);
@@ -191,9 +193,7 @@ private:
                                  int *a_x, int *a_y,
                                  int *a_w, int *a_h );
 
-    void draw_events_on(  Glib::RefPtr<Gdk::Drawable> a_draw );
-
-    int idle_progress();
+    void draw_events_on();
 
     void on_size_allocate(Gtk::Allocation& );
 
@@ -223,7 +223,6 @@ public:
     void draw_events_on_pixmap();
     void draw_selection_on_window();
     void update_pixmap();
-    int idle_redraw();
 
     void draw_progress_on_window();
 
