@@ -88,7 +88,6 @@ private:
     Seq42SeqRollInput m_seq42_interaction;
 
     Glib::RefPtr<Gdk::Window>   m_window;
-    Gdk::Color    m_dk_blue, m_black, m_white, m_grey, m_dk_grey, m_sgreen, m_red;
 
     Glib::RefPtr<Gdk::Pixmap> m_pixmap;
     Glib::RefPtr<Gdk::Pixmap> m_background;

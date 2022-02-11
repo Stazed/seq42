@@ -38,14 +38,6 @@ seqroll::seqroll(perform *a_perf,
                  Adjustment *a_hadjust,
                  Adjustment *a_vadjust,
                  ToggleButton *a_toggle_play):
-    m_dk_blue(Gdk::Color("dark blue")),         // note outline
-    m_black(Gdk::Color("black")),               // vertical lines on bar
-    m_white(Gdk::Color("white")),               // background and notes inside unselected
-    m_grey(Gdk::Color("gray")),                 // grid & scale highlighting
-    m_dk_grey(Gdk::Color("gray50")),            // horizontal grid lines
-    m_sgreen(Gdk::Color("green")),              // background sequence
-    m_red(Gdk::Color("red")),                   // note selected
-
     m_seq(a_seq),
     m_perform(a_perf),
     m_seqdata_wid(a_seqdata_wid),
@@ -95,15 +87,6 @@ seqroll::seqroll(perform *a_perf,
     m_expanded_recording(false)
 {
     using namespace Menu_Helpers;
-
-    Glib::RefPtr<Gdk::Colormap> colormap = get_default_colormap();
-    colormap->alloc_color( m_dk_blue );
-    colormap->alloc_color( m_black );
-    colormap->alloc_color( m_white );
-    colormap->alloc_color( m_grey );
-    colormap->alloc_color( m_dk_grey );
-    colormap->alloc_color( m_sgreen );
-    colormap->alloc_color( m_red );
 
     m_toggle_play = a_toggle_play;
     m_clipboard = new sequence( );
