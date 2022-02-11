@@ -2852,7 +2852,7 @@ void perform::handle_midi_control( int a_control, bool a_state, int a_value )
             if(FF_RW_button_type != FF_RW_FORWARD)
             {
                 FF_RW_button_type = FF_RW_FORWARD;
-                gtk_timeout_add(120,FF_RW_timeout,this);
+                g_timeout_add(120,FF_RW_timeout,this);
             }
         }
         else
@@ -2866,7 +2866,7 @@ void perform::handle_midi_control( int a_control, bool a_state, int a_value )
             if(FF_RW_button_type != FF_RW_REWIND)
             {
                 FF_RW_button_type = FF_RW_REWIND;
-                gtk_timeout_add(120,FF_RW_timeout,this);
+                g_timeout_add(120,FF_RW_timeout,this);
             }
         }
         else

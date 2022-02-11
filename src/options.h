@@ -39,6 +39,7 @@
 #include <gtkmm/spinbutton.h>
 #include <gtkmm/progressbar.h>
 #include <gtkmm/checkbutton.h>
+#include <gtkmm/radiobutton.h>
 #include <gtkmm/togglebutton.h>
 #include <gtkmm/notebook.h>
 
