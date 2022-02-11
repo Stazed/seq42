@@ -768,17 +768,17 @@ perfroll::on_motion_notify_event(GdkEventMotion* a_ev)
 bool
 perfroll::on_key_press_event(GdkEventKey* a_p0)
 {
-    if (a_p0->keyval == GDK_Z)         /* zoom in              */
+    if (a_p0->keyval == GDK_KEY_Z)         /* zoom in              */
     {
         m_mainwnd->set_zoom(m_zoom / 2);
         return true;
     }
-    else if (a_p0->keyval == GDK_0)         /* reset to normal zoom */
+    else if (a_p0->keyval == GDK_KEY_0)         /* reset to normal zoom */
     {
         m_mainwnd->set_zoom(c_perf_scale_x);
         return true;
     }
-    else if (a_p0->keyval == GDK_z)         /* zoom out             */
+    else if (a_p0->keyval == GDK_KEY_z)         /* zoom out             */
     {
         m_mainwnd->set_zoom(m_zoom * 2);
         return true;
@@ -821,7 +821,7 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
     {
         if ( a_p0->type == GDK_KEY_PRESS )
         {
-            if ( a_p0->keyval ==  GDK_Delete || a_p0->keyval == GDK_BackSpace )
+            if ( a_p0->keyval ==  GDK_KEY_Delete || a_p0->keyval == GDK_KEY_BackSpace )
             {
                 m_mainperf->push_trigger_undo(m_drop_track);
                 m_mainperf->get_track( m_drop_track )->del_selected_trigger();
@@ -832,14 +832,14 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
             if ( a_p0->state & GDK_CONTROL_MASK )
             {
                 /* cut */
-                if ( a_p0->keyval == GDK_x || a_p0->keyval == GDK_X )
+                if ( a_p0->keyval == GDK_KEY_x || a_p0->keyval == GDK_KEY_X )
                 {
                     m_mainperf->push_trigger_undo(m_drop_track);
                     m_mainperf->get_track( m_drop_track )->cut_selected_trigger();
                     ret = true;
                 }
                 /* copy */
-                if ( a_p0->keyval == GDK_c || a_p0->keyval == GDK_C )
+                if ( a_p0->keyval == GDK_KEY_c || a_p0->keyval == GDK_KEY_C )
                 {
                     /* for cross-track trigger paste we need to clear all previous trigger copies
                        or the cross track routine will just grab the earliest one if leftover */
@@ -858,7 +858,7 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
                 }
 
                 /* paste */
-                if ( a_p0->keyval == GDK_v || a_p0->keyval == GDK_V )
+                if ( a_p0->keyval == GDK_KEY_v || a_p0->keyval == GDK_KEY_V )
                 {
                     if (m_mainperf->get_track(m_drop_track)->get_trigger_clipboard()->m_sequence >= 0)
                     {
