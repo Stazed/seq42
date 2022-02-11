@@ -103,6 +103,11 @@ private:
     bool m_growing;
     bool m_grow_direction;
 
+    bool cross_track_paste;
+    bool have_button_press;
+    bool transport_follow;
+    bool trans_button_press;
+
     void on_realize();
     bool on_expose_event(GdkEventExpose* a_ev);
     bool on_button_press_event(GdkEventButton* a_ev);
@@ -129,11 +134,6 @@ private:
     void change_vert();
 
     void trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths);
-
-    bool cross_track_paste;
-    bool have_button_press;
-    bool transport_follow;
-    bool trans_button_press;
 
 public:
 

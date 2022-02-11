@@ -76,7 +76,7 @@ struct Seq42SeqRollInput
     bool m_adding;
 };
 
-/* piano roll */
+/* The main sequence editing grid for drawing notes */
 class seqroll : public Gtk::DrawingArea
 {
 
