@@ -60,7 +60,6 @@ perfnames::on_realize()
 
     // Now we can allocate any additional resources we need
     m_window = get_window();
-    m_window->clear();
 
     m_surface_window = m_window->create_cairo_context();
 

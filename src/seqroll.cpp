@@ -148,7 +148,6 @@ seqroll::on_realize()
 
     // Now we can allocate any additional resources we need
     m_window = get_window();
-    m_window->clear();
 
     m_window_context = m_window->create_cairo_context();
 
