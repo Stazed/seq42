@@ -754,7 +754,11 @@ perfroll::on_motion_notify_event(GdkEventMotion* a_ev)
         result = m_seq42_interaction.on_motion_notify_event(a_ev, *this);
         if(global_interaction_method_change)
         {
+#ifdef GTKMM_3_SUPPORT
+            get_window()->set_cursor(Gdk::Cursor::create(get_window()->get_display(),  Gdk::LEFT_PTR ));
+#else
             get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
+#endif
             global_interaction_method_change = false;
         }
         break;

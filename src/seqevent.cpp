@@ -669,15 +669,27 @@ void FruitySeqEventInput::updateMousePtr(seqevent& ths)
 
     if (m_is_drag_pasting || ths.m_selecting || ths.m_moving || ths.m_paste)
     {
+#ifdef GTKMM_3_SUPPORT
+        ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::LEFT_PTR ));
+#else
         ths.get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
+#endif
     }
     else if (ths.m_seq->intersectEvents( tick_s, tick_f, ths.m_status, pos ))
     {
+#ifdef GTKMM_3_SUPPORT
+        ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::CENTER_PTR ));
+#else
         ths.get_window()->set_cursor( Gdk::Cursor( Gdk::CENTER_PTR ));
+#endif
     }
     else
     {
+#ifdef GTKMM_3_SUPPORT
+        ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::PENCIL ));
+#else
         ths.get_window()->set_cursor( Gdk::Cursor( Gdk::PENCIL ));
+#endif
     }
 }
 
@@ -1054,12 +1066,20 @@ Seq42SeqEventInput::set_adding( bool a_adding, seqevent& ths )
 {
     if ( a_adding )
     {
-        ths.get_window()->set_cursor(  Gdk::Cursor( Gdk::PENCIL ) );
+#ifdef GTKMM_3_SUPPORT
+        ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::PENCIL ));
+#else
+        ths.get_window()->set_cursor( Gdk::Cursor( Gdk::PENCIL ));
+#endif
         m_adding = true;
     }
     else
     {
-        ths.get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ) );
+#ifdef GTKMM_3_SUPPORT
+        ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::LEFT_PTR ));
+#else
+        ths.get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
+#endif
         m_adding = false;
     }
 }

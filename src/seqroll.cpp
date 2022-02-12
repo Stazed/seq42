@@ -1368,7 +1368,11 @@ void FruitySeqRollInput::updateMousePtr(seqroll& ths)
         long start, end, note;
         if (ths.m_is_drag_pasting || ths.m_selecting || ths.m_moving || ths.m_growing || ths.m_paste)
         {
+#ifdef GTKMM_3_SUPPORT
+            ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::LEFT_PTR ));
+#else
             ths.get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
+#endif
         }
         else if (!m_adding &&
                  ths.m_seq->intersectNotes( drop_tick, drop_note, start, end, note ) && note == drop_note)
@@ -1376,21 +1380,36 @@ void FruitySeqRollInput::updateMousePtr(seqroll& ths)
             long handle_size = clamp( c_handlesize, 0, (end-start)/3 );
             if (start <= drop_tick && drop_tick <= start + handle_size)
             {
-                //get_window()->set_cursor( Gdk::Cursor( Gdk::RIGHT_PTR ));
-                ths.get_window()->set_cursor( Gdk::Cursor( Gdk::CENTER_PTR )); // not supported yet
+#ifdef GTKMM_3_SUPPORT
+                ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::CENTER_PTR ));
+#else
+                ths.get_window()->set_cursor( Gdk::Cursor( Gdk::CENTER_PTR ));  // not supported yet
+#endif
             }
             else if (end - handle_size <= drop_tick && drop_tick <= end)
             {
+#ifdef GTKMM_3_SUPPORT
+                ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::LEFT_PTR ));
+#else
                 ths.get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
+#endif
             }
             else
             {
+#ifdef GTKMM_3_SUPPORT
+                ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::CENTER_PTR ));
+#else
                 ths.get_window()->set_cursor( Gdk::Cursor( Gdk::CENTER_PTR ));
+#endif
             }
         }
         else
         {
+#ifdef GTKMM_3_SUPPORT
+            ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::PENCIL ));
+#else
             ths.get_window()->set_cursor( Gdk::Cursor( Gdk::PENCIL ));
+#endif
         }
     }
 }
@@ -1937,12 +1956,20 @@ Seq42SeqRollInput::set_adding( bool a_adding, seqroll& ths )
 {
     if ( a_adding )
     {
-        ths.get_window()->set_cursor(  Gdk::Cursor( Gdk::PENCIL ));
+#ifdef GTKMM_3_SUPPORT
+        ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::PENCIL ));
+#else
+        ths.get_window()->set_cursor( Gdk::Cursor( Gdk::PENCIL ));
+#endif
         m_adding = true;
     }
     else
     {
+#ifdef GTKMM_3_SUPPORT
+        ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::LEFT_PTR ));
+#else
         ths.get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
+#endif
         m_adding = false;
     }
 }

@@ -16,26 +16,46 @@ void FruityPerfInput::updateMousePtr( perfroll& ths )
             if (start <= drop_tick && drop_tick <= start + (c_perfroll_size_box_click_w * c_perf_scale_x) &&
                     (m_current_y % c_names_y) <= c_perfroll_size_box_click_w + 1)
             {
+#ifdef GTKMM_3_SUPPORT
+                ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::RIGHT_PTR ));
+#else
                 ths.get_window()->set_cursor( Gdk::Cursor( Gdk::RIGHT_PTR ));
+#endif
             }
             else if (end - (c_perfroll_size_box_click_w * c_perf_scale_x) <= drop_tick && drop_tick <= end &&
                      (m_current_y % c_names_y) >= c_names_y - c_perfroll_size_box_click_w - 1)
             {
+#ifdef GTKMM_3_SUPPORT
+                ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::LEFT_PTR ));
+#else
                 ths.get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
+#endif
             }
             else
             {
+#ifdef GTKMM_3_SUPPORT
+                ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::CENTER_PTR ));
+#else
                 ths.get_window()->set_cursor( Gdk::Cursor( Gdk::CENTER_PTR ));
+#endif
             }
         }
         else
         {
+#ifdef GTKMM_3_SUPPORT
+            ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::PENCIL ));
+#else
             ths.get_window()->set_cursor( Gdk::Cursor( Gdk::PENCIL ));
+#endif
         }
     }
     else
     {
+#ifdef GTKMM_3_SUPPORT
+        ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::CROSSHAIR ));
+#else
         ths.get_window()->set_cursor( Gdk::Cursor( Gdk::CROSSHAIR ));
+#endif
     }
 }
 
@@ -300,12 +320,20 @@ void Seq42PerfInput::set_adding( bool a_adding, perfroll& ths )
 {
     if ( a_adding )
     {
-        ths.get_window()->set_cursor(  Gdk::Cursor( Gdk::PENCIL ));
+#ifdef GTKMM_3_SUPPORT
+        ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::PENCIL ));
+#else
+        ths.get_window()->set_cursor( Gdk::Cursor( Gdk::PENCIL ));
+#endif
         m_adding = true;
     }
     else
     {
+#ifdef GTKMM_3_SUPPORT
+        ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::LEFT_PTR ));
+#else
         ths.get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
+#endif
         m_adding = false;
     }
 }
