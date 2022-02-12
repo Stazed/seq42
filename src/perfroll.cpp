@@ -1144,7 +1144,17 @@ perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
         if(a_trigger->m_sequence > -1)
         {
 #ifdef GTKMM_3_SUPPORT
+            MenuItem * menu_item1 = new MenuItem("Edit sequence");
+            menu_item1->signal_activate().connect(sigc::bind(mem_fun(ths, &perfroll::edit_sequence), a_track, a_trigger ));
+            menu_trigger->append(*menu_item1);
 
+            MenuItem * menu_item2 = new MenuItem("Export sequence");
+            menu_item2->signal_activate().connect(sigc::bind(mem_fun(ths, &perfroll::export_sequence), a_track, a_trigger ));
+            menu_trigger->append(*menu_item2);
+            
+            MenuItem * menu_item3 = new MenuItem("Export trigger");
+            menu_item3->signal_activate().connect(sigc::bind(mem_fun(ths, &perfroll::export_trigger), a_track, a_trigger ));
+            menu_trigger->append(*menu_item3);
 #else
             menu_trigger->items().push_back(MenuElem("Edit sequence", sigc::bind(mem_fun(ths,&perfroll::edit_sequence), a_track, a_trigger )));
             menu_trigger->items().push_back(MenuElem("Export sequence", sigc::bind(mem_fun(ths,&perfroll::export_sequence), a_track, a_trigger )));
@@ -1155,12 +1165,18 @@ perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
         if(a_trigger->m_sequence > -1 && !global_song_start_mode)
         {
 #ifdef GTKMM_3_SUPPORT
+            MenuItem * menu_item4 = new MenuItem("Set/Unset playing");
+            menu_item4->signal_activate().connect(sigc::bind(mem_fun(ths, &perfroll::play_sequence), a_track, a_trigger ));
+            menu_trigger->append(*menu_item4);
 
 #else
             menu_trigger->items().push_back(MenuElem("Set/Unset playing", sigc::bind(mem_fun(ths,&perfroll::play_sequence), a_track, a_trigger )));
 #endif
         }
 #ifdef GTKMM_3_SUPPORT
+        MenuItem * menu_item5 = new MenuItem("New sequence");
+        menu_item5->signal_activate().connect(sigc::bind(mem_fun(ths, &perfroll::new_sequence), a_track, a_trigger));
+        menu_trigger->append(*menu_item5);
 
 #else
         menu_trigger->items().push_back(MenuElem("New sequence", sigc::bind(mem_fun(ths,&perfroll::new_sequence), a_track, a_trigger )));
@@ -1174,7 +1190,9 @@ perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
                 sequence *a_seq = a_track->get_sequence( s );
                 snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
 #ifdef GTKMM_3_SUPPORT
-
+                MenuItem * menu_item6 = new MenuItem(name);
+                menu_item6->signal_activate().connect(sigc::bind(mem_fun(ths, &perfroll::set_trigger_sequence), a_track, a_trigger, s));
+                set_seq_menu->append(*menu_item6);
 #else
                 set_seq_menu->items().push_back(MenuElem(name,
                                                 sigc::bind(mem_fun(ths, &perfroll::set_trigger_sequence), a_track, a_trigger, s)));
@@ -1182,12 +1200,17 @@ perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
 
             }
 #ifdef GTKMM_3_SUPPORT
-
+            MenuItem * menu_item7 = new MenuItem("Set sequence");
+            menu_item7->set_submenu(*set_seq_menu);
+            menu_trigger->append(*menu_item7);
 #else
             menu_trigger->items().push_back(MenuElem("Set sequence", *set_seq_menu));
 #endif
         }
 #ifdef GTKMM_3_SUPPORT
+        MenuItem * menu_item8 = new MenuItem("Delete trigger");
+        menu_item8->signal_activate().connect(sigc::bind(mem_fun(ths, &perfroll::del_trigger), a_track, ths.m_drop_tick ));
+        menu_trigger->append(*menu_item8);
 
 #else
         menu_trigger->items().push_back(MenuElem("Delete trigger", sigc::bind(mem_fun(ths,&perfroll::del_trigger), a_track, ths.m_drop_tick )));
@@ -1217,6 +1240,9 @@ perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
                     snprintf(name, sizeof(name), "[%d] %s", t+1, some_track->get_name());
                     menu_t = manage( new Menu());
 #ifdef GTKMM_3_SUPPORT
+                    MenuItem * menu_item9 = new MenuItem(name);
+                    menu_item9->set_submenu(*menu_t);
+                    copy_seq_menu->append(*menu_item9);
 
 #else
                     copy_seq_menu->items().push_back(MenuElem(name, *menu_t));
@@ -1226,6 +1252,9 @@ perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
                 sequence *a_seq = some_track->get_sequence( s );
                 snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
 #ifdef GTKMM_3_SUPPORT
+                MenuItem * menu_item10 = new MenuItem(name);
+                menu_item10->signal_activate().connect(sigc::bind(mem_fun(ths, &perfroll::copy_sequence), a_track, a_trigger, a_seq));
+                menu_trigger->append(*menu_item10);
 
 #else
                 menu_t->items().push_back(MenuElem(name,
@@ -1236,6 +1265,9 @@ perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
         if(copy_seq_menu != NULL)
         {
 #ifdef GTKMM_3_SUPPORT
+            MenuItem * menu_item11 = new MenuItem("Copy sequence");
+            menu_item11->set_submenu(*copy_seq_menu);
+            menu_trigger->append(*menu_item11);
 
 #else
             menu_trigger->items().push_back(MenuElem("Copy sequence", *copy_seq_menu));
