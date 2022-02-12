@@ -22,7 +22,11 @@
 #pragma once
 
 #include "sequence.h"
+#include "globals.h"
 
+#ifdef GTKMM_3_SUPPORT
+#include <gtkmm.h>
+#else
 #include <gtkmm/button.h>
 #include <gtkmm/window.h>
 #include <gtkmm/accelgroup.h>
@@ -36,9 +40,7 @@
 #include <gtkmm/drawingarea.h>
 #include <gtkmm/widget.h>
 #include <gtkmm/adjustment.h>
-#include <gtkmm.h>
-
-#include "globals.h"
+#endif
 
 enum
 {

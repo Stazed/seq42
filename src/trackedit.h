@@ -20,6 +20,12 @@
 
 #pragma once
 
+#include "globals.h"
+#include "track.h"
+
+#ifdef GTKMM_3_SUPPORT
+#include <gtkmm.h>
+#else
 #include <gtkmm/button.h>
 #include <gtkmm/window.h>
 #include <gtkmm/accelgroup.h>
@@ -31,12 +37,9 @@
 #include <gtkmm/label.h>
 #include <gtkmm/entry.h>
 #include <gtkmm/checkbutton.h>
-#include <gtkmm.h>
-
 #include <sigc++/bind.h>
+#endif
 
-#include "globals.h"
-#include "track.h"
 
 using namespace Gtk;
 
