@@ -1111,11 +1111,8 @@ mainwnd::rewind(bool a_press)
     }
     else
         FF_RW_button_type = FF_RW_RELEASE;
-#ifdef GTKMM_3_SUPPORT
+
     g_timeout_add(120,FF_RW_timeout,m_mainperf);
-#else
-    gtk_timeout_add(120,FF_RW_timeout,m_mainperf);
-#endif
 }
 
 void
@@ -1131,11 +1128,7 @@ mainwnd::fast_forward(bool a_press)
     else
         FF_RW_button_type = FF_RW_RELEASE;
 
-#ifdef GTKMM_3_SUPPORT
     g_timeout_add(120,FF_RW_timeout,m_mainperf);
-#else
-    gtk_timeout_add(120,FF_RW_timeout,m_mainperf);
-#endif
 }
 
 void
