@@ -31,6 +31,7 @@
 #include <gtkmm/label.h>
 #include <gtkmm/entry.h>
 #include <gtkmm/checkbutton.h>
+#include <gtkmm.h>
 
 #include <sigc++/bind.h>
 

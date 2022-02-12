@@ -37,6 +37,7 @@
 #include <gtkmm/drawingarea.h>
 #include <gtkmm/widget.h>
 #include <gtkmm/adjustment.h>
+#include <gtkmm.h>
 
 #include "globals.h"
 

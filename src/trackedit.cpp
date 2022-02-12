@@ -129,12 +129,8 @@ trackedit::on_realize()
 {
     // we need to do the default realize
     Gtk::Window::on_realize();
-#ifdef GTKMM_3_SUPPORT
 
-#else
-    Glib::signal_timeout().connect(mem_fun(*this, &trackedit::timeout),
-                                   c_redraw_ms);
-#endif
+    Glib::signal_timeout().connect(mem_fun(*this, &trackedit::timeout), c_redraw_ms);
 }
 
 bool
