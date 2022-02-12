@@ -27,7 +27,11 @@
 bool global_interaction_method_change = false;
 
 options::options (Gtk::Window & parent, perform * a_p):
+#ifdef GTKMM_3_SUPPORT
+    Gtk::Dialog ("Options", parent, DIALOG_MODAL),
+#else
     Gtk::Dialog ("Options", parent, true, true),
+#endif
     m_perf(a_p)
 {
 
