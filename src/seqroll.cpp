@@ -1091,7 +1091,7 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
 
     if ( a_p0->type == GDK_KEY_PRESS )
     {
-        if ( a_p0->keyval ==  GDK_Delete || a_p0->keyval == GDK_BackSpace )
+        if ( a_p0->keyval ==  GDK_KEY_Delete || a_p0->keyval == GDK_KEY_BackSpace )
         {
             if(m_seq->mark_selected())
             {
@@ -1109,17 +1109,17 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
 
         if (!global_is_running)
         {
-            if ( a_p0->keyval == GDK_Home )
+            if ( a_p0->keyval == GDK_KEY_Home )
             {
                 m_seq->set_orig_tick(0);
                 ret = true;
             }
-            if ( ( a_p0->keyval == GDK_Left) && (a_p0->state & GDK_CONTROL_MASK))
+            if ( ( a_p0->keyval == GDK_KEY_Left) && (a_p0->state & GDK_CONTROL_MASK))
             {
                 m_seq->set_orig_tick(m_seq->get_last_tick()- m_snap);
                 ret = true;
             }
-            if ( (a_p0->keyval == GDK_Right) && (a_p0->state & GDK_CONTROL_MASK))
+            if ( (a_p0->keyval == GDK_KEY_Right) && (a_p0->state & GDK_CONTROL_MASK))
             {
                 m_seq->set_orig_tick(m_seq->get_last_tick() + m_snap);
                 ret = true;
@@ -1139,7 +1139,7 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
 #endif // JACK_SUPPORT
         }
 
-        if ( a_p0->keyval ==  GDK_Up )
+        if ( a_p0->keyval ==  GDK_KEY_Up )
         {
             if ( a_p0->state & GDK_SHIFT_MASK )
             {
@@ -1152,7 +1152,7 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
             ret = true;
         }
 
-        if ( a_p0->keyval ==  GDK_Down )
+        if ( a_p0->keyval ==  GDK_KEY_Down )
         {
             if ( a_p0->state & GDK_SHIFT_MASK )
             {
@@ -1165,7 +1165,7 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
             ret = true;
         }
 
-        if ( a_p0->keyval ==  GDK_Right )
+        if ( a_p0->keyval ==  GDK_KEY_Right )
         {
             if ( a_p0->state & GDK_SHIFT_MASK )
             {
@@ -1178,7 +1178,7 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
             ret = true;
         }
 
-        if ( a_p0->keyval ==  GDK_Left )
+        if ( a_p0->keyval ==  GDK_KEY_Left )
         {
             if ( a_p0->state & GDK_SHIFT_MASK )
             {
@@ -1193,7 +1193,7 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
 
         if ( a_p0->state & GDK_MOD1_MASK )  // Alt key
         {
-            if ( a_p0->keyval ==  GDK_q )
+            if ( a_p0->keyval ==  GDK_KEY_q )
             {
                 m_seq->quanize_events(EVENT_NOTE_ON, 0, m_snap, 1, true);
                 ret = true;
@@ -1203,7 +1203,7 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
         if ( a_p0->state & GDK_CONTROL_MASK )
         {
             /* cut */
-            if ( a_p0->keyval == GDK_x || a_p0->keyval == GDK_X )
+            if ( a_p0->keyval == GDK_KEY_x || a_p0->keyval == GDK_KEY_X )
             {
                 if(m_seq->mark_selected())
                 {
@@ -1214,14 +1214,14 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
                 }
             }
             /* copy */
-            if ( a_p0->keyval == GDK_c || a_p0->keyval == GDK_C )
+            if ( a_p0->keyval == GDK_KEY_c || a_p0->keyval == GDK_KEY_C )
             {
                 m_seq->copy_selected();
                 ret = true;
             }
 
             /* paste */
-            if ( a_p0->keyval == GDK_v || a_p0->keyval == GDK_V )
+            if ( a_p0->keyval == GDK_KEY_v || a_p0->keyval == GDK_KEY_V )
             {
                 if(this->has_focus())
                 {
@@ -1231,21 +1231,21 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
             }
 
             /* Undo */
-            if ( a_p0->keyval == GDK_z || a_p0->keyval == GDK_Z )
+            if ( a_p0->keyval == GDK_KEY_z || a_p0->keyval == GDK_KEY_Z )
             {
                 m_seq->pop_undo();
                 ret = true;
             }
 
             /* Redo */
-            if ( a_p0->keyval == GDK_r || a_p0->keyval == GDK_R )
+            if ( a_p0->keyval == GDK_KEY_r || a_p0->keyval == GDK_KEY_R )
             {
                 m_seq->pop_redo();
                 ret = true;
             }
 
             /* select all events */
-            if ( a_p0->keyval == GDK_a || a_p0->keyval == GDK_A )
+            if ( a_p0->keyval == GDK_KEY_a || a_p0->keyval == GDK_KEY_A )
             {
                 m_seq->select_all();
                 ret = true;
