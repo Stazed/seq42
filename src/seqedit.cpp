@@ -1720,17 +1720,17 @@ seqedit::on_key_press_event( GdkEventKey* a_ev )
     if(! m_seqroll_wid->on_key_press_event(a_ev))     // seqroll has priority - no duplicates
     {
         bool result = false;
-        if (a_ev->keyval == GDK_Z)              /* zoom in              */
+        if (a_ev->keyval == GDK_KEY_Z)              /* zoom in              */
         {
             set_zoom(m_zoom / 2);
             result = true;
         }
-        else if (a_ev->keyval == GDK_0)         /* reset to normal zoom */
+        else if (a_ev->keyval == GDK_KEY_0)         /* reset to normal zoom */
         {
             set_zoom(c_default_zoom);
             result = true;
         }
-        else if (a_ev->keyval == GDK_z)         /* zoom out             */
+        else if (a_ev->keyval == GDK_KEY_z)         /* zoom out             */
         {
             set_zoom(m_zoom * 2);
             result = true;
