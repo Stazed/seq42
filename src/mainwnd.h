@@ -70,7 +70,7 @@ private:
 
     options *m_options;
 
-    Gdk::Cursor   m_main_cursor;
+ //   Gdk::Cursor   m_main_cursor;
 
     Button      *m_button_stop;
     Button      *m_button_rewind;

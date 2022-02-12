@@ -129,8 +129,12 @@ trackedit::on_realize()
 {
     // we need to do the default realize
     Gtk::Window::on_realize();
+#ifdef GTKMM_3_SUPPORT
+
+#else
     Glib::signal_timeout().connect(mem_fun(*this, &trackedit::timeout),
                                    c_redraw_ms);
+#endif
 }
 
 bool
@@ -163,8 +167,12 @@ trackedit::popup_midibus_menu()
     mastermidibus *masterbus = m_track->get_master_midi_bus();
     for ( int i=0; i< masterbus->get_num_out_buses(); i++ )
     {
+#ifdef GTKMM_3_SUPPORT
+
+#else
         m_menu_midibus->items().push_back(MenuElem(masterbus->get_midi_out_bus_name(i),
                                           sigc::bind(mem_fun(*this,&trackedit::midi_bus_button_callback), i)));
+#endif
     }
 
     m_menu_midibus->popup(0,0);
@@ -194,10 +202,13 @@ trackedit::popup_midich_menu()
                            global_user_instrument_definitions[instrument].instrument +
                            string(")") );
         }
+#ifdef GTKMM_3_SUPPORT
 
+#else
         m_menu_midich->items().push_back(MenuElem(name,
                                          sigc::bind(mem_fun(*this,&trackedit::midi_channel_button_callback),
                                                  i )));
+#endif
     }
 
     m_menu_midich->popup(0,0);

@@ -845,7 +845,18 @@ tempo::check_above_marker(uint64_t mouse_tick, bool a_delete, bool exact )
  * This allows user to spin and won't push to undo on every changed value, but will only
  * push undo when user leaves the widget. Modified to work with typed entries as well.
  */
+#ifdef GTKMM_3_SUPPORT
+Bpm_spinbutton::Bpm_spinbutton(const Glib::RefPtr<Adjustment>& adjustment, double climb_rate, guint digits):
+    Gtk::SpinButton(adjustment,climb_rate, digits),
+    m_have_enter(false),
+    m_have_leave(false),
+    m_is_typing(false),
+    m_hold_bpm(0.0)
+{
+    
+}
 
+#else
 Bpm_spinbutton::Bpm_spinbutton(Adjustment& adjustment, double climb_rate, guint digits):
     Gtk::SpinButton(adjustment,climb_rate, digits),
     m_have_enter(false),
@@ -855,6 +866,7 @@ Bpm_spinbutton::Bpm_spinbutton(Adjustment& adjustment, double climb_rate, guint 
 {
     
 }
+#endif
 
 bool
 Bpm_spinbutton::on_enter_notify_event(GdkEventCrossing* event)

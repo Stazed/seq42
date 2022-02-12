@@ -92,6 +92,9 @@ mainwnd::mainwnd(perform *a_p):
     m_menubar = manage(new MenuBar());
 
     m_menu_file = manage(new Menu());
+#ifdef GTKMM_3_SUPPORT
+
+#else
     m_menubar->items().push_front(MenuElem("_File", *m_menu_file));
     
     m_menu_recent = nullptr;
@@ -171,7 +174,7 @@ mainwnd::mainwnd(perform *a_p):
     /* help menu items */
     m_menu_help->items().push_back(MenuElem("_About...",
                                             mem_fun(*this, &mainwnd::about_dialog)));
-
+#endif  // GTKMM-2
     /* top line items */
     hbox1 = manage( new HBox( false, 2 ) );
     hbox1->set_border_width( 2 );
@@ -293,12 +296,15 @@ mainwnd::mainwnd(perform *a_p):
     
     
     /* perfedit widgets */
+#ifdef GTKMM_3_SUPPORT
+
+#else
     m_vadjust = manage( new Adjustment(0,0,1,1,1,1 ));
     m_hadjust = manage( new Adjustment(0,0,1,1,1,1 ));
 
     m_vscroll   =  manage(new VScrollbar( *m_vadjust ));
     m_hscroll   =  manage(new HScrollbar( *m_hadjust ));
-
+#endif
     m_perfnames = manage( new perfnames( m_mainperf, this, m_vadjust ));
 
     m_perfroll = manage( new perfroll
@@ -334,6 +340,9 @@ mainwnd::mainwnd(perform *a_p):
     m_table->attach( *m_tempo, 1, 2, 1, 2, Gtk::FILL, Gtk::SHRINK );
     
     /* bpm spin button */
+#ifdef GTKMM_3_SUPPORT
+
+#else
     m_adjust_bpm = manage(new Adjustment(c_bpm, c_bpm_minimum, c_bpm_maximum, 1));
     m_spinbutton_bpm = manage( new Bpm_spinbutton( *m_adjust_bpm ));
     m_spinbutton_bpm->set_editable( true );
@@ -343,6 +352,7 @@ mainwnd::mainwnd(perform *a_p):
         mem_fun(*this, &mainwnd::adj_callback_bpm ));
 
     add_tooltip( m_spinbutton_bpm, "Adjust starting beats per minute (BPM)" );
+#endif
 
     /* bpm tap tempo button - sequencer64 */
     m_button_tap = manage(new Button("0"));
@@ -385,9 +395,13 @@ mainwnd::mainwnd(perform *a_p):
         {
             snprintf(num, sizeof(num), "0 [normal]");
         }
+#ifdef GTKMM_3_SUPPORT
+
+#else
         m_menu_xpose->items().push_front( MenuElem( num,
                                           sigc::bind(mem_fun(*this,&mainwnd::xpose_button_callback),
                                                   i )));
+#endif
     }
 
     m_button_xpose = manage( new Button());
@@ -399,6 +413,9 @@ mainwnd::mainwnd(perform *a_p):
     m_entry_xpose->set_editable( false );
 
     m_menu_snap =   manage( new Menu());
+#ifdef GTKMM_3_SUPPORT
+
+#else
     m_menu_snap->items().push_back(MenuElem("1/1",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 1  )));
     m_menu_snap->items().push_back(MenuElem("1/2",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 2  )));
     m_menu_snap->items().push_back(MenuElem("1/4",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 4  )));
@@ -427,7 +444,7 @@ mainwnd::mainwnd(perform *a_p):
     m_menu_snap->items().push_back(MenuElem("1/26",  sigc::bind(mem_fun(*this,&mainwnd::set_snap), 26  )));
     m_menu_snap->items().push_back(MenuElem("1/28",  sigc::bind(mem_fun(*this,&mainwnd::set_snap), 28  )));
     m_menu_snap->items().push_back(MenuElem("1/30",  sigc::bind(mem_fun(*this,&mainwnd::set_snap), 30  )));
-
+#endif  // GTKMM-2
     /* snap */
     m_button_snap = manage( new Button());
     m_button_snap->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( snap_xpm ))));
@@ -441,12 +458,15 @@ mainwnd::mainwnd(perform *a_p):
     m_menu_bw = manage( new Menu() );
 
     /* bw */
+#ifdef GTKMM_3_SUPPORT
+
+#else
     m_menu_bw->items().push_back(MenuElem("1", sigc::bind(mem_fun(*this,&mainwnd::bw_button_callback), 1  )));
     m_menu_bw->items().push_back(MenuElem("2", sigc::bind(mem_fun(*this,&mainwnd::bw_button_callback), 2  )));
     m_menu_bw->items().push_back(MenuElem("4", sigc::bind(mem_fun(*this,&mainwnd::bw_button_callback), 4  )));
     m_menu_bw->items().push_back(MenuElem("8", sigc::bind(mem_fun(*this,&mainwnd::bw_button_callback), 8  )));
     m_menu_bw->items().push_back(MenuElem("16", sigc::bind(mem_fun(*this,&mainwnd::bw_button_callback), 16 )));
-
+#endif
     char b[20];
 
     for( int i=0; i<16; i++ )
@@ -454,8 +474,12 @@ mainwnd::mainwnd(perform *a_p):
         snprintf( b, sizeof(b), "%d", i+1 );
 
         /* length */
+#ifdef GTKMM_3_SUPPORT
+
+#else
         m_menu_bp_measure->items().push_back(MenuElem(b,
                                              sigc::bind(mem_fun(*this,&mainwnd::bp_measure_button_callback),i+1 )));
+#endif
     }
 
     /* beats per measure */
@@ -477,6 +501,9 @@ mainwnd::mainwnd(perform *a_p):
     m_entry_bw->set_editable( false );
 
     /* swing_amount spin buttons */
+#ifdef GTKMM_3_SUPPORT
+
+#else
     m_adjust_swing_amount8 = manage(new Adjustment(0, 0, c_max_swing_amount, 1));
     m_spinbutton_swing_amount8 = manage( new SpinButton( *m_adjust_swing_amount8 ));
     m_spinbutton_swing_amount8->set_editable( false );
@@ -490,7 +517,7 @@ mainwnd::mainwnd(perform *a_p):
     m_adjust_swing_amount16->signal_value_changed().connect(
         mem_fun(*this, &mainwnd::adj_callback_swing_amount16 ));
     add_tooltip( m_spinbutton_swing_amount16, "Adjust 1/16 swing amount" );
-
+#endif
     /* undo */
     m_button_undo = manage( new Button());
     m_button_undo->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( undo_xpm  ))));
@@ -608,10 +635,22 @@ mainwnd::~mainwnd()
     delete m_options;
 
     if (m_sigpipe[0] != -1)
+    {
+#ifdef GTKMM_3_SUPPORT
+
+#else
         close(m_sigpipe[0]);
+#endif
+    }
 
     if (m_sigpipe[1] != -1)
+    {
+#ifdef GTKMM_3_SUPPORT
+
+#else
         close(m_sigpipe[1]);
+#endif
+    }
 }
 
 /*
@@ -1072,8 +1111,11 @@ mainwnd::rewind(bool a_press)
     }
     else
         FF_RW_button_type = FF_RW_RELEASE;
-
+#ifdef GTKMM_3_SUPPORT
+    g_timeout_add(120,FF_RW_timeout,m_mainperf);
+#else
     gtk_timeout_add(120,FF_RW_timeout,m_mainperf);
+#endif
 }
 
 void
@@ -1089,7 +1131,11 @@ mainwnd::fast_forward(bool a_press)
     else
         FF_RW_button_type = FF_RW_RELEASE;
 
+#ifdef GTKMM_3_SUPPORT
+    g_timeout_add(120,FF_RW_timeout,m_mainperf);
+#else
     gtk_timeout_add(120,FF_RW_timeout,m_mainperf);
+#endif
 }
 
 void
@@ -1513,7 +1559,9 @@ void mainwnd::file_save_as(file_type_e type, void *a_seq_or_track)
 
     dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
     dialog.add_button(Gtk::Stock::SAVE, Gtk::RESPONSE_OK);
+#ifdef GTKMM_3_SUPPORT
 
+#else
     Gtk::FileFilter filter_midi;
 
     if(type == E_SEQ42_NATIVE_FILE)
@@ -1607,6 +1655,7 @@ void mainwnd::file_save_as(file_type_e type, void *a_seq_or_track)
     default:
         break;
     }
+#endif // GTKMM-2
 }
 
 void mainwnd::export_midi(const Glib::ustring& fn, file_type_e type, void *a_seq_or_track)
@@ -1743,7 +1792,9 @@ void mainwnd::choose_file(const bool playlist_mode)
 
     dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
     dialog.add_button(Gtk::Stock::OPEN, Gtk::RESPONSE_OK);
+#ifdef GTKMM_3_SUPPORT
 
+#else
     if(!playlist_mode)
     {
         Gtk::FileFilter filter_midi;
@@ -1756,7 +1807,7 @@ void mainwnd::choose_file(const bool playlist_mode)
     filter_any.set_name("Any files");
     filter_any.add_pattern("*");
     dialog.add_filter(filter_any);
-
+#endif
     dialog.set_current_folder(last_used_dir);
 
     int result = dialog.run();
@@ -1910,16 +1961,23 @@ mainwnd::update_recent_files_menu ()
          *      m_menu_file->items().remove(*m_menu_recent);    // crash!
          *      delete m_menu_recent;
          */
+#ifdef GTKMM_3_SUPPORT
 
+#else
         m_menu_recent->items().clear();
+#endif
     }
     else
     {
         m_menu_recent = manage(new Gtk::Menu());
+#ifdef GTKMM_3_SUPPORT
+
+#else
         m_menu_file->items().push_back
         (
             MenuElem("_Recent .s42 files...", *m_menu_recent)
         );
+#endif
     }
 
     if (m_mainperf->recent_file_count() > 0)
@@ -1927,18 +1985,26 @@ mainwnd::update_recent_files_menu ()
         for (int i = 0; i < m_mainperf->recent_file_count(); ++i)
         {
             std::string filepath = m_mainperf->recent_file(i);     // shortened name
+#ifdef GTKMM_3_SUPPORT
+
+#else
             m_menu_recent->items().push_back
             (
                 MenuElem(filepath, sigc::bind(SET_FILE, i))
             );
+#endif
         }
     }
     else
     {
+#ifdef GTKMM_3_SUPPORT
+
+#else
         m_menu_recent->items().push_back
         (
             MenuElem("<none>", sigc::bind(SET_FILE, (-1)))
         );
+#endif
     }
 }
 
@@ -1982,7 +2048,9 @@ mainwnd::file_import_dialog()
     Gtk::FileChooserDialog dialog("Import MIDI file",
                                   Gtk::FILE_CHOOSER_ACTION_OPEN);
     dialog.set_transient_for(*this);
+#ifdef GTKMM_3_SUPPORT
 
+#else
     Gtk::FileFilter filter_midi;
     filter_midi.set_name("MIDI files");
     filter_midi.add_pattern("*.midi");
@@ -1995,17 +2063,20 @@ mainwnd::file_import_dialog()
     filter_any.set_name("Any files");
     filter_any.add_pattern("*");
     dialog.add_filter(filter_any);
-
+#endif
     dialog.set_current_folder(last_midi_dir);
 
     ButtonBox *btnbox = dialog.get_action_area();
     HBox hbox( false, 2 );
+#ifdef GTKMM_3_SUPPORT
 
+#else
     m_adjust_load_offset = manage( new Adjustment( -1, -1, SEQ24_SCREEN_SET_SIZE - 1, 1 ));
     m_spinbutton_load_offset = manage( new SpinButton( *m_adjust_load_offset ));
     m_spinbutton_load_offset->set_editable( false );
     m_spinbutton_load_offset->set_wrap( true );
     hbox.pack_end(*m_spinbutton_load_offset, false, false );
+#endif
     hbox.pack_end(*(manage( new Label("Seq24 Screen Import"))), false, false, 4);
 
     btnbox->pack_start(hbox, false, false );
@@ -2094,8 +2165,11 @@ mainwnd::about_dialog()
         "(C) 2008 - 2009 Seq24team\n"
         "(C) 2002 - 2006 Rob C. Buse");
     dialog.set_website("https://github.com/Stazed/seq42");
-
+#ifdef GTKMM_3_SUPPORT
+    std::vector<Glib::ustring> list_authors;
+#else
     std::list<Glib::ustring> list_authors;
+#endif
     list_authors.push_back("Rob C. Buse <rcb@filter24.org>");
     list_authors.push_back("Ivan Hernandez <ihernandez@kiusys.com>");
     list_authors.push_back("Guido Scholz <guido.scholz@bayernline.de>");
@@ -2108,7 +2182,11 @@ mainwnd::about_dialog()
     list_authors.push_back("Stazed <stazed@mapson.com>");
     dialog.set_authors(list_authors);
 
+#ifdef GTKMM_3_SUPPORT
+    std::vector<Glib::ustring> list_documenters;
+#else
     std::list<Glib::ustring> list_documenters;
+#endif
     list_documenters.push_back("Dana Olson <seq24@ubuntustudio.com>");
     dialog.set_documenters(list_documenters);
 
@@ -2625,17 +2703,27 @@ mainwnd::set_nsm_menu()
 {
     if(m_menu_file != nullptr)
     {
+#ifdef GTKMM_3_SUPPORT
+
+#else
         m_menu_file->items().clear();
+#endif
     }
     else
     {
         m_menu_file = manage(new Gtk::Menu());
+#ifdef GTKMM_3_SUPPORT
+
+#else
         m_menubar->items().push_front(MenuElem("_File", *m_menu_file));
+#endif
     }
 
 //    m_menu_file->items().push_back(MenuElem("Open _playlist...",
 //                                            mem_fun(*this, &mainwnd::file_open_playlist)));
+#ifdef GTKMM_3_SUPPORT
 
+#else
     m_menu_file->items().push_back(MenuElem("_Save",
                                             Gtk::AccelKey("<control>S"),
                                             mem_fun(*this, &mainwnd::file_save)));
@@ -2646,6 +2734,7 @@ mainwnd::set_nsm_menu()
     m_menu_file->items().push_back(SeparatorElem());
     m_menu_file->items().push_back(MenuElem("E_xit",
                                             Gtk::AccelKey("<control>Q"),
-                                            mem_fun(*this, &mainwnd::file_exit)));      
+                                            mem_fun(*this, &mainwnd::file_exit)));
+#endif
 }
 #endif

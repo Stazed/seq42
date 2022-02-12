@@ -52,9 +52,12 @@ trackmenu::popup_menu()
 
     if ( ! m_mainperf->is_active_track( m_current_trk ))
     {
+#ifdef GTKMM_3_SUPPORT
+
+#else
         m_menu->items().push_back(MenuElem("_New",
                                            mem_fun(*this, &trackmenu::trk_new)));
-
+#endif
         bool can_we_delete = true;
 
         for(int i = 0; i < c_max_track; i++)
@@ -68,31 +71,50 @@ trackmenu::popup_menu()
 
         if(can_we_delete)
         {
+#ifdef GTKMM_3_SUPPORT
+
+#else
             m_menu->items().push_back(MenuElem("_Insert row",
                                                sigc::bind(mem_fun(*this,&trackmenu::trk_insert),m_current_trk)));
             m_menu->items().push_back(MenuElem("_Delete row",
                                                sigc::bind(mem_fun(*this,&trackmenu::trk_delete),m_current_trk)));
             m_menu->items().push_back(MenuElem("_Pack tracks",
                                                mem_fun(*this, &trackmenu::pack_tracks)));
+#endif
         }
     }
 
     if ( m_mainperf->is_active_track( m_current_trk ))
     {
+#ifdef GTKMM_3_SUPPORT
+
+#else
         m_menu->items().push_back(MenuElem("_Edit", mem_fun(*this,&trackmenu::trk_edit)));
         m_menu->items().push_back(MenuElem("_Copy", mem_fun(*this,&trackmenu::trk_copy)));
-
+#endif
         if(! m_mainperf->is_track_in_edit( m_current_trk ))
         {
+#ifdef GTKMM_3_SUPPORT
+
+#else
             m_menu->items().push_back(MenuElem("Cut", mem_fun(*this,&trackmenu::trk_cut)));
+#endif
         }
 
         if( m_mainperf->get_track( m_current_trk)->get_track_trigger_count() > 0 )
         {
+#ifdef GTKMM_3_SUPPORT
+
+#else
             m_menu->items().push_back(MenuElem("Clear triggers", mem_fun(*this,&trackmenu::trk_clear_perf)));
             m_menu->items().push_back(MenuElem("Export track", mem_fun(*this,&trackmenu::trk_export)));
+#endif
         }
+#ifdef GTKMM_3_SUPPORT
+
+#else
         m_menu->items().push_back(SeparatorElem());
+#endif
 
         if( m_mainperf->get_track( m_current_trk ) != NULL)
         {
@@ -109,16 +131,23 @@ trackmenu::popup_menu()
 
             if(can_we_insert_delete)
             {
+#ifdef GTKMM_3_SUPPORT
+
+#else
                 m_menu->items().push_back(MenuElem("_Insert row",
                                                    sigc::bind(mem_fun(*this,&trackmenu::trk_insert),m_current_trk)));
                 m_menu->items().push_back(MenuElem("_Delete row",
                                                    sigc::bind(mem_fun(*this,&trackmenu::trk_delete),m_current_trk)));
                 m_menu->items().push_back(MenuElem("_Pack tracks",
                                                    mem_fun(*this, &trackmenu::pack_tracks)));
+#endif
             }
         }
+#ifdef GTKMM_3_SUPPORT
 
+#else
         m_menu->items().push_back(SeparatorElem());
+#endif
 
         Menu *merge_seq_menu = NULL;
         char name[40];
@@ -145,44 +174,72 @@ trackmenu::popup_menu()
                     inserted = true;
                     snprintf(name, sizeof(name), "[%d] %s", t+1, some_track->get_name());
                     menu_t = manage( new Menu());
+#ifdef GTKMM_3_SUPPORT
+
+#else
                     merge_seq_menu->items().push_back(MenuElem(name, *menu_t));
+#endif
                 }
 
                 sequence *a_seq = some_track->get_sequence( s );
                 snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
+#ifdef GTKMM_3_SUPPORT
+
+#else
                 menu_t->items().push_back(MenuElem(name,
                                                    sigc::bind(mem_fun(*this,&trackmenu::trk_merge_seq),some_track, a_seq)));
+#endif
             }
         }
+#ifdef GTKMM_3_SUPPORT
 
+#else
         m_menu->items().push_back(MenuElem("_New sequence", mem_fun(*this,&trackmenu::new_sequence)));
-
+#endif
         if(merge_seq_menu != NULL)
         {
+#ifdef GTKMM_3_SUPPORT
+
+#else
             m_menu->items().push_back(MenuElem("Merge sequence", *merge_seq_menu));
+#endif
         }
 
     }
     else
     {
+#ifdef GTKMM_3_SUPPORT
+
+#else
         if(m_something_to_paste) m_menu->items().push_back(MenuElem("_Paste", mem_fun(*this,&trackmenu::trk_paste)));
+#endif
     }
 
     if ( m_mainperf->is_active_track( m_current_trk ))
     {
-        m_menu->items().push_back(SeparatorElem());
-        Menu *menu_buses = manage( new Menu() );
+#ifdef GTKMM_3_SUPPORT
 
+#else
+        m_menu->items().push_back(SeparatorElem());
+#endif
+        Menu *menu_buses = manage( new Menu() );
+#ifdef GTKMM_3_SUPPORT
+
+#else
         m_menu->items().push_back( MenuElem( "Midi Bus", *menu_buses) );
+#endif
 
         /* midi buses */
         mastermidibus *masterbus = m_mainperf->get_master_midi_bus();
         for ( int i=0; i< masterbus->get_num_out_buses(); i++ )
         {
             Menu *menu_channels = manage( new Menu() );
+#ifdef GTKMM_3_SUPPORT
 
+#else
             menu_buses->items().push_back(MenuElem( masterbus->get_midi_out_bus_name(i),
                                                     *menu_channels ));
+#endif
             char b[4];
 
             /* midi channel menu */
@@ -198,10 +255,13 @@ trackmenu::popup_menu()
                                    global_user_instrument_definitions[instrument].instrument +
                                    string(")") );
                 }
+#ifdef GTKMM_3_SUPPORT
 
+#else
                 menu_channels->items().push_back(MenuElem(name,
                                                  sigc::bind(mem_fun(*this,&trackmenu::set_bus_and_midi_channel),
                                                          i, j )));
+#endif
             }
         }
     }

@@ -167,7 +167,11 @@ private:
     
     public:
 
+#ifdef GTKMM_3_SUPPORT
+    Bpm_spinbutton(const Glib::RefPtr<Adjustment>& adjustment, double climb_rate =  0.0, guint digits =  0);
+#else
     Bpm_spinbutton(Adjustment& adjustment, double climb_rate =  0.0, guint digits =  0);
+#endif
     
     void set_have_enter(bool a_enter);
     bool get_have_enter();

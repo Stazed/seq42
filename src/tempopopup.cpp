@@ -37,6 +37,9 @@ tempopopup::tempopopup(tempo *a_tempo) :
     set_size_request(150, 50);
 
     /* bpm spin button */
+#ifdef GTKMM_3_SUPPORT
+
+#else
     m_adjust_bpm = manage(new Adjustment(m_tempo->m_mainperf->get_bpm(), c_bpm_minimum -1, c_bpm_maximum, 1));
     m_spinbutton_bpm = manage( new SpinButton( *m_adjust_bpm ));
     m_spinbutton_bpm->set_editable( true );
@@ -45,6 +48,7 @@ tempopopup::tempopopup(tempo *a_tempo) :
         mem_fun(*this, &tempopopup::adj_callback_bpm ));
  
     m_spinbutton_bpm->set_numeric();
+#endif
     
     add_tooltip
     ( 

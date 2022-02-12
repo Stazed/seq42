@@ -114,11 +114,15 @@ options::add_midi_clock_page()
             break;
         }
     }
-
+#ifdef GTKMM_3_SUPPORT
+    Glib::RefPtr<Gtk::Adjustment> clock_mod_adj = Gtk::Adjustment::create(midibus::get_clock_mod(),
+            1, 16 << 10, 1 );
+    SpinButton *clock_mod_spin = new SpinButton( clock_mod_adj );
+#else
     Adjustment *clock_mod_adj = new Adjustment(midibus::get_clock_mod(),
             1, 16 << 10, 1 );
     SpinButton *clock_mod_spin = new SpinButton( *clock_mod_adj );
-
+#endif
     HBox *hbox2 = manage (new HBox ());
 
     hbox2->pack_start(*(manage(new Label(
@@ -126,9 +130,12 @@ options::add_midi_clock_page()
     hbox2->pack_start(*clock_mod_spin, false, false );
 
     vbox->pack_start( *hbox2, false, false );
+#ifdef GTKMM_3_SUPPORT
 
+#else
     clock_mod_adj->signal_value_changed().connect(sigc::bind(mem_fun(*this,
             &options::clock_mod_callback), clock_mod_adj));
+#endif
 }
 
 /*MIDI Input page*/

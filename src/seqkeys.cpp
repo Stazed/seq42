@@ -60,8 +60,11 @@ seqkeys::on_realize()
     // we need to do the default realize
     Gtk::DrawingArea::on_realize();
     
-    Glib::signal_timeout().connect(mem_fun(*this,&seqkeys::idle_progress), c_redraw_ms);
+#ifdef GTKMM_3_SUPPORT
 
+#else
+    Glib::signal_timeout().connect(mem_fun(*this,&seqkeys::idle_progress), c_redraw_ms);
+#endif
     // Now we can allocate any additional resources we need
     m_window = get_window();
     
