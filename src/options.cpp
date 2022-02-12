@@ -22,12 +22,7 @@
 #include "keybindentry.h"
 #include <sstream>
 
-// tooltip helper, for old vs new gtk...
-#if GTK_MINOR_VERSION >= 12
-#   define add_tooltip( obj, text ) obj->set_tooltip_text( text);
-#else
-#   define add_tooltip( obj, text ) m_tooltips->set_tip( *obj, text );
-#endif
+#define add_tooltip( obj, text ) obj->set_tooltip_text( text);
 
 bool global_interaction_method_change = false;
 
