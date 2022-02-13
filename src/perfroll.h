@@ -107,7 +107,10 @@ private:
     bool have_button_press;
     bool transport_follow;
     bool trans_button_press;
-
+    
+    /* Trigger menu items */
+    std::vector<MenuItem> m_trigger_menu_items;
+    
     void on_realize();
     bool on_expose_event(GdkEventExpose* a_ev);
     bool on_button_press_event(GdkEventButton* a_ev);
