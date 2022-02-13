@@ -75,6 +75,20 @@ private:
     Menu       *m_menu_snap;
     Menu       *m_menu_note_length;
 
+#ifdef GTKMM_3_SUPPORT
+    std::vector<MenuItem> m_tools_menu_items;
+    std::vector<MenuItem> m_snap_menu_items;
+    std::vector<MenuItem> m_note_length_menu_items;
+    std::vector<MenuItem> m_bw_menu_items;
+    std::vector<MenuItem> m_record_volume_menu_items;
+
+    SeparatorMenuItem   m_menu_separator0;
+    SeparatorMenuItem   m_menu_separator1;
+    SeparatorMenuItem   m_menu_separator2;
+    SeparatorMenuItem   m_menu_separator3;
+    SeparatorMenuItem   m_menu_separator4;
+#endif
+
     /* length in measures */
     Menu       *m_menu_length;
     Menu       *m_menu_data;
@@ -212,7 +226,7 @@ private:
     /* what is the data window currently editing ? */
     unsigned char m_editing_status;
     unsigned char m_editing_cc;
-
+    
     void set_zoom( int a_zoom );
     void set_snap( int a_snap );
     void set_note_length( int a_note_length );
