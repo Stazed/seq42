@@ -81,12 +81,17 @@ private:
     std::vector<MenuItem> m_note_length_menu_items;
     std::vector<MenuItem> m_bw_menu_items;
     std::vector<MenuItem> m_record_volume_menu_items;
+    std::vector<MenuItem> m_data_menu_items;
+    std::vector<MenuItem> m_record_type_menu_items;
 
     SeparatorMenuItem   m_menu_separator0;
     SeparatorMenuItem   m_menu_separator1;
     SeparatorMenuItem   m_menu_separator2;
     SeparatorMenuItem   m_menu_separator3;
     SeparatorMenuItem   m_menu_separator4;
+    SeparatorMenuItem   m_menu_separator5;
+    SeparatorMenuItem   m_menu_separator6;
+    SeparatorMenuItem   m_menu_separator7;
 #endif
 
     /* length in measures */

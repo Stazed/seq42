@@ -1411,7 +1411,11 @@ seqedit::popup_sequence_menu()
 
     m_menu_sequences = manage( new Menu());
 #ifdef GTKMM_3_SUPPORT
-
+    MenuItem * menu_item = new MenuItem("Off");
+    menu_item->signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), -1, -1));
+    m_menu_sequences->append(*menu_item);
+    
+    m_menu_sequences->append(m_menu_separator5);
 #else
     m_menu_sequences->items().push_back(MenuElem("Off",
                                         sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), -1, -1)));
@@ -1438,7 +1442,9 @@ seqedit::popup_sequence_menu()
                 snprintf(name, sizeof(name), "[%d] %s", t+1, a_track->get_name());
                 menu_t = manage( new Menu());
 #ifdef GTKMM_3_SUPPORT
-
+                MenuItem * menu_item = new MenuItem(name);
+                menu_item->set_submenu(*menu_t);
+                m_menu_sequences->append(*menu_item);
 #else
                 m_menu_sequences->items().push_back(MenuElem(name,*menu_t));
 #endif
@@ -1447,7 +1453,9 @@ seqedit::popup_sequence_menu()
             sequence *a_seq = a_track->get_sequence( s );
             snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
 #ifdef GTKMM_3_SUPPORT
-            
+            MenuItem * menu_item = new MenuItem(name);
+            menu_item->signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), t, s));
+            menu_t->append(*menu_item);
 #else
             menu_t->items().push_back(MenuElem(name,
                                                sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), t, s)));
@@ -1543,7 +1551,35 @@ seqedit::popup_event_menu()
 
     m_menu_data = manage( new Menu());
 #ifdef GTKMM_3_SUPPORT
+    m_data_menu_items.resize(6);
 
+    m_data_menu_items[0].set_label("Note On Velocity");
+    m_data_menu_items[0].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_data_type), (unsigned char) EVENT_NOTE_ON, 0 ));
+    m_menu_data->append(m_data_menu_items[0]);
+
+    m_menu_data->append(m_menu_separator6);
+
+    m_data_menu_items[1].set_label("Note Off Velocity");
+    m_data_menu_items[1].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_data_type), (unsigned char) EVENT_NOTE_OFF, 0 ));
+    m_menu_data->append(m_data_menu_items[1]);
+
+    m_data_menu_items[2].set_label("AfterTouch");
+    m_data_menu_items[2].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_data_type), (unsigned char) EVENT_AFTERTOUCH, 0 ));
+    m_menu_data->append(m_data_menu_items[2]);
+
+    m_data_menu_items[3].set_label("Program Change");
+    m_data_menu_items[3].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_data_type), (unsigned char) EVENT_PROGRAM_CHANGE, 0 ));
+    m_menu_data->append(m_data_menu_items[3]);
+
+    m_data_menu_items[4].set_label("Channel Pressure");
+    m_data_menu_items[4].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_data_type), (unsigned char) EVENT_CHANNEL_PRESSURE, 0 ));
+    m_menu_data->append(m_data_menu_items[4]);
+
+    m_data_menu_items[5].set_label("Pitch Wheel");
+    m_data_menu_items[5].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_data_type), (unsigned char) EVENT_PITCH_WHEEL, 0 ));
+    m_menu_data->append(m_data_menu_items[5]);
+
+    m_menu_data->append(m_menu_separator7);
 #else
     m_menu_data->items().push_back( ImageMenuElem( "Note On Velocity",
                                     *create_menu_image( note_on ),
@@ -1595,7 +1631,11 @@ seqedit::popup_event_menu()
                     controller_name = global_user_instrument_definitions[instrument].controllers[i*16+j];
             }
 #ifdef GTKMM_3_SUPPORT
-
+            CheckMenuItem * menu_item =  new CheckMenuItem();
+            menu_item->set_label(controller_name);
+            menu_item->signal_activate().connect(sigc::bind(mem_fun(this, &seqedit::set_data_type),
+                                                   (unsigned char) EVENT_CONTROL_CHANGE, i * 16 + j));
+            menu_cc->append(*menu_item);
 #else
             menu_cc->items().push_back( ImageMenuElem( controller_name,
                                         *create_menu_image( ccs[i*16+j]),
@@ -1604,7 +1644,9 @@ seqedit::popup_event_menu()
 #endif
         }
 #ifdef GTKMM_3_SUPPORT
-
+        MenuItem * menu_item = new MenuItem();
+        menu_item->set_submenu(*menu_cc);
+        m_menu_data->append(*menu_item);
 #else
         m_menu_data->items().push_back( MenuElem( string(b), *menu_cc ));
 #endif
@@ -1622,7 +1664,23 @@ seqedit::popup_record_menu()
     
     /* record type */
 #ifdef GTKMM_3_SUPPORT
+    m_record_type_menu_items.resize(4);
 
+    m_record_type_menu_items[0].set_label("Legacy merge looped recording");
+    m_record_type_menu_items[0].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_rec_type), LOOP_RECORD_LEGACY ));
+    m_menu_rec_type->append(m_record_type_menu_items[0]);
+
+    m_record_type_menu_items[1].set_label("Overwrite looped recording");
+    m_record_type_menu_items[1].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_rec_type), LOOP_RECORD_OVERWRITE ));
+    m_menu_rec_type->append(m_record_type_menu_items[1]);
+
+    m_record_type_menu_items[2].set_label("Expand sequence length to fit recording");
+    m_record_type_menu_items[2].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_rec_type), LOOP_RECORD_EXPAND ));
+    m_menu_rec_type->append(m_record_type_menu_items[2]);
+
+    m_record_type_menu_items[3].set_label("Expand sequence length and overwrite");
+    m_record_type_menu_items[3].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_rec_type), LOOP_RECORD_EXP_OVR ));
+    m_menu_rec_type->append(m_record_type_menu_items[3]);
 #else
     m_menu_rec_type->items().push_back(MenuElem("Legacy merge looped recording",
                                     sigc::bind(mem_fun(*this, &seqedit::set_rec_type), LOOP_RECORD_LEGACY)));
