@@ -79,7 +79,9 @@ perfroll::perfroll( perform *a_perf,
     for( int i=0; i<c_max_track; ++i )
         m_track_active[i]=false;
 
+#ifdef GTKMM_3_SUPPORT
     m_trigger_menu_items.resize(8);
+#endif
 }
 
 perfroll::~perfroll( )
