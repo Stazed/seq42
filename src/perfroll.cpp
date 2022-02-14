@@ -1282,8 +1282,12 @@ perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
             menu_trigger->items().push_back(MenuElem("Copy sequence", *copy_seq_menu));
 #endif
         }
-
+#ifdef GTKMM_3_SUPPORT
+        menu_trigger->show_all();
+        menu_trigger->popup_at_pointer(NULL);
+#else
         menu_trigger->popup(0,0);
+#endif
     }
 }
 

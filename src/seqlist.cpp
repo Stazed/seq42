@@ -167,7 +167,12 @@ seqlist::on_button_release_event(GdkEventButton* a_e)
             menu->items().push_back(MenuElem("Export", sigc::bind(mem_fun(*this,&seqlist::export_seq), a_seq )));
             menu->items().push_back(MenuElem("Delete", sigc::bind(mem_fun(*this,&seqlist::del_seq), a_track, a_track->get_sequence_index(a_seq) )));
 #endif
+#ifdef GTKMM_3_SUPPORT
+            menu->show_all();
+            menu->popup_at_pointer(NULL);
+#else
             menu->popup(0,0);
+#endif
         }
     }
     return true;

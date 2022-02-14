@@ -1076,7 +1076,12 @@ seqedit::popup_tool_menu()
                                               sigc::bind(mem_fun(*this,&seqedit::do_action),
                                                          reverse_pattern, 0)));
 #endif
+#ifdef GTKMM_3_SUPPORT
+    m_menu_tools->show_all();
+    m_menu_tools->popup_at_pointer(NULL);
+#else
     m_menu_tools->popup(0,0);
+#endif
 }
 
 
@@ -1401,7 +1406,12 @@ seqedit::fill_top_bar()
 void
 seqedit::popup_menu(Menu *a_menu)
 {
+#ifdef GTKMM_3_SUPPORT
+    a_menu->show_all();
+    a_menu->popup_at_pointer(NULL);
+#else
     a_menu->popup(0,0);
+#endif
 }
 
 void
@@ -1462,8 +1472,12 @@ seqedit::popup_sequence_menu()
 #endif
         }
     }
-
+#ifdef GTKMM_3_SUPPORT
+    m_menu_sequences->show_all();
+    m_menu_sequences->popup_at_pointer(NULL);
+#else
     m_menu_sequences->popup(0,0);
+#endif
 }
 
 void
@@ -1652,8 +1666,12 @@ seqedit::popup_event_menu()
         m_menu_data->items().push_back( MenuElem( string(b), *menu_cc ));
 #endif
     }
-
+#ifdef GTKMM_3_SUPPORT
+    m_menu_data->show_all();
+    m_menu_data->popup_at_pointer(NULL);
+#else
     m_menu_data->popup(0,0);
+#endif
 }
 
 void
@@ -1695,7 +1713,13 @@ seqedit::popup_record_menu()
     m_menu_rec_type->items().push_back(MenuElem("Expand sequence length and overwrite",
                                     sigc::bind(mem_fun(*this, &seqedit::set_rec_type), LOOP_RECORD_EXP_OVR)));
 #endif
+
+#ifdef GTKMM_3_SUPPORT
+    m_menu_rec_type->show_all();
+    m_menu_rec_type->popup_at_pointer(NULL);
+#else
     m_menu_rec_type->popup(0,0);
+#endif
 }
 //m_option_midich->set_history( m_seq->getMidiChannel() );
 //m_option_midibus->set_history( m_seq->getMidiBus()->getID() );

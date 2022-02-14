@@ -172,8 +172,12 @@ trackedit::popup_midibus_menu()
                                           sigc::bind(mem_fun(*this,&trackedit::midi_bus_button_callback), i)));
 #endif
     }
-
+#ifdef GTKMM_3_SUPPORT
+    m_menu_midibus->show_all();
+    m_menu_midibus->popup_at_pointer(NULL);
+#else
     m_menu_midibus->popup(0,0);
+#endif
 }
 
 void
@@ -210,8 +214,12 @@ trackedit::popup_midich_menu()
                                                  i )));
 #endif
     }
-
+#ifdef GTKMM_3_SUPPORT
+    m_menu_midich->show_all();
+    m_menu_midich->popup_at_pointer(NULL);
+#else
     m_menu_midich->popup(0,0);
+#endif
 }
 
 void

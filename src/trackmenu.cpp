@@ -325,8 +325,12 @@ trackmenu::popup_menu()
             }
         }
     }
-
+#ifdef GTKMM_3_SUPPORT
+    m_menu->show_all();
+    m_menu->popup_at_pointer(NULL);
+#else
     m_menu->popup(0,0);
+#endif
 }
 
 void
