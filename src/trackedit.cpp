@@ -161,10 +161,12 @@ trackedit::popup_midibus_menu()
 
     /* midi buses */
     mastermidibus *masterbus = m_track->get_master_midi_bus();
-    for ( int i=0; i< masterbus->get_num_out_buses(); i++ )
+    for ( int i = 0; i < masterbus->get_num_out_buses(); i++ )
     {
 #ifdef GTKMM_3_SUPPORT
-
+        MenuItem * menu_item = new MenuItem(masterbus->get_midi_out_bus_name(i));
+        menu_item->signal_activate().connect(sigc::bind(mem_fun(*this,&trackedit::midi_bus_button_callback), i) );
+        m_menu_midibus->append(*menu_item);
 #else
         m_menu_midibus->items().push_back(MenuElem(masterbus->get_midi_out_bus_name(i),
                                           sigc::bind(mem_fun(*this,&trackedit::midi_bus_button_callback), i)));
@@ -186,7 +188,7 @@ trackedit::popup_midich_menu()
     char b[16];
 
     /* midi channel menu */
-    for( int i=0; i<16; i++ )
+    for( int i = 0; i < 16; i++ )
     {
         sprintf( b, "%d", i+1 );
         std::string name = string(b);
@@ -199,7 +201,9 @@ trackedit::popup_midich_menu()
                            string(")") );
         }
 #ifdef GTKMM_3_SUPPORT
-
+        MenuItem * menu_item = new MenuItem(name);
+        menu_item->signal_activate().connect(sigc::bind(mem_fun(*this,&trackedit::midi_channel_button_callback), i) );
+        m_menu_midich->append(*menu_item);
 #else
         m_menu_midich->items().push_back(MenuElem(name,
                                          sigc::bind(mem_fun(*this,&trackedit::midi_channel_button_callback),
