@@ -72,6 +72,9 @@ seqlist::seqlist (perform *a_perf, mainwnd *a_main)
     m_TreeView.append_column("Seq Name", m_Columns.m_seq_name);
     m_TreeView.append_column_editable("Playing", m_Columns.m_playing);
     m_TreeView.append_column("Triggers", m_Columns.m_triggers);
+#ifdef GTKMM_3_SUPPORT
+    m_menu_items.resize(4);
+#endif
 
     // Allow sorting by clicking on columns
     Gtk::TreeView::Column* pColumn;
@@ -143,7 +146,21 @@ seqlist::on_button_release_event(GdkEventButton* a_e)
             track *a_track = a_seq->get_track();
             Menu *menu = manage( new Menu());
 #ifdef GTKMM_3_SUPPORT
+            m_menu_items[0].set_label("Edit");
+            m_menu_items[0].signal_activate().connect(sigc::bind(mem_fun(*this,&seqlist::edit_seq), a_seq  ));
+            menu->append(m_menu_items[0]);
 
+            m_menu_items[1].set_label("Copy");
+            m_menu_items[1].signal_activate().connect(sigc::bind(mem_fun(*this,&seqlist::copy_seq), a_seq  ));
+            menu->append(m_menu_items[1]);
+
+            m_menu_items[2].set_label("Export");
+            m_menu_items[2].signal_activate().connect(sigc::bind(mem_fun(*this,&seqlist::export_seq), a_seq  ));
+            menu->append(m_menu_items[2]);
+
+            m_menu_items[3].set_label("Delete");
+            m_menu_items[3].signal_activate().connect(sigc::bind(mem_fun(*this,&seqlist::del_seq), a_track, a_track->get_sequence_index(a_seq)));
+            menu->append(m_menu_items[3]);
 #else
             menu->items().push_back(MenuElem("Edit", sigc::bind(mem_fun(*this,&seqlist::edit_seq), a_seq )));
             menu->items().push_back(MenuElem("Copy", sigc::bind(mem_fun(*this,&seqlist::copy_seq), a_seq )));

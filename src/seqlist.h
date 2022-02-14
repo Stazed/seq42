@@ -73,6 +73,10 @@ private:
     Button     *m_button_play;
     Button     *m_button_all_off;
 
+#ifdef GTKMM_3_SUPPORT
+    std::vector<MenuItem> m_menu_items;
+#endif
+
     void update_model( );
     void edit_seq( sequence *a_seq );
     void copy_seq( sequence *a_seq );
