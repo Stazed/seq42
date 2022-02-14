@@ -89,8 +89,11 @@ private:
 
     GdkRectangle m_old;
     GdkRectangle m_selected;
-
+#ifdef GTKMM_3_SUPPORT
+    Glib::RefPtr<Adjustment> m_hadjust;
+#else
     Gtk::Adjustment   *m_hadjust;
+#endif
 
     int m_scroll_offset_ticks;
     int m_scroll_offset_x;
@@ -159,7 +162,11 @@ public:
               int a_zoom,
               int a_snap,
               seqdata *a_seqdata_wid,
+#ifdef GTKMM_3_SUPPORT
+              Glib::RefPtr<Adjustment> a_hadjust);
+#else
               Gtk::Adjustment   *a_hadjust );
+#endif
 
     void reset();
     void redraw();

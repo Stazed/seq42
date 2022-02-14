@@ -143,10 +143,13 @@ private:
     int m_move_snap_offset_x;
 
     int m_old_progress_x;
-
+#ifdef GTKMM_3_SUPPORT
+    Glib::RefPtr<Adjustment> const m_vadjust;
+    Glib::RefPtr<Adjustment> const m_hadjust;
+#else
     Adjustment   * const m_vadjust;
     Adjustment   * const m_hadjust;
-
+#endif
     int m_scroll_offset_ticks;
     int m_scroll_offset_key;
 
@@ -237,8 +240,13 @@ public:
              seqdata *a_seqdata_wid,
              seqevent *a_seqevent_wid,
              seqkeys *a_seqkeys_wid,
+#ifdef GTKMM_3_SUPPORT
+             Glib::RefPtr<Adjustment> a_hadjust,
+             Glib::RefPtr<Adjustment> a_vadjust,
+#else
              Adjustment *a_hadjust,
              Adjustment *a_vadjust,
+#endif
              ToggleButton *a_toggle_play);
 
     void set_data_type( unsigned char a_status, unsigned char a_control  );

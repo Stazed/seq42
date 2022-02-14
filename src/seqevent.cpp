@@ -20,11 +20,16 @@
 #include "event.h"
 #include "seqevent.h"
 
+
 seqevent::seqevent(sequence *a_seq,
                    int a_zoom,
                    int a_snap,
                    seqdata *a_seqdata_wid,
+#ifdef GTKMM_3_SUPPORT
+                   Glib::RefPtr<Adjustment> a_hadjust):
+#else
                    Gtk::Adjustment   *a_hadjust):
+#endif
     m_hadjust(a_hadjust),
 
     m_scroll_offset_ticks(0),

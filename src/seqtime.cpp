@@ -21,8 +21,11 @@
 #include "seqtime.h"
 #include "font.h"
 
-seqtime::seqtime(sequence *a_seq, int a_zoom,
-                 Gtk::Adjustment   *a_hadjust):
+#ifdef GTKMM_3_SUPPORT
+seqtime::seqtime(sequence *a_seq, int a_zoom, Glib::RefPtr<Adjustment> a_hadjust):
+#else
+seqtime::seqtime(sequence *a_seq, int a_zoom, Gtk::Adjustment *a_hadjust):
+#endif
     m_hadjust(a_hadjust),
     m_scroll_offset_ticks(0),
     m_scroll_offset_x(0),

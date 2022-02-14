@@ -43,6 +43,7 @@
 #include <gtkmm/adjustment.h>
 #endif
 
+using namespace Gtk;
 
 /* The bar and measures above the sequence editor grid */
 class seqtime: public Gtk::DrawingArea
@@ -53,8 +54,11 @@ private:
     Glib::RefPtr<Gdk::Window>   m_window;
     Cairo::RefPtr<Cairo::ImageSurface> m_surface;
     Cairo::RefPtr<Cairo::Context>  m_surface_window;
-
+#ifdef GTKMM_3_SUPPORT
+    Glib::RefPtr<Adjustment> m_hadjust;
+#else
     Gtk::Adjustment   *m_hadjust;
+#endif
 
     int m_scroll_offset_ticks;
     int m_scroll_offset_x;
@@ -84,9 +88,11 @@ private:
     void update_sizes();
 
 public:
-
-    seqtime( sequence *a_seq, int a_zoom,
-             Gtk::Adjustment   *a_hadjust );
+#ifdef GTKMM_3_SUPPORT
+    seqtime( sequence *a_seq, int a_zoom, Glib::RefPtr<Adjustment> a_hadjust );
+#else
+    seqtime( sequence *a_seq, int a_zoom, Gtk::Adjustment *a_hadjust );
+#endif
 
     void reset();
     void redraw();

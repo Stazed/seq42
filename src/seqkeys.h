@@ -49,6 +49,8 @@ enum
     Red_Note
 };
 
+using namespace Gtk;
+
 /* holds the left side piano */
 class seqkeys : public Gtk::DrawingArea
 {
@@ -59,8 +61,11 @@ private:
     Cairo::RefPtr<Cairo::Context>  m_surface_window;
 
     sequence *m_seq;
-
+#ifdef GTKMM_3_SUPPORT
+    Glib::RefPtr<Adjustment> m_vadjust;
+#else
     Gtk::Adjustment   *m_vadjust;
+#endif
 
     int m_scroll_offset_key;
     int m_scroll_offset_y;
@@ -114,9 +119,11 @@ public:
 
     /* true == on, false == off */
     void set_hint_state( bool a_state );
-
-    seqkeys( sequence *a_seq,
-             Gtk::Adjustment *a_vadjust );
+#ifdef GTKMM_3_SUPPORT
+    seqkeys( sequence *a_seq, Glib::RefPtr<Adjustment> a_vadjust );
+#else
+    seqkeys( sequence *a_seq, Gtk::Adjustment *a_vadjust );
+#endif
 
 
     void set_scale( int a_scale );

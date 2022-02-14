@@ -35,8 +35,13 @@ seqroll::seqroll(perform *a_perf,
                  seqdata *a_seqdata_wid,
                  seqevent *a_seqevent_wid,
                  seqkeys *a_seqkeys_wid,
+#ifdef GTKMM_3_SUPPORT
+                 Glib::RefPtr<Adjustment> a_hadjust,
+                 Glib::RefPtr<Adjustment> a_vadjust,
+#else
                  Adjustment *a_hadjust,
                  Adjustment *a_vadjust,
+#endif
                  ToggleButton *a_toggle_play):
     m_seq(a_seq),
     m_perform(a_perf),

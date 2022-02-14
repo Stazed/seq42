@@ -59,8 +59,11 @@ private:
 
     int m_drop_x, m_drop_y;
     int m_current_x, m_current_y;
-
+#ifdef GTKMM_3_SUPPORT
+    Glib::RefPtr<Adjustment> const m_hadjust;
+#else
     Gtk::Adjustment   * const m_hadjust;
+#endif
 
     int m_scroll_offset_ticks;
     int m_scroll_offset_x;
@@ -98,7 +101,11 @@ private:
 
 public:
 
+#ifdef GTKMM_3_SUPPORT
+    seqdata(sequence *a_seq, int a_zoom, Glib::RefPtr<Adjustment> a_hadjust);
+#else
     seqdata( sequence *a_seq, int a_zoom,  Gtk::Adjustment   *a_hadjust );
+#endif
 
     void reset();
     void redraw();
