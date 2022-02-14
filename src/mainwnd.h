@@ -62,6 +62,18 @@ private:
     Menu     *m_menu_recent;          /**< File/Recent menu popup.    */
     Menu     *m_menu_edit;
     Menu     *m_menu_help;
+#ifdef GTKMM_3_SUPPORT
+    std::vector<MenuItem> m_file_menu_items;
+    std::vector<MenuItem> m_edit_menu_items;
+    MenuItem m_help_menu_item;
+    MenuItem m_help_submenu_item;
+    Glib::RefPtr<Gtk::AccelGroup> m_accelgroup;
+    SeparatorMenuItem   m_menu_separator1;
+    SeparatorMenuItem   m_menu_separator2;
+    SeparatorMenuItem   m_menu_separator3;
+    SeparatorMenuItem   m_menu_separator4;
+    SeparatorMenuItem   m_menu_separator5;
+#endif
     
     Gtk::HBox *hbox1;               /* top line mainwindow */
     Gtk::Image * m_image_seq42;     /* Image for Mainwindow logo.   */
