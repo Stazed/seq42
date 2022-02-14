@@ -663,7 +663,6 @@ mainwnd::mainwnd(perform *a_p):
     m_snap_menu_items[24].set_label("1/30");
     m_snap_menu_items[24].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 30 ));
     m_menu_snap->append(m_snap_menu_items[24]);
-    
 #else
     m_menu_snap->items().push_back(MenuElem("1/1",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 1  )));
     m_menu_snap->items().push_back(MenuElem("1/2",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 2  )));
@@ -708,6 +707,27 @@ mainwnd::mainwnd(perform *a_p):
 
     /* bw */
 #ifdef GTKMM_3_SUPPORT
+    m_bw_menu_items.resize(5);
+
+    m_bw_menu_items[0].set_label("1");
+    m_bw_menu_items[0].signal_activate().connect(sigc::bind(mem_fun(*this, &mainwnd::bw_button_callback), 1 ));
+    m_menu_bw->append(m_bw_menu_items[0]);
+
+    m_bw_menu_items[1].set_label("2");
+    m_bw_menu_items[1].signal_activate().connect(sigc::bind(mem_fun(*this, &mainwnd::bw_button_callback), 2 ));
+    m_menu_bw->append(m_bw_menu_items[1]);
+
+    m_bw_menu_items[2].set_label("4");
+    m_bw_menu_items[2].signal_activate().connect(sigc::bind(mem_fun(*this, &mainwnd::bw_button_callback), 4 ));
+    m_menu_bw->append(m_bw_menu_items[2]);
+
+    m_bw_menu_items[3].set_label("8");
+    m_bw_menu_items[3].signal_activate().connect(sigc::bind(mem_fun(*this, &mainwnd::bw_button_callback), 8 ));
+    m_menu_bw->append(m_bw_menu_items[3]);
+
+    m_bw_menu_items[4].set_label("16");
+    m_bw_menu_items[4].signal_activate().connect(sigc::bind(mem_fun(*this, &mainwnd::bw_button_callback), 16 ));
+    m_menu_bw->append(m_bw_menu_items[4]);
 
 #else
     m_menu_bw->items().push_back(MenuElem("1", sigc::bind(mem_fun(*this,&mainwnd::bw_button_callback), 1  )));
@@ -724,7 +744,9 @@ mainwnd::mainwnd(perform *a_p):
 
         /* length */
 #ifdef GTKMM_3_SUPPORT
-
+        MenuItem * menu_item = new MenuItem(b);
+        menu_item->signal_activate().connect(sigc::bind(mem_fun(*this, &mainwnd::bp_measure_button_callback), i + 1 ));
+        m_menu_bp_measure->append(*menu_item);
 #else
         m_menu_bp_measure->items().push_back(MenuElem(b,
                                              sigc::bind(mem_fun(*this,&mainwnd::bp_measure_button_callback),i+1 )));

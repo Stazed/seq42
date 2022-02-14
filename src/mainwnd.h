@@ -66,6 +66,7 @@ private:
     std::vector<MenuItem> m_file_menu_items;
     std::vector<MenuItem> m_edit_menu_items;
     std::vector<MenuItem> m_snap_menu_items;
+    std::vector<MenuItem> m_bw_menu_items;
     MenuItem m_help_menu_item;
     MenuItem m_help_submenu_item;
     Glib::RefPtr<Gtk::AccelGroup> m_accelgroup;
