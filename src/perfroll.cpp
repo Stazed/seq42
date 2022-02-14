@@ -25,8 +25,13 @@
 
 perfroll::perfroll( perform *a_perf,
                     mainwnd *a_main,
+#ifdef GTKMM_3_SUPPORT
+                    Glib::RefPtr<Adjustment> a_hadjust,
+                    Glib::RefPtr<Adjustment> a_vadjust  ) :
+#else
                     Adjustment * a_hadjust,
                     Adjustment * a_vadjust  ) :
+#endif
     m_window(NULL),
     m_mainperf(a_perf),
     m_mainwnd(a_main),

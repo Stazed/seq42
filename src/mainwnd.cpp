@@ -297,7 +297,11 @@ mainwnd::mainwnd(perform *a_p):
     
     /* perfedit widgets */
 #ifdef GTKMM_3_SUPPORT
+    m_vadjust = Adjustment::create(0,0,1,1,1,1 );
+    m_hadjust = Adjustment::create(0,0,1,1,1,1 );
 
+    m_vscroll   =  manage(new VScrollbar( m_vadjust ));
+    m_hscroll   =  manage(new HScrollbar( m_hadjust ));
 #else
     m_vadjust = manage( new Adjustment(0,0,1,1,1,1 ));
     m_hadjust = manage( new Adjustment(0,0,1,1,1,1 ));

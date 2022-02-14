@@ -1506,6 +1506,7 @@ seqedit::popup_event_menu()
     /* temp */
     char b[20];
 
+    // FIXME for GTKMM-3 -- create_menu_image()
     bool note_on = false;
     bool note_off = false;
     bool aftertouch = false;

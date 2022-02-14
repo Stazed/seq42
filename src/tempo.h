@@ -64,8 +64,11 @@ private:
 
     perform      * const m_mainperf;
     mainwnd      * const m_mainwnd;
+#ifdef GTKMM_3_SUPPORT
+    Glib::RefPtr<Adjustment> const m_hadjust;
+#else
     Adjustment   * const m_hadjust;
-    
+#endif
     /* holds the markers */
     list < tempo_mark > m_list_marker;
     list < tempo_mark > m_list_no_stop_markers;
@@ -116,8 +119,11 @@ private:
     bool check_above_marker(uint64_t mouse_tick, bool a_delete, bool exact );
 
 public:
-
+#ifdef GTKMM_3_SUPPORT
+    tempo( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment> a_hadjust );
+#else
     tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust );
+#endif
     ~tempo();
 
     void idle_progress();

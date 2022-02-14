@@ -23,8 +23,11 @@
 #include "pixmaps/tempo_marker.xpm"
 #include "pixmaps/stop_marker.xpm"
 
-
+#ifdef GTKMM_3_SUPPORT
+tempo::tempo( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment> a_hadjust ) :
+#else
 tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
+#endif
 
     m_mainperf(a_perf),
     m_mainwnd(a_main),

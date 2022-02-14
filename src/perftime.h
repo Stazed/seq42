@@ -57,7 +57,11 @@ private:
 
     perform      * const m_mainperf;
     mainwnd      * const m_mainwnd;
+#ifdef GTKMM_3_SUPPORT
+    Glib::RefPtr<Adjustment> const m_hadjust;
+#else
     Adjustment   * const m_hadjust;
+#endif
 
     int m_window_x, m_window_y;
     int m_perf_scale_x;
@@ -77,9 +81,11 @@ private:
     void change_horz();
 
 public:
-
+#ifdef GTKMM_3_SUPPORT
+    perftime( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment> a_hadjust );
+#else
     perftime( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust );
-
+#endif
     void idle_progress();
     void set_zoom (int a_zoom);
 

@@ -95,9 +95,13 @@ private:
     int          m_drop_track;
 
     bool         m_track_active[c_max_track];
-
+#ifdef GTKMM_3_SUPPORT
+    Glib::RefPtr<Adjustment> m_vadjust;
+    Glib::RefPtr<Adjustment> m_hadjust;
+#else
     Adjustment   *m_vadjust;
     Adjustment   *m_hadjust;
+#endif
 
     bool m_moving;
     bool m_growing;
@@ -172,8 +176,13 @@ public:
 
     perfroll( perform *a_perf,
               mainwnd *a_main,
+#ifdef GTKMM_3_SUPPORT
+              Glib::RefPtr<Adjustment> a_hadjust,
+              Glib::RefPtr<Adjustment> a_vadjust );
+#else
               Adjustment *a_hadjust,
               Adjustment *a_vadjust );
+#endif
 
     ~perfroll( );
 };

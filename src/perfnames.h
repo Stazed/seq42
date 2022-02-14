@@ -56,8 +56,11 @@ private:
     Cairo::RefPtr<Cairo::Context>  m_surface_window;
 
     perform      *m_mainperf;
-
+#ifdef GTKMM_3_SUPPORT
+    Glib::RefPtr<Adjustment> m_vadjust;
+#else
     Adjustment   *m_vadjust;
+#endif
 
     int m_window_x, m_window_y;
 
@@ -90,8 +93,12 @@ private:
 public:
 
     void redraw_dirty_tracks();
-
+#ifdef GTKMM_3_SUPPORT
+    perfnames( perform *a_perf, mainwnd *a_main,
+               Glib::RefPtr<Adjustment> a_vadjust   );
+#else
     perfnames( perform *a_perf, mainwnd *a_main,
                Adjustment *a_vadjust   );
+#endif
 };
 

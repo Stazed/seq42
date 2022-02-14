@@ -70,15 +70,13 @@ private:
 
     options *m_options;
 
- //   Gdk::Cursor   m_main_cursor;
-
     Button      *m_button_stop;
     Button      *m_button_rewind;
     Button      *m_button_play;
     Button      *m_button_fastforward;
 
     Bpm_spinbutton *m_spinbutton_bpm;
-//    SpinButton  *m_spinbutton_bpm;
+
     Adjustment  *m_adjust_bpm;
     Button      *m_button_tap;
 
@@ -93,10 +91,13 @@ private:
 
     VScrollbar *m_vscroll;
     HScrollbar *m_hscroll;
-
+#ifdef GTKMM_3_SUPPORT
+    Glib::RefPtr<Adjustment> m_vadjust;
+    Glib::RefPtr<Adjustment> m_hadjust;
+#else
     Adjustment *m_vadjust;
     Adjustment *m_hadjust;
-
+#endif
     perfnames *m_perfnames;
     perfroll *m_perfroll;
     perftime *m_perftime;

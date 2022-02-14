@@ -21,7 +21,11 @@
 #include "mainwnd.h"
 #include "font.h"
 
+#ifdef GTKMM_3_SUPPORT
+perfnames::perfnames( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment> a_vadjust ):
+#else
 perfnames::perfnames( perform *a_perf, mainwnd *a_main, Adjustment *a_vadjust ):
+#endif
     trackmenu(a_perf, a_main),
     m_mainperf(a_perf),
     m_vadjust(a_vadjust),
