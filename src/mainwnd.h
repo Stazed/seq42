@@ -88,8 +88,11 @@ private:
     Button      *m_button_fastforward;
 
     Bpm_spinbutton *m_spinbutton_bpm;
-
+#ifdef GTKMM_3_SUPPORT
+    Glib::RefPtr<Adjustment> m_adjust_bpm;
+#else
     Adjustment  *m_adjust_bpm;
+#endif
     Button      *m_button_tap;
 
     SpinButton  *m_spinbutton_swing_amount8;

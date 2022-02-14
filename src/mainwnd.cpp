@@ -476,13 +476,16 @@ mainwnd::mainwnd(perform *a_p):
 
     m_table->attach( *m_perfnames,    0, 1, 3, 4, Gtk::SHRINK, Gtk::FILL );
     m_table->attach( *m_tempo, 1, 2, 1, 2, Gtk::FILL, Gtk::SHRINK );
-    
+
     /* bpm spin button */
 #ifdef GTKMM_3_SUPPORT
-
+    m_adjust_bpm = Adjustment::create(c_bpm, c_bpm_minimum, c_bpm_maximum, 1);
+    m_spinbutton_bpm = manage( new Bpm_spinbutton( m_adjust_bpm ));
 #else
     m_adjust_bpm = manage(new Adjustment(c_bpm, c_bpm_minimum, c_bpm_maximum, 1));
     m_spinbutton_bpm = manage( new Bpm_spinbutton( *m_adjust_bpm ));
+#endif
+
     m_spinbutton_bpm->set_editable( true );
     m_spinbutton_bpm->set_digits(2);                    // 2 = two decimal precision
     m_spinbutton_bpm->set_numeric();
@@ -490,7 +493,6 @@ mainwnd::mainwnd(perform *a_p):
         mem_fun(*this, &mainwnd::adj_callback_bpm ));
 
     add_tooltip( m_spinbutton_bpm, "Adjust starting beats per minute (BPM)" );
-#endif
 
     /* bpm tap tempo button - sequencer64 */
     m_button_tap = manage(new Button("0"));
