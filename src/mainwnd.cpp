@@ -773,22 +773,28 @@ mainwnd::mainwnd(perform *a_p):
 
     /* swing_amount spin buttons */
 #ifdef GTKMM_3_SUPPORT
+    m_adjust_swing_amount8 = Adjustment::create(0, 0, c_max_swing_amount, 1);
+    m_spinbutton_swing_amount8 = manage( new SpinButton( m_adjust_swing_amount8 ));
 
+    m_adjust_swing_amount16 = Adjustment::create(0, 0, c_max_swing_amount, 1);
+    m_spinbutton_swing_amount16 = manage( new SpinButton( m_adjust_swing_amount16 ));
 #else
     m_adjust_swing_amount8 = manage(new Adjustment(0, 0, c_max_swing_amount, 1));
     m_spinbutton_swing_amount8 = manage( new SpinButton( *m_adjust_swing_amount8 ));
+
+    m_adjust_swing_amount16 = manage(new Adjustment(0, 0, c_max_swing_amount, 1));
+    m_spinbutton_swing_amount16 = manage( new SpinButton( *m_adjust_swing_amount16 ));
+#endif
     m_spinbutton_swing_amount8->set_editable( false );
     m_adjust_swing_amount8->signal_value_changed().connect(
         mem_fun(*this, &mainwnd::adj_callback_swing_amount8 ));
     add_tooltip( m_spinbutton_swing_amount8, "Adjust 1/8 swing amount" );
 
-    m_adjust_swing_amount16 = manage(new Adjustment(0, 0, c_max_swing_amount, 1));
-    m_spinbutton_swing_amount16 = manage( new SpinButton( *m_adjust_swing_amount16 ));
     m_spinbutton_swing_amount16->set_editable( false );
     m_adjust_swing_amount16->signal_value_changed().connect(
         mem_fun(*this, &mainwnd::adj_callback_swing_amount16 ));
     add_tooltip( m_spinbutton_swing_amount16, "Adjust 1/16 swing amount" );
-#endif
+
     /* undo */
     m_button_undo = manage( new Button());
     m_button_undo->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( undo_xpm  ))));

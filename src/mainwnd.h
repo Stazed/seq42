@@ -95,15 +95,17 @@ private:
     Bpm_spinbutton *m_spinbutton_bpm;
 #ifdef GTKMM_3_SUPPORT
     Glib::RefPtr<Adjustment> m_adjust_bpm;
+    Glib::RefPtr<Adjustment> m_adjust_swing_amount8;
+    Glib::RefPtr<Adjustment> m_adjust_swing_amount16;
 #else
     Adjustment  *m_adjust_bpm;
-#endif
-    Button      *m_button_tap;
-
-    SpinButton  *m_spinbutton_swing_amount8;
     Adjustment  *m_adjust_swing_amount8;
-    SpinButton  *m_spinbutton_swing_amount16;
     Adjustment  *m_adjust_swing_amount16;
+#endif
+
+    Button      *m_button_tap;
+    SpinButton  *m_spinbutton_swing_amount8;
+    SpinButton  *m_spinbutton_swing_amount16;
 
     sigc::connection   m_timeout_connect;
 
