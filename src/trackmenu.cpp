@@ -38,6 +38,10 @@ trackmenu::trackmenu( perform *a_p, mainwnd *a_main  )
     // on paste with no previous copy...
     m_clipboard.set_master_midi_bus( a_p->get_master_midi_bus() );
     m_something_to_paste = false;
+
+#ifdef GTKMM_3_SUPPORT
+    m_menu_items.resize(16);
+#endif
 }
 
 void
@@ -53,7 +57,9 @@ trackmenu::popup_menu()
     if ( ! m_mainperf->is_active_track( m_current_trk ))
     {
 #ifdef GTKMM_3_SUPPORT
-
+        m_menu_items[0].set_label("_New");
+        m_menu_items[0].signal_activate().connect(mem_fun(*this, &trackmenu::trk_new) );
+        m_menu->append(m_menu_items[0]);
 #else
         m_menu->items().push_back(MenuElem("_New",
                                            mem_fun(*this, &trackmenu::trk_new)));
@@ -72,7 +78,17 @@ trackmenu::popup_menu()
         if(can_we_delete)
         {
 #ifdef GTKMM_3_SUPPORT
+            m_menu_items[1].set_label("_Insert row");
+            m_menu_items[1].signal_activate().connect(sigc::bind(mem_fun(*this,&trackmenu::trk_insert), m_current_trk) );
+            m_menu->append(m_menu_items[1]);
 
+            m_menu_items[2].set_label("_Delete row");
+            m_menu_items[2].signal_activate().connect(sigc::bind(mem_fun(*this,&trackmenu::trk_delete),m_current_trk) );
+            m_menu->append(m_menu_items[2]);
+
+            m_menu_items[3].set_label("_Pack tracks");
+            m_menu_items[3].signal_activate().connect(mem_fun(*this, &trackmenu::pack_tracks) );
+            m_menu->append(m_menu_items[3]);
 #else
             m_menu->items().push_back(MenuElem("_Insert row",
                                                sigc::bind(mem_fun(*this,&trackmenu::trk_insert),m_current_trk)));
@@ -87,7 +103,13 @@ trackmenu::popup_menu()
     if ( m_mainperf->is_active_track( m_current_trk ))
     {
 #ifdef GTKMM_3_SUPPORT
+        m_menu_items[4].set_label("_Edit");
+        m_menu_items[4].signal_activate().connect(mem_fun(*this,&trackmenu::trk_edit) );
+        m_menu->append(m_menu_items[4]);
 
+        m_menu_items[5].set_label("_Copy");
+        m_menu_items[5].signal_activate().connect(mem_fun(*this,&trackmenu::trk_copy) );
+        m_menu->append(m_menu_items[5]);
 #else
         m_menu->items().push_back(MenuElem("_Edit", mem_fun(*this,&trackmenu::trk_edit)));
         m_menu->items().push_back(MenuElem("_Copy", mem_fun(*this,&trackmenu::trk_copy)));
@@ -95,7 +117,9 @@ trackmenu::popup_menu()
         if(! m_mainperf->is_track_in_edit( m_current_trk ))
         {
 #ifdef GTKMM_3_SUPPORT
-
+            m_menu_items[6].set_label("Cut");
+            m_menu_items[6].signal_activate().connect(mem_fun(*this,&trackmenu::trk_cut) );
+            m_menu->append(m_menu_items[6]);
 #else
             m_menu->items().push_back(MenuElem("Cut", mem_fun(*this,&trackmenu::trk_cut)));
 #endif
@@ -104,14 +128,20 @@ trackmenu::popup_menu()
         if( m_mainperf->get_track( m_current_trk)->get_track_trigger_count() > 0 )
         {
 #ifdef GTKMM_3_SUPPORT
+            m_menu_items[7].set_label("Clear triggers");
+            m_menu_items[7].signal_activate().connect(mem_fun(*this,&trackmenu::trk_clear_perf) );
+            m_menu->append(m_menu_items[7]);
 
+            m_menu_items[8].set_label("Export track");
+            m_menu_items[8].signal_activate().connect(mem_fun(*this,&trackmenu::trk_export) );
+            m_menu->append(m_menu_items[8]);
 #else
             m_menu->items().push_back(MenuElem("Clear triggers", mem_fun(*this,&trackmenu::trk_clear_perf)));
             m_menu->items().push_back(MenuElem("Export track", mem_fun(*this,&trackmenu::trk_export)));
 #endif
         }
 #ifdef GTKMM_3_SUPPORT
-
+        m_menu->append(m_menu_separator0);
 #else
         m_menu->items().push_back(SeparatorElem());
 #endif
@@ -132,7 +162,17 @@ trackmenu::popup_menu()
             if(can_we_insert_delete)
             {
 #ifdef GTKMM_3_SUPPORT
+                m_menu_items[9].set_label("_Insert row");
+                m_menu_items[9].signal_activate().connect(sigc::bind(mem_fun(*this,&trackmenu::trk_insert), m_current_trk) );
+                m_menu->append(m_menu_items[9]);
 
+                m_menu_items[10].set_label("_Delete row");
+                m_menu_items[10].signal_activate().connect(sigc::bind(mem_fun(*this,&trackmenu::trk_delete), m_current_trk) );
+                m_menu->append(m_menu_items[10]);
+
+                m_menu_items[11].set_label("_Pack tracks");
+                m_menu_items[11].signal_activate().connect(mem_fun(*this, &trackmenu::pack_tracks) );
+                m_menu->append(m_menu_items[11]);
 #else
                 m_menu->items().push_back(MenuElem("_Insert row",
                                                    sigc::bind(mem_fun(*this,&trackmenu::trk_insert),m_current_trk)));
@@ -144,7 +184,7 @@ trackmenu::popup_menu()
             }
         }
 #ifdef GTKMM_3_SUPPORT
-
+        m_menu->append(m_menu_separator1);
 #else
         m_menu->items().push_back(SeparatorElem());
 #endif
@@ -175,7 +215,9 @@ trackmenu::popup_menu()
                     snprintf(name, sizeof(name), "[%d] %s", t+1, some_track->get_name());
                     menu_t = manage( new Menu());
 #ifdef GTKMM_3_SUPPORT
-
+                    MenuItem * menu_item = new MenuItem(name);
+                    menu_item->set_submenu(*menu_t);
+                    merge_seq_menu->append(*menu_item);
 #else
                     merge_seq_menu->items().push_back(MenuElem(name, *menu_t));
 #endif
@@ -184,7 +226,9 @@ trackmenu::popup_menu()
                 sequence *a_seq = some_track->get_sequence( s );
                 snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
 #ifdef GTKMM_3_SUPPORT
-
+                MenuItem * menu_item = new MenuItem(name);
+                menu_item->signal_activate().connect(sigc::bind(mem_fun(*this,&trackmenu::trk_merge_seq),some_track, a_seq) );
+                menu_t->append(*menu_item);
 #else
                 menu_t->items().push_back(MenuElem(name,
                                                    sigc::bind(mem_fun(*this,&trackmenu::trk_merge_seq),some_track, a_seq)));
@@ -192,14 +236,18 @@ trackmenu::popup_menu()
             }
         }
 #ifdef GTKMM_3_SUPPORT
-
+        m_menu_items[12].set_label("_New sequence");
+        m_menu_items[12].signal_activate().connect(mem_fun(*this, &trackmenu::new_sequence) );
+        m_menu->append(m_menu_items[12]);
 #else
         m_menu->items().push_back(MenuElem("_New sequence", mem_fun(*this,&trackmenu::new_sequence)));
 #endif
         if(merge_seq_menu != NULL)
         {
 #ifdef GTKMM_3_SUPPORT
-
+            m_menu_items[13].set_label("Merge sequence");
+            m_menu_items[13].set_submenu(*merge_seq_menu);
+            m_menu->append(m_menu_items[13]);
 #else
             m_menu->items().push_back(MenuElem("Merge sequence", *merge_seq_menu));
 #endif
@@ -209,22 +257,30 @@ trackmenu::popup_menu()
     else
     {
 #ifdef GTKMM_3_SUPPORT
-
+        if(m_something_to_paste)
+        {
+            m_menu_items[14].set_label("_Paste");
+            m_menu_items[14].signal_activate().connect(mem_fun(*this, &trackmenu::trk_paste) );
+            m_menu->append(m_menu_items[14]);
+        }
 #else
-        if(m_something_to_paste) m_menu->items().push_back(MenuElem("_Paste", mem_fun(*this,&trackmenu::trk_paste)));
+        if(m_something_to_paste)
+            m_menu->items().push_back(MenuElem("_Paste", mem_fun(*this,&trackmenu::trk_paste)));
 #endif
     }
 
     if ( m_mainperf->is_active_track( m_current_trk ))
     {
 #ifdef GTKMM_3_SUPPORT
-
+        m_menu->append(m_menu_separator2);
 #else
         m_menu->items().push_back(SeparatorElem());
 #endif
         Menu *menu_buses = manage( new Menu() );
 #ifdef GTKMM_3_SUPPORT
-
+        m_menu_items[15].set_label("Midi Bus");
+        m_menu_items[15].set_submenu(*menu_buses);
+        m_menu->append(m_menu_items[15]);
 #else
         m_menu->items().push_back( MenuElem( "Midi Bus", *menu_buses) );
 #endif
@@ -235,7 +291,9 @@ trackmenu::popup_menu()
         {
             Menu *menu_channels = manage( new Menu() );
 #ifdef GTKMM_3_SUPPORT
-
+            MenuItem * menu_item = new MenuItem(masterbus->get_midi_out_bus_name(i));
+            menu_item->set_submenu(*menu_channels);
+            menu_buses->append(*menu_item);
 #else
             menu_buses->items().push_back(MenuElem( masterbus->get_midi_out_bus_name(i),
                                                     *menu_channels ));
@@ -256,7 +314,9 @@ trackmenu::popup_menu()
                                    string(")") );
                 }
 #ifdef GTKMM_3_SUPPORT
-
+                MenuItem * menu_item = new MenuItem(name);
+                menu_item->signal_activate().connect(sigc::bind(mem_fun(*this,&trackmenu::set_bus_and_midi_channel), i, j));
+                menu_channels->append(*menu_item);
 #else
                 menu_channels->items().push_back(MenuElem(name,
                                                  sigc::bind(mem_fun(*this,&trackmenu::set_bus_and_midi_channel),
