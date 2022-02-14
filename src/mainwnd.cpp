@@ -1530,7 +1530,12 @@ mainwnd::toggle_follow_transport()
 void
 mainwnd::popup_menu(Menu *a_menu)
 {
+#ifdef GTKMM_3_SUPPORT
+    a_menu->show_all();
+    a_menu->popup_at_pointer(NULL);
+#else
     a_menu->popup(0,0);
+#endif
 }
 
 void
