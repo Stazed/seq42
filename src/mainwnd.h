@@ -65,6 +65,7 @@ private:
 #ifdef GTKMM_3_SUPPORT
     std::vector<MenuItem> m_file_menu_items;
     std::vector<MenuItem> m_edit_menu_items;
+    std::vector<MenuItem> m_snap_menu_items;
     MenuItem m_help_menu_item;
     MenuItem m_help_submenu_item;
     Glib::RefPtr<Gtk::AccelGroup> m_accelgroup;
@@ -73,6 +74,9 @@ private:
     SeparatorMenuItem   m_menu_separator3;
     SeparatorMenuItem   m_menu_separator4;
     SeparatorMenuItem   m_menu_separator5;
+    SeparatorMenuItem   m_menu_separator6;
+    SeparatorMenuItem   m_menu_separator7;
+    SeparatorMenuItem   m_menu_separator8;
 #endif
     
     Gtk::HBox *hbox1;               /* top line mainwindow */

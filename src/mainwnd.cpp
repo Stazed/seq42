@@ -536,7 +536,9 @@ mainwnd::mainwnd(perform *a_p):
             snprintf(num, sizeof(num), "0 [normal]");
         }
 #ifdef GTKMM_3_SUPPORT
-
+        MenuItem * menu_item = new MenuItem(num);
+        menu_item->signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::xpose_button_callback), i ));
+        m_menu_xpose->append(*menu_item);
 #else
         m_menu_xpose->items().push_front( MenuElem( num,
                                           sigc::bind(mem_fun(*this,&mainwnd::xpose_button_callback),
@@ -554,7 +556,114 @@ mainwnd::mainwnd(perform *a_p):
 
     m_menu_snap =   manage( new Menu());
 #ifdef GTKMM_3_SUPPORT
+    m_snap_menu_items.resize(25);
 
+    m_snap_menu_items[0].set_label("1/1");
+    m_snap_menu_items[0].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 1 ));
+    m_menu_snap->append(m_snap_menu_items[0]);
+
+    m_snap_menu_items[1].set_label("1/2");
+    m_snap_menu_items[1].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 2 ));
+    m_menu_snap->append(m_snap_menu_items[1]);
+
+    m_snap_menu_items[2].set_label("1/4");
+    m_snap_menu_items[2].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 4 ));
+    m_menu_snap->append(m_snap_menu_items[2]);
+
+    m_snap_menu_items[3].set_label("1/8");
+    m_snap_menu_items[3].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 8 ));
+    m_menu_snap->append(m_snap_menu_items[3]);
+
+    m_snap_menu_items[4].set_label("1/16");
+    m_snap_menu_items[4].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 16 ));
+    m_menu_snap->append(m_snap_menu_items[4]);
+
+    m_snap_menu_items[5].set_label("1/32");
+    m_snap_menu_items[5].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 32 ));
+    m_menu_snap->append(m_snap_menu_items[5]);
+
+    m_menu_snap->append(m_menu_separator6);
+
+    m_snap_menu_items[6].set_label("1/3");
+    m_snap_menu_items[6].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 3 ));
+    m_menu_snap->append(m_snap_menu_items[6]);
+
+    m_snap_menu_items[7].set_label("1/6");
+    m_snap_menu_items[7].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 6 ));
+    m_menu_snap->append(m_snap_menu_items[7]);
+
+    m_snap_menu_items[8].set_label("1/12");
+    m_snap_menu_items[8].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 12 ));
+    m_menu_snap->append(m_snap_menu_items[8]);
+
+    m_snap_menu_items[9].set_label("1/24");
+    m_snap_menu_items[9].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 24 ));
+    m_menu_snap->append(m_snap_menu_items[9]);
+
+    m_menu_snap->append(m_menu_separator7);
+
+    m_snap_menu_items[10].set_label("1/5");
+    m_snap_menu_items[10].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 5 ));
+    m_menu_snap->append(m_snap_menu_items[10]);
+
+    m_snap_menu_items[11].set_label("1/10");
+    m_snap_menu_items[11].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 10 ));
+    m_menu_snap->append(m_snap_menu_items[11]);
+
+    m_snap_menu_items[12].set_label("1/20");
+    m_snap_menu_items[12].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 20 ));
+    m_menu_snap->append(m_snap_menu_items[12]);
+
+    m_snap_menu_items[13].set_label("1/40");
+    m_snap_menu_items[13].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 40 ));
+    m_menu_snap->append(m_snap_menu_items[13]);
+
+    m_menu_snap->append(m_menu_separator8);
+
+    m_snap_menu_items[14].set_label("1/7");
+    m_snap_menu_items[14].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 7 ));
+    m_menu_snap->append(m_snap_menu_items[14]);
+
+    m_snap_menu_items[15].set_label("1/9");
+    m_snap_menu_items[15].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 9 ));
+    m_menu_snap->append(m_snap_menu_items[15]);
+
+    m_snap_menu_items[16].set_label("1/11");
+    m_snap_menu_items[16].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 11 ));
+    m_menu_snap->append(m_snap_menu_items[16]);
+
+    m_snap_menu_items[17].set_label("1/13");
+    m_snap_menu_items[17].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 13 ));
+    m_menu_snap->append(m_snap_menu_items[17]);
+
+    m_snap_menu_items[18].set_label("1/14");
+    m_snap_menu_items[18].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 14 ));
+    m_menu_snap->append(m_snap_menu_items[18]);
+
+    m_snap_menu_items[19].set_label("1/15");
+    m_snap_menu_items[19].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 15 ));
+    m_menu_snap->append(m_snap_menu_items[19]);
+
+    m_snap_menu_items[20].set_label("1/18");
+    m_snap_menu_items[20].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 18 ));
+    m_menu_snap->append(m_snap_menu_items[20]);
+
+    m_snap_menu_items[21].set_label("1/22");
+    m_snap_menu_items[21].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 22 ));
+    m_menu_snap->append(m_snap_menu_items[21]);
+
+    m_snap_menu_items[22].set_label("1/26");
+    m_snap_menu_items[22].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 26 ));
+    m_menu_snap->append(m_snap_menu_items[22]);
+
+    m_snap_menu_items[23].set_label("1/28");
+    m_snap_menu_items[23].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 28 ));
+    m_menu_snap->append(m_snap_menu_items[23]);
+
+    m_snap_menu_items[24].set_label("1/30");
+    m_snap_menu_items[24].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 30 ));
+    m_menu_snap->append(m_snap_menu_items[24]);
+    
 #else
     m_menu_snap->items().push_back(MenuElem("1/1",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 1  )));
     m_menu_snap->items().push_back(MenuElem("1/2",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 2  )));
