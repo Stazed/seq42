@@ -112,11 +112,6 @@ private:
     bool transport_follow;
     bool trans_button_press;
 
-#ifdef GTKMM_3_SUPPORT
-    /* Trigger menu items */
-    std::vector<MenuItem> m_trigger_menu_items;
-#endif
-
     void on_realize();
     bool on_expose_event(GdkEventExpose* a_ev);
     bool on_button_press_event(GdkEventButton* a_ev);
