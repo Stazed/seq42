@@ -58,6 +58,7 @@ trackmenu::popup_menu()
     {
 #ifdef GTKMM_3_SUPPORT
         m_menu_items[0].set_label("_New");
+        m_menu_items[0].set_use_underline(true);
         m_menu_items[0].signal_activate().connect(mem_fun(*this, &trackmenu::trk_new) );
         m_menu->append(m_menu_items[0]);
 #else
@@ -79,14 +80,17 @@ trackmenu::popup_menu()
         {
 #ifdef GTKMM_3_SUPPORT
             m_menu_items[1].set_label("_Insert row");
+            m_menu_items[1].set_use_underline(true);
             m_menu_items[1].signal_activate().connect(sigc::bind(mem_fun(*this,&trackmenu::trk_insert), m_current_trk) );
             m_menu->append(m_menu_items[1]);
 
             m_menu_items[2].set_label("_Delete row");
+            m_menu_items[2].set_use_underline(true);
             m_menu_items[2].signal_activate().connect(sigc::bind(mem_fun(*this,&trackmenu::trk_delete),m_current_trk) );
             m_menu->append(m_menu_items[2]);
 
             m_menu_items[3].set_label("_Pack tracks");
+            m_menu_items[3].set_use_underline(true);
             m_menu_items[3].signal_activate().connect(mem_fun(*this, &trackmenu::pack_tracks) );
             m_menu->append(m_menu_items[3]);
 #else
@@ -104,10 +108,12 @@ trackmenu::popup_menu()
     {
 #ifdef GTKMM_3_SUPPORT
         m_menu_items[4].set_label("_Edit");
+        m_menu_items[4].set_use_underline(true);
         m_menu_items[4].signal_activate().connect(mem_fun(*this,&trackmenu::trk_edit) );
         m_menu->append(m_menu_items[4]);
 
         m_menu_items[5].set_label("_Copy");
+        m_menu_items[5].set_use_underline(true);
         m_menu_items[5].signal_activate().connect(mem_fun(*this,&trackmenu::trk_copy) );
         m_menu->append(m_menu_items[5]);
 #else
@@ -163,14 +169,17 @@ trackmenu::popup_menu()
             {
 #ifdef GTKMM_3_SUPPORT
                 m_menu_items[9].set_label("_Insert row");
+                m_menu_items[9].set_use_underline(true);
                 m_menu_items[9].signal_activate().connect(sigc::bind(mem_fun(*this,&trackmenu::trk_insert), m_current_trk) );
                 m_menu->append(m_menu_items[9]);
 
                 m_menu_items[10].set_label("_Delete row");
+                m_menu_items[10].set_use_underline(true);
                 m_menu_items[10].signal_activate().connect(sigc::bind(mem_fun(*this,&trackmenu::trk_delete), m_current_trk) );
                 m_menu->append(m_menu_items[10]);
 
                 m_menu_items[11].set_label("_Pack tracks");
+                m_menu_items[11].set_use_underline(true);
                 m_menu_items[11].signal_activate().connect(mem_fun(*this, &trackmenu::pack_tracks) );
                 m_menu->append(m_menu_items[11]);
 #else
@@ -237,6 +246,7 @@ trackmenu::popup_menu()
         }
 #ifdef GTKMM_3_SUPPORT
         m_menu_items[12].set_label("_New sequence");
+        m_menu_items[12].set_use_underline(true);
         m_menu_items[12].signal_activate().connect(mem_fun(*this, &trackmenu::new_sequence) );
         m_menu->append(m_menu_items[12]);
 #else
@@ -260,6 +270,7 @@ trackmenu::popup_menu()
         if(m_something_to_paste)
         {
             m_menu_items[14].set_label("_Paste");
+            m_menu_items[14].set_use_underline(true);
             m_menu_items[14].signal_activate().connect(mem_fun(*this, &trackmenu::trk_paste) );
             m_menu->append(m_menu_items[14]);
         }
@@ -287,7 +298,7 @@ trackmenu::popup_menu()
 
         /* midi buses */
         mastermidibus *masterbus = m_mainperf->get_master_midi_bus();
-        for ( int i=0; i< masterbus->get_num_out_buses(); i++ )
+        for ( int i = 0; i < masterbus->get_num_out_buses(); i++ )
         {
             Menu *menu_channels = manage( new Menu() );
 #ifdef GTKMM_3_SUPPORT
