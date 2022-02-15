@@ -20,6 +20,10 @@
 
 #pragma once
 
+#include "globals.h"
+
+#ifndef GTKMM_3_SUPPORT
+
 #include <gtkmm/image.h>
 #include <gtkmm/widget.h>
 #include <gtkmm/drawingarea.h>
@@ -61,3 +65,4 @@ public:
 };
 
 extern font *p_font_renderer;
+#endif

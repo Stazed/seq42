@@ -23,7 +23,7 @@
 #include "font.h"
 #include "string.h"
 
-
+#ifndef GTKMM_3_SUPPORT
 #include "pixmaps/font_w.xpm"
 #include "pixmaps/font_b.xpm"
 
@@ -91,3 +91,4 @@ font::render_string_on_drawable(
         );
     }
 }
+#endif
