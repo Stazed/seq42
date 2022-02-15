@@ -494,8 +494,12 @@ mainwnd::mainwnd(perform *a_p):
     m_spinbutton_bpm->set_editable( true );
     m_spinbutton_bpm->set_digits(2);                    // 2 = two decimal precision
     m_spinbutton_bpm->set_numeric();
+#ifdef GTKMM_3_SUPPORT
+    m_spinbutton_bpm->signal_value_changed().connect(mem_fun(*this, &mainwnd::adj_callback_bpm ));
+#else
     m_adjust_bpm->signal_value_changed().connect(
         mem_fun(*this, &mainwnd::adj_callback_bpm ));
+#endif
 
     add_tooltip( m_spinbutton_bpm, "Adjust starting beats per minute (BPM)" );
 
