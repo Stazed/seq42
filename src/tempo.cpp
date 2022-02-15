@@ -23,12 +23,7 @@
 #include "pixmaps/tempo_marker.xpm"
 #include "pixmaps/stop_marker.xpm"
 
-#ifdef GTKMM_3_SUPPORT
 tempo::tempo( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment> a_hadjust ) :
-#else
-tempo::tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
-#endif
-
     m_mainperf(a_perf),
     m_mainwnd(a_main),
     m_hadjust(a_hadjust),
@@ -85,6 +80,7 @@ tempo::set_zoom (int a_zoom)
     {
         m_perf_scale_x = a_zoom;
         m_draw_background = true;
+        queue_draw();
     }
 }
 
@@ -94,10 +90,6 @@ tempo::on_realize()
     // we need to do the default realize
     Gtk::DrawingArea::on_realize();
 
-    // Now we can allocate any additional resources we need
-    m_window = get_window();
-
-    m_surface_window = m_window->create_cairo_context();
     set_size_request( 10, c_timearea_y );
 }
 
@@ -108,21 +100,8 @@ tempo::change_horz( )
     {
         m_4bar_offset = (int) m_hadjust->get_value();
 
-        Gtk::Allocation allocation = get_allocation();
-        const int width = allocation.get_width();
-        const int height = allocation.get_height();
-        
-        // resize handler
-        if (width != m_surface->get_width() || height != m_surface->get_height())
-        {
-            m_surface = Cairo::ImageSurface::create(
-                Cairo::Format::FORMAT_ARGB32,
-                allocation.get_width(),
-                allocation.get_height()
-            );
-        }
-
         m_draw_background = true;
+        queue_draw();
     }
 }
 
@@ -132,47 +111,17 @@ tempo::set_guides( int a_snap, int a_measure )
     m_snap = a_snap;
     if(a_measure != m_measure_length)
     {
-        //printf("tempo::set_guides\n");
         m_measure_length = a_measure;
         reset_tempo_list();
     }
 
     m_draw_background = true;
-}
-
-void
-tempo::idle_progress( )
-{
-    if (m_draw_background)
-        draw_background();
-}
-
-bool
-tempo::on_expose_event (GdkEventExpose * /* ev */ )
-{
-    Gtk::Allocation allocation = get_allocation();
-    const int width = allocation.get_width();
-    const int height = allocation.get_height();
-
-    // resize handler
-    if (width != m_surface->get_width() || height != m_surface->get_height())
-    {
-        m_surface = Cairo::ImageSurface::create(
-            Cairo::Format::FORMAT_ARGB32,
-            allocation.get_width(),
-            allocation.get_height()
-        );
-        m_surface_window = m_window->create_cairo_context();
-        m_draw_background = true;
-    }
-
-    return true;
+    queue_draw();
 }
 
 void
 tempo::draw_background()
 {
-    m_draw_background = false;
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
 
     Gtk::Allocation allocation = get_allocation();
@@ -283,16 +232,42 @@ tempo::draw_background()
             cr->show_text(  str);
         }
     }
+}
 
-    /* Clear previous background */
-    m_surface_window->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
-    m_surface_window->rectangle (0.0, 0.0, width, height);
-    m_surface_window->stroke_preserve();
-    m_surface_window->fill();
+bool
+tempo::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
+{
+    Gtk::Allocation allocation = get_allocation();
+    const int width = allocation.get_width();
+    const int height = allocation.get_height();
+
+    // resize handler
+    if (width != m_surface->get_width() || height != m_surface->get_height())
+    {
+        m_surface = Cairo::ImageSurface::create(
+            Cairo::Format::FORMAT_ARGB32,
+            allocation.get_width(),
+            allocation.get_height()
+        );
+        m_draw_background = true;
+    }
+
+    if (m_draw_background)
+    {
+        m_draw_background = false;
+        draw_background();
+    }
+
+    cr->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
+    cr->rectangle (0.0, 0.0, width, height);
+    cr->stroke_preserve();
+    cr->fill();
 
     /* Draw the new background */
-    m_surface_window->set_source(m_surface, 0.0, 0.0);
-    m_surface_window->paint();
+    cr->set_source(m_surface, 0.0, 0.0);
+    cr->paint();
+
+    return true;
 }
 
 bool
@@ -311,6 +286,7 @@ tempo::on_button_press_event(GdkEventButton* p0)
             m_init_move = false;
             m_moving = true;
             m_draw_background = true;
+            queue_draw();
             return true;
         }
         
@@ -320,16 +296,14 @@ tempo::on_button_press_event(GdkEventButton* p0)
          * than popping up the bpm window. */
         if(check_above_marker(tick, false, false))
         {
-#ifdef GTKMM_3_SUPPORT
             this->get_window()->set_cursor(Gdk::Cursor::create(this->get_window()->get_display(),  Gdk::CENTER_PTR ));
-#else
-            this->get_window()->set_cursor( Gdk::Cursor( Gdk::CENTER_PTR ));
-#endif
+
             m_current_mark = m_move_marker;
             m_current_mark.tick = tick;
             m_init_move = false;
             m_moving = true;
             m_draw_background = true;
+            queue_draw();
             return true;
         }
         
@@ -345,7 +319,10 @@ tempo::on_button_press_event(GdkEventButton* p0)
     if ( p0->button == 3 )
     {
         if (check_above_marker(tick, true, false))
+        {
             m_draw_background = true;
+            queue_draw();
+        }
         
         return true;
     }
@@ -366,6 +343,7 @@ tempo::on_button_release_event(GdkEventButton* p0)
             /* Clear the move marker */
             m_move_marker.tick = 0; 
             m_draw_background = true;
+            queue_draw();
             return false;
         }
         
@@ -380,6 +358,7 @@ tempo::on_button_release_event(GdkEventButton* p0)
             /* Clear the move marker */
             m_move_marker.tick = 0; 
             m_draw_background = true;
+            queue_draw();
             return false;
         }
         
@@ -398,14 +377,11 @@ tempo::on_button_release_event(GdkEventButton* p0)
          * motion notify is not triggered to update the pointer. When
          * they return to the grid, the previous cursor state is still
          * active, so we adjust it here. */
-#ifdef GTKMM_3_SUPPORT
         this->get_window()->set_cursor(Gdk::Cursor::create(this->get_window()->get_display(),  Gdk::LEFT_PTR ));
-#else
-        this->get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
-#endif
     }
     
     m_draw_background = true;
+    queue_draw();
     
     return true;
 }
@@ -429,11 +405,7 @@ tempo::on_motion_notify_event(GdkEventMotion* a_ev)
         {
             m_init_move = true;     // to tell button press we are on a marker
             m_current_mark = m_move_marker; // load the marker for display movement
-#ifdef GTKMM_3_SUPPORT
             this->get_window()->set_cursor(Gdk::Cursor::create(this->get_window()->get_display(),  Gdk::CENTER_PTR ));
-#else
-            this->get_window()->set_cursor( Gdk::Cursor( Gdk::CENTER_PTR ));
-#endif
         }
         
         /* snap the movement so the user can see where it 
@@ -442,6 +414,7 @@ tempo::on_motion_notify_event(GdkEventMotion* a_ev)
         /* m_current_mark is used to show the movement in draw background */
         m_current_mark.tick = tick;
         m_draw_background = true;
+        queue_draw();
     }
     else /* we are not over a marker and not moving so reset everything if not done already */
     {
@@ -449,11 +422,7 @@ tempo::on_motion_notify_event(GdkEventMotion* a_ev)
         {
             m_init_move = false;
             m_move_marker.tick = 0;  // clear the move marker
-#ifdef GTKMM_3_SUPPORT
             this->get_window()->set_cursor(Gdk::Cursor::create(this->get_window()->get_display(),  Gdk::LEFT_PTR ));
-#else
-            this->get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
-#endif
         }
     }
     
@@ -495,6 +464,7 @@ tempo::set_BPM(double a_bpm)
     m_current_mark.bpm = a_bpm;
     add_marker(m_current_mark);
     m_draw_background = true;
+    queue_draw();
 }
 
 bool
@@ -569,6 +539,7 @@ tempo::set_start_BPM(double a_bpm)
         reset_tempo_list();
         m_mainperf->set_bpm( a_bpm );
         m_draw_background = true;
+        queue_draw();
     }
 }
 
@@ -609,6 +580,7 @@ tempo::load_tempo_list()
     reset_tempo_list();                                 // needed to update m_list_no_stop_markers & calculate start frames
     m_mainperf->set_bpm(m_list_marker.begin()->bpm);
     m_draw_background = true;
+    queue_draw();
 }
 
 /* calculates for jack frame */
@@ -722,6 +694,7 @@ tempo::pop_undo()
         reset_tempo_list();
         m_mainperf->set_bpm(m_mainperf->get_start_tempo());
         m_draw_background = true;
+        queue_draw();
     }
 
     unlock();
@@ -741,6 +714,7 @@ tempo::pop_redo()
         reset_tempo_list();
         m_mainperf->set_bpm(m_mainperf->get_start_tempo());
         m_draw_background = true;
+        queue_draw();
     }
 
     unlock();
@@ -848,7 +822,7 @@ tempo::check_above_marker(uint64_t mouse_tick, bool a_delete, bool exact )
  * This allows user to spin and won't push to undo on every changed value, but will only
  * push undo when user leaves the widget. Modified to work with typed entries as well.
  */
-#ifdef GTKMM_3_SUPPORT
+
 Bpm_spinbutton::Bpm_spinbutton(const Glib::RefPtr<Adjustment>& adjustment, double climb_rate, guint digits):
     Gtk::SpinButton(adjustment,climb_rate, digits),
     m_have_enter(false),
@@ -858,18 +832,6 @@ Bpm_spinbutton::Bpm_spinbutton(const Glib::RefPtr<Adjustment>& adjustment, doubl
 {
     
 }
-
-#else
-Bpm_spinbutton::Bpm_spinbutton(Adjustment& adjustment, double climb_rate, guint digits):
-    Gtk::SpinButton(adjustment,climb_rate, digits),
-    m_have_enter(false),
-    m_have_leave(false),
-    m_is_typing(false),
-    m_hold_bpm(0.0)
-{
-    
-}
-#endif
 
 bool
 Bpm_spinbutton::on_enter_notify_event(GdkEventCrossing* event)

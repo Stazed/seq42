@@ -50,25 +50,21 @@ using std::list;
 
 class mainwnd;
 
-/* piano time*/
+/* Tempo track */
 class tempo: public Gtk::DrawingArea
 {
 
 private:
 
-    Glib::RefPtr<Gdk::Window>   m_window;
     Cairo::RefPtr<Cairo::ImageSurface> m_surface;
-    Cairo::RefPtr<Cairo::Context>  m_surface_window;
 
     Glib::RefPtr<Gdk::Pixbuf> m_pixbuf;
 
     perform      * const m_mainperf;
     mainwnd      * const m_mainwnd;
-#ifdef GTKMM_3_SUPPORT
+
     Glib::RefPtr<Adjustment> const m_hadjust;
-#else
-    Adjustment   * const m_hadjust;
-#endif
+
     /* holds the markers */
     list < tempo_mark > m_list_marker;
     list < tempo_mark > m_list_no_stop_markers;
@@ -96,7 +92,6 @@ private:
     void unlock ();
 
     void on_realize();
-    bool on_expose_event(GdkEventExpose* a_ev);
     bool on_button_press_event(GdkEventButton* a_ev);
     bool on_button_release_event(GdkEventButton* a_ev);
     bool on_motion_notify_event(GdkEventMotion* a_ev);
@@ -118,15 +113,14 @@ private:
     
     bool check_above_marker(uint64_t mouse_tick, bool a_delete, bool exact );
 
+protected:
+    bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr);
+
 public:
-#ifdef GTKMM_3_SUPPORT
+
     tempo( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment> a_hadjust );
-#else
-    tempo( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust );
-#endif
     ~tempo();
 
-    void idle_progress();
     void set_zoom (int a_zoom);
 
     void set_guides( int a_snap, int a_measure );
@@ -173,11 +167,7 @@ private:
     
     public:
 
-#ifdef GTKMM_3_SUPPORT
     Bpm_spinbutton(const Glib::RefPtr<Adjustment>& adjustment, double climb_rate =  0.0, guint digits =  0);
-#else
-    Bpm_spinbutton(Adjustment& adjustment, double climb_rate =  0.0, guint digits =  0);
-#endif
     
     void set_have_enter(bool a_enter);
     bool get_have_enter();
