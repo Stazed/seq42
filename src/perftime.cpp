@@ -21,12 +21,8 @@
 #include "perftime.h"
 #include "font.h"
 
-#ifdef GTKMM_3_SUPPORT
-perftime::perftime( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment> a_hadjust ) :
-#else
-perftime::perftime( perform *a_perf, mainwnd *a_main, Adjustment *a_hadjust ) :
-#endif
 
+perftime::perftime( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment> a_hadjust ) :
     m_mainperf(a_perf),
     m_mainwnd(a_main),
     m_hadjust(a_hadjust),
@@ -60,7 +56,8 @@ perftime::set_zoom (int a_zoom)
     if (m_mainwnd->zoom_check(a_zoom))
     {
         m_perf_scale_x = a_zoom;
-        draw_background();
+        m_draw_background = true;
+        queue_draw();
     }
 }
 
@@ -70,10 +67,6 @@ perftime::on_realize()
     // we need to do the default realize
     Gtk::DrawingArea::on_realize();
 
-    // Now we can allocate any additional resources we need
-    m_window = get_window();
-
-    m_surface_window = m_window->create_cairo_context();
     set_size_request( 10, c_timearea_y );
 }
 
@@ -83,21 +76,8 @@ perftime::change_horz( )
     if ( m_4bar_offset != (int) m_hadjust->get_value() )
     {
         m_4bar_offset = (int) m_hadjust->get_value();
-        Gtk::Allocation allocation = get_allocation();
-        const int width = allocation.get_width();
-        const int height = allocation.get_height();
-
-        // resize handler
-        if (width != m_surface->get_width() || height != m_surface->get_height())
-        {
-            m_surface = Cairo::ImageSurface::create(
-                Cairo::Format::FORMAT_ARGB32,
-                allocation.get_width(),
-                allocation.get_height()
-            );
-        }
-
         m_draw_background = true;
+        queue_draw();
     }
 }
 
@@ -107,41 +87,12 @@ perftime::set_guides( int a_snap, int a_measure )
     m_snap = a_snap;
     m_measure_length = a_measure;
     m_draw_background = true;
-}
-
-void
-perftime::idle_progress( )
-{
-    if (m_draw_background)
-        draw_background();
-}
-
-bool
-perftime::on_expose_event (GdkEventExpose * /* ev */ )
-{
-    Gtk::Allocation allocation = get_allocation();
-    const int width = allocation.get_width();
-    const int height = allocation.get_height();
-
-    // resize handler
-    if (width != m_surface->get_width() || height != m_surface->get_height())
-    {
-        m_surface = Cairo::ImageSurface::create(
-            Cairo::Format::FORMAT_ARGB32,
-            allocation.get_width(),
-            allocation.get_height()
-        );
-        m_surface_window = m_window->create_cairo_context();
-        m_draw_background = true;
-    }
-
-    return true;
+    queue_draw();
 }
 
 void
 perftime::draw_background()
 {
-    m_draw_background = false;
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
 
     Gtk::Allocation allocation = get_allocation();
@@ -261,16 +212,43 @@ perftime::draw_background()
         cr->move_to( right - 7, 17.0);
         cr->show_text("R");
     }
+}
+
+bool
+perftime::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
+{
+    Gtk::Allocation allocation = get_allocation();
+    const int width = allocation.get_width();
+    const int height = allocation.get_height();
+
+    // resize handler
+    if (width != m_surface->get_width() || height != m_surface->get_height())
+    {
+        m_surface = Cairo::ImageSurface::create(
+            Cairo::Format::FORMAT_ARGB32,
+            allocation.get_width(),
+            allocation.get_height()
+        );
+        m_draw_background = true;
+    }
+
+    if(m_draw_background)
+    {
+        m_draw_background = false;
+        draw_background();
+    }
 
     /* Clear previous background */
-    m_surface_window->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
-    m_surface_window->rectangle (0.0, 0.0, width, height);
-    m_surface_window->stroke_preserve();
-    m_surface_window->fill();
+    cr->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
+    cr->rectangle (0.0, 0.0, width, height);
+    cr->stroke_preserve();
+    cr->fill();
 
     /* Draw the new background */
-    m_surface_window->set_source(m_surface, 0.0, 0.0);
-    m_surface_window->paint();
+    cr->set_source(m_surface, 0.0, 0.0);
+    cr->paint();
+
+    return true;
 }
 
 bool
@@ -296,6 +274,7 @@ perftime::on_button_press_event(GdkEventButton* p0)
     }
 
     m_draw_background = true;
+    queue_draw();
 
     return true;
 }

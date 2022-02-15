@@ -1055,8 +1055,6 @@ mainwnd::timer_callback(  )
 
     m_main_time->idle_progress( ticks );
 
-    m_perftime->idle_progress();
-
     /* used on initial file load and during play with tempo changes from markers */
     if ( m_adjust_bpm->get_value() != m_mainperf->get_bpm())
     {
