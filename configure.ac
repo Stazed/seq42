@@ -45,8 +45,8 @@ fi
 dnl Checks for libraries.
 AC_CHECK_LIB(rt, main, ,    
 	AC_MSG_ERROR([POSIX.1b RealTime Library Missing -lrt]))
-AC_CHECK_LIB(gtkmm-2.4, _init,,
-             AC_MSG_ERROR(Essential library libgtkmm-2.4 not found))
+AC_CHECK_LIB(gtkmm-3.0, _init,,
+             AC_MSG_ERROR(Essential library libgtkmm-3.0 not found))
 AC_CHECK_LIB(sigc-2.0, main,,
              AC_MSG_ERROR(Essential library libsigc++-2.0 not found))
 AC_CHECK_LIB(asound, snd_pcm_open,,
@@ -63,10 +63,7 @@ AC_CHECK_FUNCS(select)
 
 AM_PATH_ALSA(0.9.0)
 
-####AM_PATH_GTKMM(1.2.0) OLD
-
-PKG_CHECK_MODULES(GTKMM, gtkmm-2.4 >= 2.4.0)
-#PKG_CHECK_MODULES(GTKMM, gtkmm-3.0 >= 3.0.0)
+PKG_CHECK_MODULES(GTKMM, gtkmm-3.0 >= 3.0.0)
 AC_SUBST(GTKMM_CFLAGS)
 AC_SUBST(GTKMM_LIBS)
 
