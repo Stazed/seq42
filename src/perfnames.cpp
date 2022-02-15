@@ -21,14 +21,11 @@
 #include "mainwnd.h"
 #include "font.h"
 
-#ifdef GTKMM_3_SUPPORT
 perfnames::perfnames( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment> a_vadjust ):
-#else
-perfnames::perfnames( perform *a_perf, mainwnd *a_main, Adjustment *a_vadjust ):
-#endif
     trackmenu(a_perf, a_main),
     m_mainperf(a_perf),
     m_vadjust(a_vadjust),
+    m_redraw_tracks(false),
     m_track_offset(0),
     m_button_down(false),
     m_moving(false)
@@ -61,12 +58,6 @@ perfnames::on_realize()
 {
     // we need to do the default realize
     Gtk::DrawingArea::on_realize();
-
-    // Now we can allocate any additional resources we need
-    m_window = get_window();
-
-    m_surface_window = m_window->create_cairo_context();
-
 }
 
 void
@@ -75,6 +66,7 @@ perfnames::change_vert( )
     if ( m_track_offset != (int) m_vadjust->get_value() )
     {
         m_track_offset = (int) m_vadjust->get_value();
+        m_redraw_tracks = true;
         queue_draw();
     }
 }
@@ -90,10 +82,6 @@ perfnames::draw_track( int track )
 {
     int i = track - m_track_offset;
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
-
-    Gtk::Allocation allocation = get_allocation();
-    const int width = allocation.get_width();
-    const int height = allocation.get_height();
 
     cr->set_operator(Cairo::OPERATOR_CLEAR);
     cr->rectangle(0, (c_names_y * i), c_names_x - 1, c_names_y);
@@ -253,20 +241,10 @@ perfnames::draw_track( int track )
         cr->stroke_preserve();
         cr->fill();
     }
-    
-    /* Clear previous background */
-    m_surface_window->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
-    m_surface_window->rectangle (0.0, 0.0, width, height);
-    m_surface_window->stroke_preserve();
-    m_surface_window->fill();
-
-    /* Draw the new background */
-    m_surface_window->set_source(m_surface, 0.0, 0.0);
-    m_surface_window->paint();
 }
 
 bool
-perfnames::on_expose_event(GdkEventExpose* a_e)
+perfnames::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
     Gtk::Allocation allocation = get_allocation();
     const int width = allocation.get_width();
@@ -280,17 +258,31 @@ perfnames::on_expose_event(GdkEventExpose* a_e)
             allocation.get_width(),
             allocation.get_height()
         );
-
-        m_surface_window = m_window->create_cairo_context();
+        m_redraw_tracks = true;
     }
 
-    int trks = (m_window_y / c_names_y) + 1;
-
-    for ( int i=0; i< trks; i++ )
+    if (m_redraw_tracks)
     {
-        int track = i + m_track_offset;
-        draw_track(track);
+        m_redraw_tracks = false;
+        int trks = (m_window_y / c_names_y) + 1;
+
+        for ( int i=0; i< trks; i++ )
+        {
+            int track = i + m_track_offset;
+            draw_track(track);
+        }
     }
+
+   /* Clear previous background */
+    cr->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
+    cr->rectangle (0.0, 0.0, width, height);
+    cr->stroke_preserve();
+    cr->fill();
+
+    /* Draw the new background */
+    cr->set_source(m_surface, 0.0, 0.0);
+    cr->paint();
+
     return true;
 }
 
@@ -322,7 +314,7 @@ perfnames::on_button_press_event(GdkEventButton *a_e)
     {
         m_button_down = true;
     }
-    
+
     /* Middle mouse button toggle solo track */
     if ( a_e->button == 2 &&  m_mainperf->is_active_track( track ) )
     {
@@ -332,9 +324,8 @@ perfnames::on_button_press_event(GdkEventButton *a_e)
          * off (false) then we are turning it on(toggle), so unset the mute. */
         if (!solo)
             m_mainperf->get_track(m_current_trk)->set_song_mute( solo );
-        
+
         check_global_solo_tracks();
-        queue_draw();
     }
     
     return true;
@@ -349,7 +340,7 @@ perfnames::on_button_release_event(GdkEventButton* p0)
 
     m_current_trk = track;
     m_button_down = false;
-    
+
     /* left mouse button & not moving - toggle mute  */
     if ( p0->button == 1 && m_mainperf->is_active_track( m_current_trk ) && !m_moving )
     {
@@ -359,35 +350,33 @@ perfnames::on_button_release_event(GdkEventButton* p0)
          * off (false) then we are turning it on(toggle), so unset the solo. */
         if (!muted)
             m_mainperf->get_track(m_current_trk)->set_song_solo( muted );
-        
+
         check_global_solo_tracks();
         global_is_modified = true;
-        queue_draw();
     }
-    
+
     /* Left button and moving */
     if ( p0->button == 1 && m_moving )
     {
         m_moving = false;
-        
+
         /* merge and NO delete  */
         if ( p0->state & GDK_SHIFT_MASK )    // shift key
         {
             merge_tracks( &m_moving_track );
-                        
+
             /* Put the merged track back to original position */
             m_mainperf->new_track( m_old_track  );
             *(m_mainperf->get_track( m_old_track )) = m_moving_track;
             m_mainperf->get_track(m_old_track)->set_dirty();
-            
             return false;
         } 
-        
+
         /* merge and delete  */
         if ( p0->state & GDK_CONTROL_MASK )     // control key
         {
             bool valid = merge_tracks( &m_moving_track );
-            
+
             /* we do not have a valid merge (i.e. they tried to merge into a track being edited or
              * did a merge to an inactive track) then just ignore everything */
             if(!valid)
@@ -399,7 +388,7 @@ perfnames::on_button_release_event(GdkEventButton* p0)
             }
             return false;
         }
-        
+
         /* If we did not land on another active track, then move to new location */
         if ( ! m_mainperf->is_active_track( m_current_trk ) )
         {
@@ -429,7 +418,7 @@ perfnames::on_button_release_event(GdkEventButton* p0)
             m_mainperf->get_track(m_old_track)->set_dirty();
         }  
     }
-    
+
     /*  launch menu - right mouse button   */
     if ( p0->button == 3 )
     {
@@ -503,7 +492,7 @@ perfnames::redraw_dirty_tracks()
 
     for ( int y=y_s; y<=y_f; y++ )
     {
-        int trk = y + m_track_offset; // 4am
+        int trk = y + m_track_offset;
 
         if ( trk < c_max_track)
         {
@@ -512,6 +501,7 @@ perfnames::redraw_dirty_tracks()
             if (dirty)
             {
                 draw_track( trk );
+                queue_draw();
             }
         }
     }

@@ -51,16 +51,12 @@ class perfnames : public virtual Gtk::DrawingArea, public virtual trackmenu
 {
 private:
 
-    Glib::RefPtr<Gdk::Window>   m_window;
     Cairo::RefPtr<Cairo::ImageSurface> m_surface;
-    Cairo::RefPtr<Cairo::Context>  m_surface_window;
 
     perform      *m_mainperf;
-#ifdef GTKMM_3_SUPPORT
+
     Glib::RefPtr<Adjustment> m_vadjust;
-#else
-    Adjustment   *m_vadjust;
-#endif
+    bool m_redraw_tracks;
 
     int m_window_x, m_window_y;
 
@@ -72,7 +68,6 @@ private:
     bool         m_moving;
 
     void on_realize();
-    bool on_expose_event(GdkEventExpose* a_ev);
     bool on_button_press_event(GdkEventButton* a_ev);
     bool on_button_release_event(GdkEventButton* a_ev);
     bool on_motion_notify_event(GdkEventMotion* a_ev);
@@ -93,12 +88,11 @@ private:
 public:
 
     void redraw_dirty_tracks();
-#ifdef GTKMM_3_SUPPORT
+
     perfnames( perform *a_perf, mainwnd *a_main,
                Glib::RefPtr<Adjustment> a_vadjust   );
-#else
-    perfnames( perform *a_perf, mainwnd *a_main,
-               Adjustment *a_vadjust   );
-#endif
+protected:
+    bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr);
+
 };
 
