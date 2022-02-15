@@ -538,7 +538,7 @@ mainwnd::mainwnd(perform *a_p):
 #ifdef GTKMM_3_SUPPORT
         MenuItem * menu_item = new MenuItem(num);
         menu_item->signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::xpose_button_callback), i ));
-        m_menu_xpose->append(*menu_item);
+        m_menu_xpose->insert(*menu_item, 0);
 #else
         m_menu_xpose->items().push_front( MenuElem( num,
                                           sigc::bind(mem_fun(*this,&mainwnd::xpose_button_callback),
