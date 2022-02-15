@@ -87,6 +87,11 @@ mainwnd::mainwnd(perform *a_p):
     update_window_title();
     set_size_request(860, 322);
 
+#ifdef GTKMM_3_SUPPORT
+    m_accelgroup = Gtk::AccelGroup::create();
+    add_accel_group(m_accelgroup);
+#endif
+
     m_main_time = manage( new maintime( ));
 
     m_menubar = manage(new MenuBar());
