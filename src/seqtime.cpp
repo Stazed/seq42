@@ -21,17 +21,12 @@
 #include "seqtime.h"
 #include "font.h"
 
-#ifdef GTKMM_3_SUPPORT
 seqtime::seqtime(sequence *a_seq, int a_zoom, Glib::RefPtr<Adjustment> a_hadjust):
-#else
-seqtime::seqtime(sequence *a_seq, int a_zoom, Gtk::Adjustment *a_hadjust):
-#endif
     m_hadjust(a_hadjust),
     m_scroll_offset_ticks(0),
     m_scroll_offset_x(0),
     m_seq(a_seq),
-    m_zoom(a_zoom),
-    m_redraw_window(false)
+    m_zoom(a_zoom)
 {
     Gtk::Allocation allocation = get_allocation();
     m_surface = Cairo::ImageSurface::create(
@@ -52,7 +47,6 @@ seqtime::seqtime(sequence *a_seq, int a_zoom, Gtk::Adjustment *a_hadjust):
 void
 seqtime::update_sizes()
 {
-    /* set these for later */
     if( get_realized() )
     {
         if (m_window_x != m_surface->get_width() || m_window_y != m_surface->get_height())
@@ -63,11 +57,8 @@ seqtime::update_sizes()
                 m_window_y
             );
         }
-        
-        m_surface_window = m_window->create_cairo_context();
 
         update_surface();
-        queue_draw();
     }
 }
 
@@ -76,13 +67,6 @@ seqtime::on_realize()
 {
     // we need to do the default realize
     Gtk::DrawingArea::on_realize();
-
-    Glib::signal_timeout().connect(mem_fun(*this,&seqtime::idle_progress), c_redraw_ms);
-
-    // Now we can allocate any additional resources we need
-    m_window = get_window();
-    
-    m_surface_window = m_window->create_cairo_context();
 
     m_hadjust->signal_value_changed().connect( mem_fun( *this, &seqtime::change_horz ));
 
@@ -109,17 +93,6 @@ seqtime::on_size_allocate(Gtk::Allocation & a_r )
     update_sizes();
 }
 
-bool
-seqtime::idle_progress( )
-{
-    if (m_redraw_window)
-    {
-        draw_surface_on_window();
-    }
-    
-    return true;
-}
-
 void
 seqtime::set_zoom( int a_zoom )
 {
@@ -137,7 +110,6 @@ seqtime::reset()
     m_scroll_offset_x = m_scroll_offset_ticks / m_zoom;
 
     update_sizes();
-    update_surface();
 }
 
 void
@@ -242,27 +214,21 @@ seqtime::update_surface()
     cr->set_font_size(9.0);
     cr->move_to(end_x, 16);
     cr->show_text("END");
-    
-    m_redraw_window = true;
-}
 
-void
-seqtime::draw_surface_on_window()
-{
-    m_redraw_window = false;
-
-    m_surface_window->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
-    m_surface_window->rectangle (0.0, 0.0, m_window_x, m_window_y);
-    m_surface_window->stroke_preserve();
-    m_surface_window->fill();
-
-    m_surface_window->set_source(m_surface, 0.0, 0.0);
-    m_surface_window->paint();
+    queue_draw();
 }
 
 bool
-seqtime::on_expose_event(GdkEventExpose* a_e)
+seqtime::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
+    cr->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
+    cr->rectangle (0.0, 0.0, m_window_x, m_window_y);
+    cr->stroke_preserve();
+    cr->fill();
+
+    cr->set_source(m_surface, 0.0, 0.0);
+    cr->paint();
+
     return true;
 }
 

@@ -25,23 +25,7 @@
 #include "seqtime.h"
 #include "globals.h"
 
-#ifdef GTKMM_3_SUPPORT
 #include <gtkmm.h>
-#else
-#include <gtkmm/button.h>
-#include <gtkmm/window.h>
-#include <gtkmm/accelgroup.h>
-#include <gtkmm/box.h>
-#include <gtkmm/main.h>
-#include <gtkmm/menu.h>
-#include <gtkmm/menubar.h>
-#include <gtkmm/eventbox.h>
-#include <gtkmm/window.h>
-#include <gtkmm/table.h>
-#include <gtkmm/drawingarea.h>
-#include <gtkmm/widget.h>
-#include <gtkmm/adjustment.h>
-#endif
 
 using namespace Gtk;
 
@@ -51,14 +35,8 @@ class seqtime: public Gtk::DrawingArea
 
 private:
 
-    Glib::RefPtr<Gdk::Window>   m_window;
     Cairo::RefPtr<Cairo::ImageSurface> m_surface;
-    Cairo::RefPtr<Cairo::Context>  m_surface_window;
-#ifdef GTKMM_3_SUPPORT
     Glib::RefPtr<Adjustment> m_hadjust;
-#else
-    Gtk::Adjustment   *m_hadjust;
-#endif
 
     int m_scroll_offset_ticks;
     int m_scroll_offset_x;
@@ -69,30 +47,22 @@ private:
     int          m_zoom;
 
     int m_window_x, m_window_y;
-    bool m_redraw_window;
 
     void on_realize();
-    bool on_expose_event(GdkEventExpose* a_ev);
     bool on_button_press_event(GdkEventButton* a_ev);
     bool on_button_release_event(GdkEventButton* a_ev);
-    void draw_surface_on_window();
-    void draw_progress_on_window();
-    void update_surface();
-
-    bool idle_progress();
-
     void on_size_allocate(Gtk::Allocation& );
 
+    void update_surface();
     void change_horz();
-
     void update_sizes();
 
+protected:
+    bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr);
+
 public:
-#ifdef GTKMM_3_SUPPORT
+
     seqtime( sequence *a_seq, int a_zoom, Glib::RefPtr<Adjustment> a_hadjust );
-#else
-    seqtime( sequence *a_seq, int a_zoom, Gtk::Adjustment *a_hadjust );
-#endif
 
     void reset();
     void redraw();
