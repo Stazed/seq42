@@ -35,13 +35,8 @@ seqroll::seqroll(perform *a_perf,
                  seqdata *a_seqdata_wid,
                  seqevent *a_seqevent_wid,
                  seqkeys *a_seqkeys_wid,
-#ifdef GTKMM_3_SUPPORT
                  Glib::RefPtr<Adjustment> a_hadjust,
                  Glib::RefPtr<Adjustment> a_vadjust,
-#else
-                 Adjustment *a_hadjust,
-                 Adjustment *a_vadjust,
-#endif
                  ToggleButton *a_toggle_play):
     m_seq(a_seq),
     m_perform(a_perf),
@@ -135,7 +130,6 @@ seqroll::set_background_sequence( bool a_state, int a_trk, int a_seq )
 
     update_background();
     update_surface();
-    queue_draw();
 }
 
 seqroll::~seqroll( )
@@ -150,11 +144,6 @@ seqroll::on_realize()
     Gtk::DrawingArea::on_realize();
 
     set_can_focus();
-
-    // Now we can allocate any additional resources we need
-    m_window = get_window();
-
-    m_window_context = m_window->create_cairo_context();
 
     m_hadjust->signal_value_changed().connect( mem_fun( *this,
             &seqroll::change_horz ));
@@ -214,8 +203,6 @@ seqroll::update_sizes()
     /* create surfaces with window dimensions */
     if( get_realized() )
     {
-        m_window_context = m_window->create_cairo_context();
-
         // resize handler
         if (m_window_x != m_surface_background->get_width() || m_window_y != m_surface_background->get_height())
         {
@@ -278,7 +265,6 @@ seqroll::reset()
     update_sizes();
     update_background();
     update_surface();
-    queue_draw();
 }
 
 void
@@ -520,14 +506,32 @@ seqroll::update_surface()
     draw_events_on_surface();
 }
 
+/**
+ * timeout
+ */
 void
 seqroll::draw_progress_on_window()
+{
+    queue_draw();
+}
+
+/**
+ * Gets called when queue_draw() is sent.
+ * 
+ * @param cr
+ *      Gtkmm supplied cairo context for the window drawing.
+ * 
+ * @return 
+ *      true.
+ */
+bool
+seqroll::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
     static int last_scroll = 0;
 
     /* draw old */
-    m_window_context->set_source(m_surface_edit, 0.0, 0.0);
-    m_window_context->paint();
+    cr->set_source(m_surface_edit, 0.0, 0.0);
+    cr->paint();
 
     long last_progress = m_old_progress_x;
     if(last_scroll < m_scroll_offset_x)
@@ -549,15 +553,16 @@ seqroll::draw_progress_on_window()
 
     if ( m_old_progress_x != 0 )
     {
-        m_window_context->set_source_rgb(0.0, 0.0, 0.0);            // Black  FIXME
-        m_window_context->set_line_width(2.0);
-        m_window_context->move_to(m_old_progress_x, 0.0);
-        m_window_context->line_to(m_old_progress_x, m_window_y);
-        m_window_context->stroke();
+        cr->set_source_rgb(0.0, 0.0, 0.0);            // Black  FIXME
+        cr->set_line_width(2.0);
+        cr->move_to(m_old_progress_x, 0.0);
+        cr->line_to(m_old_progress_x, m_window_y);
+        cr->stroke();
     }
     
-    draw_selection_on_window();
-    
+    draw_selection_on_window(cr);
+
+    return true;
 }
 
 /* fills main surface with events */
@@ -752,8 +757,14 @@ seqroll::draw_events_on_surface()
     }
 }
 
+/**
+ * The selection box
+ * 
+ * @param cr
+ *  The on_draw() window context.
+ */
 void
-seqroll::draw_selection_on_window()
+seqroll::draw_selection_on_window(const Cairo::RefPtr<Cairo::Context>& cr)
 {
     if ( !(m_selecting  ||  m_moving || m_paste ||  m_growing) )
     {
@@ -763,8 +774,8 @@ seqroll::draw_selection_on_window()
     int x,y,w,h;
 
     /* Set line attributes */
-    m_window_context->set_line_join(Cairo::LINE_JOIN_MITER);
-    m_window_context->set_source_rgb(1.0, 0.27, 0.0);    // Red FIXME
+    cr->set_line_join(Cairo::LINE_JOIN_MITER);
+    cr->set_source_rgb(1.0, 0.27, 0.0);    // Red FIXME
 
     if ( m_selecting )
     {
@@ -783,8 +794,8 @@ seqroll::draw_selection_on_window()
         m_old.width = w;
         m_old.height = h + c_key_y;
 
-        m_window_context->rectangle(x, y, w, h + c_key_y );
-        m_window_context->stroke();
+        cr->rectangle(x, y, w, h + c_key_y );
+        cr->stroke();
     }
 
     if ( m_moving || m_paste )
@@ -798,11 +809,8 @@ seqroll::draw_selection_on_window()
         x -= m_scroll_offset_x;
         y -= m_scroll_offset_y;
 
-        m_window_context->rectangle(x,
-                            y,
-                            m_selected.width,
-                            m_selected.height );
-        m_window_context->stroke();
+        cr->rectangle(x, y, m_selected.width, m_selected.height );
+        cr->stroke();
 
         m_old.x = x;
         m_old.y = y;
@@ -824,11 +832,8 @@ seqroll::draw_selection_on_window()
         x -= m_scroll_offset_x;
         y -= m_scroll_offset_y;
 
-        m_window_context->rectangle(x,
-                            y,
-                            width,
-                            m_selected.height );
-        m_window_context->stroke();
+        cr->rectangle(x, y, width, m_selected.height );
+        cr->stroke();
 
         m_old.x = x;
         m_old.y = y;
@@ -837,29 +842,14 @@ seqroll::draw_selection_on_window()
     }
 }
 
-bool
-seqroll::on_expose_event(GdkEventExpose* e)
-{
-    if (!m_initial_expose)
-    {
-        m_initial_expose = true;
-        /* needed when seqroll created from file loading */
-        m_window_context = m_window->create_cairo_context();
-    }
-
-    return true;
-}
 
 void
 seqroll::force_draw()
 {
-    m_window_context->set_source(m_surface_edit, 0.0, 0.0);
-    m_window_context->paint();
-
     m_seqevent_wid->reset();    // needed for final refresh to draw over above changes
 }
 
-/* takes screen corrdinates, give us notes and ticks */
+/* takes screen coordinates, give us notes and ticks */
 void
 seqroll::convert_xy( int a_x, int a_y, long *a_tick, int *a_note)
 {
@@ -867,7 +857,7 @@ seqroll::convert_xy( int a_x, int a_y, long *a_tick, int *a_note)
     *a_note = (c_rollarea_y - a_y - 2) / c_key_y;
 }
 
-/* notes and ticks to screen corridinates */
+/* notes and ticks to screen coordinates */
 void
 seqroll::convert_tn( long a_ticks, int a_note, int *a_x, int *a_y)
 {
@@ -1373,11 +1363,7 @@ void FruitySeqRollInput::updateMousePtr(seqroll& ths)
         long start, end, note;
         if (ths.m_is_drag_pasting || ths.m_selecting || ths.m_moving || ths.m_growing || ths.m_paste)
         {
-#ifdef GTKMM_3_SUPPORT
             ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::LEFT_PTR ));
-#else
-            ths.get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
-#endif
         }
         else if (!m_adding &&
                  ths.m_seq->intersectNotes( drop_tick, drop_note, start, end, note ) && note == drop_note)
@@ -1385,36 +1371,20 @@ void FruitySeqRollInput::updateMousePtr(seqroll& ths)
             long handle_size = clamp( c_handlesize, 0, (end-start)/3 );
             if (start <= drop_tick && drop_tick <= start + handle_size)
             {
-#ifdef GTKMM_3_SUPPORT
                 ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::CENTER_PTR ));
-#else
-                ths.get_window()->set_cursor( Gdk::Cursor( Gdk::CENTER_PTR ));  // not supported yet
-#endif
             }
             else if (end - handle_size <= drop_tick && drop_tick <= end)
             {
-#ifdef GTKMM_3_SUPPORT
                 ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::LEFT_PTR ));
-#else
-                ths.get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
-#endif
             }
             else
             {
-#ifdef GTKMM_3_SUPPORT
                 ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::CENTER_PTR ));
-#else
-                ths.get_window()->set_cursor( Gdk::Cursor( Gdk::CENTER_PTR ));
-#endif
             }
         }
         else
         {
-#ifdef GTKMM_3_SUPPORT
             ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::PENCIL ));
-#else
-            ths.get_window()->set_cursor( Gdk::Cursor( Gdk::PENCIL ));
-#endif
         }
     }
 }
@@ -1961,20 +1931,12 @@ Seq42SeqRollInput::set_adding( bool a_adding, seqroll& ths )
 {
     if ( a_adding )
     {
-#ifdef GTKMM_3_SUPPORT
         ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::PENCIL ));
-#else
-        ths.get_window()->set_cursor( Gdk::Cursor( Gdk::PENCIL ));
-#endif
         m_adding = true;
     }
     else
     {
-#ifdef GTKMM_3_SUPPORT
         ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::LEFT_PTR ));
-#else
-        ths.get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
-#endif
         m_adding = false;
     }
 }

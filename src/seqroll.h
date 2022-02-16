@@ -88,11 +88,8 @@ private:
     friend struct Seq42SeqRollInput;
     Seq42SeqRollInput m_seq42_interaction;
 
-    Glib::RefPtr<Gdk::Window>   m_window;
-
     Cairo::RefPtr<Cairo::ImageSurface> m_surface_edit;
     Cairo::RefPtr<Cairo::ImageSurface> m_surface_background;
-    Cairo::RefPtr<Cairo::Context>  m_window_context;
 
     rect         m_old;
     rect         m_selected;
@@ -143,13 +140,10 @@ private:
     int m_move_snap_offset_x;
 
     int m_old_progress_x;
-#ifdef GTKMM_3_SUPPORT
+
     Glib::RefPtr<Adjustment> const m_vadjust;
     Glib::RefPtr<Adjustment> const m_hadjust;
-#else
-    Adjustment   * const m_vadjust;
-    Adjustment   * const m_hadjust;
-#endif
+
     int m_scroll_offset_ticks;
     int m_scroll_offset_key;
 
@@ -170,7 +164,6 @@ private:
     bool m_initial_expose;
 
     void on_realize();
-    bool on_expose_event(GdkEventExpose* a_ev);
     bool on_button_press_event(GdkEventButton* a_ev);
     bool on_button_release_event(GdkEventButton* a_ev);
     bool on_motion_notify_event(GdkEventMotion* a_ev);
@@ -180,6 +173,7 @@ private:
 
     bool on_leave_notify_event	(GdkEventCrossing* a_p0);
     bool on_enter_notify_event	(GdkEventCrossing* a_p0);
+    void on_size_allocate(Gtk::Allocation& );
 
     void convert_xy( int a_x, int a_y, long *a_ticks, int *a_note);
     void convert_tn( long a_ticks, int a_note, int *a_x, int *a_y);
@@ -197,12 +191,13 @@ private:
                                  int *a_x, int *a_y,
                                  int *a_w, int *a_h );
 
-    void on_size_allocate(Gtk::Allocation& );
-
     void change_horz();
     void change_vert();
 
     void force_draw();
+
+protected:
+    bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr);
 
 public:
 
@@ -223,7 +218,7 @@ public:
     void update_background();
     void draw_background_on_surface();
     void draw_events_on_surface();
-    void draw_selection_on_window();
+    void draw_selection_on_window(const Cairo::RefPtr<Cairo::Context>& cr);
     void update_surface();
 
     void draw_progress_on_window();
@@ -240,13 +235,9 @@ public:
              seqdata *a_seqdata_wid,
              seqevent *a_seqevent_wid,
              seqkeys *a_seqkeys_wid,
-#ifdef GTKMM_3_SUPPORT
              Glib::RefPtr<Adjustment> a_hadjust,
              Glib::RefPtr<Adjustment> a_vadjust,
-#else
-             Adjustment *a_hadjust,
-             Adjustment *a_vadjust,
-#endif
+
              ToggleButton *a_toggle_play);
 
     void set_data_type( unsigned char a_status, unsigned char a_control  );
