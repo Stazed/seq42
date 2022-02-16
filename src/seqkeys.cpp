@@ -20,11 +20,8 @@
 #include "seqkeys.h"
 #include "font.h"
 
-#ifdef GTKMM_3_SUPPORT
+
 seqkeys::seqkeys(sequence *a_seq, Glib::RefPtr<Adjustment> a_vadjust ):
-#else
-seqkeys::seqkeys(sequence *a_seq, Gtk::Adjustment *a_vadjust ):
-#endif
     m_seq(a_seq),
     m_vadjust(a_vadjust),
     m_scroll_offset_key(0),
@@ -64,11 +61,6 @@ seqkeys::on_realize()
 
     Glib::signal_timeout().connect(mem_fun(*this,&seqkeys::idle_progress), c_redraw_ms);
 
-    // Now we can allocate any additional resources we need
-    m_window = get_window();
-    
-    m_surface_window = m_window->create_cairo_context();
-
     m_vadjust->signal_value_changed().connect( mem_fun( *this, &seqkeys::change_vert ));
 
     change_vert();
@@ -101,7 +93,6 @@ seqkeys::reset()
 {
     update_surface();
     m_redraw_window = true;
-    queue_draw();
 }
 
 void
@@ -218,18 +209,18 @@ seqkeys::update_surface()
     }
 }
 
-void
-seqkeys::draw_surface_on_window()
+bool
+seqkeys::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
-    m_redraw_window = false;
+    cr->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
+    cr->rectangle (0.0, 0.0, m_window_x, m_window_y);
+    cr->stroke_preserve();
+    cr->fill();
 
-    m_surface_window->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
-    m_surface_window->rectangle (0.0, 0.0, m_window_x, m_window_y);
-    m_surface_window->stroke_preserve();
-    m_surface_window->fill();
+    cr->set_source(m_surface, 0.0, -m_scroll_offset_y);
+    cr->paint();
 
-    m_surface_window->set_source(m_surface, 0.0, -m_scroll_offset_y);
-    m_surface_window->paint();
+    return true;
 }
 
 bool
@@ -237,24 +228,14 @@ seqkeys::idle_progress( )
 {
     if (m_redraw_window)
     {
-        draw_surface_on_window();
+        m_redraw_window = false;
+        queue_draw();
     }
     
     return true;
 }
 
-bool
-seqkeys::on_expose_event(GdkEventExpose* a_e)
-{
-    m_surface_window = m_window->create_cairo_context();
-
-    update_surface();
-    m_redraw_window = true;
-
-    return true;
-}
-
-/* takes screen corrdinates, give us notes and ticks */
+/* takes screen coordinates, give us notes and ticks */
 void
 seqkeys::convert_y( int a_y, int *a_note)
 {
