@@ -23,11 +23,7 @@
 #include "seqdata.h"
 #include "font.h"
 
-#ifdef GTKMM_3_SUPPORT
 seqdata::seqdata(sequence *a_seq, int a_zoom, Glib::RefPtr<Adjustment> a_hadjust):
-#else
-seqdata::seqdata(sequence *a_seq, int a_zoom, Gtk::Adjustment *a_hadjust):
-#endif
     m_seq(a_seq),
 
     m_zoom(a_zoom),
