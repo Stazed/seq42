@@ -815,6 +815,7 @@ seqedit::popup_tool_menu()
 
     holder = manage( new Menu());
 #ifdef GTKMM_3_SUPPORT
+    m_tools_menu_items.clear();
     m_tools_menu_items.resize(23);
     
     m_tools_menu_items[0].set_label("All Notes");
@@ -826,11 +827,11 @@ seqedit::popup_tool_menu()
     holder->append(m_tools_menu_items[1]);
 
     m_tools_menu_items[2].set_label("Even 1/4 Note Beats");
-    m_tools_menu_items[2].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::do_action), select_even_notes, 0) );
+    m_tools_menu_items[2].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::do_action), select_even_notes, c_ppqn) );
     holder->append(m_tools_menu_items[2]);
 
     m_tools_menu_items[3].set_label("Odd 1/4 Note Beats");
-    m_tools_menu_items[3].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::do_action), select_odd_notes, 0) );
+    m_tools_menu_items[3].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::do_action), select_odd_notes, c_ppqn) );
     holder->append(m_tools_menu_items[3]);
 
     m_tools_menu_items[4].set_label("Even 1/8 Note Beats");
