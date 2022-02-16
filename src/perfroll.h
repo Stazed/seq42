@@ -65,11 +65,8 @@ private:
     friend class Seq42PerfInput;
     Seq42PerfInput m_seq42_interaction;
 
-    Glib::RefPtr<Gdk::Window> m_window;
-
     Cairo::RefPtr<Cairo::ImageSurface> m_surface_track;
     Cairo::RefPtr<Cairo::ImageSurface> m_surface_background;
-    Cairo::RefPtr<Cairo::Context>  m_surface_window;
 
     perform        * const m_mainperf;
     mainwnd        * const m_mainwnd;
@@ -95,13 +92,9 @@ private:
     int          m_drop_track;
 
     bool         m_track_active[c_max_track];
-#ifdef GTKMM_3_SUPPORT
+
     Glib::RefPtr<Adjustment> m_vadjust;
     Glib::RefPtr<Adjustment> m_hadjust;
-#else
-    Adjustment   *m_vadjust;
-    Adjustment   *m_hadjust;
-#endif
 
     bool m_moving;
     bool m_growing;
@@ -111,9 +104,9 @@ private:
     bool have_button_press;
     bool transport_follow;
     bool trans_button_press;
+    bool m_redraw_tracks;
 
     void on_realize();
-    bool on_expose_event(GdkEventExpose* a_ev);
     bool on_button_press_event(GdkEventButton* a_ev);
     bool on_button_release_event(GdkEventButton* a_ev);
     bool on_motion_notify_event(GdkEventMotion* a_ev);
@@ -138,6 +131,9 @@ private:
     void change_vert();
 
     void trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths);
+
+protected:
+    bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr);
 
 public:
 
@@ -171,13 +167,8 @@ public:
 
     perfroll( perform *a_perf,
               mainwnd *a_main,
-#ifdef GTKMM_3_SUPPORT
               Glib::RefPtr<Adjustment> a_hadjust,
               Glib::RefPtr<Adjustment> a_vadjust );
-#else
-              Adjustment *a_hadjust,
-              Adjustment *a_vadjust );
-#endif
 
     ~perfroll( );
 };

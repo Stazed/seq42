@@ -25,14 +25,8 @@
 
 perfroll::perfroll( perform *a_perf,
                     mainwnd *a_main,
-#ifdef GTKMM_3_SUPPORT
                     Glib::RefPtr<Adjustment> a_hadjust,
                     Glib::RefPtr<Adjustment> a_vadjust  ) :
-#else
-                    Adjustment * a_hadjust,
-                    Adjustment * a_vadjust  ) :
-#endif
-    m_window(NULL),
     m_mainperf(a_perf),
     m_mainwnd(a_main),
 
@@ -54,7 +48,8 @@ perfroll::perfroll( perform *a_perf,
     cross_track_paste(false),
     have_button_press(false),
     transport_follow(true),
-    trans_button_press(false)
+    trans_button_press(false),
+    m_redraw_tracks(false)
 {
     Gtk::Allocation allocation = get_allocation();
     m_surface_track = Cairo::ImageSurface::create(
@@ -96,7 +91,7 @@ perfroll::change_horz( )
     if ( m_4bar_offset != (int) m_hadjust->get_value() )
     {
         m_4bar_offset = (int) m_hadjust->get_value();
-        queue_draw();
+        m_redraw_tracks = true;
     }
 }
 
@@ -106,7 +101,7 @@ perfroll::change_vert( )
     if ( m_track_offset != (int) m_vadjust->get_value() )
     {
         m_track_offset = (int) m_vadjust->get_value();
-        queue_draw();
+        m_redraw_tracks = true;
     }
 }
 
@@ -117,12 +112,6 @@ perfroll::on_realize()
     Gtk::DrawingArea::on_realize();
 
     set_can_focus();
-
-    // Now we can allocate any additional resources we need
-    m_window = get_window();
-    
-    m_surface_window = m_window->create_cairo_context();
-
     update_sizes();
 
     m_hadjust->signal_value_changed().connect( mem_fun( *this, &perfroll::change_horz ));
@@ -147,6 +136,7 @@ perfroll::on_realize()
 
     /* and fill the background ( dotted lines n' such ) */
     fill_background_surface();
+    m_redraw_tracks = true;
 }
 
 void
@@ -188,18 +178,8 @@ perfroll::update_sizes()
     {
         m_vadjust->set_value(v_max_value);
     }
-
-    if ( get_realized() )
-    {
-        m_surface_window = m_window->create_cairo_context();
-
-        m_surface_track = Cairo::ImageSurface::create(
-            Cairo::Format::FORMAT_ARGB32,
-            m_window_x,  m_window_y
-        );
-    }
-
-    queue_draw();
+    
+    m_redraw_tracks = true;
 }
 
 void
@@ -283,30 +263,74 @@ perfroll::set_guides( int a_snap, int a_measure, int a_beat )
     if ( get_realized() )
     {
         fill_background_surface();
+        m_redraw_tracks = true;
+    }
+}
+
+void
+perfroll::draw_progress()
+{
+    // resize handler
+    if (c_perfroll_background_x != m_surface_background->get_width() || c_names_y != m_surface_background->get_height())
+    {
+        m_surface_background = Cairo::ImageSurface::create(
+            Cairo::Format::FORMAT_ARGB32,
+            c_perfroll_background_x, c_names_y
+        );
+
+        fill_background_surface();
+        m_redraw_tracks = true;
+    }
+
+    if (m_window_x != m_surface_track->get_width() || m_window_y != m_surface_track->get_height())
+    {
+        m_surface_track = Cairo::ImageSurface::create(
+            Cairo::Format::FORMAT_ARGB32,
+                m_window_x,  m_window_y
+        );
+
+        m_redraw_tracks = true;
+    }
+
+    if (m_redraw_tracks)
+    {
+        m_redraw_tracks = false;
+        int y_s = 0;
+        int y_f = m_window_y / c_names_y;
+
+        for ( int y=y_s; y<=y_f; y++ )
+        {
+            int track = y + m_track_offset;
+
+            draw_background_on(track );
+            draw_track_on(track);
+        }
     }
 
     queue_draw();
 }
 
-void
-perfroll::draw_progress()
+bool 
+perfroll::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
     long tick = m_mainperf->get_tick();
     long tick_offset = m_4bar_offset * c_ppqn * 16;
 
     int progress_x =     ( tick - tick_offset ) / m_perf_scale_x ;
 
-    m_surface_window->set_source(m_surface_track, 0.0, 0.0);
-    m_surface_window->paint();
+    cr->set_source(m_surface_track, 0.0, 0.0);
+    cr->paint();
 
     /* draw progress line */
-    m_surface_window->set_source_rgb(0.0, 0.0, 0.0);            // Black  FIXME
-    m_surface_window->set_line_width(2.0);
-    m_surface_window->move_to(progress_x, 0.0);
-    m_surface_window->line_to(progress_x, m_window_y);
-    m_surface_window->stroke();
+    cr->set_source_rgb(0.0, 0.0, 0.0);            // Black  FIXME
+    cr->set_line_width(2.0);
+    cr->move_to(progress_x, 0.0);
+    cr->line_to(progress_x, m_window_y);
+    cr->stroke();
 
     auto_scroll_horz();
+
+    return true;
 }
 
 
@@ -535,22 +559,6 @@ void perfroll::draw_background_on( int a_track )
     }
 }
 
-bool
-perfroll::on_expose_event(GdkEventExpose* e)
-{
-    int y_s = e->area.y / c_names_y;
-    int y_f = (e->area.y  + e->area.height) / c_names_y;
-
-    for ( int y = y_s; y <= y_f; y++ )
-    {
-        draw_background_on( y + m_track_offset );
-        draw_track_on( y + m_track_offset );
-    }
-
-    return true;
-}
-
-
 void
 perfroll::redraw_dirty_tracks()
 {
@@ -559,7 +567,7 @@ perfroll::redraw_dirty_tracks()
 
     for ( int y=y_s; y<=y_f; y++ )
     {
-        int track = y + m_track_offset; // 4am
+        int track = y + m_track_offset;
 
         bool dirty = (m_mainperf->is_dirty_perf(track ));
 
@@ -759,11 +767,7 @@ perfroll::on_motion_notify_event(GdkEventMotion* a_ev)
         result = m_seq42_interaction.on_motion_notify_event(a_ev, *this);
         if(global_interaction_method_change)
         {
-#ifdef GTKMM_3_SUPPORT
-            get_window()->set_cursor(Gdk::Cursor::create(get_window()->get_display(),  Gdk::LEFT_PTR ));
-#else
-            get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
-#endif
+            get_window()->set_cursor(Gdk::Cursor::create(get_window()->get_display(), Gdk::LEFT_PTR ));
             global_interaction_method_change = false;
         }
         break;
@@ -882,7 +886,7 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
     if ( ret == true )
     {
         fill_background_surface();
-        queue_draw();
+        m_redraw_tracks = true;
         return true;
     }
     else
@@ -1144,16 +1148,11 @@ perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
     }
     if(a_trigger != NULL)
     {
-#ifdef GTKMM_3_SUPPORT
         Menu * menu_trigger = new Menu();
         menu_trigger->attach_to_widget(*this);
-#else
-        Menu *menu_trigger =   manage( new Menu());
-#endif
 
         if(a_trigger->m_sequence > -1)
         {
-#ifdef GTKMM_3_SUPPORT
             MenuItem * menu_item1 = new MenuItem("Edit sequence");
             menu_item1->signal_activate().connect(sigc::bind(mem_fun(ths, &perfroll::edit_sequence), a_track, a_trigger ));
             menu_trigger->append(*menu_item1);
@@ -1165,70 +1164,41 @@ perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
             MenuItem * menu_item3 = new MenuItem("Export trigger");
             menu_item3->signal_activate().connect(sigc::bind(mem_fun(ths, &perfroll::export_trigger), a_track, a_trigger ));
             menu_trigger->append(*menu_item3);
-#else
-            menu_trigger->items().push_back(MenuElem("Edit sequence", sigc::bind(mem_fun(ths,&perfroll::edit_sequence), a_track, a_trigger )));
-            menu_trigger->items().push_back(MenuElem("Export sequence", sigc::bind(mem_fun(ths,&perfroll::export_sequence), a_track, a_trigger )));
-            menu_trigger->items().push_back(MenuElem("Export trigger", sigc::bind(mem_fun(ths,&perfroll::export_trigger), a_track, a_trigger )));
-#endif
         }
 
         if(a_trigger->m_sequence > -1 && !global_song_start_mode)
         {
-#ifdef GTKMM_3_SUPPORT
             MenuItem * menu_item4 = new MenuItem("Set/Unset playing");
             menu_item4->signal_activate().connect(sigc::bind(mem_fun(ths, &perfroll::play_sequence), a_track, a_trigger ));
             menu_trigger->append(*menu_item4);
-
-#else
-            menu_trigger->items().push_back(MenuElem("Set/Unset playing", sigc::bind(mem_fun(ths,&perfroll::play_sequence), a_track, a_trigger )));
-#endif
         }
-#ifdef GTKMM_3_SUPPORT
+
         MenuItem * menu_item5 = new MenuItem("New sequence");
         menu_item5->signal_activate().connect(sigc::bind(mem_fun(ths, &perfroll::new_sequence), a_track, a_trigger));
         menu_trigger->append(*menu_item5);
-
-#else
-        menu_trigger->items().push_back(MenuElem("New sequence", sigc::bind(mem_fun(ths,&perfroll::new_sequence), a_track, a_trigger )));
-#endif
         if(a_track->get_number_of_sequences())
         {
             char name[40];
-#ifdef GTKMM_3_SUPPORT
             Menu *set_seq_menu = new Menu();
-#else
-            Menu *set_seq_menu = manage( new Menu());
-#endif
+
             for (unsigned s = 0; s < a_track->get_number_of_sequences(); s++ )
             {
                 sequence *a_seq = a_track->get_sequence( s );
                 snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
-#ifdef GTKMM_3_SUPPORT
+
                 MenuItem * menu_item = new MenuItem(name);
                 menu_item->signal_activate().connect(sigc::bind(mem_fun(ths, &perfroll::set_trigger_sequence), a_track, a_trigger, s));
                 set_seq_menu->append(*menu_item);
-#else
-                set_seq_menu->items().push_back(MenuElem(name,
-                                                sigc::bind(mem_fun(ths, &perfroll::set_trigger_sequence), a_track, a_trigger, s)));
-#endif
-
             }
-#ifdef GTKMM_3_SUPPORT
+
             MenuItem * menu_item6 = new MenuItem("Set sequence");
             menu_item6->set_submenu(*set_seq_menu);
             menu_trigger->append(*menu_item6);
-#else
-            menu_trigger->items().push_back(MenuElem("Set sequence", *set_seq_menu));
-#endif
         }
-#ifdef GTKMM_3_SUPPORT
+
         MenuItem * menu_item7 = new MenuItem("Delete trigger");
         menu_item7->signal_activate().connect(sigc::bind(mem_fun(ths, &perfroll::del_trigger), a_track, ths.m_drop_tick ));
         menu_trigger->append(*menu_item7);
-
-#else
-        menu_trigger->items().push_back(MenuElem("Delete trigger", sigc::bind(mem_fun(ths,&perfroll::del_trigger), a_track, ths.m_drop_tick )));
-#endif
 
         Menu *copy_seq_menu = NULL;
         char name[40];
@@ -1248,56 +1218,35 @@ perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
                 {
                     if(copy_seq_menu == NULL)
                     {
-#ifdef GTKMM_3_SUPPORT
                         copy_seq_menu = new Menu();
-#else
-                        copy_seq_menu = manage( new Menu());
-#endif
                     }
+
                     inserted = true;
                     snprintf(name, sizeof(name), "[%d] %s", t+1, some_track->get_name());
-#ifdef GTKMM_3_SUPPORT
+
                     menu_t = new Menu();
                     MenuItem * menu_item8 = new MenuItem(name);
                     menu_item8->set_submenu(*menu_t);
                     copy_seq_menu->append(*menu_item8);
-
-#else
-                    menu_t = manage( new Menu());
-                    copy_seq_menu->items().push_back(MenuElem(name, *menu_t));
-#endif
                 }
 
                 sequence *a_seq = some_track->get_sequence( s );
                 snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
-#ifdef GTKMM_3_SUPPORT
+
                 MenuItem * menu_item9 = new MenuItem(name);
                 menu_item9->signal_activate().connect(sigc::bind(mem_fun(ths, &perfroll::copy_sequence), a_track, a_trigger, a_seq));
                 menu_t->append(*menu_item9);
-
-#else
-                menu_t->items().push_back(MenuElem(name,
-                                                   sigc::bind(mem_fun(ths, &perfroll::copy_sequence), a_track, a_trigger, a_seq)));
-#endif
             }
         }
         if(copy_seq_menu != NULL)
         {
-#ifdef GTKMM_3_SUPPORT
             MenuItem * menu_item10 = new MenuItem("Copy sequence");
             menu_item10->set_submenu(*copy_seq_menu);
             menu_trigger->append(*menu_item10);
-
-#else
-            menu_trigger->items().push_back(MenuElem("Copy sequence", *copy_seq_menu));
-#endif
         }
-#ifdef GTKMM_3_SUPPORT
+
         menu_trigger->show_all();
         menu_trigger->popup_at_pointer(NULL);
-#else
-        menu_trigger->popup(0,0);
-#endif
     }
 }
 
