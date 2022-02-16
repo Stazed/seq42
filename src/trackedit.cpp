@@ -163,21 +163,13 @@ trackedit::popup_midibus_menu()
     mastermidibus *masterbus = m_track->get_master_midi_bus();
     for ( int i = 0; i < masterbus->get_num_out_buses(); i++ )
     {
-#ifdef GTKMM_3_SUPPORT
         MenuItem * menu_item = new MenuItem(masterbus->get_midi_out_bus_name(i));
         menu_item->signal_activate().connect(sigc::bind(mem_fun(*this,&trackedit::midi_bus_button_callback), i) );
         m_menu_midibus->append(*menu_item);
-#else
-        m_menu_midibus->items().push_back(MenuElem(masterbus->get_midi_out_bus_name(i),
-                                          sigc::bind(mem_fun(*this,&trackedit::midi_bus_button_callback), i)));
-#endif
     }
-#ifdef GTKMM_3_SUPPORT
+
     m_menu_midibus->show_all();
     m_menu_midibus->popup_at_pointer(NULL);
-#else
-    m_menu_midibus->popup(0,0);
-#endif
 }
 
 void
@@ -204,22 +196,14 @@ trackedit::popup_midich_menu()
                            global_user_instrument_definitions[instrument].instrument +
                            string(")") );
         }
-#ifdef GTKMM_3_SUPPORT
+
         MenuItem * menu_item = new MenuItem(name);
         menu_item->signal_activate().connect(sigc::bind(mem_fun(*this,&trackedit::midi_channel_button_callback), i) );
         m_menu_midich->append(*menu_item);
-#else
-        m_menu_midich->items().push_back(MenuElem(name,
-                                         sigc::bind(mem_fun(*this,&trackedit::midi_channel_button_callback),
-                                                 i )));
-#endif
     }
-#ifdef GTKMM_3_SUPPORT
+
     m_menu_midich->show_all();
     m_menu_midich->popup_at_pointer(NULL);
-#else
-    m_menu_midich->popup(0,0);
-#endif
 }
 
 void
