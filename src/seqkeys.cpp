@@ -31,8 +31,7 @@ seqkeys::seqkeys(sequence *a_seq, Glib::RefPtr<Adjustment> a_vadjust ):
     m_enter_piano_roll(false),
     m_keying(false),
     m_scale(0),
-    m_key(0),
-    m_redraw_window(false)
+    m_key(0)
 {
     m_surface = Cairo::ImageSurface::create(
         Cairo::Format::FORMAT_ARGB32,
@@ -58,8 +57,6 @@ seqkeys::on_realize()
 {
     // we need to do the default realize
     Gtk::DrawingArea::on_realize();
-
-    Glib::signal_timeout().connect(mem_fun(*this,&seqkeys::idle_progress), c_redraw_ms);
 
     m_vadjust->signal_value_changed().connect( mem_fun( *this, &seqkeys::change_vert ));
 
@@ -92,7 +89,7 @@ void
 seqkeys::reset()
 {
     update_surface();
-    m_redraw_window = true;
+    queue_draw();
 }
 
 void
@@ -223,18 +220,6 @@ seqkeys::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     return true;
 }
 
-bool
-seqkeys::idle_progress( )
-{
-    if (m_redraw_window)
-    {
-        m_redraw_window = false;
-        queue_draw();
-    }
-    
-    return true;
-}
-
 /* takes screen coordinates, give us notes and ticks */
 void
 seqkeys::convert_y( int a_y, int *a_note)
@@ -268,7 +253,7 @@ seqkeys::on_button_press_event(GdkEventButton *a_e)
             convert_y( y,&note );
             m_seq->set_mute_note( note );
             update_surface();
-            m_redraw_window = true;
+            queue_draw();
         }
 
         /* middle mouse button, or left-ctrl click (for 2 button mice) */
@@ -278,7 +263,7 @@ seqkeys::on_button_press_event(GdkEventButton *a_e)
             convert_y( y,&note );
             m_seq->set_solo_note( note );
             update_surface();
-            m_redraw_window = true;
+            queue_draw();
         }
     }
     return true;
@@ -423,7 +408,7 @@ seqkeys::draw_key( int a_key, bool a_state )
         cr->fill();
     }
 
-    m_redraw_window = true;
+    queue_draw();
 }
 
 void
@@ -433,7 +418,7 @@ seqkeys::change_vert( )
     m_scroll_offset_y = m_scroll_offset_key * c_key_y,
 
     update_surface();
-    m_redraw_window = true;
+    queue_draw();
 }
 
 void
@@ -445,7 +430,7 @@ seqkeys::on_size_allocate(Gtk::Allocation& a_r )
     m_window_y = a_r.get_height();
 
     update_surface();
-    m_redraw_window = true;
+    queue_draw();
 }
 
 bool

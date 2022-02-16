@@ -62,8 +62,6 @@ private:
     int m_scale;
     int m_key;
 
-    bool m_redraw_window;
-
     void on_realize();
     bool on_button_press_event(GdkEventButton* a_ev);
     bool on_button_release_event(GdkEventButton* a_ev);
@@ -74,7 +72,6 @@ private:
     void on_size_allocate(Gtk::Allocation&);
     
     void update_surface();
-    bool idle_progress();
     void convert_y( int a_y, int *a_note);
     void draw_key( int a_key, bool a_state );
     void change_vert();
