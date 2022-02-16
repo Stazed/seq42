@@ -1153,11 +1153,13 @@ seqedit::do_action( int a_action, int a_var )
     case expand_pattern:
         m_seq->push_undo();
         m_seq->multiply_pattern(2.0);
+        set_measures(get_measures(), true);
         break;
 
     case compress_pattern:
         m_seq->push_undo();
         m_seq->multiply_pattern(0.5);
+        set_measures(get_measures(), true);
         break;
 
     case reverse_pattern:
