@@ -83,17 +83,12 @@ private:
     friend struct Seq42SeqEventInput;
     Seq42SeqEventInput m_seq42_interaction;
 
-    Glib::RefPtr<Gdk::Window> m_window;
     Cairo::RefPtr<Cairo::ImageSurface> m_surface;
-    Cairo::RefPtr<Cairo::Context>  m_surface_window;
 
     GdkRectangle m_old;
     GdkRectangle m_selected;
-#ifdef GTKMM_3_SUPPORT
+
     Glib::RefPtr<Adjustment> m_hadjust;
-#else
-    Gtk::Adjustment   *m_hadjust;
-#endif
 
     int m_scroll_offset_ticks;
     int m_scroll_offset_x;
@@ -128,14 +123,13 @@ private:
     unsigned char m_cc;
 
     void on_realize();
-    bool on_expose_event(GdkEventExpose* a_ev);
-
     bool on_button_press_event(GdkEventButton* a_ev);
     bool on_button_release_event(GdkEventButton* a_ev);
     bool on_motion_notify_event(GdkEventMotion* a_ev);
     bool on_key_press_event(GdkEventKey* a_p0);
     bool on_focus_in_event(GdkEventFocus*);
     bool on_focus_out_event(GdkEventFocus*);
+    void on_size_allocate(Gtk::Allocation& );
 
     void convert_x( int a_x, long *a_ticks );
     void convert_t( long a_ticks, int *a_x );
@@ -151,10 +145,13 @@ private:
 
     void start_paste();
 
-    void on_size_allocate(Gtk::Allocation& );
     void change_horz();
+    void update_sizes();
+    void draw_background();
+    void update_surface();
 
-    void force_draw();
+protected:
+    bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr);
 
 public:
 
@@ -162,11 +159,7 @@ public:
               int a_zoom,
               int a_snap,
               seqdata *a_seqdata_wid,
-#ifdef GTKMM_3_SUPPORT
               Glib::RefPtr<Adjustment> a_hadjust);
-#else
-              Gtk::Adjustment   *a_hadjust );
-#endif
 
     void reset();
     void redraw();
@@ -174,12 +167,5 @@ public:
     void set_snap( int a_snap );
 
     void set_data_type( unsigned char a_status, unsigned char a_control  );
-
-    void update_sizes();
-    void draw_background();
-    void draw_surface_on_window();
-    void draw_selection_on_window();
-    void update_surface();
-
 };
 

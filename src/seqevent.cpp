@@ -25,11 +25,7 @@ seqevent::seqevent(sequence *a_seq,
                    int a_zoom,
                    int a_snap,
                    seqdata *a_seqdata_wid,
-#ifdef GTKMM_3_SUPPORT
                    Glib::RefPtr<Adjustment> a_hadjust):
-#else
-                   Gtk::Adjustment   *a_hadjust):
-#endif
     m_hadjust(a_hadjust),
 
     m_scroll_offset_ticks(0),
@@ -78,11 +74,6 @@ seqevent::on_realize()
 
     set_can_focus();
 
-    // Now we can allocate any additional resources we need
-    m_window = get_window();
-
-    m_surface_window = m_window->create_cairo_context();
-
     m_hadjust->signal_value_changed().connect( mem_fun( *this, &seqevent::change_horz ));
 
     update_sizes();
@@ -95,7 +86,7 @@ seqevent::change_horz( )
     m_scroll_offset_x = m_scroll_offset_ticks / m_zoom;
 
     update_surface();
-    force_draw();
+    queue_draw();
 }
 
 void
@@ -120,9 +111,6 @@ seqevent::update_sizes()
 {
     if( get_realized() )
     {
-        /* create surface with window dimensions */
-        m_surface_window = m_window->create_cairo_context();
-
         m_surface = Cairo::ImageSurface::create(
             Cairo::Format::FORMAT_ARGB32,
             m_window_x,  m_window_y
@@ -142,8 +130,6 @@ seqevent::reset()
     m_scroll_offset_x = m_scroll_offset_ticks / m_zoom;
 
     update_sizes();
-    update_surface();
-    draw_surface_on_window();
 }
 
 void
@@ -153,7 +139,7 @@ seqevent::redraw()
     m_scroll_offset_x = m_scroll_offset_ticks / m_zoom;
 
     update_surface();
-    draw_surface_on_window();
+    queue_draw();
 }
 
 /* updates background */
@@ -261,7 +247,7 @@ seqevent::set_data_type( unsigned char a_status, unsigned char a_control = 0 )
     m_status = a_status;
     m_cc = a_control;
 
-    this->redraw();
+    redraw();
 }
 
 /* draws background pixmap on main pixmap,
@@ -330,12 +316,49 @@ seqevent::draw_events_on()
     }
 }
 
-/* draws pixmap, tells event to do the same */
-void
-seqevent::draw_surface_on_window()
+bool
+seqevent::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
-    m_surface_window->set_source(m_surface, 0.0, 0.0);
-    m_surface_window->paint();
+    int x,w;
+
+    int y = (c_eventarea_y - c_eventevent_y)/2;
+    int h =  c_eventevent_y;
+
+    cr->set_source(m_surface, 0.0, 0.0);
+    cr->paint();
+
+    /* The box selector */
+    cr->set_line_join(Cairo::LINE_JOIN_MITER);
+    cr->set_source_rgb(1.0, 0.27, 0.0);    // Red FIXME
+
+    if ( m_selecting )
+    {
+        x_to_w( m_drop_x, m_current_x, &x,&w );
+
+        x -= m_scroll_offset_x;
+
+        m_old.x = x;
+        m_old.width = w;
+
+        cr->rectangle(x, y, w, h );
+        cr->stroke();
+    }
+
+    if ( m_moving || m_paste )
+    {
+        int delta_x = m_current_x - m_drop_x;
+
+        x = m_selected.x + delta_x;
+        x -= m_scroll_offset_x;
+
+        cr->rectangle(x, y, m_selected.width, h );
+        cr->stroke();
+
+        m_old.x = x;
+        m_old.width = m_selected.width;
+    }
+
+    return true;
 }
 
 /* checks mins / maxes..  the fills in x,y
@@ -354,67 +377,6 @@ seqevent::x_to_w( int a_x1, int a_x2,
         *a_x = a_x2;
         *a_w = a_x1 - a_x2;
     }
-}
-
-/**
- * The box selector
- */
-void
-seqevent::draw_selection_on_window()
-{
-    int x,w;
-
-    int y = (c_eventarea_y - c_eventevent_y)/2;
-    int h =  c_eventevent_y;
-
-    m_surface_window->set_source(m_surface, 0.0, 0.0);
-    m_surface_window->paint();
-
-    m_surface_window->set_line_join(Cairo::LINE_JOIN_MITER);
-    m_surface_window->set_source_rgb(1.0, 0.27, 0.0);    // Red FIXME
-
-    if ( m_selecting )
-    {
-        x_to_w( m_drop_x, m_current_x, &x,&w );
-
-        x -= m_scroll_offset_x;
-
-        m_old.x = x;
-        m_old.width = w;
-
-        m_surface_window->rectangle(x, y, w, h );
-        m_surface_window->stroke();
-    }
-
-    if ( m_moving || m_paste )
-    {
-        int delta_x = m_current_x - m_drop_x;
-
-        x = m_selected.x + delta_x;
-        x -= m_scroll_offset_x;
-
-        m_surface_window->rectangle(x, y, m_selected.width, h );
-        m_surface_window->stroke();
-
-        m_old.x = x;
-        m_old.width = m_selected.width;
-    }
-}
-
-bool
-seqevent::on_expose_event(GdkEventExpose* e)
-{
-    draw_selection_on_window();     // needed for horizontal resize
-    return true;
-}
-
-/**
- * For scrolling
- */
-void
-seqevent::force_draw()
-{
-    draw_selection_on_window();
 }
 
 void
@@ -674,27 +636,15 @@ void FruitySeqEventInput::updateMousePtr(seqevent& ths)
 
     if (m_is_drag_pasting || ths.m_selecting || ths.m_moving || ths.m_paste)
     {
-#ifdef GTKMM_3_SUPPORT
         ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::LEFT_PTR ));
-#else
-        ths.get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
-#endif
     }
     else if (ths.m_seq->intersectEvents( tick_s, tick_f, ths.m_status, pos ))
     {
-#ifdef GTKMM_3_SUPPORT
         ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::CENTER_PTR ));
-#else
-        ths.get_window()->set_cursor( Gdk::Cursor( Gdk::CENTER_PTR ));
-#endif
     }
     else
     {
-#ifdef GTKMM_3_SUPPORT
         ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::PENCIL ));
-#else
-        ths.get_window()->set_cursor( Gdk::Cursor( Gdk::PENCIL ));
-#endif
     }
 }
 
@@ -897,7 +847,7 @@ bool FruitySeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& 
 
     /* if they clicked, something changed */
     ths.update_surface();
-    ths.draw_surface_on_window();
+    ths.queue_draw();
 
     updateMousePtr( ths );
 
@@ -1015,7 +965,7 @@ bool FruitySeqEventInput::on_button_release_event(GdkEventButton* a_ev, seqevent
 
     /* if they clicked, something changed */
     ths.update_surface();
-    ths.draw_surface_on_window();
+    ths.queue_draw();
 
     updateMousePtr(ths);
 
@@ -1051,8 +1001,8 @@ bool FruitySeqEventInput::on_motion_notify_event(GdkEventMotion* a_ev, seqevent&
     {
         if ( ths.m_moving || ths.m_paste )
             ths.snap_x( &ths.m_current_x );
-
-        ths.draw_selection_on_window();
+        
+        ths.queue_draw();
     }
 
     if ( ths.m_painting )
@@ -1071,20 +1021,12 @@ Seq42SeqEventInput::set_adding( bool a_adding, seqevent& ths )
 {
     if ( a_adding )
     {
-#ifdef GTKMM_3_SUPPORT
         ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::PENCIL ));
-#else
-        ths.get_window()->set_cursor( Gdk::Cursor( Gdk::PENCIL ));
-#endif
         m_adding = true;
     }
     else
     {
-#ifdef GTKMM_3_SUPPORT
         ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::LEFT_PTR ));
-#else
-        ths.get_window()->set_cursor( Gdk::Cursor( Gdk::LEFT_PTR ));
-#endif
         m_adding = false;
     }
 }
@@ -1235,7 +1177,7 @@ bool Seq42SeqEventInput::on_button_press_event(GdkEventButton* a_ev, seqevent& t
 
     /* if they clicked, something changed */
     ths.update_surface();
-    ths.draw_surface_on_window();
+    ths.queue_draw();
 
     return true;
 }
@@ -1310,7 +1252,7 @@ bool Seq42SeqEventInput::on_button_release_event(GdkEventButton* a_ev, seqevent&
 
     /* if they clicked, something changed */
     ths.update_surface();
-    ths.draw_surface_on_window();
+    ths.queue_draw();
 
     return true;
 }
@@ -1332,7 +1274,7 @@ bool Seq42SeqEventInput::on_motion_notify_event(GdkEventMotion* a_ev, seqevent& 
         if ( ths.m_moving || ths.m_paste )
             ths.snap_x( &ths.m_current_x );
 
-        ths.draw_selection_on_window();
+        ths.queue_draw();
     }
 
     if ( ths.m_painting )
