@@ -25,9 +25,7 @@
 
 seqdata::seqdata(sequence *a_seq, int a_zoom, Glib::RefPtr<Adjustment> a_hadjust):
     m_seq(a_seq),
-
     m_zoom(a_zoom),
-
     m_hadjust(a_hadjust),
 
     m_scroll_offset_ticks(0),
@@ -62,7 +60,15 @@ seqdata::update_sizes()
 {
     if( get_realized() )
     {
-        m_surface_window = m_window->create_cairo_context();
+        if (m_window_x != m_surface->get_width() || m_window_y != m_surface->get_height())
+        {
+            m_surface = Cairo::ImageSurface::create(
+                Cairo::Format::FORMAT_ARGB32,
+                m_window_x,
+                m_window_y
+            );
+        }
+
         m_redraw_events = true;
     }
 }
@@ -88,11 +94,6 @@ seqdata::on_realize()
     // we need to do the default realize
     Gtk::DrawingArea::on_realize();
 
-    // Now we can allocate any additional resources we need
-    m_window = get_window();
-
-    m_surface_window = m_window->create_cairo_context();
-
     m_hadjust->signal_value_changed().connect( mem_fun( *this, &seqdata::change_horz ));
 
     update_sizes();
@@ -114,14 +115,13 @@ seqdata::set_data_type( unsigned char a_status, unsigned char a_control = 0  )
     m_status = a_status;
     m_cc = a_control;
 
-    this->redraw();
+    redraw();
 }
 
 
 void
 seqdata::draw_events_on_window( )
 {
-    m_redraw_events = false;
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
 
     Gtk::Allocation allocation = get_allocation();
@@ -257,43 +257,43 @@ seqdata::draw_events_on_window( )
         selection_type = num_selected_events;
         goto SECOND_PASS_NOTE_ON;
     }
-
-    /* Clear previous background */
-    m_surface_window->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
-    m_surface_window->rectangle (0.0, 0.0, width, height);
-    m_surface_window->stroke_preserve();
-    m_surface_window->fill();
-
-    /* Draw the new background */
-    m_surface_window->set_source(m_surface, 0.0, 0.0);
-    m_surface_window->paint();
 }
 
 int
 seqdata::idle_redraw()
 {
-    Gtk::Allocation allocation = get_allocation();
-    const int width = allocation.get_width();
-    const int height = allocation.get_height();
-
-    // resize handler
-    if (width != m_surface->get_width() || height != m_surface->get_height())
-    {
-        m_surface = Cairo::ImageSurface::create(
-            Cairo::Format::FORMAT_ARGB32,
-            allocation.get_width(),
-            allocation.get_height()
-        );
-        m_redraw_events = true;
-    }
-
     /* no flicker, redraw */
     if ( m_redraw_events )
     {
+        m_redraw_events = false;
         draw_events_on_window();
+        queue_draw();
     }
 
-    draw_line_on_window();
+    return true;
+}
+
+bool
+seqdata::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
+{
+    /* Clear previous background */
+    cr->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
+    cr->rectangle (0.0, 0.0, m_window_x, m_window_y);
+    cr->stroke_preserve();
+    cr->fill();
+
+    /* Draw the new background */
+    cr->set_source(m_surface, 0.0, 0.0);
+    cr->paint();
+    
+    /* The line drag adjustment */
+    if (m_dragging)
+    {
+        cr->set_source_rgb(1.0, 0.27, 0.0);    // Red FIXME
+        cr->move_to(m_current_x - m_scroll_offset_x, m_current_y);
+        cr->line_to( m_drop_x - m_scroll_offset_x, m_drop_y);
+        cr->stroke();
+    }
 
     return true;
 }
@@ -512,21 +512,6 @@ seqdata::on_leave_notify_event(GdkEventCrossing* p0)
 {
     m_redraw_events = true;
     return true;
-}
-
-/**
- * The event adjustment line from mouse drag
- */
-void
-seqdata::draw_line_on_window()
-{
-    if (m_dragging)
-    {
-        m_surface_window->set_source_rgb(1.0, 0.27, 0.0);    // Red FIXME
-        m_surface_window->move_to(m_current_x - m_scroll_offset_x, m_current_y);
-        m_surface_window->line_to( m_drop_x - m_scroll_offset_x, m_drop_y);
-        m_surface_window->stroke();
-    }
 }
 
 void

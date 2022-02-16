@@ -46,16 +46,14 @@ class seqdata : public Gtk::DrawingArea
 
 private:
 
-    Glib::RefPtr<Gdk::Window> m_window;
     Cairo::RefPtr<Cairo::ImageSurface> m_surface;
-    Cairo::RefPtr<Cairo::Context>  m_surface_window;
-    
-    Glib::RefPtr<Adjustment> const m_hadjust;
-    
+
     sequence     * const m_seq;
 
     /* one pixel == m_zoom ticks */
     int          m_zoom;
+
+    Glib::RefPtr<Adjustment> const m_hadjust;
 
     int m_window_x, m_window_y;
 
@@ -80,10 +78,9 @@ private:
     bool on_motion_notify_event(GdkEventMotion* a_p0);
     bool on_leave_notify_event(GdkEventCrossing* p0);
     bool on_scroll_event( GdkEventScroll* a_ev ) ;
+    void on_size_allocate(Gtk::Allocation& );
 
     void update_sizes();
-    void draw_line_on_window();
-
     void convert_x( int a_x, long *a_tick );
 
     void xy_to_rect( int a_x1,  int a_y1,
@@ -93,8 +90,10 @@ private:
 
     void draw_events_on_window();
 
-    void on_size_allocate(Gtk::Allocation& );
     void change_horz();
+
+protected:
+    bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr);
 
 public:
 
