@@ -47,12 +47,8 @@
 #include "pixmaps/seq-editor.xpm"
 #include "pixmaps/chord.xpm"
 
-// tooltip helper, for old vs new gtk...
-#if GTK_MINOR_VERSION >= 12
-#   define add_tooltip( obj, text ) obj->set_tooltip_text( text);
-#else
-#   define add_tooltip( obj, text ) m_tooltips->set_tip( *obj, text );
-#endif
+
+# define add_tooltip( obj, text ) obj->set_tooltip_text( text);
 
 int seqedit::m_initial_zoom = 2;
 int seqedit::m_initial_snap = c_ppqn / 4;
@@ -122,17 +118,11 @@ seqedit::seqedit( sequence *a_seq,
     m_seq->set_editing( true );
 
     /* scroll bars */
-#ifdef GTKMM_3_SUPPORT
     m_vadjust = Adjustment::create(55, 0, c_num_keys, 1, 1, 1);
     m_hadjust = Adjustment::create(0, 0, 1, 1, 1, 1);
     m_vscroll_new   =  manage(new VScrollbar( m_vadjust ));
     m_hscroll_new   =  manage(new HScrollbar( m_hadjust ));
-#else
-    m_vadjust = manage( new Adjustment(55,0, c_num_keys, 1, 1, 1 ));
-    m_hadjust = manage( new Adjustment(0, 0, 1,  1,1,1 ));
-    m_vscroll_new   =  manage(new VScrollbar( *m_vadjust ));
-    m_hscroll_new   =  manage(new HScrollbar( *m_hadjust ));
-#endif
+
     /* get some new objects */
     m_seqkeys_wid  = manage( new seqkeys(  m_seq,
                                            m_vadjust ));
@@ -359,19 +349,12 @@ seqedit::create_menus()
     for (int i = c_min_zoom; i <= c_max_zoom; i*=2)
     {
         snprintf(b, sizeof(b), "1:%d", i);
-#ifdef GTKMM_3_SUPPORT
         MenuItem * menu_item = new MenuItem(b);
         menu_item->signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_zoom), i ) );
         m_menu_zoom->append(*menu_item);
-
-#else
-        m_menu_zoom->items().push_back(MenuElem(b,
-                                                sigc::bind(mem_fun(*this, &seqedit::set_zoom), i )));
-#endif
     }
 
     /* note snap */
-#ifdef GTKMM_3_SUPPORT
     m_snap_menu_items.resize(15);
 
     m_snap_menu_items[0].set_label("1");
@@ -500,106 +483,7 @@ seqedit::create_menus()
     m_note_length_menu_items[14].set_label("1/192");
     m_note_length_menu_items[14].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_note_length), c_ppqn / 16 / 3) );
     m_menu_note_length->append(m_note_length_menu_items[14]);
-#else
-    m_menu_snap->items().push_back(MenuElem("1",
-                                            sigc::bind(mem_fun(*this, &seqedit::set_snap),
-                                                    c_ppqn * 4  )));
-    m_menu_snap->items().push_back(MenuElem("1/2",
-                                            sigc::bind(mem_fun(*this, &seqedit::set_snap),
-                                                    c_ppqn * 2  )));
-    m_menu_snap->items().push_back(MenuElem("1/4",
-                                            sigc::bind(mem_fun(*this, &seqedit::set_snap),
-                                                    c_ppqn * 1  )));
-    m_menu_snap->items().push_back(MenuElem("1/8",
-                                            sigc::bind(mem_fun(*this, &seqedit::set_snap),
-                                                    c_ppqn / 2  )));
-    m_menu_snap->items().push_back(MenuElem("1/16",
-                                            sigc::bind(mem_fun(*this, &seqedit::set_snap),
-                                                    c_ppqn / 4  )));
-    m_menu_snap->items().push_back(MenuElem("1/32",
-                                            sigc::bind(mem_fun(*this, &seqedit::set_snap),
-                                                    c_ppqn / 8  )));
-    m_menu_snap->items().push_back(MenuElem("1/64",
-                                            sigc::bind(mem_fun(*this, &seqedit::set_snap),
-                                                    c_ppqn / 16 )));
-    m_menu_snap->items().push_back(MenuElem("1/128",
-                                            sigc::bind(mem_fun(*this, &seqedit::set_snap),
-                                                    c_ppqn / 32 )));
 
-    m_menu_snap->items().push_back(SeparatorElem());
-
-    m_menu_snap->items().push_back(MenuElem("1/3",
-                                            sigc::bind(mem_fun(*this, &seqedit::set_snap),
-                                                    c_ppqn * 4  / 3 )));
-    m_menu_snap->items().push_back(MenuElem("1/6",
-                                            sigc::bind(mem_fun(*this, &seqedit::set_snap),
-                                                    c_ppqn * 2  / 3 )));
-    m_menu_snap->items().push_back(MenuElem("1/12",
-                                            sigc::bind(mem_fun(*this, &seqedit::set_snap),
-                                                    c_ppqn * 1  / 3 )));
-    m_menu_snap->items().push_back(MenuElem("1/24",
-                                            sigc::bind(mem_fun(*this, &seqedit::set_snap),
-                                                    c_ppqn / 2  / 3 )));
-    m_menu_snap->items().push_back(MenuElem("1/48",
-                                            sigc::bind(mem_fun(*this, &seqedit::set_snap),
-                                                    c_ppqn / 4  / 3 )));
-    m_menu_snap->items().push_back(MenuElem("1/96",
-                                            sigc::bind(mem_fun(*this, &seqedit::set_snap),
-                                                    c_ppqn / 8  / 3 )));
-    m_menu_snap->items().push_back(MenuElem("1/192",
-                                            sigc::bind(mem_fun(*this, &seqedit::set_snap),
-                                                    c_ppqn / 16 / 3 )));
-
-    /* note note_length */
-    m_menu_note_length->items().push_back(MenuElem("1",
-                                          sigc::bind(mem_fun(*this, &seqedit::set_note_length),
-                                                  c_ppqn * 4  )));
-    m_menu_note_length->items().push_back(MenuElem("1/2",
-                                          sigc::bind(mem_fun(*this, &seqedit::set_note_length),
-                                                  c_ppqn * 2  )));
-    m_menu_note_length->items().push_back(MenuElem("1/4",
-                                          sigc::bind(mem_fun(*this, &seqedit::set_note_length),
-                                                  c_ppqn * 1  )));
-    m_menu_note_length->items().push_back(MenuElem("1/8",
-                                          sigc::bind(mem_fun(*this, &seqedit::set_note_length),
-                                                  c_ppqn / 2  )));
-    m_menu_note_length->items().push_back(MenuElem("1/16",
-                                          sigc::bind(mem_fun(*this, &seqedit::set_note_length),
-                                                  c_ppqn / 4  )));
-    m_menu_note_length->items().push_back(MenuElem("1/32",
-                                          sigc::bind(mem_fun(*this, &seqedit::set_note_length),
-                                                  c_ppqn / 8  )));
-    m_menu_note_length->items().push_back(MenuElem("1/64",
-                                          sigc::bind(mem_fun(*this, &seqedit::set_note_length),
-                                                  c_ppqn / 16 )));
-    m_menu_note_length->items().push_back(MenuElem("1/128",
-                                          sigc::bind(mem_fun(*this, &seqedit::set_note_length),
-                                                  c_ppqn / 32 )));
-
-    m_menu_note_length->items().push_back(SeparatorElem());
-
-    m_menu_note_length->items().push_back(MenuElem("1/3",
-                                          sigc::bind(mem_fun(*this, &seqedit::set_note_length),
-                                                  c_ppqn * 4  / 3 )));
-    m_menu_note_length->items().push_back(MenuElem("1/6",
-                                          sigc::bind(mem_fun(*this, &seqedit::set_note_length),
-                                                  c_ppqn * 2  / 3 )));
-    m_menu_note_length->items().push_back(MenuElem("1/12",
-                                          sigc::bind(mem_fun(*this, &seqedit::set_note_length),
-                                                  c_ppqn * 1  / 3 )));
-    m_menu_note_length->items().push_back(MenuElem("1/24",
-                                          sigc::bind(mem_fun(*this, &seqedit::set_note_length),
-                                                  c_ppqn / 2  / 3 )));
-    m_menu_note_length->items().push_back(MenuElem("1/48",
-                                          sigc::bind(mem_fun(*this, &seqedit::set_note_length),
-                                                  c_ppqn / 4  / 3 )));
-    m_menu_note_length->items().push_back(MenuElem("1/96",
-                                          sigc::bind(mem_fun(*this, &seqedit::set_note_length),
-                                                  c_ppqn / 8  / 3 )));
-    m_menu_note_length->items().push_back(MenuElem("1/192",
-                                          sigc::bind(mem_fun(*this, &seqedit::set_note_length),
-                                                  c_ppqn / 16 / 3 )));
-#endif  // GTKMM-2
     /* Key */
     for (int i = 0; i < 12; i++)
     {
@@ -615,7 +499,7 @@ seqedit::create_menus()
         );
 #endif
     }
-#ifdef GTKMM_3_SUPPORT
+
     /* bw */
     m_bw_menu_items.resize(5);
 
@@ -677,75 +561,27 @@ seqedit::create_menus()
     m_record_volume_menu_items[8].set_label("Fixed 1 (16)");
     m_record_volume_menu_items[8].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 16) );
     m_menu_rec_vol->append(m_record_volume_menu_items[8]);
-#else
-    /* bw */
-    m_menu_bw->items().push_back(MenuElem("1",
-                                          sigc::bind(mem_fun(*this, &seqedit::set_bw), 1  )));
-    m_menu_bw->items().push_back(MenuElem("2",
-                                          sigc::bind(mem_fun(*this, &seqedit::set_bw), 2  )));
-    m_menu_bw->items().push_back(MenuElem("4",
-                                          sigc::bind(mem_fun(*this, &seqedit::set_bw), 4  )));
-    m_menu_bw->items().push_back(MenuElem("8",
-                                          sigc::bind(mem_fun(*this, &seqedit::set_bw), 8  )));
-    m_menu_bw->items().push_back(MenuElem("16",
-                                          sigc::bind(mem_fun(*this, &seqedit::set_bw), 16 )));
-
-    /* note volume */
-    m_menu_rec_vol->items().push_back(MenuElem("Free",
-                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 0)));
-    m_menu_rec_vol->items().push_back(MenuElem("Fixed 8 (127)",
-                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 127)));
-    m_menu_rec_vol->items().push_back(MenuElem("Fixed 7 (112)",
-                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 112)));
-    m_menu_rec_vol->items().push_back(MenuElem("Fixed 6  (96)",
-                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 96)));
-    m_menu_rec_vol->items().push_back(MenuElem("Fixed 5  (80)",
-                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 80)));
-    m_menu_rec_vol->items().push_back(MenuElem("Fixed 4  (64)",
-                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 64)));
-    m_menu_rec_vol->items().push_back(MenuElem("Fixed 3  (48)",
-                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 48)));
-    m_menu_rec_vol->items().push_back(MenuElem("Fixed 2  (32)",
-                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 32)));
-    m_menu_rec_vol->items().push_back(MenuElem("Fixed 1  (16)",
-                                      sigc::bind(mem_fun(*this, &seqedit::set_rec_vol), 16)));
-#endif
-//#define SET_SCALE   mem_fun(*this, &seqedit::set_scale)
 
     for (int i = int(c_scale_off); i < int(c_scale_size); i++)
     {
-#ifdef GTKMM_3_SUPPORT
         /* music scale      */
         MenuItem * menu_item = new MenuItem(c_scales_text[i]);
         menu_item->signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_scale), i) );
         m_menu_scale->append(*menu_item);
-#else
-        m_menu_scale->items().push_back                 /* music scale      */
-        (
-            MenuElem(c_scales_text[i], sigc::bind(mem_fun(*this, &seqedit::set_scale), i))
-        );
-#endif
     }
 
     for (int i = int(0); i < int(c_chord_number); i++)
     {
-#ifdef GTKMM_3_SUPPORT
         /* Chords     */
         MenuItem * menu_item = new MenuItem(c_chord_table_text[i]);
         menu_item->signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_chord), i) );
         m_menu_chords->append(*menu_item);
-#else
-        m_menu_chords->items().push_back                 /* Chords     */
-        (
-            MenuElem(c_chord_table_text[i], sigc::bind(mem_fun(*this, &seqedit::set_chord), i))
-        );
-#endif
     }
 
     for( int i = 0; i < 16; i++ )
     {
         snprintf(b, sizeof(b), "%d", i + 1);
-#ifdef GTKMM_3_SUPPORT
+
         MenuItem * menu_item1 = new MenuItem(b);
         menu_item1->signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::measures_button_callback), i + 1) );
         m_menu_length->append(*menu_item1);
@@ -753,17 +589,8 @@ seqedit::create_menus()
         MenuItem * menu_item2 = new MenuItem(b);
         menu_item2->signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_bp_measure), i + 1) );
         m_menu_bp_measure->append(*menu_item2);
-
-#else
-        /* length */
-        m_menu_length->items().push_back(MenuElem(b,
-                                         sigc::bind(mem_fun(*this, &seqedit::measures_button_callback), i+1 )));
-        /* length */
-        m_menu_bp_measure->items().push_back(MenuElem(b,
-                                             sigc::bind(mem_fun(*this, &seqedit::set_bp_measure), i+1 )));
-#endif
     }
-#ifdef GTKMM_3_SUPPORT
+
     MenuItem * menu_item32 = new MenuItem("32");
     menu_item32->signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::measures_button_callback), 32) );
     m_menu_length->append(*menu_item32);
@@ -784,22 +611,6 @@ seqedit::create_menus()
     MenuItem * menu_item16 = new MenuItem("1/16");
     menu_item16->signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::swing_button_callback), c_swing_sixteenths) );
     m_menu_swing_mode->append(*menu_item16);
-
-#else
-    m_menu_length->items().push_back(MenuElem("32",
-                                     sigc::bind(mem_fun(*this, &seqedit::measures_button_callback), 32 )));
-    m_menu_length->items().push_back(MenuElem("64",
-                                     sigc::bind(mem_fun(*this, &seqedit::measures_button_callback), 64 )));
-
-
-    m_menu_swing_mode->items().push_back(MenuElem("off",
-                                         sigc::bind(mem_fun(*this, &seqedit::swing_button_callback), c_no_swing )));
-    m_menu_swing_mode->items().push_back(MenuElem("1/8",
-                                         sigc::bind(mem_fun(*this, &seqedit::swing_button_callback), c_swing_eighths )));
-    m_menu_swing_mode->items().push_back(MenuElem("1/16",
-                                         sigc::bind(mem_fun(*this, &seqedit::swing_button_callback), c_swing_sixteenths )));
-#endif
-    //m_menu_tools->items().push_back( SeparatorElem( ));
 }
 
 void
@@ -814,7 +625,7 @@ seqedit::popup_tool_menu()
     Menu *holder2;
 
     holder = manage( new Menu());
-#ifdef GTKMM_3_SUPPORT
+
     m_tools_menu_items.clear();
     m_tools_menu_items.resize(23);
     
@@ -850,44 +661,9 @@ seqedit::popup_tool_menu()
     m_tools_menu_items[7].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::do_action), select_odd_notes, c_ppsn) );
     holder->append(m_tools_menu_items[7]);
 
-#else
-    holder->items().push_back( MenuElem( "All Notes",
-                                         sigc::bind(mem_fun(*this, &seqedit::do_action),
-                                                 select_all_notes, 0)));
-
-    holder->items().push_back( MenuElem( "Inverse Notes",
-                                         sigc::bind(mem_fun(*this, &seqedit::do_action),
-                                                 select_inverse_notes, 0)));
-
-    holder->items().push_back( MenuElem( "Even 1/4 Note Beats",
-                                         sigc::bind(mem_fun(*this, &seqedit::do_action),
-                                                 select_even_notes, c_ppqn)));
-
-    holder->items().push_back( MenuElem( "Odd 1/4 Note Beats",
-                                         sigc::bind(mem_fun(*this, &seqedit::do_action),
-                                                 select_odd_notes, c_ppqn)));
-
-    holder->items().push_back( MenuElem( "Even 1/8 Note Beats",
-                                         sigc::bind(mem_fun(*this, &seqedit::do_action),
-                                                 select_even_notes, c_ppen)));
-
-    holder->items().push_back( MenuElem( "Odd 1/8 Note Beats",
-                                         sigc::bind(mem_fun(*this, &seqedit::do_action),
-                                                 select_odd_notes, c_ppen)));
-
-    holder->items().push_back( MenuElem( "Even 1/16 Note Beats",
-                                         sigc::bind(mem_fun(*this, &seqedit::do_action),
-                                                 select_even_notes, c_ppsn)));
-
-    holder->items().push_back( MenuElem( "Odd 1/16 Note Beats",
-                                         sigc::bind(mem_fun(*this, &seqedit::do_action),
-                                                 select_odd_notes, c_ppsn)));
-#endif  // GTKMM-2
     if ( m_editing_status !=  EVENT_NOTE_ON &&
             m_editing_status !=  EVENT_NOTE_OFF )
     {
-#ifdef GTKMM_3_SUPPORT
- 
         holder->append(m_menu_separator2);
 
         m_tools_menu_items[8].set_label("All Events");
@@ -897,18 +673,8 @@ seqedit::popup_tool_menu()
         m_tools_menu_items[9].set_label("Inverse Events");
         m_tools_menu_items[9].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::do_action), select_inverse_events, 0) );
         holder->append(m_tools_menu_items[9]);
-#else
-        holder->items().push_back( SeparatorElem( ));
-        holder->items().push_back( MenuElem( "All Events",
-                                             sigc::bind(mem_fun(*this, &seqedit::do_action),
-                                                     select_all_events, 0)));
-
-        holder->items().push_back( MenuElem( "Inverse Events",
-                                             sigc::bind(mem_fun(*this, &seqedit::do_action),
-                                                     select_inverse_events, 0)));
-#endif
     }
-#ifdef GTKMM_3_SUPPORT
+
     m_tools_menu_items[10].set_label("Select");
     m_tools_menu_items[10].set_submenu(*holder);
     m_menu_tools->append(m_tools_menu_items[10]);
@@ -922,23 +688,10 @@ seqedit::popup_tool_menu()
     m_tools_menu_items[12].set_label("Tighten Selected Notes");
     m_tools_menu_items[12].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::do_action), tighten_notes, 0 ) );
     holder->append(m_tools_menu_items[12]);
-#else
-    m_menu_tools->items().push_back( MenuElem( "Select", *holder ));
 
-    holder = manage( new Menu());
-    holder->items().push_back( MenuElem( "Quantize Selected Notes",
-                                         sigc::bind(mem_fun(*this, &seqedit::do_action),
-                                                 quantize_notes, 0 )));
-
-    holder->items().push_back( MenuElem( "Tighten Selected Notes",
-                                         sigc::bind(mem_fun(*this, &seqedit::do_action),
-                                                 tighten_notes,0 )));
-#endif
     if ( m_editing_status !=  EVENT_NOTE_ON &&
             m_editing_status !=  EVENT_NOTE_OFF )
     {
-#ifdef GTKMM_3_SUPPORT
-
         holder->append(m_menu_separator3);
 
         m_tools_menu_items[13].set_label("Quantize Selected Events");
@@ -948,18 +701,8 @@ seqedit::popup_tool_menu()
         m_tools_menu_items[14].set_label("Tighten Selected Events");
         m_tools_menu_items[14].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::do_action), tighten_events, 0 ) );
         holder->append(m_tools_menu_items[14]);
-#else
-        holder->items().push_back( SeparatorElem( ));
-        holder->items().push_back( MenuElem( "Quantize Selected Events",
-                                             sigc::bind(mem_fun(*this, &seqedit::do_action),
-                                                     quantize_events,0 )));
-
-        holder->items().push_back( MenuElem( "Tighten Selected Events",
-                                             sigc::bind(mem_fun(*this, &seqedit::do_action),
-                                                     tighten_events,0 )));
-#endif
     }
-#ifdef GTKMM_3_SUPPORT
+
     holder->append(m_menu_separator4);
 
     m_tools_menu_items[15].set_label("Expand Pattern (double)");
@@ -973,19 +716,7 @@ seqedit::popup_tool_menu()
     m_tools_menu_items[17].set_label("Modify Time");
     m_tools_menu_items[17].set_submenu(*holder);
     m_menu_tools->append(m_tools_menu_items[17]);
-    
-#else
-    holder->items().push_back( SeparatorElem( ));
-    holder->items().push_back( MenuElem( "Expand Pattern (double)",
-                                         sigc::bind(mem_fun(*this, &seqedit::do_action),
-                                                 expand_pattern,0 )));
 
-    holder->items().push_back( MenuElem( "Compress Pattern (halve)",
-                                         sigc::bind(mem_fun(*this, &seqedit::do_action),
-                                                 compress_pattern,0 )));
-
-    m_menu_tools->items().push_back( MenuElem( "Modify Time", *holder ));
-#endif
     holder = manage( new Menu());
 
     char num[11];
@@ -996,76 +727,51 @@ seqedit::popup_tool_menu()
         if (i != 0)
         {
             snprintf(num, sizeof(num), "%+d [%s]", i, c_interval_text[abs(i)]);
-#ifdef GTKMM_3_SUPPORT
+
             MenuItem * menu_item = new MenuItem(num);
             menu_item->signal_activate().connect(sigc::bind(mem_fun(*this,&seqedit::do_action), transpose, i) );
             holder2->insert(*menu_item, 0);
-#else
-            holder2->items().push_front( MenuElem( num,
-                                                   sigc::bind(mem_fun(*this,&seqedit::do_action),
-                                                           transpose, i )));
-#endif
         }
     }
-#ifdef GTKMM_3_SUPPORT
+
     m_tools_menu_items[18].set_label("Transpose Selected");
     m_tools_menu_items[18].set_submenu(*holder2);
     holder->append(m_tools_menu_items[18]);
-#else
-    holder->items().push_back( MenuElem( "Transpose Selected", *holder2));
-#endif
+
     holder2 = manage( new Menu());
     for ( int i = -7; i <= 7; ++i)
     {
         if (i != 0)
         {
             snprintf(num, sizeof(num), "%+d [%s]", (i<0) ? i-1 : i+1, c_chord_text[abs(i)]);
-#ifdef GTKMM_3_SUPPORT
+
             MenuItem * menu_item = new MenuItem(num);
             menu_item->signal_activate().connect(sigc::bind(mem_fun(*this,&seqedit::do_action), transpose_h, i) );
             holder2->insert(*menu_item, 0);
-#else
-            holder2->items().push_front( MenuElem( num,
-                                                   sigc::bind(mem_fun(*this,&seqedit::do_action),
-                                                           transpose_h, i )));
-#endif
         }
     }
 
     if ( m_scale != 0 )
     {
-#ifdef GTKMM_3_SUPPORT
         m_tools_menu_items[19].set_label("Harmonic Transpose Selected");
         m_tools_menu_items[19].set_submenu(*holder2);
         holder->append(m_tools_menu_items[19]);
-#else
-        holder->items().push_back( MenuElem(
-                                       "Harmonic Transpose Selected", *holder2));
-#endif
     }
-#ifdef GTKMM_3_SUPPORT
+
     m_tools_menu_items[20].set_label("Modify Pitch");
     m_tools_menu_items[20].set_submenu(*holder);
     m_menu_tools->append(m_tools_menu_items[20]);
-#else
-    m_menu_tools->items().push_back( MenuElem( "Modify Pitch", *holder ));
-#endif
 
     holder = manage( new Menu());
     for ( int i = 1; i < 17; ++i)
     {
         snprintf(num, sizeof(num), "+/- %d", i);
-#ifdef GTKMM_3_SUPPORT
+
         MenuItem * menu_item = new MenuItem(num);
         menu_item->signal_activate().connect(sigc::bind(mem_fun(*this,&seqedit::do_action), randomize_events, i) );
         holder->append(*menu_item);
-#else
-        holder->items().push_back( MenuElem( num,
-                                             sigc::bind(mem_fun(*this,&seqedit::do_action),
-                                                     randomize_events, i )));
-#endif
     }
-#ifdef GTKMM_3_SUPPORT
+
     m_tools_menu_items[21].set_label("Randomize Event Values");
     m_tools_menu_items[21].set_submenu(*holder);
     m_menu_tools->append(m_tools_menu_items[21]);
@@ -1073,19 +779,9 @@ seqedit::popup_tool_menu()
     m_tools_menu_items[22].set_label("Reverse pattern");
     m_tools_menu_items[22].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::do_action), reverse_pattern, 0) );
     m_menu_tools->append(m_tools_menu_items[22]);
-#else
-    m_menu_tools->items().push_back( MenuElem( "Randomize Event Values", *holder ));
 
-    m_menu_tools->items().push_back( MenuElem( "Reverse pattern",
-                                              sigc::bind(mem_fun(*this,&seqedit::do_action),
-                                                         reverse_pattern, 0)));
-#endif
-#ifdef GTKMM_3_SUPPORT
     m_menu_tools->show_all();
     m_menu_tools->popup_at_pointer(NULL);
-#else
-    m_menu_tools->popup(0,0);
-#endif
 }
 
 
@@ -1412,12 +1108,8 @@ seqedit::fill_top_bar()
 void
 seqedit::popup_menu(Menu *a_menu)
 {
-#ifdef GTKMM_3_SUPPORT
     a_menu->show_all();
     a_menu->popup_at_pointer(NULL);
-#else
-    a_menu->popup(0,0);
-#endif
 }
 
 void
@@ -1426,17 +1118,12 @@ seqedit::popup_sequence_menu()
     using namespace Menu_Helpers;
 
     m_menu_sequences = manage( new Menu());
-#ifdef GTKMM_3_SUPPORT
+
     MenuItem * menu_item = new MenuItem("Off");
     menu_item->signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), -1, -1));
     m_menu_sequences->append(*menu_item);
     
     m_menu_sequences->append(m_menu_separator5);
-#else
-    m_menu_sequences->items().push_back(MenuElem("Off",
-                                        sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), -1, -1)));
-    m_menu_sequences->items().push_back( SeparatorElem( ));
-#endif
 
     char name[40];
     for ( int t=0; t<c_max_track; ++t )
@@ -1457,33 +1144,23 @@ seqedit::popup_sequence_menu()
                 inserted = true;
                 snprintf(name, sizeof(name), "[%d] %s", t+1, a_track->get_name());
                 menu_t = manage( new Menu());
-#ifdef GTKMM_3_SUPPORT
+
                 MenuItem * menu_item = new MenuItem(name);
                 menu_item->set_submenu(*menu_t);
                 m_menu_sequences->append(*menu_item);
-#else
-                m_menu_sequences->items().push_back(MenuElem(name,*menu_t));
-#endif
             }
 
             sequence *a_seq = a_track->get_sequence( s );
             snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
-#ifdef GTKMM_3_SUPPORT
+
             MenuItem * menu_item = new MenuItem(name);
             menu_item->signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), t, s));
             menu_t->append(*menu_item);
-#else
-            menu_t->items().push_back(MenuElem(name,
-                                               sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), t, s)));
-#endif
         }
     }
-#ifdef GTKMM_3_SUPPORT
+
     m_menu_sequences->show_all();
     m_menu_sequences->popup_at_pointer(NULL);
-#else
-    m_menu_sequences->popup(0,0);
-#endif
 }
 
 void
@@ -1688,7 +1365,7 @@ seqedit::popup_record_menu()
     m_menu_rec_type = manage( new Menu());
     
     /* record type */
-#ifdef GTKMM_3_SUPPORT
+    m_record_type_menu_items.clear();
     m_record_type_menu_items.resize(4);
 
     m_record_type_menu_items[0].set_label("Legacy merge looped recording");
@@ -1706,29 +1383,10 @@ seqedit::popup_record_menu()
     m_record_type_menu_items[3].set_label("Expand sequence length and overwrite");
     m_record_type_menu_items[3].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_rec_type), LOOP_RECORD_EXP_OVR ));
     m_menu_rec_type->append(m_record_type_menu_items[3]);
-#else
-    m_menu_rec_type->items().push_back(MenuElem("Legacy merge looped recording",
-                                    sigc::bind(mem_fun(*this, &seqedit::set_rec_type), LOOP_RECORD_LEGACY)));
-    
-    m_menu_rec_type->items().push_back(MenuElem("Overwrite looped recording",
-                                    sigc::bind(mem_fun(*this, &seqedit::set_rec_type), LOOP_RECORD_OVERWRITE)));
-    
-    m_menu_rec_type->items().push_back(MenuElem("Expand sequence length to fit recording",
-                                    sigc::bind(mem_fun(*this, &seqedit::set_rec_type), LOOP_RECORD_EXPAND)));
-    
-    m_menu_rec_type->items().push_back(MenuElem("Expand sequence length and overwrite",
-                                    sigc::bind(mem_fun(*this, &seqedit::set_rec_type), LOOP_RECORD_EXP_OVR)));
-#endif
 
-#ifdef GTKMM_3_SUPPORT
     m_menu_rec_type->show_all();
     m_menu_rec_type->popup_at_pointer(NULL);
-#else
-    m_menu_rec_type->popup(0,0);
-#endif
 }
-//m_option_midich->set_history( m_seq->getMidiChannel() );
-//m_option_midibus->set_history( m_seq->getMidiBus()->getID() );
 
 void
 seqedit::set_track_info( )

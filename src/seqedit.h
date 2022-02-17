@@ -75,7 +75,6 @@ private:
     Menu       *m_menu_snap;
     Menu       *m_menu_note_length;
 
-#ifdef GTKMM_3_SUPPORT
     std::vector<MenuItem> m_tools_menu_items;
     std::vector<MenuItem> m_snap_menu_items;
     std::vector<MenuItem> m_note_length_menu_items;
@@ -92,7 +91,6 @@ private:
     SeparatorMenuItem   m_menu_separator5;
     SeparatorMenuItem   m_menu_separator6;
     SeparatorMenuItem   m_menu_separator7;
-#endif
 
     /* length in measures */
     Menu       *m_menu_length;
@@ -125,13 +123,10 @@ private:
     HBox       *m_hbox;
     HBox       *m_hbox2;
     HBox       *m_hbox3;
-#ifdef GTKMM_3_SUPPORT
+
     Glib::RefPtr<Adjustment> m_vadjust;
     Glib::RefPtr<Adjustment> m_hadjust;
-#else
-    Adjustment *m_vadjust;
-    Adjustment *m_hadjust;
-#endif
+
     VScrollbar *m_vscroll_new;
     HScrollbar *m_hscroll_new;
 
