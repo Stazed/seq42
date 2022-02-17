@@ -40,8 +40,8 @@
 #include "pixmaps/undo.xpm"
 #include "pixmaps/redo.xpm"
 #include "pixmaps/quanize.xpm"
-#include "pixmaps/menu_empty.xpm"
-#include "pixmaps/menu_full.xpm"
+//#include "pixmaps/menu_empty.xpm"
+//#include "pixmaps/menu_full.xpm"
 #include "pixmaps/sequences.xpm"
 #include "pixmaps/tools.xpm"
 #include "pixmaps/seq-editor.xpm"
@@ -1186,15 +1186,6 @@ seqedit::set_background_sequence( int a_trk, int a_seq )
     }
 }
 
-Gtk::Image*
-seqedit::create_menu_image( bool a_state )
-{
-    if ( a_state )
-        return manage( new Image(Gdk::Pixbuf::create_from_xpm_data( menu_full_xpm  )));
-    else
-        return manage( new Image(Gdk::Pixbuf::create_from_xpm_data( menu_empty_xpm  )));
-}
-
 void
 seqedit::popup_event_menu()
 {
@@ -1203,7 +1194,6 @@ seqedit::popup_event_menu()
     /* temp */
     char b[20];
 
-    // FIXME for GTKMM-3 -- create_menu_image()
     bool note_on = false;
     bool note_off = false;
     bool aftertouch = false;
@@ -1253,6 +1243,7 @@ seqedit::popup_event_menu()
     m_data_menu_items.resize(6);
 
     m_data_menu_items[0].set_label("Note On Velocity");
+    m_data_menu_items[0].set_active(note_on);
     m_data_menu_items[0].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_data_type), (unsigned char) EVENT_NOTE_ON, 0 ));
     m_menu_data->append(m_data_menu_items[0]);
 
@@ -1260,22 +1251,27 @@ seqedit::popup_event_menu()
     m_menu_data->append(*menu_separator1);
 
     m_data_menu_items[1].set_label("Note Off Velocity");
+    m_data_menu_items[1].set_active(note_off);
     m_data_menu_items[1].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_data_type), (unsigned char) EVENT_NOTE_OFF, 0 ));
     m_menu_data->append(m_data_menu_items[1]);
 
     m_data_menu_items[2].set_label("AfterTouch");
+    m_data_menu_items[2].set_active(aftertouch);
     m_data_menu_items[2].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_data_type), (unsigned char) EVENT_AFTERTOUCH, 0 ));
     m_menu_data->append(m_data_menu_items[2]);
 
     m_data_menu_items[3].set_label("Program Change");
+    m_data_menu_items[3].set_active(program_change);
     m_data_menu_items[3].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_data_type), (unsigned char) EVENT_PROGRAM_CHANGE, 0 ));
     m_menu_data->append(m_data_menu_items[3]);
 
     m_data_menu_items[4].set_label("Channel Pressure");
+    m_data_menu_items[4].set_active(channel_pressure);
     m_data_menu_items[4].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_data_type), (unsigned char) EVENT_CHANNEL_PRESSURE, 0 ));
     m_menu_data->append(m_data_menu_items[4]);
 
     m_data_menu_items[5].set_label("Pitch Wheel");
+    m_data_menu_items[5].set_active(pitch_wheel);
     m_data_menu_items[5].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_data_type), (unsigned char) EVENT_PITCH_WHEEL, 0 ));
     m_menu_data->append(m_data_menu_items[5]);
 
@@ -1297,18 +1293,13 @@ seqedit::popup_event_menu()
                 if ( global_user_instrument_definitions[instrument].controllers_active[i*16+j] )
                     controller_name = global_user_instrument_definitions[instrument].controllers[i*16+j];
             }
-#ifdef GTKMM_3_SUPPORT
+
             CheckMenuItem * menu_item =  new CheckMenuItem();
             menu_item->set_label(controller_name);
+            menu_item->set_active(ccs[i * 16 + j]);
             menu_item->signal_activate().connect(sigc::bind(mem_fun(this, &seqedit::set_data_type),
                                                    (unsigned char) EVENT_CONTROL_CHANGE, i * 16 + j));
             menu_cc->append(*menu_item);
-#else
-            menu_cc->items().push_back( ImageMenuElem( controller_name,
-                                        *create_menu_image( ccs[i*16+j]),
-                                        sigc::bind(mem_fun(*this, &seqedit::set_data_type),
-                                                   (unsigned char) EVENT_CONTROL_CHANGE, i*16+j)));
-#endif
         }
 
         MenuItem * menu_item = new MenuItem();

@@ -80,7 +80,7 @@ private:
     std::vector<MenuItem> m_note_length_menu_items;
     std::vector<MenuItem> m_bw_menu_items;
     std::vector<MenuItem> m_record_volume_menu_items;
-    std::vector<MenuItem> m_data_menu_items;
+    std::vector<CheckMenuItem> m_data_menu_items;
     std::vector<MenuItem> m_record_type_menu_items;
 
     SeparatorMenuItem   m_menu_separator0;
@@ -272,8 +272,6 @@ private:
     void popup_record_menu();
     void popup_sequence_menu();
     void popup_tool_menu();
-
-    Gtk::Image* create_menu_image( bool a_state = false );
 
     void on_realize();
 
