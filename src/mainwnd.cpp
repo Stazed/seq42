@@ -2437,21 +2437,25 @@ mainwnd::about_dialog()
 {
     Gtk::AboutDialog dialog;
     dialog.set_transient_for(*this);
-    dialog.set_name(PACKAGE_NAME);
     dialog.set_version(VERSION);
     dialog.set_comments("Interactive MIDI Sequencer\n");
 
     dialog.set_copyright(
-        "(C) 2015 -      Stazed\n"
+        "(C) 2015 - present Stazed\n"
         "(C) 2010 - 2013 Sam Brauer\n"
         "(C) 2008 - 2009 Seq24team\n"
         "(C) 2002 - 2006 Rob C. Buse");
     dialog.set_website("https://github.com/Stazed/seq42");
-#ifdef GTKMM_3_SUPPORT
+
+    dialog.set_logo(Gdk::Pixbuf::create_from_xpm_data( seq42_xpm  ));
+
+    Glib::ustring null_license;
+    dialog.set_license(null_license);
+
+    dialog.set_license_type(LICENSE_GPL_3_0);
+
     std::vector<Glib::ustring> list_authors;
-#else
-    std::list<Glib::ustring> list_authors;
-#endif
+
     list_authors.push_back("Rob C. Buse <rcb@filter24.org>");
     list_authors.push_back("Ivan Hernandez <ihernandez@kiusys.com>");
     list_authors.push_back("Guido Scholz <guido.scholz@bayernline.de>");
@@ -2464,15 +2468,7 @@ mainwnd::about_dialog()
     list_authors.push_back("Stazed <stazed@mapson.com>");
     dialog.set_authors(list_authors);
 
-#ifdef GTKMM_3_SUPPORT
-    std::vector<Glib::ustring> list_documenters;
-#else
-    std::list<Glib::ustring> list_documenters;
-#endif
-    list_documenters.push_back("Dana Olson <seq24@ubuntustudio.com>");
-    dialog.set_documenters(list_documenters);
-
-    dialog.show_all_children();
+    dialog.show();
     dialog.run();
 }
 
