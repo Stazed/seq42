@@ -23,23 +23,7 @@
 #include "globals.h"
 #include "track.h"
 
-#ifdef GTKMM_3_SUPPORT
 #include <gtkmm.h>
-#else
-#include <gtkmm/button.h>
-#include <gtkmm/window.h>
-#include <gtkmm/accelgroup.h>
-#include <gtkmm/box.h>
-#include <gtkmm/main.h>
-#include <gtkmm/window.h>
-#include <gtkmm/dialog.h>
-#include <gtkmm/table.h>
-#include <gtkmm/label.h>
-#include <gtkmm/entry.h>
-#include <gtkmm/checkbutton.h>
-#include <sigc++/bind.h>
-#endif
-
 
 using namespace Gtk;
 

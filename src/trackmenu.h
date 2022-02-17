@@ -55,14 +55,7 @@ private:
     mainwnd     *m_mainwnd;
     bool m_something_to_paste;
 
-#ifdef GTKMM_3_SUPPORT
     std::vector<MenuItem> m_menu_items;
-
-    SeparatorMenuItem   m_menu_separator0;
-    SeparatorMenuItem   m_menu_separator1;
-    SeparatorMenuItem   m_menu_separator2;
-#endif
-    
 
     void on_realize();
 
