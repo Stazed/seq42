@@ -37,13 +37,8 @@ tempopopup::tempopopup(tempo *a_tempo) :
     set_size_request(150, 50);
 
     /* bpm spin button */
-#ifdef GTKMM_3_SUPPORT
     m_adjust_bpm = Adjustment::create(m_tempo->m_mainperf->get_bpm(), c_bpm_minimum -1, c_bpm_maximum, 1);
     m_spinbutton_bpm = manage( new SpinButton( m_adjust_bpm ));
-#else
-    m_adjust_bpm = manage(new Adjustment(m_tempo->m_mainperf->get_bpm(), c_bpm_minimum -1, c_bpm_maximum, 1));
-    m_spinbutton_bpm = manage( new SpinButton( *m_adjust_bpm ));
-#endif
 
     m_spinbutton_bpm->set_editable( true );
     m_spinbutton_bpm->set_digits(2);                             // 2 = two decimal precision
@@ -175,7 +170,7 @@ tempopopup::on_key_press_event( GdkEventKey* a_ev )
          then triggers the adj_callback_bpm() with the correct amount. But the below manual
          call to adj_callback_bpm() is called first and sends the incorrect old
          NOT updated amount to m_tempo->set_BPM. The m_is_typing bool is set any
-         time a keypress is use to eliminate the dupicate.  */
+         time a keypress is use to eliminate the duplicate.  */
         m_return = true;
         bool is_typing = m_is_typing;   // must check before callback since cb will set to false
         
@@ -190,7 +185,7 @@ tempopopup::on_key_press_event( GdkEventKey* a_ev )
 }
 
 void 
-tempopopup::popup_tempo_win()
+tempopopup::popup_tempo_win(int x, int y)
 {
     m_return = false;
     m_escape = false;
@@ -198,6 +193,7 @@ tempopopup::popup_tempo_win()
     m_spinbutton_bpm->set_value(m_tempo->m_mainperf->get_bpm());    // set to default starting bpm
     m_spinbutton_bpm->select_region(0,-1);                          // select all for easy typing replacement
     m_spinbutton_bpm->grab_focus();
+    move(x, y);
     show_all();
     raise();
 }

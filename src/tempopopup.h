@@ -43,11 +43,9 @@ private:
 
     HBox *m_hbox;
     SpinButton  *m_spinbutton_bpm;
-#ifdef GTKMM_3_SUPPORT
+
     Glib::RefPtr<Adjustment> m_adjust_bpm;
-#else
-    Adjustment  *m_adjust_bpm;
-#endif
+
     Button      *m_button_tap;
     tempo       *m_tempo;
 
@@ -70,7 +68,7 @@ public:
 
     tempopopup (tempo *a_tempo);
     
-    void popup_tempo_win();
+    void popup_tempo_win(int x, int y);
     
     /* From  sequencer64 tap button */
     void tap ();
