@@ -1248,14 +1248,16 @@ seqedit::popup_event_menu()
     }
 
     m_menu_data = manage( new Menu());
-#ifdef GTKMM_3_SUPPORT
+
+    m_data_menu_items.clear();
     m_data_menu_items.resize(6);
 
     m_data_menu_items[0].set_label("Note On Velocity");
     m_data_menu_items[0].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_data_type), (unsigned char) EVENT_NOTE_ON, 0 ));
     m_menu_data->append(m_data_menu_items[0]);
 
-    m_menu_data->append(m_menu_separator6);
+    MenuItem * menu_separator1 = new SeparatorMenuItem();
+    m_menu_data->append(*menu_separator1);
 
     m_data_menu_items[1].set_label("Note Off Velocity");
     m_data_menu_items[1].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_data_type), (unsigned char) EVENT_NOTE_OFF, 0 ));
@@ -1277,49 +1279,16 @@ seqedit::popup_event_menu()
     m_data_menu_items[5].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_data_type), (unsigned char) EVENT_PITCH_WHEEL, 0 ));
     m_menu_data->append(m_data_menu_items[5]);
 
-    m_menu_data->append(m_menu_separator7);
-#else
-    m_menu_data->items().push_back( ImageMenuElem( "Note On Velocity",
-                                    *create_menu_image( note_on ),
-                                    sigc::bind(mem_fun(*this, &seqedit::set_data_type),
-                                            (unsigned char) EVENT_NOTE_ON, 0 )));
+    MenuItem * menu_separator2 = new SeparatorMenuItem();
+    m_menu_data->append(*menu_separator2);
 
-    m_menu_data->items().push_back( SeparatorElem( ));
-
-    m_menu_data->items().push_back( ImageMenuElem( "Note Off Velocity",
-                                    *create_menu_image( note_off ),
-                                    sigc::bind(mem_fun(*this, &seqedit::set_data_type),
-                                            (unsigned char) EVENT_NOTE_OFF, 0 )));
-
-    m_menu_data->items().push_back( ImageMenuElem( "AfterTouch",
-                                    *create_menu_image( aftertouch ),
-                                    sigc::bind(mem_fun(*this, &seqedit::set_data_type),
-                                            (unsigned char) EVENT_AFTERTOUCH, 0 )));
-
-    m_menu_data->items().push_back( ImageMenuElem( "Program Change",
-                                    *create_menu_image( program_change ),
-                                    sigc::bind(mem_fun(*this, &seqedit::set_data_type),
-                                            (unsigned char) EVENT_PROGRAM_CHANGE, 0 )));
-
-    m_menu_data->items().push_back( ImageMenuElem( "Channel Pressure",
-                                    *create_menu_image( channel_pressure ),
-                                    sigc::bind(mem_fun(*this, &seqedit::set_data_type),
-                                            (unsigned char) EVENT_CHANNEL_PRESSURE, 0 )));
-
-    m_menu_data->items().push_back( ImageMenuElem( "Pitch Wheel",
-                                    *create_menu_image( pitch_wheel ),
-                                    sigc::bind(mem_fun(*this, &seqedit::set_data_type),
-                                            (unsigned char) EVENT_PITCH_WHEEL, 0 )));
-
-    m_menu_data->items().push_back( SeparatorElem( ));
-#endif
     /* create control change */
-    for ( int i=0; i<8; i++ )
+    for ( int i = 0; i < 8; i++ )
     {
         snprintf(b, sizeof(b), "Controls %d-%d", (i*16), (i*16) + 15);
         Menu *menu_cc = manage( new Menu() );
 
-        for( int j=0; j<16; j++ )
+        for( int j = 0; j < 16; j++ )
         {
             string controller_name( c_controller_names[i*16+j] );
             int instrument = global_user_midi_bus_definitions[midi_bus].instrument[midi_ch];
@@ -1341,20 +1310,15 @@ seqedit::popup_event_menu()
                                                    (unsigned char) EVENT_CONTROL_CHANGE, i*16+j)));
 #endif
         }
-#ifdef GTKMM_3_SUPPORT
+
         MenuItem * menu_item = new MenuItem();
+        menu_item->set_label(string(b));
         menu_item->set_submenu(*menu_cc);
         m_menu_data->append(*menu_item);
-#else
-        m_menu_data->items().push_back( MenuElem( string(b), *menu_cc ));
-#endif
     }
-#ifdef GTKMM_3_SUPPORT
+
     m_menu_data->show_all();
     m_menu_data->popup_at_pointer(NULL);
-#else
-    m_menu_data->popup(0,0);
-#endif
 }
 
 void
