@@ -74,7 +74,7 @@ private:
     void clock_callback_on ( int a_bus, RadioButton *a_button );
     void clock_callback_mod( int a_bus, RadioButton *a_button );
 
-    void clock_mod_callback( Adjustment *adj );
+    void clock_mod_callback( Glib::RefPtr<Gtk::Adjustment> adj );
 
     void input_callback( int a_bus, Button *a_button );
 
