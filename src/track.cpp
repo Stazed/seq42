@@ -304,6 +304,7 @@ track::pop_trigger_undo()
         m_list_trigger_redo.push( m_list_trigger );
         m_list_trigger = m_list_trigger_undo.top();
         m_list_trigger_undo.pop();
+        set_dirty();
     }
 
     unlock();
@@ -319,6 +320,7 @@ track::pop_trigger_redo()
         m_list_trigger_undo.push( m_list_trigger );
         m_list_trigger = m_list_trigger_redo.top();
         m_list_trigger_redo.pop();
+        set_dirty();
     }
 
     unlock();
