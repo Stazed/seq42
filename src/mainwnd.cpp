@@ -2170,35 +2170,31 @@ mainwnd::file_import_dialog()
     Gtk::FileChooserDialog dialog("Import MIDI file",
                                   Gtk::FILE_CHOOSER_ACTION_OPEN);
     dialog.set_transient_for(*this);
-#ifdef GTKMM_3_SUPPORT
 
-#else
-    Gtk::FileFilter filter_midi;
-    filter_midi.set_name("MIDI files");
-    filter_midi.add_pattern("*.midi");
-    filter_midi.add_pattern("*.MIDI");
-    filter_midi.add_pattern("*.mid");
-    filter_midi.add_pattern("*.MID");
+    auto filter_midi = Gtk::FileFilter::create();
+    filter_midi->set_name("MIDI files");
+    filter_midi->add_pattern("*.midi");
+    filter_midi->add_pattern("*.MIDI");
+    filter_midi->add_pattern("*.mid");
+    filter_midi->add_pattern("*.MID");
     dialog.add_filter(filter_midi);
 
-    Gtk::FileFilter filter_any;
-    filter_any.set_name("Any files");
-    filter_any.add_pattern("*");
+    auto filter_any = Gtk::FileFilter::create();
+    filter_any->set_name("Any files");
+    filter_any->add_pattern("*");
     dialog.add_filter(filter_any);
-#endif
+
     dialog.set_current_folder(last_midi_dir);
 
     ButtonBox *btnbox = dialog.get_action_area();
     HBox hbox( false, 2 );
-#ifdef GTKMM_3_SUPPORT
 
-#else
-    m_adjust_load_offset = manage( new Adjustment( -1, -1, SEQ24_SCREEN_SET_SIZE - 1, 1 ));
-    m_spinbutton_load_offset = manage( new SpinButton( *m_adjust_load_offset ));
-    m_spinbutton_load_offset->set_editable( false );
+    m_adjust_load_offset = Adjustment::create(-1, -1, SEQ24_SCREEN_SET_SIZE - 1, 1 );
+    m_spinbutton_load_offset = manage( new SpinButton( m_adjust_load_offset ));
+    m_spinbutton_load_offset->set_editable( true );
     m_spinbutton_load_offset->set_wrap( true );
     hbox.pack_end(*m_spinbutton_load_offset, false, false );
-#endif
+
     hbox.pack_end(*(manage( new Label("Seq24 Screen Import"))), false, false, 4);
 
     btnbox->pack_start(hbox, false, false );
@@ -2220,7 +2216,9 @@ mainwnd::file_import_dialog()
             midifile f( dialog.get_filename() );
 
             if(f.parse( m_mainperf, this, (int) m_adjust_load_offset->get_value() ))
+            {
                 last_midi_dir = dialog.get_filename().substr(0, dialog.get_filename().rfind("/") + 1);
+            }
             else return;
         }
         catch(...)

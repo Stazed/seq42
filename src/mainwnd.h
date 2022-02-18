@@ -147,7 +147,7 @@ private:
     Entry       *m_entry_bw;
 
     SpinButton  *m_spinbutton_load_offset;
-    Adjustment  *m_adjust_load_offset;
+    Glib::RefPtr<Adjustment> m_adjust_load_offset;
 
     HBox *m_hbox;
     HBox *m_hlbox;
