@@ -1916,22 +1916,20 @@ void mainwnd::choose_file(const bool playlist_mode)
 
     dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
     dialog.add_button(Gtk::Stock::OPEN, Gtk::RESPONSE_OK);
-#ifdef GTKMM_3_SUPPORT
 
-#else
     if(!playlist_mode)
     {
-        Gtk::FileFilter filter_midi;
-        filter_midi.set_name("Seq42 files");
-        filter_midi.add_pattern("*.s42");
+        auto filter_midi = Gtk::FileFilter::create();
+        filter_midi->set_name("Seq42 files");
+        filter_midi->add_pattern("*.s42");
         dialog.add_filter(filter_midi);
     }
     
-    Gtk::FileFilter filter_any;
-    filter_any.set_name("Any files");
-    filter_any.add_pattern("*");
+    auto filter_any = Gtk::FileFilter::create();
+    filter_any->set_name("Any files");
+    filter_any->add_pattern("*");
     dialog.add_filter(filter_any);
-#endif
+
     dialog.set_current_folder(last_used_dir);
 
     int result = dialog.run();
