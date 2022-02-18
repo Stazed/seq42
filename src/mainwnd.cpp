@@ -137,7 +137,7 @@ mainwnd::mainwnd(perform *a_p):
     m_menu_file->append(m_file_menu_items[2]);
 
     /* Add the recent files submenu */
-    update_recent_files_menu();   // FIXME
+    update_recent_files_menu();
 
     m_file_menu_items[3].set_label("Open _playlist...");
     m_file_menu_items[3].set_use_underline(true);
@@ -2794,38 +2794,12 @@ mainwnd::set_nsm_menu()
 {
     if(m_menu_file != nullptr)
     {
-#ifdef GTKMM_3_SUPPORT
-
-#else
-        m_menu_file->items().clear();
-#endif
+        m_file_menu_items[1].set_sensitive(false);  // New
+        m_file_menu_items[2].set_sensitive(false);  // Open
+        m_file_menu_items[3].set_sensitive(false);  // Open playlist
+        m_file_menu_items[5].set_sensitive(false);  // Save As
+        m_file_menu_items[7].set_sensitive(false);  // Exit
+        m_menu_recent->set_sensitive(false);        // Recent files submenu
     }
-    else
-    {
-        m_menu_file = manage(new Gtk::Menu());
-#ifdef GTKMM_3_SUPPORT
-
-#else
-        m_menubar->items().push_front(MenuElem("_File", *m_menu_file));
-#endif
-    }
-
-//    m_menu_file->items().push_back(MenuElem("Open _playlist...",
-//                                            mem_fun(*this, &mainwnd::file_open_playlist)));
-#ifdef GTKMM_3_SUPPORT
-
-#else
-    m_menu_file->items().push_back(MenuElem("_Save",
-                                            Gtk::AccelKey("<control>S"),
-                                            mem_fun(*this, &mainwnd::file_save)));
-
-    m_menu_file->items().push_back(MenuElem("O_ptions...",
-                                            mem_fun(*this,&mainwnd::options_dialog)));
-
-    m_menu_file->items().push_back(SeparatorElem());
-    m_menu_file->items().push_back(MenuElem("E_xit",
-                                            Gtk::AccelKey("<control>Q"),
-                                            mem_fun(*this, &mainwnd::file_exit)));
-#endif
 }
 #endif  // NSM_SUPPORT
