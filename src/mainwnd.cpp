@@ -87,10 +87,8 @@ mainwnd::mainwnd(perform *a_p):
     update_window_title();
     set_size_request(860, 322);
 
-#ifdef GTKMM_3_SUPPORT
     m_accelgroup = Gtk::AccelGroup::create();
     add_accel_group(m_accelgroup);
-#endif
 
     m_main_time = manage( new maintime( ));
 
@@ -103,8 +101,7 @@ mainwnd::mainwnd(perform *a_p):
     m_menu_edit = manage(new Menu());
 
     m_menu_help = manage(new Menu());
-    
-#ifdef GTKMM_3_SUPPORT
+
     m_file_menu_items.resize(8);
     m_edit_menu_items.resize(11);
 
@@ -237,83 +234,6 @@ mainwnd::mainwnd(perform *a_p):
     m_help_menu_item.signal_activate().connect(mem_fun(*this, &mainwnd::about_dialog));
     m_menu_help->append(m_help_menu_item);
 
-#else
-    m_menubar->items().push_front(MenuElem("_File", *m_menu_file));
-
-    m_menubar->items().push_back(MenuElem("_Edit", *m_menu_edit));
-
-    m_menubar->items().push_back(MenuElem("_Help", *m_menu_help));
-
-    /* file menu items */
-    m_menu_file->items().push_back(MenuElem("_New",
-                                            Gtk::AccelKey("<control>N"),
-                                            mem_fun(*this, &mainwnd::file_new)));
-    
-    m_menu_file->items().push_back(MenuElem("_Open...",
-                                            Gtk::AccelKey("<control>O"),
-                                            mem_fun(*this, &mainwnd::file_open)));
-    update_recent_files_menu();
-    
-    m_menu_file->items().push_back(MenuElem("Open _playlist...",
-                                            mem_fun(*this, &mainwnd::file_open_playlist)));
-    
-    m_menu_file->items().push_back(SeparatorElem());
-    
-    m_menu_file->items().push_back(MenuElem("_Save",
-                                            Gtk::AccelKey("<control>S"),
-                                            mem_fun(*this, &mainwnd::file_save)));
-    m_menu_file->items().push_back(MenuElem("Save _as...",
-                                            sigc::bind(mem_fun(*this, &mainwnd::file_save_as), E_SEQ42_NATIVE_FILE, nullptr)));
-
-    m_menu_file->items().push_back(SeparatorElem());
-
-    m_menu_file->items().push_back(MenuElem("O_ptions...",
-                                            mem_fun(*this,&mainwnd::options_dialog)));
-    m_menu_file->items().push_back(SeparatorElem());
-    m_menu_file->items().push_back(MenuElem("E_xit",
-                                            Gtk::AccelKey("<control>Q"),
-                                            mem_fun(*this, &mainwnd::file_exit)));
-
-    /* edit menu items */
-    m_menu_edit->items().push_back(MenuElem("Sequence _list",
-                                            mem_fun(*this, &mainwnd::open_seqlist)));
-
-    m_menu_edit->items().push_back(MenuElem("_Apply song transpose",
-                                            mem_fun(*this, &mainwnd::apply_song_transpose)));
-
-//    m_menu_edit->items().push_back(MenuElem("Increase _grid size",
-//                                            mem_fun(*this, &mainwnd::grow)));
-
-    m_menu_edit->items().push_back(MenuElem("_Delete unused sequences",
-                                            mem_fun(*this, &mainwnd::delete_unused_seq)));
-
-    m_menu_edit->items().push_back(MenuElem("_Create triggers between L and R for 'playing' sequences",
-                                            mem_fun(*this, &mainwnd::create_triggers)));
-
-    m_menu_edit->items().push_back(SeparatorElem());
-    m_menu_edit->items().push_back(MenuElem("_Mute all tracks",
-                                            sigc::bind(mem_fun(*this, &mainwnd::set_song_mute), MUTE_ON)));
-
-    m_menu_edit->items().push_back(MenuElem("_Unmute all tracks",
-                                            sigc::bind(mem_fun(*this, &mainwnd::set_song_mute), MUTE_OFF)));
-
-    m_menu_edit->items().push_back(MenuElem("_Toggle mute for all tracks",
-                                            sigc::bind(mem_fun(*this, &mainwnd::set_song_mute), MUTE_TOGGLE)));
-
-    m_menu_edit->items().push_back(SeparatorElem());
-    m_menu_edit->items().push_back(MenuElem("_Import midi...",
-                                            mem_fun(*this, &mainwnd::file_import_dialog)));
-
-    m_menu_edit->items().push_back(MenuElem("Midi e_xport (Seq 24/32/64)",
-                                            sigc::bind(mem_fun(*this, &mainwnd::file_save_as), E_MIDI_SEQ24_FORMAT, nullptr)));
-
-    m_menu_edit->items().push_back(MenuElem("Midi export _song",
-                                            sigc::bind(mem_fun(*this, &mainwnd::file_save_as), E_MIDI_SONG_FORMAT, nullptr)));
-
-    /* help menu items */
-    m_menu_help->items().push_back(MenuElem("_About...",
-                                            mem_fun(*this, &mainwnd::about_dialog)));
-#endif  // GTKMM-2
     /* top line items */
     hbox1 = manage( new HBox( false, 2 ) );
     hbox1->set_border_width( 2 );
@@ -435,19 +355,12 @@ mainwnd::mainwnd(perform *a_p):
     
     
     /* perfedit widgets */
-#ifdef GTKMM_3_SUPPORT
     m_vadjust = Adjustment::create(0,0,1,1,1,1 );
     m_hadjust = Adjustment::create(0,0,1,1,1,1 );
 
     m_vscroll   =  manage(new VScrollbar( m_vadjust ));
     m_hscroll   =  manage(new HScrollbar( m_hadjust ));
-#else
-    m_vadjust = manage( new Adjustment(0,0,1,1,1,1 ));
-    m_hadjust = manage( new Adjustment(0,0,1,1,1,1 ));
 
-    m_vscroll   =  manage(new VScrollbar( *m_vadjust ));
-    m_hscroll   =  manage(new HScrollbar( *m_hadjust ));
-#endif
     m_perfnames = manage( new perfnames( m_mainperf, this, m_vadjust ));
 
     m_perfroll = manage( new perfroll
@@ -1473,12 +1386,8 @@ mainwnd::toggle_follow_transport()
 void
 mainwnd::popup_menu(Menu *a_menu)
 {
-#ifdef GTKMM_3_SUPPORT
     a_menu->show_all();
     a_menu->popup_at_pointer(NULL);
-#else
-    a_menu->popup(0,0);
-#endif
 }
 
 void

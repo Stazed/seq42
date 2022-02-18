@@ -62,7 +62,7 @@ private:
     Menu     *m_menu_recent;          /**< File/Recent menu popup.    */
     Menu     *m_menu_edit;
     Menu     *m_menu_help;
-#ifdef GTKMM_3_SUPPORT
+
     std::vector<MenuItem> m_file_menu_items;
     std::vector<MenuItem> m_edit_menu_items;
     std::vector<MenuItem> m_snap_menu_items;
@@ -78,7 +78,6 @@ private:
     SeparatorMenuItem   m_menu_separator6;
     SeparatorMenuItem   m_menu_separator7;
     SeparatorMenuItem   m_menu_separator8;
-#endif
     
     Gtk::HBox *hbox1;               /* top line mainwindow */
     Gtk::Image * m_image_seq42;     /* Image for Mainwindow logo.   */
@@ -93,15 +92,10 @@ private:
     Button      *m_button_fastforward;
 
     Bpm_spinbutton *m_spinbutton_bpm;
-#ifdef GTKMM_3_SUPPORT
+
     Glib::RefPtr<Adjustment> m_adjust_bpm;
     Glib::RefPtr<Adjustment> m_adjust_swing_amount8;
     Glib::RefPtr<Adjustment> m_adjust_swing_amount16;
-#else
-    Adjustment  *m_adjust_bpm;
-    Adjustment  *m_adjust_swing_amount8;
-    Adjustment  *m_adjust_swing_amount16;
-#endif
 
     Button      *m_button_tap;
     SpinButton  *m_spinbutton_swing_amount8;
@@ -113,13 +107,10 @@ private:
 
     VScrollbar *m_vscroll;
     HScrollbar *m_hscroll;
-#ifdef GTKMM_3_SUPPORT
+
     Glib::RefPtr<Adjustment> m_vadjust;
     Glib::RefPtr<Adjustment> m_hadjust;
-#else
-    Adjustment *m_vadjust;
-    Adjustment *m_hadjust;
-#endif
+
     perfnames *m_perfnames;
     perfroll *m_perfroll;
     perftime *m_perftime;
