@@ -20,7 +20,6 @@
 #include "event.h"
 #include "perfroll.h"
 #include "seqedit.h"
-#include "font.h"
 
 
 perfroll::perfroll( perform *a_perf,

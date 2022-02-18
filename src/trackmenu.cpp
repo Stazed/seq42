@@ -21,7 +21,6 @@
 #include "trackmenu.h"
 #include "seqedit.h"
 #include "mainwnd.h"
-#include "font.h"
 
 
 // Constructor

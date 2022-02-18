@@ -19,7 +19,6 @@
 //-----------------------------------------------------------------------------
 #include "event.h"
 #include "seqtime.h"
-#include "font.h"
 
 seqtime::seqtime(sequence *a_seq, int a_zoom, Glib::RefPtr<Adjustment> a_hadjust):
     m_hadjust(a_hadjust),

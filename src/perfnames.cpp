@@ -19,7 +19,6 @@
 //-----------------------------------------------------------------------------
 #include "perfnames.h"
 #include "mainwnd.h"
-#include "font.h"
 
 perfnames::perfnames( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment> a_vadjust ):
     trackmenu(a_perf, a_main),

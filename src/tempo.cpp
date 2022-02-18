@@ -19,7 +19,6 @@
 //-----------------------------------------------------------------------------
 
 #include "tempo.h"
-#include "font.h"
 #include "pixmaps/tempo_marker.xpm"
 #include "pixmaps/stop_marker.xpm"
 

@@ -28,7 +28,6 @@
 #    include "config.h"
 #endif
 
-#include "font.h"
 #ifdef LASH_SUPPORT
 #    include "lash.h"
 #endif
