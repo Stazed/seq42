@@ -483,23 +483,12 @@ mainwnd::mainwnd(perform *a_p):
     m_table->attach( *m_tempo, 1, 2, 1, 2, Gtk::FILL, Gtk::SHRINK );
 
     /* bpm spin button */
-#ifdef GTKMM_3_SUPPORT
     m_adjust_bpm = Adjustment::create(c_bpm, c_bpm_minimum, c_bpm_maximum, 1);
     m_spinbutton_bpm = manage( new Bpm_spinbutton( m_adjust_bpm ));
-#else
-    m_adjust_bpm = manage(new Adjustment(c_bpm, c_bpm_minimum, c_bpm_maximum, 1));
-    m_spinbutton_bpm = manage( new Bpm_spinbutton( *m_adjust_bpm ));
-#endif
-
     m_spinbutton_bpm->set_editable( true );
     m_spinbutton_bpm->set_digits(2);                    // 2 = two decimal precision
     m_spinbutton_bpm->set_numeric();
-#ifdef GTKMM_3_SUPPORT
     m_spinbutton_bpm->signal_value_changed().connect(mem_fun(*this, &mainwnd::adj_callback_bpm ));
-#else
-    m_adjust_bpm->signal_value_changed().connect(
-        mem_fun(*this, &mainwnd::adj_callback_bpm ));
-#endif
 
     add_tooltip( m_spinbutton_bpm, "Adjust starting beats per minute (BPM)" );
 
@@ -544,15 +533,10 @@ mainwnd::mainwnd(perform *a_p):
         {
             snprintf(num, sizeof(num), "0 [normal]");
         }
-#ifdef GTKMM_3_SUPPORT
+
         MenuItem * menu_item = new MenuItem(num);
         menu_item->signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::xpose_button_callback), i ));
         m_menu_xpose->insert(*menu_item, 0);
-#else
-        m_menu_xpose->items().push_front( MenuElem( num,
-                                          sigc::bind(mem_fun(*this,&mainwnd::xpose_button_callback),
-                                                  i )));
-#endif
     }
 
     m_button_xpose = manage( new Button());
@@ -560,11 +544,10 @@ mainwnd::mainwnd(perform *a_p):
     m_button_xpose->signal_clicked().connect(  sigc::bind<Menu *>( mem_fun( *this, &mainwnd::popup_menu), m_menu_xpose  ));
     add_tooltip( m_button_xpose, "Song transpose" );
     m_entry_xpose = manage( new Entry());
-    m_entry_xpose->set_size_request( 40, -1 );
+    m_entry_xpose->set_width_chars(3);
     m_entry_xpose->set_editable( false );
 
     m_menu_snap =   manage( new Menu());
-#ifdef GTKMM_3_SUPPORT
     m_snap_menu_items.resize(25);
 
     m_snap_menu_items[0].set_label("1/1");
@@ -672,50 +655,20 @@ mainwnd::mainwnd(perform *a_p):
     m_snap_menu_items[24].set_label("1/30");
     m_snap_menu_items[24].signal_activate().connect(sigc::bind(mem_fun(*this,&mainwnd::set_snap), 30 ));
     m_menu_snap->append(m_snap_menu_items[24]);
-#else
-    m_menu_snap->items().push_back(MenuElem("1/1",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 1  )));
-    m_menu_snap->items().push_back(MenuElem("1/2",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 2  )));
-    m_menu_snap->items().push_back(MenuElem("1/4",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 4  )));
-    m_menu_snap->items().push_back(MenuElem("1/8",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 8  )));
-    m_menu_snap->items().push_back(MenuElem("1/16",  sigc::bind(mem_fun(*this,&mainwnd::set_snap), 16  )));
-    m_menu_snap->items().push_back(MenuElem("1/32",  sigc::bind(mem_fun(*this,&mainwnd::set_snap), 32  )));
-    m_menu_snap->items().push_back(SeparatorElem());
-    m_menu_snap->items().push_back(MenuElem("1/3",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 3  )));
-    m_menu_snap->items().push_back(MenuElem("1/6",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 6  )));
-    m_menu_snap->items().push_back(MenuElem("1/12",  sigc::bind(mem_fun(*this,&mainwnd::set_snap), 12  )));
-    m_menu_snap->items().push_back(MenuElem("1/24",  sigc::bind(mem_fun(*this,&mainwnd::set_snap), 24  )));
-    m_menu_snap->items().push_back(SeparatorElem());
-    m_menu_snap->items().push_back(MenuElem("1/5",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 5  )));
-    m_menu_snap->items().push_back(MenuElem("1/10",  sigc::bind(mem_fun(*this,&mainwnd::set_snap), 10  )));
-    m_menu_snap->items().push_back(MenuElem("1/20",  sigc::bind(mem_fun(*this,&mainwnd::set_snap), 20  )));
-    m_menu_snap->items().push_back(MenuElem("1/40",  sigc::bind(mem_fun(*this,&mainwnd::set_snap), 40  )));
-    m_menu_snap->items().push_back(SeparatorElem());
-    m_menu_snap->items().push_back(MenuElem("1/7",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 7  )));
-    m_menu_snap->items().push_back(MenuElem("1/9",   sigc::bind(mem_fun(*this,&mainwnd::set_snap), 9  )));
-    m_menu_snap->items().push_back(MenuElem("1/11",  sigc::bind(mem_fun(*this,&mainwnd::set_snap), 11  )));
-    m_menu_snap->items().push_back(MenuElem("1/13",  sigc::bind(mem_fun(*this,&mainwnd::set_snap), 13  )));
-    m_menu_snap->items().push_back(MenuElem("1/14",  sigc::bind(mem_fun(*this,&mainwnd::set_snap), 14  )));
-    m_menu_snap->items().push_back(MenuElem("1/15",  sigc::bind(mem_fun(*this,&mainwnd::set_snap), 15  )));
-    m_menu_snap->items().push_back(MenuElem("1/18",  sigc::bind(mem_fun(*this,&mainwnd::set_snap), 18  )));
-    m_menu_snap->items().push_back(MenuElem("1/22",  sigc::bind(mem_fun(*this,&mainwnd::set_snap), 22  )));
-    m_menu_snap->items().push_back(MenuElem("1/26",  sigc::bind(mem_fun(*this,&mainwnd::set_snap), 26  )));
-    m_menu_snap->items().push_back(MenuElem("1/28",  sigc::bind(mem_fun(*this,&mainwnd::set_snap), 28  )));
-    m_menu_snap->items().push_back(MenuElem("1/30",  sigc::bind(mem_fun(*this,&mainwnd::set_snap), 30  )));
-#endif  // GTKMM-2
+
     /* snap */
     m_button_snap = manage( new Button());
     m_button_snap->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( snap_xpm ))));
     m_button_snap->signal_clicked().connect(  sigc::bind<Menu *>( mem_fun( *this, &mainwnd::popup_menu), m_menu_snap  ));
     add_tooltip( m_button_snap, "Grid snap. (Fraction of Measure Length)" );
     m_entry_snap = manage( new Entry());
-    m_entry_snap->set_size_request( 40, -1 );
+    m_entry_snap->set_width_chars(4);
     m_entry_snap->set_editable( false );
 
     m_menu_bp_measure = manage( new Menu() );
     m_menu_bw = manage( new Menu() );
 
     /* bw */
-#ifdef GTKMM_3_SUPPORT
     m_bw_menu_items.resize(5);
 
     m_bw_menu_items[0].set_label("1");
@@ -738,13 +691,6 @@ mainwnd::mainwnd(perform *a_p):
     m_bw_menu_items[4].signal_activate().connect(sigc::bind(mem_fun(*this, &mainwnd::bw_button_callback), 16 ));
     m_menu_bw->append(m_bw_menu_items[4]);
 
-#else
-    m_menu_bw->items().push_back(MenuElem("1", sigc::bind(mem_fun(*this,&mainwnd::bw_button_callback), 1  )));
-    m_menu_bw->items().push_back(MenuElem("2", sigc::bind(mem_fun(*this,&mainwnd::bw_button_callback), 2  )));
-    m_menu_bw->items().push_back(MenuElem("4", sigc::bind(mem_fun(*this,&mainwnd::bw_button_callback), 4  )));
-    m_menu_bw->items().push_back(MenuElem("8", sigc::bind(mem_fun(*this,&mainwnd::bw_button_callback), 8  )));
-    m_menu_bw->items().push_back(MenuElem("16", sigc::bind(mem_fun(*this,&mainwnd::bw_button_callback), 16 )));
-#endif
     char b[20];
 
     for( int i=0; i<16; i++ )
@@ -752,14 +698,9 @@ mainwnd::mainwnd(perform *a_p):
         snprintf( b, sizeof(b), "%d", i+1 );
 
         /* length */
-#ifdef GTKMM_3_SUPPORT
         MenuItem * menu_item = new MenuItem(b);
         menu_item->signal_activate().connect(sigc::bind(mem_fun(*this, &mainwnd::bp_measure_button_callback), i + 1 ));
         m_menu_bp_measure->append(*menu_item);
-#else
-        m_menu_bp_measure->items().push_back(MenuElem(b,
-                                             sigc::bind(mem_fun(*this,&mainwnd::bp_measure_button_callback),i+1 )));
-#endif
     }
 
     /* beats per measure */
@@ -781,26 +722,21 @@ mainwnd::mainwnd(perform *a_p):
     m_entry_bw->set_editable( false );
 
     /* swing_amount spin buttons */
-#ifdef GTKMM_3_SUPPORT
     m_adjust_swing_amount8 = Adjustment::create(0, 0, c_max_swing_amount, 1);
     m_spinbutton_swing_amount8 = manage( new SpinButton( m_adjust_swing_amount8 ));
 
     m_adjust_swing_amount16 = Adjustment::create(0, 0, c_max_swing_amount, 1);
     m_spinbutton_swing_amount16 = manage( new SpinButton( m_adjust_swing_amount16 ));
-#else
-    m_adjust_swing_amount8 = manage(new Adjustment(0, 0, c_max_swing_amount, 1));
-    m_spinbutton_swing_amount8 = manage( new SpinButton( *m_adjust_swing_amount8 ));
 
-    m_adjust_swing_amount16 = manage(new Adjustment(0, 0, c_max_swing_amount, 1));
-    m_spinbutton_swing_amount16 = manage( new SpinButton( *m_adjust_swing_amount16 ));
-#endif
-    m_spinbutton_swing_amount8->set_editable( false );
-    m_adjust_swing_amount8->signal_value_changed().connect(
+    m_spinbutton_swing_amount8->set_editable(true);
+    m_spinbutton_swing_amount8->set_width_chars(2);
+    m_spinbutton_swing_amount8->signal_value_changed().connect(
         mem_fun(*this, &mainwnd::adj_callback_swing_amount8 ));
     add_tooltip( m_spinbutton_swing_amount8, "Adjust 1/8 swing amount" );
 
-    m_spinbutton_swing_amount16->set_editable( false );
-    m_adjust_swing_amount16->signal_value_changed().connect(
+    m_spinbutton_swing_amount16->set_editable(true);
+    m_spinbutton_swing_amount16->set_width_chars(2);
+    m_spinbutton_swing_amount16->signal_value_changed().connect(
         mem_fun(*this, &mainwnd::adj_callback_swing_amount16 ));
     add_tooltip( m_spinbutton_swing_amount16, "Adjust 1/16 swing amount" );
 
