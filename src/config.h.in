@@ -12,8 +12,8 @@
 /* Define to 1 if you have the `atopology' library (-latopology). */
 #undef HAVE_LIBATOPOLOGY
 
-/* Define to 1 if you have the `gtkmm-2.4' library (-lgtkmm-2.4). */
-#undef HAVE_LIBGTKMM_2_4
+/* Define to 1 if you have the `gtkmm-3.0' library (-lgtkmm-3.0). */
+#undef HAVE_LIBGTKMM_3_0
 
 /* Define to 1 if you have the `rt' library (-lrt). */
 #undef HAVE_LIBRT
@@ -50,9 +50,6 @@
 
 /* Define to enable JACK driver */
 #undef JACK_SUPPORT
-
-/* Define to enable LASH support */
-#undef LASH_SUPPORT
 
 /* Define if LIBLO library is available. */
 #undef LIBLO_SUPPORT

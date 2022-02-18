@@ -91,27 +91,6 @@ fi
 
 
 dnl
-dnl LASH SUPPORT
-dnl
-AC_ARG_ENABLE(lash,
-    [AS_HELP_STRING(--disable-lash, [Disable LASH support])],
-    [lash=$enableval],
-    [lash=no])
-
-if test "$lash" != "no"; then
-    PKG_CHECK_MODULES(LASH, lash-1.0 >= 0.5.0, lash_found="yes", lash_found="no")
-    if test "$lash_found" = "yes"; then
-        AC_DEFINE(LASH_SUPPORT, 1, [Define to enable LASH support])
-        AC_SUBST(LASH_CFLAGS)
-        AC_SUBST(LASH_LIBS)
-    else
-        AC_MSG_WARN([*** LASH not found, session support will not be built.])
-    fi
-else
-    AC_MSG_WARN([*** LASH support not enabled.]);
-fi
-
-dnl
 dnl    MIDI CONTROL SUPPORT
 dnl
 midi_control="yes"

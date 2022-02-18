@@ -24,7 +24,7 @@ build() {
     cd "${srcdir}/${_pkgbasename}"
 
     autoreconf -i
-    ./configure --prefix=/usr --disable-lash
+    ./configure --prefix=/usr
     make
 }
 

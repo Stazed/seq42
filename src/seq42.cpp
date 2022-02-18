@@ -28,9 +28,6 @@
 #    include "config.h"
 #endif
 
-#ifdef LASH_SUPPORT
-#    include "lash.h"
-#endif
 #include "mainwnd.h"
 #include "midifile.h"
 #include "optionsfile.h"
@@ -131,11 +128,6 @@ Glib::ustring global_jack_session_uuid = "";
 user_midi_bus_definition   global_user_midi_bus_definitions[c_maxBuses];
 user_instrument_definition global_user_instrument_definitions[c_max_instruments];
 
-//font *p_font_renderer;
-
-#ifdef LASH_SUPPORT
-lash *lash_driver = NULL;
-#endif
 
 #ifdef __WIN32__
 #   define HOME "HOMEPATH"
@@ -165,14 +157,6 @@ main (int argc, char *argv[])
         for ( int j=0; j<128; j++ )
             global_user_instrument_definitions[i].controllers_active[j] = false;
     }
-
-    /* Init the lash driver (strip lash specific command line
-     * arguments and connect to daemon) */
-    /* lash must be initialized here because mastermidibus uses the global
-    * lash_driver variable*/
-#ifdef LASH_SUPPORT
-    lash_driver = new lash(&argc, &argv);
-#endif
 
     /* parse parameters */
     int c;
@@ -370,8 +354,6 @@ main (int argc, char *argv[])
     p.launch_output_thread();
     p.init_jack();
 
-//    p_font_renderer = new font();
-
     mainwnd seq42_window( &p );
 
 #ifdef NSM_SUPPORT
@@ -430,12 +412,7 @@ main (int argc, char *argv[])
 #ifdef NSM_SUPPORT
     }
 #endif
-    
-    /* connect to lash daemon and poll events*/
-#ifdef LASH_SUPPORT
-    lash_driver->set_mainwnd(&seq42_window);
-    lash_driver->start( &p );
-#endif
+
     kit.run(seq42_window);
 
     p.deinit_jack();
@@ -457,10 +434,6 @@ main (int argc, char *argv[])
     {
         printf( "Error calling getenv( \"%s\" )\n", HOME );
     }
-
-#ifdef LASH_SUPPORT
-    delete lash_driver;
-#endif
 
 #ifdef NSM_SUPPORT
     if(nsm)

@@ -2,8 +2,8 @@
 
 SUBDIRS = pixmaps
 
-AM_CXXFLAGS = $(GTKMM_CFLAGS) $(JACK_CFLAGS) $(LASH_CFLAGS) $(LIBLO_LIBS) -Wall -Wno-deprecated-declarations
-seq42_LDADD = $(GTKMM_LIBS) $(ALSA_LIBS) $(JACK_LIBS) $(LASH_LIBS) $(LIBLO_LIBS)
+AM_CXXFLAGS = $(GTKMM_CFLAGS) $(JACK_CFLAGS) $(LIBLO_LIBS) -Wall -Wno-deprecated-declarations
+seq42_LDADD = $(GTKMM_LIBS) $(ALSA_LIBS) $(JACK_LIBS) $(LIBLO_LIBS)
 
 bin_PROGRAMS = seq42
 
@@ -13,7 +13,6 @@ seq42_SOURCES = \
 	event.cpp event.h \
 	globals.h \
 	keybindentry.cpp keybindentry.h \
-	lash.cpp lash.h \
 	lfownd.cpp lfownd.h \
 	maintime.cpp maintime.h \
 	mainwnd.cpp mainwnd.h \
