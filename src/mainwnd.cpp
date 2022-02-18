@@ -392,7 +392,7 @@ mainwnd::mainwnd(perform *a_p):
     /* fill table */
     m_table->attach( *m_hlbox,  0, 3, 0, 1,  Gtk::FILL, Gtk::SHRINK, 2, 0 ); // shrink was 0
 
-    m_table->attach( *m_perfnames,    0, 1, 3, 4, Gtk::SHRINK, Gtk::FILL );
+    m_table->attach( *m_perfnames,    0, 1, 3, 4, Gtk::FILL, Gtk::FILL );
     m_table->attach( *m_tempo, 1, 2, 1, 2, Gtk::FILL, Gtk::SHRINK );
 
     /* bpm spin button */

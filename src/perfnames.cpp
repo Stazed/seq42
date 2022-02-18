@@ -84,7 +84,7 @@ perfnames::draw_track( int track )
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
 
     cr->set_operator(Cairo::OPERATOR_CLEAR);
-    cr->rectangle(0, (c_names_y * i), c_names_x - 1, c_names_y);
+    cr->rectangle(0, (c_names_y * i), m_window_x - 1, c_names_y);
     cr->paint_with_alpha(0.0);
     cr->set_operator(Cairo::OPERATOR_OVER);
 
@@ -93,7 +93,7 @@ perfnames::draw_track( int track )
     if ( track < c_max_track )
     {
         cr->set_source_rgb(0.0, 0.0, 0.0);        // Black FIXME
-        cr->rectangle(0, (c_names_y * i), c_names_x - 1, c_names_y);
+        cr->rectangle(0, (c_names_y * i), m_window_x - 1, c_names_y);
         cr->stroke_preserve();
         cr->fill();
 
@@ -106,7 +106,7 @@ perfnames::draw_track( int track )
             cr->set_source_rgb(0.6, 0.8, 1.0);    // blue FIXME
         }
 
-        cr->rectangle(3, (c_names_y * i) + 3, c_names_x - 4, c_names_y - 4);
+        cr->rectangle(3, (c_names_y * i) + 3, m_window_x - 4, c_names_y - 4);
         cr->stroke_preserve();
         cr->fill();
 
@@ -181,7 +181,7 @@ perfnames::draw_track( int track )
                 cr->set_source_rgb(0.5, 0.988, 0.0);    // Green FIXME
             }
 
-            cr->rectangle(105, (c_names_y * i) + 2, 9, c_names_y - 2);
+            cr->rectangle( m_window_x - 9, (c_names_y * i) + 2, 9, c_names_y - 2);
             if ( fill )
             {
                 cr->stroke_preserve();
@@ -215,7 +215,7 @@ perfnames::draw_track( int track )
             }
 
             // draw the background for the mute label
-            cr->rectangle(106, c_names_y * i + 7, (strlen(smute) * 5) + 2, 9.0);
+            cr->rectangle(m_window_x - 8, c_names_y * i + 7, (strlen(smute) * 5) + 2, 9.0);
             cr->stroke_preserve();
             cr->fill();
 
@@ -230,14 +230,14 @@ perfnames::draw_track( int track )
             }
             cr->select_font_face("Sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
             cr->set_font_size(9.0);
-            cr->move_to(106, c_names_y * i + 15);
+            cr->move_to(m_window_x - 8, c_names_y * i + 15);
             cr->show_text( smute);
         }
     }
     else
     {
         cr->set_source_rgb(0.6, 0.8, 1.0);    // blue FIXME
-        cr->rectangle(0, (c_names_y * i) + 1, c_names_x, c_names_y);
+        cr->rectangle(0, (c_names_y * i) + 1, m_window_x, c_names_y);
         cr->stroke_preserve();
         cr->fill();
     }
