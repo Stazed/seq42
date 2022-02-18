@@ -2077,29 +2077,14 @@ mainwnd::update_recent_files_menu ()
 
     if (m_menu_recent != nullptr)
     {
-        /*
-         * Causes a crash:
-         *
-         *      m_menu_file->items().remove(*m_menu_recent);    // crash!
-         *      delete m_menu_recent;
-         */
-#ifdef GTKMM_3_SUPPORT
-
-#else
-        m_menu_recent->items().clear();
-#endif
+        // Nothing to do??
     }
     else
     {
         m_menu_recent = manage(new Gtk::Menu());
-#ifdef GTKMM_3_SUPPORT
-
-#else
-        m_menu_file->items().push_back
-        (
-            MenuElem("_Recent .s42 files...", *m_menu_recent)
-        );
-#endif
+        MenuItem * menu_item = new MenuItem("Recent Files");
+        menu_item->set_submenu(*m_menu_recent);
+        m_menu_file->append(*menu_item);
     }
 
     if (m_mainperf->recent_file_count() > 0)
@@ -2107,26 +2092,16 @@ mainwnd::update_recent_files_menu ()
         for (int i = 0; i < m_mainperf->recent_file_count(); ++i)
         {
             std::string filepath = m_mainperf->recent_file(i);     // shortened name
-#ifdef GTKMM_3_SUPPORT
-
-#else
-            m_menu_recent->items().push_back
-            (
-                MenuElem(filepath, sigc::bind(SET_FILE, i))
-            );
-#endif
+            MenuItem * menu_item = new MenuItem(filepath);
+            menu_item->signal_activate().connect(sigc::bind(SET_FILE, i));
+            m_menu_recent->append(*menu_item);
         }
     }
     else
     {
-#ifdef GTKMM_3_SUPPORT
-
-#else
-        m_menu_recent->items().push_back
-        (
-            MenuElem("<none>", sigc::bind(SET_FILE, (-1)))
-        );
-#endif
+        MenuItem * menu_item = new MenuItem("<none>");
+        menu_item->signal_activate().connect(sigc::bind(SET_FILE, (-1)));
+        m_menu_recent->append(*menu_item);
     }
 }
 
@@ -2853,4 +2828,4 @@ mainwnd::set_nsm_menu()
                                             mem_fun(*this, &mainwnd::file_exit)));
 #endif
 }
-#endif
+#endif  // NSM_SUPPORT

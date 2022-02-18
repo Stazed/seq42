@@ -3480,7 +3480,7 @@ perform::recent_file (int index, bool shorten) const
  */
 
 void
-perform::add_recent_file (const std::string & fname)
+perform::add_recent_file (const std::string & fname, bool file_loading)
 {
     bool found =
         std::find(m_recent_files.begin(), m_recent_files.end(), fname) !=
@@ -3491,7 +3491,15 @@ perform::add_recent_file (const std::string & fname)
         if (m_recent_files.size() >= c_max_recent_files)
             m_recent_files.pop_back();
 
-        m_recent_files.insert(m_recent_files.begin(), fname);
+        /* For file loading we append, for adding we insert at beginning */
+        if( file_loading)
+        {
+            m_recent_files.insert(m_recent_files.end(), fname);
+        }
+        else
+        {
+            m_recent_files.insert(m_recent_files.begin(), fname);
+        }
     }
 }
 

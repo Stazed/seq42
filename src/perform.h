@@ -559,7 +559,7 @@ public:
     void apply_song_transpose ();
     
     std::string recent_file (int index, bool shorten = true) const;
-    void add_recent_file (const std::string & filename);
+    void add_recent_file (const std::string & filename, bool file_loading = false);
     /**
      * \getter m_recent_files.size()
      */

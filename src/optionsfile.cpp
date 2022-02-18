@@ -217,7 +217,7 @@ optionsfile::parse( perform *a_perf )
         {
             next_data_line( &file );
             if (strlen(m_line) > 0)
-                a_perf->add_recent_file(std::string(m_line));
+                a_perf->add_recent_file(std::string(m_line), true);
         }
     }
     
