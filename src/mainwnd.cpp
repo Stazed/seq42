@@ -1686,30 +1686,28 @@ void mainwnd::file_save_as(file_type_e type, void *a_seq_or_track)
 
     dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
     dialog.add_button(Gtk::Stock::SAVE, Gtk::RESPONSE_OK);
-#ifdef GTKMM_3_SUPPORT
 
-#else
-    Gtk::FileFilter filter_midi;
+    auto filter_midi = Gtk::FileFilter::create();
 
     if(type == E_SEQ42_NATIVE_FILE)
     {
-        filter_midi.set_name("Seq42 files");
-        filter_midi.add_pattern("*.s42");
+        filter_midi->set_name("Seq42 files");
+        filter_midi->add_pattern("*.s42");
     }
     else
     {
-        filter_midi.set_name("MIDI files");
-        filter_midi.add_pattern("*.midi");
-        filter_midi.add_pattern("*.MIDI");
-        filter_midi.add_pattern("*.mid");
-        filter_midi.add_pattern("*.MID");
+        filter_midi->set_name("MIDI files");
+        filter_midi->add_pattern("*.midi");
+        filter_midi->add_pattern("*.MIDI");
+        filter_midi->add_pattern("*.mid");
+        filter_midi->add_pattern("*.MID");
     }
 
     dialog.add_filter(filter_midi);
 
-    Gtk::FileFilter filter_any;
-    filter_any.set_name("Any files");
-    filter_any.add_pattern("*");
+    auto filter_any = Gtk::FileFilter::create();
+    filter_any->set_name("Any files");
+    filter_any->add_pattern("*");
     dialog.add_filter(filter_any);
 
     if(type == E_SEQ42_NATIVE_FILE) // .s42
@@ -1728,9 +1726,9 @@ void mainwnd::file_save_as(file_type_e type, void *a_seq_or_track)
     case Gtk::RESPONSE_OK:
     {
         std::string fname = dialog.get_filename();
-        Gtk::FileFilter* current_filter = dialog.get_filter();
+        auto current_filter = dialog.get_filter();
 
-        if ((current_filter != NULL) &&
+        if ((current_filter) &&
                 (current_filter->get_name() == "Seq42 files"))
         {
             // check for Seq42 file extension; if missing, add .s42
@@ -1740,7 +1738,7 @@ void mainwnd::file_save_as(file_type_e type, void *a_seq_or_track)
             if (suffix != "s42") fname = fname + ".s42";
         }
 
-        if ((current_filter != NULL) &&
+        if ((current_filter) &&
                 (current_filter->get_name() == "MIDI files"))
         {
             // check for MIDI file extension; if missing, add .midi
@@ -1782,7 +1780,6 @@ void mainwnd::file_save_as(file_type_e type, void *a_seq_or_track)
     default:
         break;
     }
-#endif // GTKMM-2
 }
 
 void mainwnd::export_midi(const Glib::ustring& fn, file_type_e type, void *a_seq_or_track)
