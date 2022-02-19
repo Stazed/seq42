@@ -385,10 +385,8 @@ main (int argc, char *argv[])
             global_nsm_gui = true;
         }
 
-        seq42_window.set_nsm_client(nsm);
-        
-        // Set limited file menu for session
-        seq42_window.set_nsm_menu(nsm_opional_gui_support);
+        // set client and limited file menus
+        seq42_window.set_nsm_client(nsm, nsm_opional_gui_support);
         
         // Open the NSM session file
         if (Glib::file_test(global_filename, Glib::FILE_TEST_EXISTS))

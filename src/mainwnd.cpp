@@ -914,6 +914,7 @@ mainwnd::timer_callback(  )
 #ifdef NSM_SUPPORT
     if(m_nsm != NULL)
     {
+        nsm_check_nowait( m_nsm );
         if (m_nsm_optional_gui && m_nsm_visible != global_nsm_gui)
         {
             m_nsm_visible = global_nsm_gui;
@@ -942,8 +943,6 @@ mainwnd::timer_callback(  )
                 nsm_send_is_clean ( m_nsm );
             }
         }
-        
-        poll_nsm(0);
     }
 #endif
 
@@ -2712,16 +2711,6 @@ FF_RW_timeout(void *arg)
 
 #ifdef NSM_SUPPORT
 void
-mainwnd::poll_nsm(void *)
-{
-    if ( m_nsm != NULL )
-    {
-        nsm_check_nowait( m_nsm );
-        return;
-    }
-}
-
-void
 mainwnd::close_all_windows()
 {
     m_closing_windows = true;
@@ -2759,8 +2748,9 @@ mainwnd::remove_window_pointer(Gtk::Window * a_win)
 }
 
 void
-mainwnd::set_nsm_menu(bool optional_gui)
+mainwnd::set_nsm_client(nsm_client_t *nsm, bool optional_gui)
 {
+    m_nsm = nsm;
     m_nsm_optional_gui = optional_gui;
     if(m_menu_file != nullptr)
     {

@@ -228,10 +228,8 @@ private:
     /* Flag for holding the global_is_modified flag and checking for changes to notify NSM dirty, clean */
     bool m_dirty_flag;
     nsm_client_t *m_nsm;
-    void poll_nsm(void *);
 public:
-    void set_nsm_client(nsm_client_t *nsm){m_nsm = nsm;};
-    void set_nsm_menu(bool optional_gui);
+    void set_nsm_client(nsm_client_t *nsm, bool optional_gui);
 private:
 #endif
 
