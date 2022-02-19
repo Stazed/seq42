@@ -106,7 +106,7 @@ trackedit::trackedit (track *a_track, mainwnd *a_main)
     m_hbox3->pack_start( *m_check_transposable, PACK_EXPAND_WIDGET );
 
     this->add( *m_vbox );
-    set_modal();                            // keep focus until done
+ //   set_modal();    // for some reason, this prevents hiding of seqedit in NSM session
     set_transient_for(*m_mainwnd);          // always on top
 
     /* For the popup window location - current mouse location */
