@@ -65,8 +65,9 @@ ff_rw_type_e FF_RW_button_type = FF_RW_RELEASE;
 
 #define add_tooltip( obj, text ) obj->set_tooltip_text( text);
 
-mainwnd::mainwnd(perform *a_p):
+mainwnd::mainwnd(perform *a_p, Glib::RefPtr<Gtk::Application> app):
     m_mainperf(a_p),
+    m_app(app),
     m_options(NULL),
     m_snap(c_ppqn / 4),
     m_bp_measure(4),
@@ -74,6 +75,7 @@ mainwnd::mainwnd(perform *a_p):
     m_tick_time_as_bbt(false),
     m_toggle_time_type(false),
 #ifdef NSM_SUPPORT
+    m_nsm_visible(true),
     m_dirty_flag(false),
     m_nsm(NULL)
 #endif
@@ -758,32 +760,11 @@ mainwnd::mainwnd(perform *a_p):
     m_timeout_connect = Glib::signal_timeout().connect(
                             mem_fun(*this, &mainwnd::timer_callback), c_redraw_ms);
 
-    m_sigpipe[0] = -1;
-    m_sigpipe[1] = -1;
-    install_signal_handlers();
 }
 
 mainwnd::~mainwnd()
 {
     delete m_options;
-
-    if (m_sigpipe[0] != -1)
-    {
-#ifdef GTKMM_3_SUPPORT
-
-#else
-        close(m_sigpipe[0]);
-#endif
-    }
-
-    if (m_sigpipe[1] != -1)
-    {
-#ifdef GTKMM_3_SUPPORT
-
-#else
-        close(m_sigpipe[1]);
-#endif
-    }
 }
 
 /*
@@ -932,6 +913,22 @@ mainwnd::timer_callback(  )
 #ifdef NSM_SUPPORT
     if(m_nsm != NULL)
     {
+        if (m_nsm_optional_gui && m_nsm_visible != global_nsm_gui)
+        {
+            m_nsm_visible = global_nsm_gui;
+            if (m_nsm_visible)
+            {
+                show();
+                nsm_send_is_shown(m_nsm);
+            }
+            else
+            {
+                m_app->hold();
+                close_all_windows();
+                hide();
+                nsm_send_is_hidden(m_nsm);
+            }
+        }
         if (m_dirty_flag != global_is_modified)
         {
             m_dirty_flag = global_is_modified;
@@ -2225,17 +2222,32 @@ mainwnd::file_import_dialog()
 /*callback function*/
 void mainwnd::file_exit()
 {
-    if (is_save())
+    if (m_nsm && m_nsm_optional_gui)
     {
-        if (global_is_running)
-            stop_playing();
-        hide();
+        global_nsm_gui = false;
+    }
+    else
+    {
+        if (is_save())
+        {
+            if (global_is_running)
+                stop_playing();
+
+            close();
+        }
     }
 }
 
 bool
 mainwnd::on_delete_event(GdkEventAny *a_e)
 {
+    if (m_nsm && m_nsm_optional_gui)
+    {
+        // nsm : hide gui instead of closing
+        global_nsm_gui = false;
+        return true;
+    }
+    
     bool result = is_save();
     if (result && global_is_running)
         stop_playing();
@@ -2548,86 +2560,6 @@ mainwnd::update_window_xpm()
     }
 }
 
-int mainwnd::m_sigpipe[2];
-
-/* Handler for system signals (SIGUSR1, SIGINT...)
- * Write a message to the pipe and leave as soon as possible
- */
-void
-mainwnd::handle_signal(int sig)
-{
-    if (write(m_sigpipe[1], &sig, sizeof(sig)) == -1)
-    {
-        printf("write() failed: %s\n", std::strerror(errno));
-    }
-}
-
-bool
-mainwnd::install_signal_handlers()
-{
-    /*install pipe to forward received system signals*/
-    if (pipe(m_sigpipe) < 0)
-    {
-        printf("pipe() failed: %s\n", std::strerror(errno));
-        return false;
-    }
-
-    /*install notifier to handle pipe messages*/
-    Glib::signal_io().connect(sigc::mem_fun(*this, &mainwnd::signal_action),
-                              m_sigpipe[0], Glib::IO_IN);
-
-    /*install signal handlers*/
-    struct sigaction action;
-    memset(&action, 0, sizeof(action));
-    action.sa_handler = handle_signal;
-
-    if (sigaction(SIGUSR1, &action, NULL) == -1)
-    {
-        printf("sigaction() failed: %s\n", std::strerror(errno));
-        return false;
-    }
-
-    if (sigaction(SIGINT, &action, NULL) == -1)
-    {
-        printf("sigaction() failed: %s\n", std::strerror(errno));
-        return false;
-    }
-
-    return true;
-}
-
-bool
-mainwnd::signal_action(Glib::IOCondition condition)
-{
-    int message;
-
-    if ((condition & Glib::IO_IN) == 0)
-    {
-        printf("Error: unexpected IO condition\n");
-        return false;
-    }
-
-    if (read(m_sigpipe[0], &message, sizeof(message)) == -1)
-    {
-        printf("read() failed: %s\n", std::strerror(errno));
-        return false;
-    }
-
-    switch (message)
-    {
-    case SIGUSR1:
-        save_file();
-        break;
-    case SIGINT:
-        file_exit();
-        break;
-    default:
-        printf("Unexpected signal received: %d\n", message);
-        break;
-    }
-    return true;
-}
-
 /* update tempo class for file loading of tempo map */
 void
 mainwnd::load_tempo_list()
@@ -2788,16 +2720,24 @@ mainwnd::poll_nsm(void *)
 }
 
 void
-mainwnd::set_nsm_menu()
+mainwnd::close_all_windows()
 {
+    // FIXME
+}
+
+void
+mainwnd::set_nsm_menu(bool optional_gui)
+{
+    m_nsm_optional_gui = optional_gui;
     if(m_menu_file != nullptr)
     {
         m_file_menu_items[1].set_sensitive(false);  // New
         m_file_menu_items[2].set_sensitive(false);  // Open
         m_file_menu_items[3].set_sensitive(false);  // Open playlist
         m_file_menu_items[5].set_sensitive(false);  // Save As
-        m_file_menu_items[7].set_sensitive(false);  // Exit
+
         m_menu_recent->set_sensitive(false);        // Recent files submenu
+        m_file_menu_items[7].set_label("Hide");     // Exit
     }
 }
 #endif  // NSM_SUPPORT

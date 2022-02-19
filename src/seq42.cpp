@@ -35,14 +35,31 @@
 #include "userfile.h"
 
 
-Glib::ustring global_client_name = "seq42"; // default
+Glib::ustring global_client_name = PACKAGE; // default seq42
 Glib::ustring global_filename = "";
+
+Glib::RefPtr<Gtk::Application> application;
 
 #ifdef NSM_SUPPORT
 #include "nsm.h"
 
+bool global_nsm_gui = false;
+bool nsm_opional_gui_support = true;
 static nsm_client_t *nsm = 0;
 static int wait_nsm = 1;
+
+void
+nsm_hide_cb(void *userdata)
+{
+    application->hold();
+    global_nsm_gui = false;
+}
+
+void
+nsm_show_cb(void *userdata)
+{
+    global_nsm_gui = true;
+}
 
 int                                                                  
 cb_nsm_open ( const char *save_file_path,   // See API Docs 2.2.2 
@@ -53,11 +70,6 @@ cb_nsm_open ( const char *save_file_path,   // See API Docs 2.2.2
 {
     global_filename = save_file_path;
     global_filename += ".s42";
-    
-   // fprintf(stderr, "FilenameXXX %s\n",global_filename.c_str() );
-   // mainwnd *seq42_window =  (mainwnd*) userdata;
-   // seq42_window->open_file(global_filename);
-
     global_client_name = strdup(client_id);
     wait_nsm = 0;
     return ERR_OK;
@@ -67,8 +79,7 @@ int
 cb_nsm_save ( char **,  void *userdata)
 {
     mainwnd *seq42_window =  (mainwnd*) userdata;
-    
-    // fprintf(stderr, "Seq42 cb save file\n" );
+
     seq42_window->file_save();
 
     return ERR_OK;
@@ -333,7 +344,7 @@ main (int argc, char *argv[])
 
         if ( 0 == nsm_init( nsm, nsm_url ) )
         {
-            nsm_send_announce( nsm, "seq42", ":dirty:", argv[0] );
+            nsm_send_announce( nsm, PACKAGE, ":optional-gui:dirty:", argv[0] );
         }
 
         int timeout = 0;
@@ -354,17 +365,30 @@ main (int argc, char *argv[])
     p.launch_output_thread();
     p.init_jack();
 
-    mainwnd seq42_window( &p );
+    application = Gtk::Application::create();
+    mainwnd seq42_window( &p, application );
 
 #ifdef NSM_SUPPORT
     if ( nsm_url )
     {
         // Set the save callback and nsm client now that the mainwnd is created.
         nsm_set_save_callback( nsm, cb_nsm_save, (void*) &seq42_window );
+        if (nsm_opional_gui_support)
+        {
+            nsm_set_show_callback(nsm, nsm_show_cb, 0);
+            nsm_set_hide_callback(nsm, nsm_hide_cb, 0);
+            if (!global_nsm_gui) nsm_hide_cb(0);
+            else nsm_send_is_shown(nsm);
+        } 
+        else 
+        {
+            global_nsm_gui = true;
+        }
+
         seq42_window.set_nsm_client(nsm);
         
         // Set limited file menu for session
-        seq42_window.set_nsm_menu();
+        seq42_window.set_nsm_menu(nsm_opional_gui_support);
         
         // Open the NSM session file
         if (Glib::file_test(global_filename, Glib::FILE_TEST_EXISTS))
@@ -376,6 +400,12 @@ main (int argc, char *argv[])
             seq42_window.file_save();
             seq42_window.update_window_title();
         }
+        
+        signal(SIGTERM, [](int param)
+        {
+            global_is_running = false;
+            application->quit();
+        });
     }
 #endif // NSM_SUPPORT
 
@@ -412,8 +442,9 @@ main (int argc, char *argv[])
 #ifdef NSM_SUPPORT
     }
 #endif
-
-    kit.run(seq42_window);
+    
+    int status = 0;
+    status = application->run(seq42_window);
 
     p.deinit_jack();
 
@@ -443,7 +474,7 @@ main (int argc, char *argv[])
     }
 #endif
 
-    return 0;
+    return status;
 }
 
 

@@ -55,7 +55,7 @@ class mainwnd : public Gtk::Window
 private:
 
     perform  *m_mainperf;
-    static int m_sigpipe[2];
+    Glib::RefPtr<Gtk::Application> m_app;
 
     MenuBar  *m_menubar;
     Menu     *m_menu_file;
@@ -217,13 +217,16 @@ private:
     void file_open_playlist();
     
 #ifdef NSM_SUPPORT
+    bool m_nsm_optional_gui;
+    bool m_nsm_visible;
     /* Flag for holding the global_is_modified flag and checking for changes to notify NSM dirty, clean */
     bool m_dirty_flag;
     nsm_client_t *m_nsm;
     void poll_nsm(void *);
+    void close_all_windows();
 public:
     void set_nsm_client(nsm_client_t *nsm){m_nsm = nsm;};
-    void set_nsm_menu();
+    void set_nsm_menu(bool optional_gui);
 private:
 #endif
 
@@ -241,10 +244,6 @@ private:
     bool is_save();
     void update_recent_files_menu ();
     void load_recent_file (int index);
-    
-    static void handle_signal(int sig);
-    bool install_signal_handlers();
-    bool signal_action(Glib::IOCondition condition);
 
     /* Begin method that used to be in perfedit */
     void set_snap (int a_snap);
@@ -316,10 +315,10 @@ private:
     std::string tick_to_timestring(long a_tick);
     std::string tick_to_measurestring (long a_tick);
     void tick_to_midi_measures (long a_tick, int &measures, int &beats, int &divisions);
-
+    
 public:
 
-    mainwnd(perform *a_p);
+    mainwnd(perform *a_p, Glib::RefPtr<Gtk::Application> app);
     ~mainwnd();
 
     static bool zoom_check (int z)
