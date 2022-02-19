@@ -73,7 +73,7 @@ trackedit::trackedit (track *a_track, mainwnd *a_main)
 
     m_entry_bus = manage( new Entry());
     m_entry_bus->set_max_length(60);
-    m_entry_bus->set_width_chars(60);
+    m_entry_bus->set_width_chars(30);
     m_entry_bus->set_editable( false );
 
     m_hbox2->pack_start( *m_button_bus, false, false );
@@ -106,6 +106,17 @@ trackedit::trackedit (track *a_track, mainwnd *a_main)
     m_hbox3->pack_start( *m_check_transposable, PACK_EXPAND_WIDGET );
 
     this->add( *m_vbox );
+    set_modal();                            // keep focus until done
+    set_transient_for(*m_mainwnd);          // always on top
+
+    /* For the popup window location - current mouse location */
+    int x, y;
+    GdkDisplay *display = gdk_display_get_default ();
+    GdkDeviceManager *device_manager = gdk_display_get_device_manager (display);
+    GdkDevice *device = gdk_device_manager_get_client_pointer (device_manager);
+    gdk_device_get_position (device, NULL, &x, &y);
+    
+    move(x, y);
     show_all();
 
     set_midi_channel( m_track->get_midi_channel() );
