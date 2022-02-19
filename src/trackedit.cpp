@@ -22,14 +22,16 @@
 #include "pixmaps/bus.xpm"
 #include "pixmaps/midi.xpm"
 #include "pixmaps/transpose.xpm"
+#include "mainwnd.h"
 
 #   define add_tooltip( obj, text ) obj->set_tooltip_text( text);
 
-trackedit::trackedit (track *a_track)
+trackedit::trackedit (track *a_track, mainwnd *a_main)
 {
     // FIXME create an icon?
     // set_icon(Gdk::Pixbuf::create_from_xpm_data(track_editor_xpm));
 
+    m_mainwnd = a_main;
     m_track = a_track;
 
     /* main window */
@@ -119,6 +121,7 @@ bool
 trackedit::on_delete_event(GdkEventAny *a_event)
 {
     //printf( "trackedit::on_delete_event()\n" );
+    m_mainwnd->remove_window_pointer(this);
     m_track->set_editing( false );
     delete this;
     return false;

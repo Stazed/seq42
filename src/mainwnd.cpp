@@ -74,6 +74,7 @@ mainwnd::mainwnd(perform *a_p, Glib::RefPtr<Gtk::Application> app):
     m_bw(4),
     m_tick_time_as_bbt(false),
     m_toggle_time_type(false),
+    m_closing_windows(false),
 #ifdef NSM_SUPPORT
     m_nsm_visible(true),
     m_dirty_flag(false),
@@ -1587,7 +1588,8 @@ mainwnd::open_seqlist()
     }
     else
     {
-        new seqlist(m_mainperf, this);
+        seqlist * a_seqlist = new seqlist(m_mainperf, this);
+        set_window_pointer(a_seqlist);
     }
 }
 
@@ -2722,7 +2724,38 @@ mainwnd::poll_nsm(void *)
 void
 mainwnd::close_all_windows()
 {
-    // FIXME
+    m_closing_windows = true;
+
+    for(unsigned i = 0; i < m_vector_windows.size(); ++i)
+    {
+        m_vector_windows[i]->close();
+    }
+    
+    m_vector_windows.clear();
+    m_tempo->hide_tempo_popup();
+
+    m_closing_windows = false;
+}
+
+void
+mainwnd::set_window_pointer(Gtk::Window * a_win)
+{
+    m_vector_windows.push_back(a_win);
+}
+
+void
+mainwnd::remove_window_pointer(Gtk::Window * a_win)
+{
+    if (m_closing_windows)
+        return;
+    
+    for(unsigned i = 0; i < m_vector_windows.size(); ++i)
+    {
+        if (m_vector_windows[i] == a_win)
+        {
+            m_vector_windows.erase(m_vector_windows.begin() + i);
+        }
+    }
 }
 
 void

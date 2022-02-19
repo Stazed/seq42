@@ -140,6 +140,7 @@ public:
     void pop_redo();
     void set_hold_undo (bool a_hold);
     int get_hold_undo ();
+    void hide_tempo_popup() { m_popup_tempo_wnd->hide();}
     
     void print_marker_info(list<tempo_mark> a_list);
     

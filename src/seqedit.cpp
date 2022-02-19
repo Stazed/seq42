@@ -46,6 +46,7 @@
 #include "pixmaps/tools.xpm"
 #include "pixmaps/seq-editor.xpm"
 #include "pixmaps/chord.xpm"
+#include "mainwnd.h"
 
 
 # define add_tooltip( obj, text ) obj->set_tooltip_text( text);
@@ -92,11 +93,12 @@ seqedit::menu_action_quantise()
 }
 
 seqedit::seqedit( sequence *a_seq,
-                  perform *a_perf) :
+                  perform *a_perf, mainwnd *a_main) :
 
     /* set the performance */
     m_seq(a_seq),
     m_mainperf(a_perf),
+    m_mainwnd(a_main),
 
     m_zoom(m_initial_zoom),
     m_snap(m_initial_snap),
@@ -1759,10 +1761,12 @@ bool
 seqedit::on_delete_event(GdkEventAny *a_event)
 {
     //printf( "seqedit::on_delete_event()\n" );
+    m_mainwnd->remove_window_pointer(this);
+
     m_seq->set_recording( false );
     m_mainperf->get_master_midi_bus()->set_sequence_input( false, m_seq );
     m_seq->set_editing( false );
-    
+
     m_mainperf->set_sequence_editing_list(false);
 
     delete m_lfo_wnd;
@@ -1881,7 +1885,8 @@ seqedit::trk_edit()
     }
     else
     {
-        new trackedit(a_track);
+        trackedit * a_trackedit = new trackedit(a_track, m_mainwnd);
+        m_mainwnd->set_window_pointer(a_trackedit);
     }
 }
 

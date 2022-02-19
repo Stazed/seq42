@@ -56,6 +56,9 @@ private:
 
     perform  *m_mainperf;
     Glib::RefPtr<Gtk::Application> m_app;
+    
+    /* Holds the various window pointers so they can be closed by NSM, and file new() */
+    vector< Gtk::Window *> m_vector_windows;
 
     MenuBar  *m_menubar;
     Menu     *m_menu_file;
@@ -188,6 +191,9 @@ private:
     /* Flag used when time type is toggled when stopped to update gui */
     bool m_toggle_time_type;
 
+    /* Flag to indicate that all windows are being closed */
+    bool m_closing_windows;
+
     void file_import_dialog();
     void options_dialog();
     void about_dialog();
@@ -223,7 +229,6 @@ private:
     bool m_dirty_flag;
     nsm_client_t *m_nsm;
     void poll_nsm(void *);
-    void close_all_windows();
 public:
     void set_nsm_client(nsm_client_t *nsm){m_nsm = nsm;};
     void set_nsm_menu(bool optional_gui);
@@ -315,6 +320,7 @@ private:
     std::string tick_to_timestring(long a_tick);
     std::string tick_to_measurestring (long a_tick);
     void tick_to_midi_measures (long a_tick, int &measures, int &beats, int &divisions);
+    void close_all_windows();
     
 public:
 
@@ -344,6 +350,9 @@ public:
     void set_swing_amount8(int swing_amount8);
     void set_swing_amount16(int swing_amount16);
     void update_start_BPM(double bpm);
+    void set_window_pointer(Gtk::Window * a_win);
+    void remove_window_pointer(Gtk::Window * a_win);
+
     friend int FF_RW_timeout(void *arg);
 };
 

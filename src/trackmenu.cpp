@@ -516,7 +516,8 @@ trackmenu::trk_edit()
         }
         else
         {
-            new trackedit(a_track);
+            trackedit * a_trackedit = new trackedit(a_track, m_mainwnd);
+            m_mainwnd->set_window_pointer(a_trackedit);
         }
     }
 }
@@ -528,7 +529,8 @@ trackmenu::new_sequence()
     track *a_track = m_mainperf->get_track( m_current_trk );
     int seq_idx = a_track->new_sequence();
     sequence *a_sequence = a_track->get_sequence(seq_idx);
-    new seqedit( a_sequence, m_mainperf );
+    seqedit * a_seq_edit =  new seqedit( a_sequence, m_mainperf, m_mainwnd );
+    m_mainwnd->set_window_pointer(a_seq_edit);
 }
 
 void

@@ -67,6 +67,7 @@ private:
 
     sequence   * const m_seq;
     perform    * const m_mainperf;
+    mainwnd    *m_mainwnd;
 
     MenuBar    *m_menubar;
 
@@ -292,7 +293,7 @@ private:
 public:
 
     seqedit(sequence *a_seq,
-            perform *a_perf);
+            perform *a_perf, mainwnd *a_main);
 
     ~seqedit();
 

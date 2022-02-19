@@ -971,7 +971,8 @@ perfroll::new_sequence( track *a_track, trigger *a_trigger )
     int seq_idx = a_track->new_sequence();
     sequence *a_sequence = a_track->get_sequence(seq_idx);
     a_track->set_trigger_sequence(a_trigger, seq_idx);
-    new seqedit( a_sequence, m_mainperf );
+    seqedit * a_seq_edit = new seqedit( a_sequence, m_mainperf, m_mainwnd );
+    m_mainwnd->set_window_pointer(a_seq_edit);
 }
 
 void
@@ -990,7 +991,8 @@ perfroll::copy_sequence( track *a_track, trigger *a_trigger, sequence *a_seq )
         a_sequence->set_name( new_name );
     }
     a_track->set_trigger_sequence(a_trigger, seq_idx);
-    new seqedit( a_sequence, m_mainperf );
+    seqedit * a_seq_edit = new seqedit( a_sequence, m_mainperf, m_mainwnd );
+    m_mainwnd->set_window_pointer(a_seq_edit);
 }
 
 void
@@ -1003,7 +1005,8 @@ perfroll::edit_sequence( track *a_track, trigger *a_trigger )
     }
     else
     {
-        new seqedit( a_seq, m_mainperf );
+        seqedit * a_seq_edit = new seqedit( a_seq, m_mainperf, m_mainwnd );
+        m_mainwnd->set_window_pointer(a_seq_edit);
     }
 }
 

@@ -25,12 +25,16 @@
 
 #include <gtkmm.h>
 
+class mainwnd;
+
 using namespace Gtk;
 
 class trackedit : public Gtk::Window
 {
 
 private:
+    
+    mainwnd * m_mainwnd;
 
     track *m_track;
 
@@ -63,7 +67,7 @@ private:
 
 public:
 
-    trackedit( track *a_track );
+    trackedit( track *a_track, mainwnd *a_main );
     ~trackedit();
 
     bool on_delete_event(GdkEventAny *a_event);
