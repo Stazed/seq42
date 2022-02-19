@@ -95,6 +95,14 @@ void
 seqkeys::update_surface()
 {
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
+    
+    Pango::FontDescription font;
+    int text_width;
+    int text_height;
+
+    font.set_family(c_font);
+    font.set_size(c_key_fontsize * Pango::SCALE);
+    font.set_weight(Pango::WEIGHT_NORMAL);
 
     cr->set_operator(Cairo::OPERATOR_CLEAR);
     cr->rectangle(0.0, 0.0, c_keyarea_x, c_keyarea_y);
@@ -194,11 +202,14 @@ seqkeys::update_surface()
 
             snprintf(notes, sizeof(notes), "%2s%1d", c_key_text[key], octave);
 
+            auto t = create_pango_layout(notes);
+            t->set_font_description(font);
+            t->set_justify(Pango::ALIGN_LEFT);
+            t->get_pixel_size(text_width, text_height);
+
             cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
-            cr->select_font_face("Sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
-            cr->set_font_size(9.0);
             cr->move_to(2,  ((c_key_y * i) - 1) + 7);
-            cr->show_text( notes);
+            t->show_in_cairo_context(cr);
         }
 
         //snprintf(notes, sizeof(notes), "%c %d", c_scales_symbol[m_scale][key], m_scale );
