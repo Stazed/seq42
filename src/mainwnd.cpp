@@ -872,7 +872,7 @@ mainwnd::playlist_verify()
 }
 
 // This is the GTK timer callback, used to draw our current time and bpm
-// ondd_events( the main window
+// and_events, the main window
 bool
 mainwnd::timer_callback(  )
 {
@@ -912,7 +912,7 @@ mainwnd::timer_callback(  )
 #endif // JACK_SUPPORT
     
 #ifdef NSM_SUPPORT
-    if(m_nsm != NULL)
+    if(m_nsm)
     {
         nsm_check_nowait( m_nsm );
         if (m_nsm_optional_gui && m_nsm_visible != global_nsm_gui)
@@ -921,14 +921,14 @@ mainwnd::timer_callback(  )
             if (m_nsm_visible)
             {
                 show();
-                nsm_send_is_shown(m_nsm);
+                nsm_send_is_shown( m_nsm );
             }
             else
             {
                 m_app->hold();
                 close_all_windows();
                 hide();
-                nsm_send_is_hidden(m_nsm);
+                nsm_send_is_hidden( m_nsm );
             }
         }
         if (m_dirty_flag != global_is_modified)
@@ -2056,7 +2056,7 @@ bool mainwnd::is_save()
 /**
  *  Sets up the recent .s42 files menu.  If the menu already exists, delete it.
  *  Then recreate the new menu named "&Recent .s42 files...".  Add all of the
- *  entries present in the m_minperf->recent_files_count() list.  Hook each entry up
+ *  entries present in the m_mainperf->recent_files_count() list.  Hook each entry up
  *  to the open_file() function with each file-name as a parameter.  If there
  *  are none, just add a disabled "<none>" entry.
  */
@@ -2067,7 +2067,7 @@ void
 mainwnd::update_recent_files_menu ()
 {
 #ifdef NSM_SUPPORT
-    if(m_nsm != NULL)
+    if(m_nsm)
         return;
 #endif
 
@@ -2234,7 +2234,7 @@ void mainwnd::file_exit()
             if (global_is_running)
                 stop_playing();
 
-            close();
+            hide();
         }
     }
 }
