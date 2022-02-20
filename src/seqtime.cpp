@@ -220,13 +220,13 @@ seqtime::update_surface()
     cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
 
     // draw the black background for the 'END' label
-    cr->rectangle(end_x, (m_window_y *.5), text_width + 2, text_height );
+    cr->rectangle(end_x, m_window_y - text_height + 3, text_width + 2, text_height );
     cr->stroke_preserve();
     cr->fill();
    
     // print the 'END' label in white
     cr->set_source_rgb(1.0, 1.0, 1.0);    // White FIXME
-    cr->move_to(end_x + 1, (m_window_y *.5) - (text_height *.5) + 4);
+    cr->move_to(end_x + 1, m_window_y - text_height);
 
     t->show_in_cairo_context(cr);
 
