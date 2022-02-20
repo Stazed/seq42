@@ -100,7 +100,7 @@ perftime::draw_background()
 
     font.set_family(c_font);
     font.set_size((c_key_fontsize - 2) * Pango::SCALE);
-    font.set_weight(Pango::WEIGHT_BOLD);
+    font.set_weight(Pango::WEIGHT_NORMAL);
 
     Gtk::Allocation allocation = get_allocation();
     const int width = allocation.get_width();
@@ -192,6 +192,7 @@ perftime::draw_background()
         cr->set_source_rgb( 0.0, 0.0, 0.0);    // Black FIXME
 
         auto t = create_pango_layout("L");
+        font.set_weight(Pango::WEIGHT_BOLD);
         t->set_font_description(font);
         t->get_pixel_size(text_width, text_height);
 
@@ -213,6 +214,7 @@ perftime::draw_background()
         cr->set_source_rgb( 0.0, 0.0, 0.0);    // Black FIXME
 
         auto t = create_pango_layout("R");
+        font.set_weight(Pango::WEIGHT_BOLD);
         t->set_font_description(font);
         t->get_pixel_size(text_width, text_height);
 
