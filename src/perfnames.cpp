@@ -82,6 +82,14 @@ perfnames::draw_track( int track )
     int i = track - m_track_offset;
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
 
+    Pango::FontDescription font;
+    int text_width;
+    int text_height;
+
+    font.set_family(c_font);
+    font.set_size((c_key_fontsize - 1) * Pango::SCALE);
+    font.set_weight(Pango::WEIGHT_NORMAL);
+
     cr->set_operator(Cairo::OPERATOR_CLEAR);
     cr->rectangle(0, (c_names_y * i), m_window_x - 1, c_names_y);
     cr->paint_with_alpha(0.0);
@@ -127,38 +135,44 @@ perfnames::draw_track( int track )
             // set background for bus
             cr->set_source_rgb(1.0, 1.0, 1.0);    // White FIXME
             cr->set_line_width(1.0);
-            
+
             // draw the white background for the bus
             cr->rectangle(5, c_names_y * i + 3, (strlen(str) * 5) + 1, 6.0);
             cr->stroke_preserve();
             cr->fill();
-            
+
             // print the string
+            auto t = create_pango_layout(str);
+            t->set_font_description(font);
+            t->get_pixel_size(text_width, text_height);
+
             cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
-            cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
-            cr->set_font_size(9.0);
-            cr->move_to(5, c_names_y * i + 11);
-            cr->show_text( str);
+            cr->move_to(5, (c_names_y * i) + 1);
+
+            t->show_in_cairo_context(cr);
 
             /* Track name */
             char name[20];
             snprintf(name, sizeof(name), "%-16.16s",
                      m_mainperf->get_track(track)->get_name());
-            
+
             // set background for name
             cr->set_source_rgb(1.0, 1.0, 1.0);    // White FIXME
-            
+
             // draw the white background for the name
             cr->rectangle(5, c_names_y * i + 12, (strlen(name) * 5) + 1, 10.0);
             cr->stroke_preserve();
             cr->fill();
 
             // print the track name
+            auto n = create_pango_layout(name);
+            n->set_font_description(font);
+            n->get_pixel_size(text_width, text_height);
+
             cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
-            cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
-            cr->set_font_size(9.0);
-            cr->move_to(5, c_names_y * i + 20);
-            cr->show_text( name);
+            cr->move_to(5, (c_names_y * i) + (text_height * .5) + 4);
+
+            n->show_in_cairo_context(cr);
 
             /* The Play, Mute, Solo button */
             bool fill = false;
@@ -227,10 +241,14 @@ perfnames::draw_track( int track )
             {
                 cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
             }
-            cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
-            cr->set_font_size(9.0);
-            cr->move_to(m_window_x - 7, c_names_y * i + 15);
-            cr->show_text( smute);
+            
+            auto m = create_pango_layout(smute);
+            m->set_font_description(font);
+            m->get_pixel_size(text_width, text_height);
+ 
+            cr->move_to(m_window_x - 7, (c_names_y * i) + (text_height * .5));
+            
+            m->show_in_cairo_context(cr);
         }
     }
     else
