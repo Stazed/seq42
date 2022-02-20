@@ -101,7 +101,7 @@ seqkeys::update_surface()
     int text_height;
 
     font.set_family(c_font);
-    font.set_size((c_key_fontsize - 2)* Pango::SCALE);
+    font.set_size((c_key_fontsize - 1)* Pango::SCALE);
     font.set_weight(Pango::WEIGHT_NORMAL);
 
     cr->set_operator(Cairo::OPERATOR_CLEAR);
@@ -205,9 +205,9 @@ seqkeys::update_surface()
             auto t = create_pango_layout(notes);
             t->set_font_description(font);
             t->get_pixel_size(text_width, text_height);
-
+            
             cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
-            cr->move_to(2,  (c_key_y * i) - (text_height * .2) );
+            cr->move_to(2,  (c_key_y * i) - (text_height * .1) );
 
             t->show_in_cairo_context(cr);
         }
