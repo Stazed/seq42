@@ -94,6 +94,14 @@ perftime::draw_background()
 {
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
 
+    Pango::FontDescription font;
+    int text_width;
+    int text_height;
+
+    font.set_family(c_font);
+    font.set_size((c_key_fontsize - 2) * Pango::SCALE);
+    font.set_weight(Pango::WEIGHT_BOLD);
+
     Gtk::Allocation allocation = get_allocation();
     const int width = allocation.get_width();
     const int height = allocation.get_height();
@@ -160,11 +168,13 @@ perftime::draw_background()
         char bar[16];
         snprintf( bar, sizeof(bar), "%d", i + 1 );
 
+        auto t = create_pango_layout(bar);
+        t->set_font_description(font);
+
         cr->set_source_rgb( 0.0, 0.0, 0.0);    // Black FIXME
-        cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
-        cr->set_font_size(9.0);
-        cr->move_to( x_pos + 2, 8.0);
-        cr->show_text(bar);
+        cr->move_to( x_pos + 2, 0);
+
+        t->show_in_cairo_context(cr);
     }
 
     /* The 'L' and 'R' markers */
@@ -181,17 +191,20 @@ perftime::draw_background()
         // set background for tempo labels to black
         cr->set_source_rgb( 0.0, 0.0, 0.0);    // Black FIXME
 
+        auto t = create_pango_layout("L");
+        t->set_font_description(font);
+        t->get_pixel_size(text_width, text_height);
+
         // draw the black background for the labels
-        cr->rectangle( left, m_window_y - 9, 7, 10);
+        cr->rectangle( left, m_window_y - 9, text_width  + 2, text_height + 2);
         cr->stroke_preserve();
         cr->fill();
 
         // print the 'L' label in white
         cr->set_source_rgb( 1.0, 1.0, 1.0);    // White FIXME
-        cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
-        cr->set_font_size( 9.0);
-        cr->move_to( left + 1, 16.0);
-        cr->show_text("L");
+        cr->move_to( left + 1,  (m_window_y *.5) - (text_height * .5) + 4 );
+
+        t->show_in_cairo_context(cr);
     }
 
     if ( right >=0 && right <= m_window_x )
@@ -199,17 +212,20 @@ perftime::draw_background()
         // set background for tempo labels to black
         cr->set_source_rgb( 0.0, 0.0, 0.0);    // Black FIXME
 
+        auto t = create_pango_layout("R");
+        t->set_font_description(font);
+        t->get_pixel_size(text_width, text_height);
+
         // draw the black background for the labels
-        cr->rectangle( right - 7, m_window_y - 9, 7, 10);
+        cr->rectangle( right - 7, m_window_y - 9, text_width  + 2, text_height + 2);
         cr->stroke_preserve();
         cr->fill();
 
         // print the 'R' label in white
         cr->set_source_rgb( 1.0, 1.0, 1.0);    // White FIXME
-        cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
-        cr->set_font_size( 9.0);
-        cr->move_to( right - 6, 16.0);
-        cr->show_text("R");
+        cr->move_to( right - 6, (m_window_y *.5) - (text_height * .5) + 4 );
+
+        t->show_in_cairo_context(cr);
     }
 }
 

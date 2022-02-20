@@ -130,7 +130,7 @@ seqtime::update_surface()
     int text_height;
 
     font.set_family(c_font);
-    font.set_size((c_key_fontsize - 2)* Pango::SCALE);
+    font.set_size((c_key_fontsize - 2) * Pango::SCALE);
     font.set_weight(Pango::WEIGHT_NORMAL);
 
     Gtk::Allocation allocation = get_allocation();
