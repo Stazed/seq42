@@ -34,8 +34,6 @@
 
 using namespace std;
 
-#define GTKMM_3_SUPPORT 1
-
 const int c_file_version = 7;  // Version of our save file format.  Increment this whenever the format of the save file changes.
 /* Version history:
 0 - initial seq42 file format

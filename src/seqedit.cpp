@@ -489,17 +489,9 @@ seqedit::create_menus()
     /* Key */
     for (int i = 0; i < 12; i++)
     {
-#ifdef GTKMM_3_SUPPORT
         MenuItem * menu_item = new MenuItem(c_key_text[i]);
         menu_item->signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_key), i) );
         m_menu_key->append(*menu_item);
-    
-#else
-        m_menu_key->items().push_back                 /* key      */
-        (
-            MenuElem(c_key_text[i], sigc::bind(mem_fun(*this, &seqedit::set_key), i))
-        );
-#endif
     }
 
     /* bw */
