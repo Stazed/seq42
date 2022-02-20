@@ -135,7 +135,7 @@ perfnames::draw_track( int track )
             
             // print the string
             cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
-            cr->select_font_face("Sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
+            cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
             cr->set_font_size(9.0);
             cr->move_to(5, c_names_y * i + 11);
             cr->show_text( str);
@@ -149,15 +149,15 @@ perfnames::draw_track( int track )
             cr->set_source_rgb(1.0, 1.0, 1.0);    // White FIXME
             
             // draw the white background for the name
-            cr->rectangle(5, c_names_y * i + 11, (strlen(name) * 5) + 1, 10.0);
+            cr->rectangle(5, c_names_y * i + 12, (strlen(name) * 5) + 1, 10.0);
             cr->stroke_preserve();
             cr->fill();
 
             // print the track name
             cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
-            cr->select_font_face("Sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
+            cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
             cr->set_font_size(9.0);
-            cr->move_to(5, c_names_y * i + 19);
+            cr->move_to(5, c_names_y * i + 20);
             cr->show_text( name);
 
             /* The Play, Mute, Solo button */
@@ -227,9 +227,9 @@ perfnames::draw_track( int track )
             {
                 cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
             }
-            cr->select_font_face("Sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
+            cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
             cr->set_font_size(9.0);
-            cr->move_to(m_window_x - 8, c_names_y * i + 15);
+            cr->move_to(m_window_x - 7, c_names_y * i + 15);
             cr->show_text( smute);
         }
     }

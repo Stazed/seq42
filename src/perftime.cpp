@@ -161,7 +161,7 @@ perftime::draw_background()
         snprintf( bar, sizeof(bar), "%d", i + 1 );
 
         cr->set_source_rgb( 0.0, 0.0, 0.0);    // Black FIXME
-        cr->select_font_face( "Sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
+        cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
         cr->set_font_size(9.0);
         cr->move_to( x_pos + 2, 8.0);
         cr->show_text(bar);
@@ -188,9 +188,9 @@ perftime::draw_background()
 
         // print the 'L' label in white
         cr->set_source_rgb( 1.0, 1.0, 1.0);    // White FIXME
-        cr->select_font_face( "Sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
+        cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
         cr->set_font_size( 9.0);
-        cr->move_to( left + 1, 17.0);
+        cr->move_to( left + 1, 16.0);
         cr->show_text("L");
     }
 
@@ -206,9 +206,9 @@ perftime::draw_background()
 
         // print the 'R' label in white
         cr->set_source_rgb( 1.0, 1.0, 1.0);    // White FIXME
-        cr->select_font_face( "Sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
+        cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
         cr->set_font_size( 9.0);
-        cr->move_to( right - 7, 17.0);
+        cr->move_to( right - 6, 16.0);
         cr->show_text("R");
     }
 }

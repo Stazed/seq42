@@ -225,7 +225,7 @@ tempo::draw_background()
 
             // print the BPM or [Stop] label in white
             cr->set_source_rgb( 1.0, 1.0, 1.0);    // White FIXME
-            cr->select_font_face( "Sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_BOLD);
+            cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_BOLD);
             cr->set_font_size( 9.0);
             cr->move_to( tempo_marker + 5, 9.0);
             cr->show_text(  str);

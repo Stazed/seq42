@@ -524,7 +524,7 @@ void perfroll::draw_track_on( int a_track )
 
                     /* print the sequence label */ 
                     cr->set_source_rgb(0.0, 0.0, 0.0);        // Black FIXME
-                    cr->select_font_face("Sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
+                    cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
                     cr->set_font_size(8.0);
                     cr->move_to(x + 7, y + 10);
                     cr->show_text(label);

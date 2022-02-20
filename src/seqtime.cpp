@@ -191,7 +191,7 @@ seqtime::update_surface()
         char bar[16];
         snprintf(bar, sizeof(bar), "%d", (i/ ticks_per_measure ) + 1);
 
-        cr->select_font_face("Sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
+        cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
         cr->set_font_size(9.0);
         cr->move_to(base_line + 2 -  m_scroll_offset_x, 7);
         cr->show_text( bar);
@@ -203,15 +203,15 @@ seqtime::update_surface()
     cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
 
     // draw the black background for the 'END' label
-    cr->rectangle(end_x, 9, 22, 8 );
+    cr->rectangle(end_x, 9, 17, 8 );
     cr->stroke_preserve();
     cr->fill();
 
     // print the 'END' label in white
     cr->set_source_rgb(1.0, 1.0, 1.0);    // White FIXME
-    cr->select_font_face("Sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_BOLD);
+    cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_BOLD);
     cr->set_font_size(9.0);
-    cr->move_to(end_x, 16);
+    cr->move_to(end_x + 1, 16);
     cr->show_text("END");
 
     queue_draw();
