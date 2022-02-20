@@ -234,19 +234,9 @@ seqdata::draw_events_on_window( )
             t->set_wrap(Pango::WRAP_CHAR);
             t->get_pixel_size(text_width, text_height);
 
-            /* Volume label level */
-            int height_offset = 13;
-            
-            if (event_height > 9)
-            {
-                height_offset = 26;
-                if (event_height > 99)
-                    height_offset = 40;
-            }
-
             cr->set_source_rgb(0.0, 0.0, 0.0);  // Black FIXME
-            cr->move_to(event_x + 3 - m_scroll_offset_x,
-                                  c_dataarea_y - height_offset);
+            cr->move_to(event_x + (text_width * 0.5) - m_scroll_offset_x,
+                                  c_dataarea_y - text_height);
             t->show_in_cairo_context(cr);
         }
     }
