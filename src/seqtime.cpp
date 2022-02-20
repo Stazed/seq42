@@ -220,7 +220,7 @@ seqtime::update_surface()
     cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
 
     // draw the black background for the 'END' label
-    cr->rectangle(end_x, m_window_y - text_height + 3, text_width + 2, text_height );
+    cr->rectangle(end_x, m_window_y - text_height + 2, text_width + 2, text_height );
     cr->stroke_preserve();
     cr->fill();
    
