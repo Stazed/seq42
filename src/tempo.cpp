@@ -237,7 +237,7 @@ tempo::draw_background()
 
             // print the BPM or [Stop] label in white
             cr->set_source_rgb( 1.0, 1.0, 1.0);    // White FIXME
-            cr->move_to( tempo_marker + 5, (m_window_y * .5) - (text_height * .5) - 2 );
+            cr->move_to( tempo_marker + 5, (m_window_y * .5) - (text_height * .5) - 3 );
 
             t->show_in_cairo_context(cr);
         }
