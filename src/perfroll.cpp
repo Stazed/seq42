@@ -346,6 +346,14 @@ void perfroll::draw_track_on( int a_track )
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface_track);
     cr->set_operator(Cairo::OPERATOR_DEST);
     cr->set_operator(Cairo::OPERATOR_OVER);
+    
+    Pango::FontDescription font;
+    int text_width;
+    int text_height;
+
+    font.set_family(c_font);
+    font.set_size((c_key_fontsize - 2) * Pango::SCALE);
+    font.set_weight(Pango::WEIGHT_NORMAL);
 
     cr->set_line_width(1.0);
 
@@ -517,17 +525,19 @@ void perfroll::draw_track_on( int a_track )
                     /* set background for labels to white */
                     cr->set_source_rgb(1.0, 1.0, 1.0);        // White FIXME
 
+                    auto t = create_pango_layout(label);
+                    t->set_font_description(font);
+                    t->get_pixel_size(text_width, text_height);
+
                     /* draw the white background for the labels */
-                    cr->rectangle(x + 7, y + 2, (strlen(label) * 5), 10.0);
+                    cr->rectangle(x + 7, y + 2, text_width, text_height - 1);
                     cr->stroke_preserve();
                     cr->fill();
 
-                    /* print the sequence label */ 
+                    /* print the sequence label */
                     cr->set_source_rgb(0.0, 0.0, 0.0);        // Black FIXME
-                    cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
-                    cr->set_font_size(8.0);
-                    cr->move_to(x + 7, y + 10);
-                    cr->show_text(label);
+                    cr->move_to(x + 7, y + 1);
+                    t->show_in_cairo_context(cr);
                 }
             }
         }
