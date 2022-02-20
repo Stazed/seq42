@@ -195,9 +195,9 @@ seqkeys::update_surface()
             snprintf(notes, sizeof(notes), "%2s%1d", c_key_text[key], octave);
 
             cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
-            cr->select_font_face("Sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
-            cr->set_font_size(9.0);
-            cr->move_to(2,  ((c_key_y * i) - 1) + 7);
+            cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
+            cr->set_font_size(10.0);
+            cr->move_to(2,  (c_key_y * i) + 8);
             cr->show_text( notes);
         }
 

@@ -109,7 +109,7 @@ const int c_dataarea_y = 128;
 const int c_data_x = 2;
 /* size of handle */
 const int c_data_handle_radius = 4;
-const char * const c_font = "sans";
+const char * const c_font = "monospace";
 const int c_key_fontsize = 8;
 
 /* keyboard */
