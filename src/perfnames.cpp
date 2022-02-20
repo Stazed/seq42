@@ -232,7 +232,7 @@ perfnames::draw_track( int track )
             m->get_pixel_size(text_width, text_height);
 
             // draw the background for the mute label
-            cr->rectangle(m_window_x - text_width - 1 , c_names_y * i + (text_height * .5)  , text_width, (text_height * .5) + 3 );
+            cr->rectangle(m_window_x - text_width - 2 , c_names_y * i + (text_height * .5)  , text_width + 1, (text_height * .5) + 5 );
             cr->stroke_preserve();
             cr->fill();
 
