@@ -125,6 +125,14 @@ seqtime::update_surface()
 {
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
 
+    Pango::FontDescription font;
+    int text_width;
+    int text_height;
+
+    font.set_family(c_font);
+    font.set_size((c_key_fontsize - 2)* Pango::SCALE);
+    font.set_weight(Pango::WEIGHT_NORMAL);
+
     Gtk::Allocation allocation = get_allocation();
     const int width = allocation.get_width();
     const int height = allocation.get_height();
@@ -191,28 +199,36 @@ seqtime::update_surface()
         char bar[16];
         snprintf(bar, sizeof(bar), "%d", (i/ ticks_per_measure ) + 1);
 
-        cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
-        cr->set_font_size(9.0);
-        cr->move_to(base_line + 2 -  m_scroll_offset_x, 7);
-        cr->show_text( bar);
+        auto t = create_pango_layout(bar);
+        t->set_font_description(font);
+        t->get_pixel_size(text_width, text_height);
+
+        cr->move_to(base_line + 2 -  m_scroll_offset_x, -1);
+
+        t->show_in_cairo_context(cr);
     }
 
     long end_x = m_seq->get_length() / m_zoom - m_scroll_offset_x;
+    
+    auto t = create_pango_layout("END");
+    font.set_size(c_key_fontsize * Pango::SCALE);
+    font.set_weight(Pango::WEIGHT_BOLD);
+    t->set_font_description(font);
+    t->get_pixel_size(text_width, text_height);
 
     // set background for label to black
     cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
 
     // draw the black background for the 'END' label
-    cr->rectangle(end_x, 9, 17, 8 );
+    cr->rectangle(end_x, 9, text_width + 2, text_height );
     cr->stroke_preserve();
     cr->fill();
 
     // print the 'END' label in white
     cr->set_source_rgb(1.0, 1.0, 1.0);    // White FIXME
-    cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_BOLD);
-    cr->set_font_size(9.0);
-    cr->move_to(end_x + 1, 16);
-    cr->show_text("END");
+    cr->move_to(end_x + 1, text_height * .5);
+
+    t->show_in_cairo_context(cr);
 
     queue_draw();
 }
