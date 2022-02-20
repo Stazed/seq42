@@ -133,6 +133,9 @@ seqdata::draw_events_on_window( )
     cr->set_operator(Cairo::OPERATOR_OVER);
 
     Pango::FontDescription font;
+    int text_width;
+    int text_height;
+
     font.set_family(c_font);
     font.set_size(c_key_fontsize * Pango::SCALE);
     font.set_weight(Pango::WEIGHT_NORMAL);
@@ -229,6 +232,7 @@ seqdata::draw_events_on_window( )
             t->set_justify(Pango::ALIGN_CENTER);
             t->set_width(0);
             t->set_wrap(Pango::WRAP_CHAR);
+            t->get_pixel_size(text_width, text_height);
 
             /* Volume label level */
             int height_offset = 13;

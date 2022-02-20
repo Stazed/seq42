@@ -125,11 +125,6 @@ seqtime::update_surface()
 {
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
 
-    Pango::FontDescription font;
-    font.set_family(c_font);
-    font.set_size((c_key_fontsize - 1) * Pango::SCALE);
-    font.set_weight(Pango::WEIGHT_BOLD);
-
     Gtk::Allocation allocation = get_allocation();
     const int width = allocation.get_width();
     const int height = allocation.get_height();
@@ -196,12 +191,10 @@ seqtime::update_surface()
         char bar[16];
         snprintf(bar, sizeof(bar), "%d", (i/ ticks_per_measure ) + 1);
 
-        auto t = create_pango_layout(bar);
-        t->set_font_description(font);
-        t->set_justify(Pango::ALIGN_LEFT);
-
-        cr->move_to(base_line + 2 -  m_scroll_offset_x, -2);
-        t->show_in_cairo_context(cr);
+        cr->select_font_face("Sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_NORMAL);
+        cr->set_font_size(9.0);
+        cr->move_to(base_line + 2 -  m_scroll_offset_x, 7);
+        cr->show_text( bar);
     }
 
     long end_x = m_seq->get_length() / m_zoom - m_scroll_offset_x;
@@ -210,18 +203,16 @@ seqtime::update_surface()
     cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
 
     // draw the black background for the 'END' label
-    cr->rectangle(end_x, 9, 19, 8 );
+    cr->rectangle(end_x, 9, 22, 8 );
     cr->stroke_preserve();
     cr->fill();
 
     // print the 'END' label in white
-    auto t = create_pango_layout("END");
-    t->set_font_description(font);
-    t->set_justify(Pango::ALIGN_LEFT);
     cr->set_source_rgb(1.0, 1.0, 1.0);    // White FIXME
-
-    cr->move_to(end_x + 1, 7);
-    t->show_in_cairo_context(cr);
+    cr->select_font_face("Sans", Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_BOLD);
+    cr->set_font_size(9.0);
+    cr->move_to(end_x, 16);
+    cr->show_text("END");
 
     queue_draw();
 }
