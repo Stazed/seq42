@@ -123,6 +123,14 @@ tempo::draw_background()
 {
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
 
+    Pango::FontDescription font;
+    int text_width;
+    int text_height;
+
+    font.set_family(c_font);
+    font.set_size((c_key_fontsize - 1) * Pango::SCALE);
+    font.set_weight(Pango::WEIGHT_BOLD);
+
     Gtk::Allocation allocation = get_allocation();
     const int width = allocation.get_width();
     const int height = allocation.get_height();
@@ -218,17 +226,20 @@ tempo::draw_background()
             // set background for tempo labels to black
             cr->set_source_rgb( 0.0, 0.0, 0.0);    // Black FIXME
 
+            auto t = create_pango_layout(str);
+            t->set_font_description(font);
+            t->get_pixel_size(text_width, text_height);
+
             // draw the black background for the labels
-            cr->rectangle( tempo_marker + 5, 0, (strlen(str) * 5) + 1, 12.0);
+            cr->rectangle(tempo_marker + 5, 0, text_width, text_height);
             cr->stroke_preserve();
             cr->fill();
 
             // print the BPM or [Stop] label in white
             cr->set_source_rgb( 1.0, 1.0, 1.0);    // White FIXME
-            cr->select_font_face(c_font, Cairo::FONT_SLANT_NORMAL, Cairo::FONT_WEIGHT_BOLD);
-            cr->set_font_size( 9.0);
-            cr->move_to( tempo_marker + 5, 9.0);
-            cr->show_text(  str);
+            cr->move_to( tempo_marker + 5, (m_window_y * .5) - (text_height * .5) - 2 );
+
+            t->show_in_cairo_context(cr);
         }
     }
 }
