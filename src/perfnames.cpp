@@ -170,7 +170,7 @@ perfnames::draw_track( int track )
             n->get_pixel_size(text_width, text_height);
 
             cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
-            cr->move_to(5, (c_names_y * i) + (text_height * .5) + 4);
+            cr->move_to(5, (c_names_y * i) + ( (c_names_y * .5) - (text_height * .5) ) + 6);
 
             n->show_in_cairo_context(cr);
 
@@ -246,7 +246,7 @@ perfnames::draw_track( int track )
             m->set_font_description(font);
             m->get_pixel_size(text_width, text_height);
  
-            cr->move_to(m_window_x - 7, (c_names_y * i) + (text_height * .5));
+            cr->move_to(m_window_x - 7, (c_names_y * i) +  ((c_names_y * .5) - (text_height * .5) + 1 ));
             
             m->show_in_cairo_context(cr);
         }
