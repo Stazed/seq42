@@ -211,7 +211,7 @@ seqtime::update_surface()
     long end_x = m_seq->get_length() / m_zoom - m_scroll_offset_x;
     
     auto t = create_pango_layout("END");
-    font.set_size(c_key_fontsize * Pango::SCALE);
+    font.set_size((c_key_fontsize -1) * Pango::SCALE);
     font.set_weight(Pango::WEIGHT_BOLD);
     t->set_font_description(font);
     t->get_pixel_size(text_width, text_height);

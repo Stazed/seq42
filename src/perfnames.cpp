@@ -226,9 +226,13 @@ perfnames::draw_track( int track )
                 // background 
                 cr->set_source_rgb(1.0, 1.0, 1.0);    // White FIXME
             }
+            
+            auto m = create_pango_layout(smute);
+            m->set_font_description(font);
+            m->get_pixel_size(text_width, text_height);
 
             // draw the background for the mute label
-            cr->rectangle(m_window_x - 8, c_names_y * i + 7, (strlen(smute) * 5) + 2, 9.0);
+            cr->rectangle(m_window_x - text_width - 1 , c_names_y * i + (text_height * .5)  , text_width, (text_height * .5) + 3 );
             cr->stroke_preserve();
             cr->fill();
 
@@ -241,13 +245,9 @@ perfnames::draw_track( int track )
             {
                 cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
             }
-            
-            auto m = create_pango_layout(smute);
-            m->set_font_description(font);
-            m->get_pixel_size(text_width, text_height);
- 
-            cr->move_to(m_window_x - 7, (c_names_y * i) +  ((c_names_y * .5) - (text_height * .5) + 1 ));
-            
+
+            cr->move_to(m_window_x - text_width - 1, (c_names_y * i) +  ((c_names_y * .5) - (text_height * .5) + 1 ));
+
             m->show_in_cairo_context(cr);
         }
     }
