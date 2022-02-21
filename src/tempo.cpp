@@ -286,8 +286,8 @@ tempo::on_button_press_event(GdkEventButton* p0)
     /* For the popup window location - current mouse location */
     int x, y;
     GdkDisplay *display = gdk_display_get_default ();
-    GdkDeviceManager *device_manager = gdk_display_get_device_manager (display);
-    GdkDevice *device = gdk_device_manager_get_client_pointer (device_manager);
+    GdkSeat* seat = gdk_display_get_default_seat(display);
+    GdkDevice* device = gdk_seat_get_pointer(seat);
     gdk_device_get_position (device, NULL, &x, &y);
  
     uint64_t tick = (uint64_t) p0->x;

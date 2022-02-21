@@ -2,7 +2,7 @@
 
 SUBDIRS = pixmaps
 
-AM_CXXFLAGS = $(GTKMM_CFLAGS) $(JACK_CFLAGS) $(LIBLO_LIBS) -Wall -Wno-deprecated-declarations
+AM_CXXFLAGS = $(GTKMM_CFLAGS) $(JACK_CFLAGS) $(LIBLO_LIBS) -Wall
 seq42_LDADD = $(GTKMM_LIBS) $(ALSA_LIBS) $(JACK_LIBS) $(LIBLO_LIBS)
 
 bin_PROGRAMS = seq42
