@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include <gtkmm/entry.h>
+#include <gtkmm.h>
 
 /*forward declaration*/
 class perform;

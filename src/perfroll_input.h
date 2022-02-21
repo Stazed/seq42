@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include <gtkmm/button.h>
+#include <gtkmm.h>
 
 class perfroll;
 class FruityPerfInput

@@ -20,30 +20,7 @@
 
 #pragma once
 
-#include <gtkmm/button.h>
-#include <gtkmm/window.h>
-#include <gtkmm/accelgroup.h>
-#include <gtkmm/box.h>
-#include <gtkmm/main.h>
-#include <gtkmm/menu.h>
-#include <gtkmm/menubar.h>
-#include <gtkmm/eventbox.h>
-#include <gtkmm/window.h>
-#include <gtkmm/dialog.h>
-#include <gtkmm/table.h>
-#include <gtkmm/drawingarea.h>
-#include <gtkmm/label.h>
-#include <gtkmm/frame.h>
-#include <gtkmm/dialog.h>
-#include <gtkmm/arrow.h>
-#include <gtkmm/spinbutton.h>
-#include <gtkmm/progressbar.h>
-#include <gtkmm/checkbutton.h>
-#include <gtkmm/radiobutton.h>
-#include <gtkmm/togglebutton.h>
-#include <gtkmm/notebook.h>
-
-#include <sigc++/bind.h>
+#include <gtkmm.h>
 
 #include "globals.h"
 #include "perform.h"

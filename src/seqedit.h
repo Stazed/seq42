@@ -30,7 +30,6 @@
 #include "trackedit.h"
 
 #include <gtkmm.h>
-#include <sigc++/bind.h>
 
 #include <list>
 #include <string>

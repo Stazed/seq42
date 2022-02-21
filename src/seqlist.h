@@ -21,7 +21,7 @@
 #pragma once
 
 #include <gtkmm.h>
-#include <sigc++/bind.h>
+
 #include "globals.h"
 #include "track.h"
 #include "perform.h"

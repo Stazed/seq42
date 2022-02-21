@@ -27,10 +27,7 @@
 #endif
 
 #include <string>
-#include <gtkmm/main.h>
-#include <gtkmm/drawingarea.h>
-//For keys
-#include <gtkmm/accelkey.h>
+#include <gtkmm.h>
 
 using namespace std;
 
