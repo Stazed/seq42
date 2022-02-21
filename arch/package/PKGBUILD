@@ -1,13 +1,13 @@
 # Maintainer: stazed<stazed@mapson.com>
 _pkgbasename=seq42
 pkgname=${_pkgbasename}-git
-pkgver=1.1.5.
+pkgver=2.0.0
 pkgrel=1
 pkgdesc="A MIDI sequencer"
 arch=('i686' 'x86_64')
 url="http//github.com/Stazed/seq42.git"
-license=('GPL')
-depends=('gtkmm' 'jack' 'liblo')
+license=('GPL3')
+depends=('gtkmm3' 'jack' 'liblo')
 makedepends=('git')
 provides=("${_pkgbasename}")
 conflicts=("${_pkgbasename}")
