@@ -40,8 +40,6 @@
 #include "pixmaps/undo.xpm"
 #include "pixmaps/redo.xpm"
 #include "pixmaps/quanize.xpm"
-//#include "pixmaps/menu_empty.xpm"
-//#include "pixmaps/menu_full.xpm"
 #include "pixmaps/sequences.xpm"
 #include "pixmaps/tools.xpm"
 #include "pixmaps/seq-editor.xpm"
