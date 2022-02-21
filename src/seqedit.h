@@ -86,10 +86,6 @@ private:
 
     SeparatorMenuItem   m_menu_separator0;
     SeparatorMenuItem   m_menu_separator1;
-    SeparatorMenuItem   m_menu_separator2;
-    SeparatorMenuItem   m_menu_separator3;
-    SeparatorMenuItem   m_menu_separator4;
-    SeparatorMenuItem   m_menu_separator5;
 
     /* length in measures */
     Menu       *m_menu_length;

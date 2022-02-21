@@ -658,7 +658,8 @@ seqedit::popup_tool_menu()
     if ( m_editing_status !=  EVENT_NOTE_ON &&
             m_editing_status !=  EVENT_NOTE_OFF )
     {
-        holder->append(m_menu_separator2);
+        SeparatorMenuItem * menu_separator = new SeparatorMenuItem;
+        holder->append(*menu_separator);
 
         m_tools_menu_items[8].set_label("All Events");
         m_tools_menu_items[8].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::do_action), select_all_events, 0) );
@@ -686,7 +687,8 @@ seqedit::popup_tool_menu()
     if ( m_editing_status !=  EVENT_NOTE_ON &&
             m_editing_status !=  EVENT_NOTE_OFF )
     {
-        holder->append(m_menu_separator3);
+        SeparatorMenuItem * menu_separator = new SeparatorMenuItem;
+        holder->append(*menu_separator);
 
         m_tools_menu_items[13].set_label("Quantize Selected Events");
         m_tools_menu_items[13].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::do_action), quantize_events, 0 ) );
@@ -697,7 +699,8 @@ seqedit::popup_tool_menu()
         holder->append(m_tools_menu_items[14]);
     }
 
-    holder->append(m_menu_separator4);
+    SeparatorMenuItem * menu_separator = new SeparatorMenuItem;
+    holder->append(*menu_separator);
 
     m_tools_menu_items[15].set_label("Expand Pattern (double)");
     m_tools_menu_items[15].signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::do_action), expand_pattern, 0 ) );
@@ -876,7 +879,7 @@ seqedit::fill_top_bar()
     m_entry_name = manage( new Entry( ));
     m_entry_name->set_name("Sequence Name");
     m_entry_name->set_max_length(c_max_seq_name);
-    m_entry_name->set_width_chars(c_max_seq_name);
+    m_entry_name->set_width_chars(c_max_seq_name - 10);
     m_entry_name->set_text( m_seq->get_name());
     m_entry_name->select_region(0,0);
     m_entry_name->set_position(0);
@@ -954,7 +957,7 @@ seqedit::fill_top_bar()
     m_hbox->pack_start( *m_button_track, false, false );
     m_entry_track = manage( new Entry());
     m_entry_track->set_max_length(50);
-    m_entry_track->set_width_chars(22);
+    m_entry_track->set_width_chars(20);
     m_entry_track->set_editable( false );
     m_hbox->pack_start( *m_entry_track, true, true );
     m_label_bus = manage (new Label( "Bus" ));
@@ -1117,7 +1120,8 @@ seqedit::popup_sequence_menu()
     menu_item->signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), -1, -1));
     m_menu_sequences->append(*menu_item);
     
-    m_menu_sequences->append(m_menu_separator5);
+    SeparatorMenuItem * menu_separator = new SeparatorMenuItem;
+    m_menu_sequences->append(*menu_separator);
 
     char name[40];
     for ( int t=0; t<c_max_track; ++t )
