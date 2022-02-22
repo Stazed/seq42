@@ -70,9 +70,6 @@ public:
     perftime( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment> a_hadjust );
 
     void set_zoom (int a_zoom);
-
-    void reset();
-    void set_scale( int a_scale );
     void set_guides( int a_snap, int a_measure );
 };
 
