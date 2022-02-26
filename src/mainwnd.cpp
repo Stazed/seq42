@@ -74,11 +74,11 @@ mainwnd::mainwnd(perform *a_p, Glib::RefPtr<Gtk::Application> app):
     m_bw(4),
     m_tick_time_as_bbt(false),
     m_toggle_time_type(false),
-    m_closing_windows(false),
+    m_closing_windows(false)
 #ifdef NSM_SUPPORT
-    m_nsm_visible(true),
-    m_dirty_flag(false),
-    m_nsm(NULL)
+    ,m_nsm_visible(true)
+    ,m_dirty_flag(false)
+    ,m_nsm(NULL)
 #endif
 {
     using namespace Menu_Helpers;
@@ -2719,8 +2719,12 @@ mainwnd::close_all_windows()
     {
         m_vector_windows[i]->close();
     }
-    
+
     m_vector_windows.clear();
+    
+    if ( m_options != NULL )
+        m_options->hide();
+
     m_tempo->hide_tempo_popup();
 
     m_closing_windows = false;
