@@ -543,7 +543,6 @@ seqevent::on_focus_in_event(GdkEventFocus*)
 bool
 seqevent::on_focus_out_event(GdkEventFocus*)
 {
-    //unset_flags(Gtk::HAS_FOCUS);
     return false;
 }
 

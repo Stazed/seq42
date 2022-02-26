@@ -1052,14 +1052,12 @@ bool
 seqroll::on_focus_in_event(GdkEventFocus*)
 {
     grab_focus();
-    //m_seq->clear_clipboard();
     return false;
 }
 
 bool
 seqroll::on_focus_out_event(GdkEventFocus*)
 {
-    //unset_flags(Gtk::HAS_FOCUS);
     return false;
 }
 
@@ -1251,7 +1249,6 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
     if ( ret == true )
     {
         m_seq->set_dirty();
-        //redraw_events();
         return true;
     }
 
