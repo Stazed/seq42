@@ -137,6 +137,7 @@ public:
     void draw_progress();
 
     void redraw_dirty_tracks();
+    void redraw_all_tracks(){m_redraw_tracks = true;}
 
     /* Trigger menu callbacks */
     void new_sequence(track *a_track, trigger *a_trigger);

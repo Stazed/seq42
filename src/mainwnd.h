@@ -57,7 +57,7 @@ private:
     perform  *m_mainperf;
     Glib::RefPtr<Gtk::Application> m_app;
     
-    /* Holds the various window pointers so they can be closed by NSM, and file new() */
+    /* Holds the various window pointers so they can be closed by NSM */
     vector< Gtk::Window *> m_vector_windows;
 
     MenuBar  *m_menubar;

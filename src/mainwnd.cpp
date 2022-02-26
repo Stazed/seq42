@@ -1098,28 +1098,24 @@ void
 mainwnd::undo_trigger(int a_track)
 {
     m_mainperf->pop_trigger_undo(a_track);
-    m_perfroll->queue_draw();
 }
 
 void
 mainwnd::undo_trigger() // collapse and expand
 {
     m_mainperf->pop_trigger_undo();
-    m_perfroll->queue_draw();
 }
 
 void
 mainwnd::undo_track( int a_track )
 {
     m_mainperf->pop_track_undo(a_track);
-    m_perfroll->queue_draw();
 }
 
 void
 mainwnd::undo_perf(bool a_import)
 {
     m_mainperf->pop_perf_undo(a_import);
-    m_perfroll->queue_draw();
 }
 
 void
@@ -1170,28 +1166,24 @@ void
 mainwnd::redo_trigger(int a_track) // single track
 {
     m_mainperf->pop_trigger_redo(a_track);
-    m_perfroll->queue_draw();
 }
 
 void
-mainwnd::redo_trigger() // collapse and expand
+mainwnd::redo_trigger()
 {
     m_mainperf->pop_trigger_redo();
-    m_perfroll->queue_draw();
 }
 
 void
 mainwnd::redo_track( int a_track )
 {
     m_mainperf->pop_track_redo(a_track);
-    m_perfroll->queue_draw();
 }
 
 void
 mainwnd::redo_perf(bool a_import)
 {
     m_mainperf->pop_perf_redo(a_import);
-    m_perfroll->queue_draw();
 }
 
 void
@@ -1264,7 +1256,7 @@ mainwnd::collapse() // all tracks
 {
     m_mainperf->push_trigger_undo();
     m_mainperf->move_triggers( false );
-    m_perfroll->queue_draw();
+    m_perfroll->redraw_all_tracks();
 }
 
 void
@@ -1272,7 +1264,7 @@ mainwnd::copy() // all tracks
 {
     m_mainperf->push_trigger_undo();
     m_mainperf->copy_triggers(  );
-    m_perfroll->queue_draw();
+    m_perfroll->redraw_all_tracks();
 }
 
 void
@@ -1280,7 +1272,7 @@ mainwnd::expand() // all tracks
 {
     m_mainperf->push_trigger_undo();
     m_mainperf->move_triggers( true );
-    m_perfroll->queue_draw();
+    m_perfroll->redraw_all_tracks();
 }
 
 void
