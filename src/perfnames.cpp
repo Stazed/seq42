@@ -194,7 +194,7 @@ perfnames::draw_track( int track )
                 cr->set_source_rgb(0.5, 0.988, 0.0);    // Green FIXME
             }
 
-            cr->rectangle( m_window_x - 9, (c_names_y * i) + 2, 9, c_names_y - 2);
+            cr->rectangle( m_window_x - 11, (c_names_y * i) + 2, 11, c_names_y - 2);
             if ( fill )
             {
                 cr->stroke_preserve();
@@ -232,7 +232,7 @@ perfnames::draw_track( int track )
             m->get_pixel_size(text_width, text_height);
 
             // draw the background for the mute label
-            cr->rectangle(m_window_x - text_width - 2 , c_names_y * i + (text_height * .5)  , text_width + 1, (text_height * .5) + 5 );
+            cr->rectangle(m_window_x - text_width - 3 , c_names_y * i + (text_height * .5)  , text_width + 1, (text_height * .5) + 5 );
             cr->stroke_preserve();
             cr->fill();
 
@@ -246,7 +246,7 @@ perfnames::draw_track( int track )
                 cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
             }
 
-            cr->move_to(m_window_x - text_width - 1, (c_names_y * i) +  ((c_names_y * .5) - (text_height * .5) + 1 ));
+            cr->move_to(m_window_x - text_width - 2, (c_names_y * i) +  ((c_names_y * .5) - (text_height * .5) + 1 ));
 
             m->show_in_cairo_context(cr);
         }
