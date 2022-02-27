@@ -1635,6 +1635,14 @@ void mainwnd::new_file()
 /* callback function */
 void mainwnd::file_save()
 {
+#ifdef NSM_SUPPORT
+    // Do not save if in NSM session and using playlist mode
+    if(m_mainperf->get_playlist_mode() && (m_nsm != NULL))
+    {
+        fprintf(stderr, "Seq42 playlist mode cannot save!!\n" );
+        return;
+    }
+#endif
     save_file();
 }
 
@@ -2752,7 +2760,8 @@ mainwnd::set_nsm_client(nsm_client_t *nsm, bool optional_gui)
     {
         m_file_menu_items[1].set_sensitive(false);  // New
         m_file_menu_items[2].set_sensitive(false);  // Open
-        m_file_menu_items[3].set_sensitive(false);  // Open playlist
+        /* We allow loading of play list - but we prevent saving when using it */
+        //m_file_menu_items[3].set_sensitive(false);  // Open playlist
         m_file_menu_items[5].set_sensitive(false);  // Save As
 
         m_menu_recent->set_sensitive(false);        // Recent files submenu
