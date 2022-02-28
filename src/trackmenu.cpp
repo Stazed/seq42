@@ -305,6 +305,7 @@ trackmenu::trk_insert(int a_track_location)
         if ( m_mainperf->is_active_track(i) == true )
         {
             m_mainperf->m_tracks_clipboard[i] = *m_mainperf->get_track(i);
+            m_mainperf->m_tracks_clipboard[i].unselect_triggers();
         }
         else
         {
@@ -349,6 +350,7 @@ trackmenu::trk_delete(int a_track_location)
         if ( m_mainperf->is_active_track(i) == true )
         {
             m_mainperf->m_tracks_clipboard[i] = *m_mainperf->get_track(i);
+            m_mainperf->m_tracks_clipboard[i].unselect_triggers();
         }
         else
         {
@@ -392,6 +394,7 @@ trackmenu::pack_tracks()
         if ( m_mainperf->is_active_track(i) == true )
         {
             m_mainperf->m_tracks_clipboard[active_tracks] = *m_mainperf->get_track(i);
+            m_mainperf->m_tracks_clipboard[active_tracks].unselect_triggers();
             active_tracks++;
         }
     }
@@ -432,6 +435,7 @@ trackmenu::trk_copy()
     if ( m_mainperf->is_active_track( m_current_trk ))
     {
         m_clipboard = *(m_mainperf->get_track( m_current_trk ));
+        m_clipboard.unselect_triggers();
         m_something_to_paste = true;
     }
 }
@@ -444,6 +448,7 @@ trackmenu::trk_cut()
             !m_mainperf->is_track_in_edit( m_current_trk ) )
     {
         m_clipboard = *(m_mainperf->get_track( m_current_trk ));
+        m_clipboard.unselect_triggers();
         m_something_to_paste = true;
         m_mainperf->push_track_undo(m_current_trk);
         m_mainperf->delete_track( m_current_trk );

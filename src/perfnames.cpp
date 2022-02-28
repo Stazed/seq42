@@ -411,6 +411,7 @@ perfnames::on_button_release_event(GdkEventButton* p0)
         {
             m_mainperf->new_track( m_current_trk  );
             *(m_mainperf->get_track( m_current_trk )) = m_moving_track;
+            m_mainperf->get_track( m_current_trk )->unselect_triggers();
             m_mainperf->get_track(m_current_trk)->set_dirty();
         }
         /* If we did land on an active track and it is not being edited, then swap places. */
@@ -419,17 +420,20 @@ perfnames::on_button_release_event(GdkEventButton* p0)
             m_clipboard = *(m_mainperf->get_track( m_current_trk ));        // hold the current for swap to old location
             m_mainperf->new_track( m_old_track  );                          // The old location
             *(m_mainperf->get_track( m_old_track )) = m_clipboard;          // put the current track into the old location
+            m_mainperf->get_track( m_old_track )->unselect_triggers();
             m_mainperf->get_track(m_old_track)->set_dirty();
 
             m_mainperf->delete_track( m_current_trk );                      // delete the current for replacement
             m_mainperf->new_track( m_current_trk  );                        // add a new blank one
             *(m_mainperf->get_track( m_current_trk )) = m_moving_track;     // replace with the old
+            m_mainperf->get_track( m_current_trk )->unselect_triggers();
             m_mainperf->get_track(m_current_trk)->set_dirty();
         }
        /* They landed on another track but it is being edited, so ignore the move 
          * and put the old track back to original location. */
         else
         {
+            // FIXME popup error
             m_mainperf->new_track( m_old_track  );
             *(m_mainperf->get_track( m_old_track )) = m_moving_track;
             m_mainperf->get_track(m_old_track)->set_dirty();
