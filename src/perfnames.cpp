@@ -433,7 +433,7 @@ perfnames::on_button_release_event(GdkEventButton* p0)
          * and put the old track back to original location. */
         else
         {
-            // FIXME popup error
+            track_is_being_edited();
             m_mainperf->new_track( m_old_track  );
             *(m_mainperf->get_track( m_old_track )) = m_moving_track;
             m_mainperf->get_track(m_old_track)->set_dirty();
@@ -595,4 +595,16 @@ perfnames::merge_tracks( track *a_merge_track )
     }
     
     return is_merge_valid;
+}
+
+void
+perfnames::track_is_being_edited()
+{
+    Glib::ustring query_str = "Cannot swap tracks if being edited!";
+    
+    Gtk::MessageDialog dialog( query_str, false,
+                              Gtk::MESSAGE_INFO,
+                              Gtk::BUTTONS_OK, true);
+
+    dialog.run();
 }
