@@ -32,8 +32,7 @@ seqdata::seqdata(sequence *a_seq, int a_zoom, Glib::RefPtr<Adjustment> a_hadjust
     m_status(0x00),
 
     m_dragging(false),
-    m_drag_handle(false),
-    m_redraw_events(false)
+    m_drag_handle(false)
 {
     Gtk::Allocation allocation = get_allocation();
     m_surface = Cairo::ImageSurface::create(
@@ -68,7 +67,7 @@ seqdata::update_sizes()
             );
         }
 
-        m_redraw_events = true;
+        queue_draw();
     }
 }
 
@@ -84,7 +83,7 @@ seqdata::reset()
 void
 seqdata::redraw()
 {
-    m_redraw_events = true;
+    queue_draw();
 }
 
 void
@@ -248,23 +247,11 @@ seqdata::draw_events_on_window( )
     }
 }
 
-int
-seqdata::idle_redraw()
-{
-    /* no flicker, redraw */
-    if ( m_redraw_events )
-    {
-        m_redraw_events = false;
-        draw_events_on_window();
-        queue_draw();
-    }
-
-    return true;
-}
-
 bool
 seqdata::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
+    draw_events_on_window();
+
     /* Clear previous background */
     cr->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
     cr->rectangle (0.0, 0.0, m_window_x, m_window_y);
@@ -315,7 +302,7 @@ seqdata::on_scroll_event( GdkEventScroll* a_ev )
         m_seq->decrement_selected( m_status, m_cc );
     }
 
-    m_redraw_events = true;
+    queue_draw();
 
     return true;
 }
@@ -398,7 +385,7 @@ seqdata::on_button_release_event(GdkEventButton* a_p0)
         m_seq->set_hold_undo(false);
     }
 
-    m_redraw_events = true;
+    queue_draw();
     return true;
 }
 
@@ -452,7 +439,7 @@ seqdata::on_motion_notify_event(GdkEventMotion* a_p0)
 
         m_seq->adjust_data_handle(m_status, m_current_y );
 
-        m_redraw_events = true;
+        queue_draw();
     }
 
     if ( m_dragging )
@@ -490,7 +477,7 @@ seqdata::on_motion_notify_event(GdkEventMotion* a_p0)
                                         c_dataarea_y - adj_y_max -1 );
 
         /* convert x,y to ticks, then set events in range */
-        m_redraw_events = true;
+        queue_draw();
     }
 
     return true;
@@ -499,7 +486,7 @@ seqdata::on_motion_notify_event(GdkEventMotion* a_p0)
 bool
 seqdata::on_leave_notify_event(GdkEventCrossing* p0)
 {
-    m_redraw_events = true;
+    queue_draw();
     return true;
 }
 
@@ -509,7 +496,7 @@ seqdata::change_horz( )
     m_scroll_offset_ticks = (int) m_hadjust->get_value();
     m_scroll_offset_x = m_scroll_offset_ticks / m_zoom;
 
-    m_redraw_events = true;
+    queue_draw();
 }
 
 void
