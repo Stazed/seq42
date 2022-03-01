@@ -48,6 +48,7 @@ bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
         ths.m_mainperf->get_track( ths.m_drop_track )->unselect_triggers( );
         ths.draw_background_on( ths.m_drop_track );
         ths.draw_track_on( ths.m_drop_track );
+        ths.redraw_all_tracks();
     }
 
     ths.m_drop_x = (int) a_ev->x;
@@ -168,6 +169,7 @@ void FruityPerfInput::on_left_button_pressed(GdkEventButton* a_ev, perfroll& ths
 
                     ths.draw_background_on( ths.m_drop_track );
                     ths.draw_track_on( ths.m_drop_track );
+                    ths.redraw_all_tracks();
                 }
 
                 // add an event:
@@ -179,6 +181,7 @@ void FruityPerfInput::on_left_button_pressed(GdkEventButton* a_ev, perfroll& ths
                     ths.m_mainperf->get_track( ths.m_drop_track )->add_trigger( tick, ths.get_default_trigger_length(ths));
                     ths.draw_background_on( ths.m_drop_track );
                     ths.draw_track_on( ths.m_drop_track );
+                    ths.redraw_all_tracks();
                 }
             }
         }
@@ -226,6 +229,7 @@ bool FruityPerfInput::on_button_release_event(GdkEventButton* a_ev, perfroll& th
     {
         ths.draw_background_on( ths.m_drop_track );
         ths.draw_track_on( ths.m_drop_track );
+        ths.redraw_all_tracks();
     }
 
     updateMousePtr( ths );
@@ -253,6 +257,7 @@ bool FruityPerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths
                         ->grow_trigger( ths.m_drop_tick, tick, ths.get_default_trigger_length(ths));
             ths.draw_background_on( ths.m_drop_track );
             ths.draw_track_on( ths.m_drop_track );
+            ths.redraw_all_tracks();
         }
     }
     else if ( ths.m_moving || ths.m_growing )
@@ -287,6 +292,7 @@ bool FruityPerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths
 
             ths.draw_background_on( ths.m_drop_track );
             ths.draw_track_on( ths.m_drop_track );
+            ths.redraw_all_tracks();
         }
     }
 
@@ -319,6 +325,7 @@ bool Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
         ths.m_mainperf->get_track( ths.m_drop_track )->unselect_triggers( );
         ths.draw_background_on( ths.m_drop_track );
         ths.draw_track_on( ths.m_drop_track );
+        ths.redraw_all_tracks();
     }
 
     ths.m_drop_x = (int) a_ev->x;
@@ -353,6 +360,7 @@ bool Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
                     ths.m_mainperf->get_track( ths.m_drop_track )->add_trigger( tick, ths.get_default_trigger_length(ths));
                     ths.draw_background_on( ths.m_drop_track );
                     ths.draw_track_on( ths.m_drop_track );
+                    ths.redraw_all_tracks();
                 }
             }
         }
@@ -398,6 +406,7 @@ bool Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 
                 ths.draw_background_on( ths.m_drop_track );
                 ths.draw_track_on( ths.m_drop_track );
+                ths.redraw_all_tracks();
             }
         }
     }
@@ -436,6 +445,7 @@ bool Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 
                 ths.draw_background_on( ths.m_drop_track );
                 ths.draw_track_on( ths.m_drop_track );
+                ths.redraw_all_tracks();
             }
             else    // clicked off trigger for paste
             {
@@ -479,6 +489,7 @@ bool Seq42PerfInput::on_button_release_event(GdkEventButton* a_ev, perfroll& ths
     {
         ths.draw_background_on( ths.m_drop_track );
         ths.draw_track_on( ths.m_drop_track );
+        ths.redraw_all_tracks();
     }
 
     return true;
@@ -502,6 +513,7 @@ bool Seq42PerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths)
 
             ths.draw_background_on( ths.m_drop_track );
             ths.draw_track_on( ths.m_drop_track );
+            ths.redraw_all_tracks();
         }
     }
     else if ( ths.m_moving || ths.m_growing )
@@ -538,6 +550,7 @@ bool Seq42PerfInput::on_motion_notify_event(GdkEventMotion* a_ev, perfroll& ths)
 
             ths.draw_background_on( ths.m_drop_track );
             ths.draw_track_on( ths.m_drop_track );
+            ths.redraw_all_tracks();
         }
     }
 

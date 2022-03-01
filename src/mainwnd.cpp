@@ -1049,6 +1049,7 @@ mainwnd::timer_callback(  )
     {
         if((m_mainperf->get_starting_tick() == m_mainperf->get_tick()) && m_mainperf->get_reposition())
         {
+            m_perfroll->have_stopped_reposition();
             m_mainperf->set_reposition(false);
         }
     }
@@ -1361,6 +1362,11 @@ void
 mainwnd::set_follow_transport()
 {
     m_mainperf->set_follow_transport(m_button_follow->get_active());
+
+    if(m_perfroll)
+    {
+        m_perfroll->have_stopped_reposition();
+    }
 }
 
 void

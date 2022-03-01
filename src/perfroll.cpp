@@ -31,6 +31,8 @@ perfroll::perfroll( perform *a_perf,
 
     m_perf_scale_x(c_perf_scale_x),       // 32 ticks per pixel
     m_zoom(c_perf_scale_x),               // 32 ticks per pixel
+        
+    m_old_progress_ticks(0),
 
     m_4bar_offset(0),
     m_track_offset(0),
@@ -48,7 +50,9 @@ perfroll::perfroll( perform *a_perf,
     have_button_press(false),
     transport_follow(true),
     trans_button_press(false),
-    m_redraw_tracks(false)
+    m_redraw_tracks(false),
+    m_have_realize(false),
+    m_have_stop_reposition(false)
 {
     Gtk::Allocation allocation = get_allocation();
     m_surface_track = Cairo::ImageSurface::create(
@@ -269,7 +273,66 @@ perfroll::set_guides( int a_snap, int a_measure, int a_beat )
 void
 perfroll::draw_progress()
 {
-    // resize handler
+    if (m_redraw_tracks)
+    {
+        if(!m_have_realize)     // We keep polling until we get it
+            return;
+
+        m_redraw_tracks = false;
+
+        int y_s = 0;
+        int y_f = m_window_y / c_names_y;
+
+        for ( int y = y_s; y <= y_f; y++ )
+        {
+            int track = y + m_track_offset;
+
+            draw_background_on(track );
+            draw_track_on(track);
+        }
+
+        m_surface_window->set_source(m_surface_track, 0.0, 0.0);
+        m_surface_window->paint();
+        m_have_stop_reposition = true;  // in case we are stopped, we need to draw the progress line
+    }
+
+    /* Here we draw the progress line */
+    if (global_is_running || m_have_stop_reposition )
+    {
+        m_have_stop_reposition = false;
+
+        /* draw progress line */
+        long tick = m_mainperf->get_tick();
+        long tick_offset = m_4bar_offset * c_ppqn * 16;
+
+        int progress_x = ( tick - tick_offset ) / m_perf_scale_x ;
+
+        /* Redraw the previous line to clear the previous progress */
+        m_surface_window->set_source(m_surface_track, 0.0, 0.0);
+        m_surface_window->rectangle(m_old_progress_ticks, 0, 1, m_window_y);
+        m_surface_window->stroke_preserve();
+        m_surface_window->fill();
+
+        m_old_progress_ticks = progress_x;  // hold the position to clear for next line
+
+        /* The new progress line */
+        m_surface_window->set_source_rgb(0.0, 0.0, 0.0);            // Black  FIXME
+        m_surface_window->set_line_width(2.0);
+        m_surface_window->move_to(progress_x, 0.0);
+        m_surface_window->line_to(progress_x, m_window_y);
+        m_surface_window->stroke();
+
+        auto_scroll_horz();
+    }
+}
+
+bool 
+perfroll::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
+{
+    m_surface_window = cr;
+
+    m_have_realize = true;
+
     if (c_perfroll_background_x != m_surface_background->get_width() || c_names_y != m_surface_background->get_height())
     {
         m_surface_background = Cairo::ImageSurface::create(
@@ -278,7 +341,6 @@ perfroll::draw_progress()
         );
 
         fill_background_surface();
-        m_redraw_tracks = true;
     }
 
     if (m_window_x != m_surface_track->get_width() || m_window_y != m_surface_track->get_height())
@@ -287,47 +349,11 @@ perfroll::draw_progress()
             Cairo::Format::FORMAT_ARGB32,
                 m_window_x,  m_window_y
         );
-
-        m_redraw_tracks = true;
     }
-
-    if (m_redraw_tracks)
-    {
-        m_redraw_tracks = false;
-        int y_s = 0;
-        int y_f = m_window_y / c_names_y;
-
-        for ( int y=y_s; y<=y_f; y++ )
-        {
-            int track = y + m_track_offset;
-
-            draw_background_on(track );
-            draw_track_on(track);
-        }
-    }
-
-    queue_draw();
-}
-
-bool 
-perfroll::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
-{
-    long tick = m_mainperf->get_tick();
-    long tick_offset = m_4bar_offset * c_ppqn * 16;
-
-    int progress_x =     ( tick - tick_offset ) / m_perf_scale_x ;
-
-    cr->set_source(m_surface_track, 0.0, 0.0);
-    cr->paint();
-
-    /* draw progress line */
-    cr->set_source_rgb(0.0, 0.0, 0.0);            // Black  FIXME
-    cr->set_line_width(2.0);
-    cr->move_to(progress_x, 0.0);
-    cr->line_to(progress_x, m_window_y);
-    cr->stroke();
-
-    auto_scroll_horz();
+    
+    m_redraw_tracks = true;
+    
+    draw_progress();
 
     return true;
 }
@@ -584,6 +610,7 @@ perfroll::redraw_dirty_tracks()
         {
             draw_background_on(track );
             draw_track_on(track);
+            m_redraw_tracks = true;
         }
     }
 }

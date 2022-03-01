@@ -51,6 +51,7 @@ private:
     friend class Seq42PerfInput;
     Seq42PerfInput m_seq42_interaction;
 
+    Cairo::RefPtr<Cairo::Context>  m_surface_window;
     Cairo::RefPtr<Cairo::ImageSurface> m_surface_track;
     Cairo::RefPtr<Cairo::ImageSurface> m_surface_background;
 
@@ -65,6 +66,8 @@ private:
     int          m_zoom;
 
     int          m_window_x, m_window_y;
+    
+    long         m_old_progress_ticks;
 
     int          m_4bar_offset;
     int          m_track_offset;
@@ -91,6 +94,8 @@ private:
     bool transport_follow;
     bool trans_button_press;
     bool m_redraw_tracks;
+    bool m_have_realize;
+    bool m_have_stop_reposition;
 
     void on_realize();
     bool on_button_press_event(GdkEventButton* a_ev);
@@ -138,6 +143,7 @@ public:
 
     void redraw_dirty_tracks();
     void redraw_all_tracks(){m_redraw_tracks = true;}
+    void have_stopped_reposition(){m_have_stop_reposition = true;}
 
     /* Trigger menu callbacks */
     void new_sequence(track *a_track, trigger *a_trigger);
