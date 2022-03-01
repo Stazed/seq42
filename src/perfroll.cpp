@@ -358,8 +358,6 @@ perfroll::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     return true;
 }
 
-
-
 void perfroll::draw_track_on( int a_track )
 {
     long tick_on;
@@ -595,6 +593,24 @@ void perfroll::draw_background_on( int a_track )
 }
 
 void
+perfroll::draw_track_on_window( int a_track )
+{
+    draw_background_on( a_track );
+    draw_track_on( a_track );
+
+    a_track -= m_track_offset;
+    int y = c_names_y * a_track;
+
+    m_surface_window->set_source(m_surface_track, 0.0, 0.0);
+    m_surface_window->rectangle(a_track, y, m_window_x, c_names_y);
+    m_surface_window->fill();
+    
+    /* If the transport is stopped, then we need to set this
+     * to draw the progress line above the track */
+    m_have_stop_reposition = true;
+}
+
+void
 perfroll::redraw_dirty_tracks()
 {
     int y_s = 0;
@@ -608,9 +624,7 @@ perfroll::redraw_dirty_tracks()
 
         if (dirty)
         {
-            draw_background_on(track );
-            draw_track_on(track);
-            m_redraw_tracks = true;
+            draw_track_on_window(track);
         }
     }
 }

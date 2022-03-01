@@ -117,6 +117,7 @@ private:
 
     void draw_track_on( int a_track );
     void draw_background_on( int a_track );
+    void draw_track_on_window( int a_track );
 
     void change_horz();
     void change_vert();
