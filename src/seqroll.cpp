@@ -85,7 +85,8 @@ seqroll::seqroll(perform *a_perf,
 
     m_ignore_redraw(false),
     m_expanded_recording(false),
-    m_initial_expose(false)
+    m_have_realize(false),
+    m_redraw_window(false)
 {
     Gtk::Allocation allocation = get_allocation();
     m_surface_edit = Cairo::ImageSurface::create(
@@ -504,6 +505,7 @@ seqroll::update_surface()
 {
     draw_background_on_surface();
     draw_events_on_surface();
+    m_redraw_window = true;
 }
 
 /**
@@ -512,7 +514,55 @@ seqroll::update_surface()
 void
 seqroll::draw_progress_on_window()
 {
-    queue_draw();
+    if(!m_have_realize)
+        return;         // poll until we get it
+
+    if(m_redraw_window)
+    {
+        m_redraw_window = false;
+        m_surface_window->set_source(m_surface_edit, 0.0, 0.0);
+        m_surface_window->paint();
+    }
+
+    if(global_is_running)
+    {
+        static int last_scroll = 0;
+
+        /* draw old */
+        m_surface_window->set_source(m_surface_edit, 0.0, 0.0);
+        m_surface_window->rectangle(m_old_progress_x, 0, 1, m_window_y);
+        m_surface_window->stroke_preserve();
+        m_surface_window->fill();
+
+        long last_progress = m_old_progress_x;
+        if(last_scroll < m_scroll_offset_x)
+        {
+            last_progress -= m_scroll_offset_x;
+            last_scroll = m_scroll_offset_x;
+        }
+
+        m_old_progress_x = (m_seq->get_last_tick() / m_zoom) - m_scroll_offset_x;
+
+    //    printf("last_scroll %d\n", last_scroll);
+    //    printf("last_progress %ld: old_progress %d: scroll_offset %d\n", last_progress, m_old_progress_x, m_scroll_offset_x);
+
+        if(m_old_progress_x < last_progress)
+        {
+            m_seq->set_loop_reset( true ); // for overwrite recording
+            last_scroll = 0;
+        }
+
+        if ( m_old_progress_x != 0 )
+        {
+            m_surface_window->set_source_rgb(0.0, 0.0, 0.0);            // Black  FIXME
+            m_surface_window->set_line_width(2.0);
+            m_surface_window->move_to(m_old_progress_x, 0.0);
+            m_surface_window->line_to(m_old_progress_x, m_window_y);
+            m_surface_window->stroke();
+        }
+    }
+
+    draw_selection_on_window(m_surface_window);
 }
 
 /**
@@ -527,40 +577,12 @@ seqroll::draw_progress_on_window()
 bool
 seqroll::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
-    static int last_scroll = 0;
+    m_surface_window = cr;
 
-    /* draw old */
-    cr->set_source(m_surface_edit, 0.0, 0.0);
-    cr->paint();
+    m_have_realize = true;
+    m_redraw_window = true;
 
-    long last_progress = m_old_progress_x;
-    if(last_scroll < m_scroll_offset_x)
-    {
-        last_progress -= m_scroll_offset_x;
-        last_scroll = m_scroll_offset_x;
-    }
-
-    m_old_progress_x = (m_seq->get_last_tick() / m_zoom) - m_scroll_offset_x;
-
-//    printf("last_scroll %d\n", last_scroll);
-//    printf("last_progress %ld: old_progress %d: scroll_offset %d\n", last_progress, m_old_progress_x, m_scroll_offset_x);
-    
-    if(m_old_progress_x < last_progress)
-    {
-        m_seq->set_loop_reset( true ); // for overwrite recording
-        last_scroll = 0;
-    }
-
-    if ( m_old_progress_x != 0 )
-    {
-        cr->set_source_rgb(0.0, 0.0, 0.0);            // Black  FIXME
-        cr->set_line_width(2.0);
-        cr->move_to(m_old_progress_x, 0.0);
-        cr->line_to(m_old_progress_x, m_window_y);
-        cr->stroke();
-    }
-    
-    draw_selection_on_window(cr);
+    draw_progress_on_window();  // to stop flicker on resize
 
     return true;
 }
@@ -840,6 +862,8 @@ seqroll::draw_selection_on_window(const Cairo::RefPtr<Cairo::Context>& cr)
         m_old.width = width;
         m_old.height = m_selected.height;
     }
+
+    m_redraw_window = true;
 }
 
 
@@ -1677,9 +1701,8 @@ bool FruitySeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& th
     /* if they clicked, something changed */
     if ( needs_update )
     {
-        ////printf( "needs update\n" );
         ths.m_seq->set_dirty();
-        //redraw_events();
+        ths.update_surface();
     }
     return true;
 }
@@ -2121,9 +2144,8 @@ bool Seq42SeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& ths
     /* if they clicked, something changed */
     if ( needs_update )
     {
-        ////printf( "needs update\n" );
         ths.m_seq->set_dirty();
-        //redraw_events();
+        ths.update_surface();
     }
     return true;
 }
@@ -2227,9 +2249,8 @@ bool Seq42SeqRollInput::on_button_release_event(GdkEventButton* a_ev, seqroll& t
     /* if they clicked, something changed */
     if (  needs_update )
     {
-        ////printf( "needs_update2\n" );
         ths.m_seq->set_dirty();
-        //redraw_events();
+        ths.update_surface();
     }
     return true;
 }
