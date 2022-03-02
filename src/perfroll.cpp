@@ -595,6 +595,9 @@ void perfroll::draw_background_on( int a_track )
 void
 perfroll::draw_track_on_window( int a_track )
 {
+    if(!m_have_realize)
+        return;
+
     draw_background_on( a_track );
     draw_track_on( a_track );
 
