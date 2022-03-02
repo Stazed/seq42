@@ -1854,9 +1854,8 @@ bool FruitySeqRollInput::on_button_release_event(GdkEventButton* a_ev, seqroll& 
     /* if they clicked, something changed */
     if (  needs_update )
     {
-        ////printf( "needs_update2\n" );
         ths.m_seq->set_dirty();
-        //redraw_events();
+        ths.update_surface();
     }
     return true;
 }
