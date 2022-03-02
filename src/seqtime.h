@@ -25,8 +25,6 @@
 #include "seqtime.h"
 #include "globals.h"
 
-#include <gtkmm.h>
-
 using namespace Gtk;
 
 /* The bar and measures above the sequence editor grid */

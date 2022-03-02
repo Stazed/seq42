@@ -30,7 +30,6 @@ class trackmenu;
 class mainwnd;
 class perfnames;
 
-#include <gtkmm.h>
 
 using namespace Gtk;
 

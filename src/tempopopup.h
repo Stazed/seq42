@@ -28,7 +28,6 @@
 
 #pragma once
 
-#include <gtkmm.h>
 #include <string>
 #include "globals.h"
 

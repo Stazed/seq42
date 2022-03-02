@@ -23,8 +23,6 @@
 #include "globals.h"
 #include "track.h"
 
-#include <gtkmm.h>
-
 class mainwnd;
 
 using namespace Gtk;

@@ -24,9 +24,6 @@
 #include "mainwnd.h"
 #include "perform.h"
 #include "seqtime.h"
-
-#include <gtkmm.h>
-
 #include "globals.h"
 
 using namespace Gtk;

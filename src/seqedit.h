@@ -28,14 +28,12 @@
 #include "seqevent.h"
 #include "perform.h"
 #include "trackedit.h"
-
-#include <gtkmm.h>
+#include "globals.h"
+#include "lfownd.h"
 
 #include <list>
 #include <string>
 
-#include "globals.h"
-#include "lfownd.h"
 
 using namespace Gtk;
 

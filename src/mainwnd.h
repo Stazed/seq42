@@ -36,7 +36,6 @@
 #endif
 
 #include <map>
-#include <gtkmm.h>
 #include <string>
 
 using namespace Gtk;

@@ -23,15 +23,12 @@
 #include "mainwnd.h"
 #include "perform.h"
 #include "seqtime.h"
-
-#include <list>
-#include <stack>
-
-#include <gtkmm.h>
-
 #include "globals.h"
 #include "tempopopup.h"
 #include "mutex.h"
+
+#include <list>
+#include <stack>
 
 using namespace Gtk;
 using std::list;

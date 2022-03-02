@@ -20,8 +20,6 @@
 
 #pragma once
 
-#include <gtkmm.h>
-
 #include "globals.h"
 #include "perform.h"
 

@@ -24,8 +24,6 @@
 #include "sequence.h"
 #include "globals.h"
 
-#include <gtkmm.h>
-
 enum
 {
     White_Note = 0,

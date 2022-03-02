@@ -24,15 +24,13 @@
 #include "perform.h"
 #include "track.h"
 #include "trackmenu.h"
-
-#include <gtkmm.h>
+#include "globals.h"
 
 /* forward declaration */
 class mainwnd;
 
 using namespace Gtk;
 
-#include "globals.h"
 
 /* holds the left side track names */
 class perfnames : public virtual Gtk::DrawingArea, public virtual trackmenu
