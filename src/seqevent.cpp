@@ -154,7 +154,7 @@ seqevent::draw_background()
     cr->set_operator(Cairo::OPERATOR_OVER);
 
     /* clear background */
-    cr->set_source_rgb(0.9, 0.9, 0.9);    // Light grey FIXME
+    cr->set_source_rgb(0.9, 0.9, 0.9);    // Light grey
     cr->set_line_width(1.0);
     cr->rectangle(0.0, 0.0, m_window_x, m_window_y );
     cr->stroke_preserve();
@@ -191,19 +191,19 @@ seqevent::draw_background()
         if ( i % ticks_per_m_line == 0 )
         {
             /* solid line on every beat */
-            cr->set_source_rgb(0.0, 0.0, 0.6);    // Dark blue  FIXME
+            cr->set_source_rgb(0.0, 0.0, 0.6);    // Dark blue 
             cr->set_line_join(Cairo::LINE_JOIN_MITER);
             cr->set_dash(clear, 0.0);
         }
         else if (i % ticks_per_beat == 0 )
         {
-            cr->set_source_rgb(0.6, 0.6, 0.6);    // Grey  FIXME
+            cr->set_source_rgb(0.6, 0.6, 0.6);    // Grey 
             cr->set_line_join(Cairo::LINE_JOIN_MITER);
             cr->set_dash(clear, 0.0);
         }
         else
         {
-            cr->set_source_rgb(0.6, 0.6, 0.6);    // Grey  FIXME
+            cr->set_source_rgb(0.6, 0.6, 0.6);    // Grey 
             cr->set_line_join(Cairo::LINE_JOIN_MITER);
             static const std::vector<double> dashed = {1.0};
             cr->set_line_width(1.5);
@@ -218,7 +218,7 @@ seqevent::draw_background()
     /* reset line style */
     cr->set_dash(clear, 0.0);
 
-    cr->set_source_rgb(0.0, 0.0, 0.6);    // Dark blue  FIXME
+    cr->set_source_rgb(0.0, 0.0, 0.6);    // Dark blue 
     cr->rectangle(-1, 0.0, m_window_x + 1, m_window_y - 1 );
     cr->stroke();
 }
@@ -289,7 +289,7 @@ seqevent::draw_events_on()
             /* turn into screen corrids */
             x = tick / m_zoom;
 
-            cr->set_source_rgb(0.0, 0.0, 0.6);    // Dark blue  FIXME
+            cr->set_source_rgb(0.0, 0.0, 0.6);    // Dark blue 
             cr->rectangle(x -  m_scroll_offset_x,
                                    (c_eventarea_y - c_eventevent_y)/2,
                                    c_eventevent_x,
@@ -299,11 +299,11 @@ seqevent::draw_events_on()
 
             if ( selected )
             {
-                cr->set_source_rgb(1.0, 0.27, 0.0);    // Red FIXME
+                cr->set_source_rgb(1.0, 0.27, 0.0);    // Red
             }
             else
             {
-                cr->set_source_rgb(1.0, 1.0, 1.0);    // White FIXME
+                cr->set_source_rgb(1.0, 1.0, 1.0);    // White
             }
 
             cr->rectangle(x -  m_scroll_offset_x + 1,
@@ -329,7 +329,7 @@ seqevent::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 
     /* The box selector */
     cr->set_line_join(Cairo::LINE_JOIN_MITER);
-    cr->set_source_rgb(1.0, 0.27, 0.0);    // Red FIXME
+    cr->set_source_rgb(1.0, 0.27, 0.0);    // Red
 
     if ( m_selecting )
     {

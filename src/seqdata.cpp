@@ -188,7 +188,7 @@ seqdata::draw_events_on_window( )
 
             /* Clear background of event velocity labels - we need
              * to do this before the handles or they get cropped */
-            cr->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
+            cr->set_source_rgb(1.0, 1.0, 1.0);  // White
             cr->rectangle(event_x + 3 - m_scroll_offset_x,
                                   c_dataarea_y - 40,
                                   8, 40);
@@ -196,11 +196,11 @@ seqdata::draw_events_on_window( )
 
             if(selected)
             {
-                cr->set_source_rgb(1.0, 0.27, 0.0);    // Red FIXME);
+                cr->set_source_rgb(1.0, 0.27, 0.0);    // Red
             }
             else
             {
-                cr->set_source_rgb(0.0, 0.0, 1.0);    // blue FIXME
+                cr->set_source_rgb(0.0, 0.0, 1.0);    // blue
             }
 
             /* generate the value */
@@ -233,7 +233,7 @@ seqdata::draw_events_on_window( )
             t->set_wrap(Pango::WRAP_CHAR);
             t->get_pixel_size(text_width, text_height);
 
-            cr->set_source_rgb(0.0, 0.0, 0.0);  // Black FIXME
+            cr->set_source_rgb(0.0, 0.0, 0.0);  // Black
             cr->move_to(event_x + (text_width * 0.5) - m_scroll_offset_x,
                                   c_dataarea_y - text_height);
             t->show_in_cairo_context(cr);
@@ -253,7 +253,7 @@ seqdata::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     draw_events_on_window();
 
     /* Clear previous background */
-    cr->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
+    cr->set_source_rgb(1.0, 1.0, 1.0);  // White
     cr->rectangle (0.0, 0.0, m_window_x, m_window_y);
     cr->stroke_preserve();
     cr->fill();
@@ -265,7 +265,7 @@ seqdata::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     /* The line drag adjustment */
     if (m_dragging)
     {
-        cr->set_source_rgb(1.0, 0.27, 0.0);    // Red FIXME
+        cr->set_source_rgb(1.0, 0.27, 0.0);    // Red
         cr->move_to(m_current_x - m_scroll_offset_x, m_current_y);
         cr->line_to( m_drop_x - m_scroll_offset_x, m_drop_y);
         cr->stroke();

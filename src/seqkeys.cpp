@@ -109,13 +109,13 @@ seqkeys::update_surface()
     cr->paint_with_alpha(1.0);
     cr->set_operator(Cairo::OPERATOR_OVER);
 
-    cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
+    cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
     cr->set_line_width(1.0);
     cr->rectangle(0.0, 0.0, c_keyarea_x, c_keyarea_y);
     cr->stroke_preserve();
     cr->fill();
 
-    cr->set_source_rgb(1.0, 1.0, 1.0);    // White FIXME
+    cr->set_source_rgb(1.0, 1.0, 1.0);    // White
     cr->rectangle(1.0, 1.0, c_keyoffset_x - 1, c_keyarea_y - 2);
     cr->stroke_preserve();
     cr->fill();
@@ -133,7 +133,7 @@ seqkeys::update_surface()
             note_color = Green_Note;    /* green for solo */
         }
 
-        cr->set_source_rgb(1.0, 1.0, 1.0);    // White FIXME
+        cr->set_source_rgb(1.0, 1.0, 1.0);    // White
         cr->rectangle(c_keyoffset_x + 1,
                                  (c_key_y * i) + 1,
                                  c_key_x - 2,
@@ -153,15 +153,15 @@ seqkeys::update_surface()
         {
             if(note_color == White_Note)    // Not a muted or solo note so set it to black 
             {
-                cr->set_source_rgb(0.0, 0.0, 0.0);        // Black FIXME
+                cr->set_source_rgb(0.0, 0.0, 0.0);        // Black
             }
             else if (note_color == Green_Note)
             {
-                cr->set_source_rgb(0.0, 0.4, 0.0);        // Green FIXME
+                cr->set_source_rgb(0.0, 0.4, 0.0);        // Green
             }
             else
             {
-                cr->set_source_rgb(1.0, 0.27, 0.0);       // Red FIXME
+                cr->set_source_rgb(1.0, 0.27, 0.0);       // Red
             }
             
             cr->rectangle(c_keyoffset_x + 1,
@@ -175,11 +175,11 @@ seqkeys::update_surface()
         {
             if( note_color == Green_Note)
             {
-                cr->set_source_rgb(0.0, 0.4, 0.0);        // Green FIXME
+                cr->set_source_rgb(0.0, 0.4, 0.0);        // Green
             }
             else
             {
-                cr->set_source_rgb(1.0, 0.27, 0.0);       // Red FIXME
+                cr->set_source_rgb(1.0, 0.27, 0.0);       // Red
             }
 
             cr->rectangle(c_keyoffset_x + 1,
@@ -206,7 +206,7 @@ seqkeys::update_surface()
             t->set_font_description(font);
             t->get_pixel_size(text_width, text_height);
             
-            cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
+            cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
             cr->move_to(2,  (c_key_y * i) - (text_height * .1) );
 
             t->show_in_cairo_context(cr);
@@ -219,7 +219,7 @@ seqkeys::update_surface()
 bool
 seqkeys::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
-    cr->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
+    cr->set_source_rgb(1.0, 1.0, 1.0);  // White
     cr->rectangle (0.0, 0.0, m_window_x, m_window_y);
     cr->stroke_preserve();
     cr->fill();
@@ -383,21 +383,21 @@ seqkeys::draw_key( int a_key, bool a_state )
             key == 8 ||
             key == 10 )
     {
-        cr->set_source_rgb(0.0, 0.0, 0.0);      // Black  FIXME
+        cr->set_source_rgb(0.0, 0.0, 0.0);      // Black 
     }
     else
     {
-        cr->set_source_rgb(1.0, 1.0, 1.0);       // White  FIXME
+        cr->set_source_rgb(1.0, 1.0, 1.0);       // White 
     }
 
     /* Mute or solo keys */
     if(m_seq->is_note_mute(base_key))
     {
-        cr->set_source_rgb(1.0, 0.27, 0.0);       // Red FIXME
+        cr->set_source_rgb(1.0, 0.27, 0.0);       // Red
     }
     else if(m_seq->is_note_solo(base_key))
     {
-        cr->set_source_rgb(0.0, 0.4, 0.0);        // Green FIXME
+        cr->set_source_rgb(0.0, 0.4, 0.0);        // Green
     }
 
     cr->rectangle(c_keyoffset_x + 1,
@@ -409,7 +409,7 @@ seqkeys::draw_key( int a_key, bool a_state )
 
     if ( a_state ) // piano hint key
     {
-        cr->set_source_rgb(0.0, 0.0, 1.0);          // Blue  FIXME
+        cr->set_source_rgb(0.0, 0.0, 1.0);          // Blue 
         cr->rectangle(c_keyoffset_x + 1,
                              (c_key_y * a_key) + 2 /* - m_scroll_offset_y*/,
                              c_key_x - 3,

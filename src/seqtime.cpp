@@ -142,7 +142,7 @@ seqtime::update_surface()
     cr->paint_with_alpha(1.0);
     cr->set_operator(Cairo::OPERATOR_OVER);
 
-    cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
+    cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
     cr->move_to(0.0, m_window_y - 1);
     cr->line_to(m_window_x,  m_window_y - 1 );
     cr->stroke();
@@ -217,7 +217,7 @@ seqtime::update_surface()
     t->get_pixel_size(text_width, text_height);
 
     // set background for label to black
-    cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
+    cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
 
     // draw the black background for the 'END' label
     cr->rectangle(end_x, m_window_y - text_height + 2, text_width + 2, text_height );
@@ -225,7 +225,7 @@ seqtime::update_surface()
     cr->fill();
    
     // print the 'END' label in white
-    cr->set_source_rgb(1.0, 1.0, 1.0);    // White FIXME
+    cr->set_source_rgb(1.0, 1.0, 1.0);    // White
     cr->move_to(end_x + 1, m_window_y - text_height);
 
     t->show_in_cairo_context(cr);
@@ -236,7 +236,7 @@ seqtime::update_surface()
 bool
 seqtime::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
-    cr->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
+    cr->set_source_rgb(1.0, 1.0, 1.0);  // White
     cr->rectangle (0.0, 0.0, m_window_x, m_window_y);
     cr->stroke_preserve();
     cr->fill();

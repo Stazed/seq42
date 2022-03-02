@@ -324,7 +324,7 @@ seqroll::update_background()
     cr->set_operator(Cairo::OPERATOR_OVER);
 
     /* clear background */
-    cr->set_source_rgb(1.0, 1.0, 1.0);    // White FIXME
+    cr->set_source_rgb(1.0, 1.0, 1.0);    // White
     cr->rectangle(0.0, 0.0, m_window_x, m_window_y );
     cr->stroke_preserve();
     cr->fill();
@@ -334,7 +334,7 @@ seqroll::update_background()
     static const std::vector<double> clear;
 
     /* draw horizontal grey lines */
-    cr->set_source_rgb(0.6, 0.6, 0.6);    // Grey FIXME
+    cr->set_source_rgb(0.6, 0.6, 0.6);    // Grey
     cr->set_line_join(Cairo::LINE_JOIN_MITER);
     cr->set_line_width(1.0);
     cr->set_dash(dashed, 1.0);
@@ -345,14 +345,14 @@ seqroll::update_background()
         {
             /* draw horz black lines at C */
             cr->set_line_width(1.0);
-            cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
+            cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
             cr->set_dash(clear, 0.0);
             cr->set_line_join(Cairo::LINE_JOIN_MITER);
         }
         else if (11 == (((c_num_keys - i) - m_scroll_offset_key + ( 12 - m_key )) % 12))
         {
             /* draw horz grey lines for the other notes */
-            cr->set_source_rgb(0.6, 0.6, 0.6);    // Grey FIXME
+            cr->set_source_rgb(0.6, 0.6, 0.6);    // Grey
             cr->set_line_join(Cairo::LINE_JOIN_MITER);
             cr->set_line_width(1.0);
             cr->set_dash(dashed, 1.0);
@@ -364,7 +364,7 @@ seqroll::update_background()
 
         if ( m_scale != c_scale_off )
         {
-            cr->set_source_rgb(0.5, 0.5, 0.5);    // Dark grey FIXME
+            cr->set_source_rgb(0.5, 0.5, 0.5);    // Dark grey
 
             if ( !c_scales_policy[m_scale][ ((c_num_keys - i)
                                              - m_scroll_offset_key
@@ -406,19 +406,19 @@ seqroll::update_background()
         if ( i % ticks_per_m_line == 0 )
         {
             /* solid line on every beat */
-            cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
+            cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
             cr->set_dash(clear, 0.0);
             cr->set_line_join(Cairo::LINE_JOIN_MITER);
         }
         else if (i % ticks_per_beat == 0 )
         {
-            cr->set_source_rgb(0.5, 0.5, 0.5);    // Dark grey FIXME
+            cr->set_source_rgb(0.5, 0.5, 0.5);    // Dark grey
             cr->set_dash(clear, 0.0);
             cr->set_line_join(Cairo::LINE_JOIN_MITER);
         }
         else
         {
-            cr->set_source_rgb(0.6, 0.6, 0.6);    // Grey FIXME
+            cr->set_source_rgb(0.6, 0.6, 0.6);    // Grey
             cr->set_line_join(Cairo::LINE_JOIN_MITER);
             cr->set_line_width(1.0);
             cr->set_dash(dashed, 1.0);
@@ -427,11 +427,11 @@ seqroll::update_background()
 
             if( i == i_snap )
             {
-                cr->set_source_rgb(0.5, 0.5, 0.5);    // Dark grey FIXME
+                cr->set_source_rgb(0.5, 0.5, 0.5);    // Dark grey
             }
             else
             {
-                cr->set_source_rgb(0.6, 0.6, 0.6);    // Grey FIXME
+                cr->set_source_rgb(0.6, 0.6, 0.6);    // Grey
             }
         }
 
@@ -554,7 +554,7 @@ seqroll::draw_progress_on_window()
 
         if ( m_old_progress_x != 0 )
         {
-            m_surface_window->set_source_rgb(0.0, 0.0, 0.0);            // Black  FIXME
+            m_surface_window->set_source_rgb(0.0, 0.0, 0.0);            // Black 
             m_surface_window->set_line_width(2.0);
             m_surface_window->move_to(m_old_progress_x, 0.0);
             m_surface_window->line_to(m_old_progress_x, m_window_y);
@@ -687,13 +687,13 @@ seqroll::draw_events_on_surface()
                 note_x -= m_scroll_offset_x;
                 note_y -= m_scroll_offset_y;
 
-                cr->set_source_rgb(0.0, 0.0, 0.6);    // Dark blue  FIXME
+                cr->set_source_rgb(0.0, 0.0, 0.6);    // Dark blue 
 
                 /* draw boxes from sequence */
                 /* method 0 is background sequence */
                 if ( method == 0 )
                 {
-                    cr->set_source_rgb(0.0, 0.6, 0.0);    // Dark Green  FIXME
+                    cr->set_source_rgb(0.0, 0.6, 0.0);    // Dark Green 
                 }
 
                 cr->rectangle(note_x,
@@ -725,11 +725,11 @@ seqroll::draw_events_on_surface()
                 {
                     if ( selected )
                     {
-                        cr->set_source_rgb(1.0, 0.27, 0.0);       // Red FIXME
+                        cr->set_source_rgb(1.0, 0.27, 0.0);       // Red
                     }
                     else
                     {
-                        cr->set_source_rgb(1.0, 1.0, 1.0);        // White FIXME
+                        cr->set_source_rgb(1.0, 1.0, 1.0);        // White
                     }
 
                     if ( method == 1 )
@@ -797,7 +797,7 @@ seqroll::draw_selection_on_window(const Cairo::RefPtr<Cairo::Context>& cr)
 
     /* Set line attributes */
     cr->set_line_join(Cairo::LINE_JOIN_MITER);
-    cr->set_source_rgb(1.0, 0.27, 0.0);    // Red FIXME
+    cr->set_source_rgb(1.0, 0.27, 0.0);    // Red
 
     if ( m_selecting )
     {

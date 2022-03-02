@@ -99,18 +99,18 @@ perfnames::draw_track( int track )
 
     if ( track < c_max_track )
     {
-        cr->set_source_rgb(0.0, 0.0, 0.0);        // Black FIXME
+        cr->set_source_rgb(0.0, 0.0, 0.0);        // Black
         cr->rectangle(0, (c_names_y * i), m_window_x - 1, c_names_y);
         cr->stroke_preserve();
         cr->fill();
 
         if ( m_mainperf->is_active_track( track ))
         {
-            cr->set_source_rgb(1.0, 1.0, 1.0);    // White FIXME
+            cr->set_source_rgb(1.0, 1.0, 1.0);    // White
         }
         else
         {
-            cr->set_source_rgb(0.6, 0.8, 1.0);    // blue FIXME
+            cr->set_source_rgb(0.6, 0.8, 1.0);    // blue
         }
 
         cr->rectangle(3, (c_names_y * i) + 3, m_window_x - 4, c_names_y - 4);
@@ -133,7 +133,7 @@ perfnames::draw_track( int track )
             );
 
             // set background for bus
-            cr->set_source_rgb(1.0, 1.0, 1.0);    // White FIXME
+            cr->set_source_rgb(1.0, 1.0, 1.0);    // White
             cr->set_line_width(1.0);
 
             // draw the white background for the bus
@@ -146,7 +146,7 @@ perfnames::draw_track( int track )
             t->set_font_description(font);
             t->get_pixel_size(text_width, text_height);
 
-            cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
+            cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
             cr->move_to(5, (c_names_y * i) + 1);
 
             t->show_in_cairo_context(cr);
@@ -157,7 +157,7 @@ perfnames::draw_track( int track )
                      m_mainperf->get_track(track)->get_name());
 
             // set background for name
-            cr->set_source_rgb(1.0, 1.0, 1.0);    // White FIXME
+            cr->set_source_rgb(1.0, 1.0, 1.0);    // White
 
             // draw the white background for the name
             cr->rectangle(5, c_names_y * i + 12, (strlen(name) * 5) + 1, 10.0);
@@ -169,7 +169,7 @@ perfnames::draw_track( int track )
             n->set_font_description(font);
             n->get_pixel_size(text_width, text_height);
 
-            cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
+            cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
             cr->move_to(5, (c_names_y * i) + ( (c_names_y * .5) - (text_height * .5) ) + 6);
 
             n->show_in_cairo_context(cr);
@@ -183,15 +183,15 @@ perfnames::draw_track( int track )
             if(solo || muted)
                 fill = true;
 
-            cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
+            cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
 
             if(muted)
             {
-                cr->set_source_rgb(1.0, 0.27, 0.0);    // Red FIXME
+                cr->set_source_rgb(1.0, 0.27, 0.0);    // Red
             }
             if(solo)
             {
-                cr->set_source_rgb(0.5, 0.988, 0.0);    // Green FIXME
+                cr->set_source_rgb(0.5, 0.988, 0.0);    // Green
             }
 
             cr->rectangle( m_window_x - 11, (c_names_y * i) + 2, 11, c_names_y - 2);
@@ -212,19 +212,19 @@ perfnames::draw_track( int track )
             {
                 snprintf(smute, sizeof(smute), "M" );
                 // background
-                cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
+                cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
             }
             else if ( solo )
             {
                 snprintf(smute, sizeof(smute), "S" );
                 // background
-                cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
+                cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
             }
             else
             {
                 snprintf(smute, sizeof(smute), "P" );
                 // background 
-                cr->set_source_rgb(1.0, 1.0, 1.0);    // White FIXME
+                cr->set_source_rgb(1.0, 1.0, 1.0);    // White
             }
             
             auto m = create_pango_layout(smute);
@@ -239,11 +239,11 @@ perfnames::draw_track( int track )
             // print the mute label
             if ( muted || solo )
             {
-                cr->set_source_rgb(1.0, 1.0, 1.0);    // White FIXME
+                cr->set_source_rgb(1.0, 1.0, 1.0);    // White
             }
             else
             {
-                cr->set_source_rgb(0.0, 0.0, 0.0);    // Black FIXME
+                cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
             }
 
             cr->move_to(m_window_x - text_width - 2, (c_names_y * i) +  ((c_names_y * .5) - (text_height * .5) + 1 ));
@@ -253,7 +253,7 @@ perfnames::draw_track( int track )
     }
     else
     {
-        cr->set_source_rgb(0.6, 0.8, 1.0);    // blue FIXME
+        cr->set_source_rgb(0.6, 0.8, 1.0);    // blue
         cr->rectangle(0, (c_names_y * i) + 1, m_window_x, c_names_y);
         cr->stroke_preserve();
         cr->fill();
@@ -291,7 +291,7 @@ perfnames::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     }
 
    /* Clear previous background */
-    cr->set_source_rgb(1.0, 1.0, 1.0);  // White FIXME
+    cr->set_source_rgb(1.0, 1.0, 1.0);  // White
     cr->rectangle (0.0, 0.0, width, height);
     cr->stroke_preserve();
     cr->fill();
