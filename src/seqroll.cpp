@@ -324,7 +324,7 @@ seqroll::update_background()
     cr->set_operator(Cairo::OPERATOR_OVER);
 
     /* clear background */
-    cr->set_source_rgb(1.0, 1.0, 1.0);    // White
+    cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
     cr->rectangle(0.0, 0.0, m_window_x, m_window_y );
     cr->stroke_preserve();
     cr->fill();
@@ -687,7 +687,7 @@ seqroll::draw_events_on_surface()
                 note_x -= m_scroll_offset_x;
                 note_y -= m_scroll_offset_y;
 
-                cr->set_source_rgb(0.0, 0.0, 0.6);    // Dark blue 
+                cr->set_source_rgb(0.6, 0.6, 0.6);    // light grey
 
                 /* draw boxes from sequence */
                 /* method 0 is background sequence */
