@@ -377,7 +377,7 @@ void perfroll::draw_track_on( int a_track )
 
     font.set_family(c_font);
     font.set_size((c_key_fontsize - 2) * Pango::SCALE);
-    font.set_weight(Pango::WEIGHT_BOLD);
+    font.set_weight(Pango::WEIGHT_NORMAL);
 
     cr->set_line_width(1.0);
 
