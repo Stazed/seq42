@@ -38,7 +38,7 @@ perfroll::perfroll( perform *a_perf,
     m_track_offset(0),
     m_roll_length_ticks(0),
     m_drop_y(0),
-    m_drop_track(0),
+    m_drop_track(-1),   // set invalid so focus on track 0 will not be same as old focus
 
     m_vadjust(a_vadjust),
     m_hadjust(a_hadjust),
