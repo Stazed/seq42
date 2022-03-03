@@ -226,6 +226,7 @@ private:
     bool m_was_active_edit[ c_max_track ];
     bool m_was_active_perf[ c_max_track ];
     bool m_was_active_names[ c_max_track ];
+    bool m_is_focus_track[ c_max_track ];
 
     /* our midibus */
     mastermidibus m_master_bus;
@@ -482,6 +483,8 @@ public:
     bool is_active_track(int a_track);
     bool is_dirty_perf (int a_sequence);
     bool is_dirty_names (int a_sequence);
+    void set_focus_track(int a_track);
+    bool is_focus_track(int a_track);
 
     void new_track( int a_track );
 

@@ -204,7 +204,7 @@ perfroll::fill_background_surface()
     cr->set_operator(Cairo::OPERATOR_OVER);
 
     /* clear background */
-    cr->set_source_rgb(1.0, 1.0, 1.0);    // White
+    cr->set_source_rgb(0.0, 0.0, 0.0);    // BLACK
     cr->set_line_width(1.0);
     cr->rectangle(0.0, 0.0, c_perfroll_background_x, c_names_y);
     cr->stroke_preserve();
@@ -316,7 +316,7 @@ perfroll::draw_progress()
         m_old_progress_ticks = progress_x;  // hold the position to clear for next line
 
         /* The new progress line */
-        m_surface_window->set_source_rgb(0.0, 0.0, 0.0);            // Black 
+        m_surface_window->set_source_rgb(1.0, 0.0, 0.0);            // RED
         m_surface_window->set_line_width(2.0);
         m_surface_window->move_to(progress_x, 0.0);
         m_surface_window->line_to(progress_x, m_window_y);
@@ -370,14 +370,14 @@ void perfroll::draw_track_on( int a_track )
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface_track);
     cr->set_operator(Cairo::OPERATOR_DEST);
     cr->set_operator(Cairo::OPERATOR_OVER);
-    
+
     Pango::FontDescription font;
     int text_width;
     int text_height;
 
     font.set_family(c_font);
     font.set_size((c_key_fontsize - 2) * Pango::SCALE);
-    font.set_weight(Pango::WEIGHT_NORMAL);
+    font.set_weight(Pango::WEIGHT_BOLD);
 
     cr->set_line_width(1.0);
 
@@ -411,32 +411,37 @@ void perfroll::draw_track_on( int a_track )
 
                     if ( selected )
                     {
-                        cr->set_source_rgb(0.6, 0.8, 1.0);    // blue
+                        cr->set_source_rgba(c_track_color.r, c_track_color.g, c_track_color.b, 1.0);
                     }
                     else
                     {
-                        cr->set_source_rgb(1.0, 1.0, 1.0);    // White
+                        cr->set_source_rgba(c_track_color.r, c_track_color.g, c_track_color.b, 0.5);
                     }
 
                     /* trigger background */
                     cr->rectangle(x, y, w, h);
                     cr->fill();
 
+                    if ( selected )
+                    {
+                        cr->set_source_rgb(0.0, 0.0, 0.0);      // black
+                    }
+                    else
+                    {
+                        cr->set_source_rgb(1.0, 1.0, 1.0);    // White
+                    }
+
                     /* trigger outline */
-                    cr->set_source_rgb(0.0, 0.0, 0.0);        // black
                     cr->rectangle(x, y, w, h);
                     cr->stroke();
 
                     /* resize handle - top left */
-                    cr->set_source_rgb(0.0, 0.0, 0.0);        // black
                     cr->rectangle(x, y, c_perfroll_size_box_w, c_perfroll_size_box_w);
                     cr->stroke();
 
                     /* resize handle - bottom right */
                     cr->rectangle(x+w-c_perfroll_size_box_w, y+h-c_perfroll_size_box_w, c_perfroll_size_box_w, c_perfroll_size_box_w);
                     cr->stroke();
-
-                    cr->set_source_rgb(0.0, 0.0, 0.0);        // black
 
                     /* sequence label and notes */
                     char label[40];
@@ -489,17 +494,24 @@ void perfroll::draw_track_on( int a_track )
                             long tick_f;
                             int note;
 
-                            bool selected;
+                            bool t_selected;
 
                             int velocity;
                             draw_type dt;
 
                             seq->reset_draw_marker();
 
-                            cr->set_source_rgb(0.0, 0.0, 0.0);      // black
+                            if ( selected )
+                            {
+                                cr->set_source_rgb(0.0, 0.0, 0.0);      // black
+                            }
+                            else
+                            {
+                                cr->set_source_rgb(1.0, 1.0, 1.0);    // White
+                            }
 
                             while ( (dt = seq->get_next_note_event( &tick_s, &tick_f, &note,
-                                                                    &selected, &velocity )) != DRAW_FIN )
+                                                                    &t_selected, &velocity )) != DRAW_FIN )
                             {
                                 int note_y = ((c_names_y-6) -
                                               ((c_names_y-6)  * (note - lowest_note)) / height) + 1;
@@ -545,21 +557,27 @@ void perfroll::draw_track_on( int a_track )
                         }
                     }
                     label[max_label] = '\0';
-                    
-                    /* set background for labels to white */
-                    cr->set_source_rgb(1.0, 1.0, 1.0);        // White
 
                     auto t = create_pango_layout(label);
                     t->set_font_description(font);
                     t->get_pixel_size(text_width, text_height);
 
-                    /* draw the white background for the labels */
+                    /* draw the background for the labels */
+                    if (selected)
+                        cr->set_source_rgb(1.0, 1.0, 1.0);        // White
+                    else
+                        cr->set_source_rgb(0.0, 0.0, 0.0);        // Black
+                    
                     cr->rectangle(x + 7, y + 2, text_width, text_height - 1);
                     cr->stroke_preserve();
                     cr->fill();
 
                     /* print the sequence label */
-                    cr->set_source_rgb(0.0, 0.0, 0.0);        // Black
+                    if (selected)
+                        cr->set_source_rgb(0.0, 0.0, 0.0);        // Black
+                    else
+                        cr->set_source_rgb(1.0, 1.0, 1.0);        // White
+                    
                     cr->move_to(x + 7, y + 1);
                     t->show_in_cairo_context(cr);
                 }
@@ -574,13 +592,13 @@ void perfroll::draw_background_on( int a_track )
     long first_measure = tick_offset / m_measure_length;
 
     a_track -= m_track_offset;
-
+    
     int y = c_names_y * a_track;
 
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface_track);
     cr->set_operator(Cairo::OPERATOR_DEST);
     cr->set_operator(Cairo::OPERATOR_OVER);
-
+    
     /* apply the background grid - lines, etc */
     for ( int i = first_measure;
             i < first_measure + (m_window_x * m_perf_scale_x / (m_measure_length)) + 1; i++ )

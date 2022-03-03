@@ -46,6 +46,7 @@ perform::perform()
         m_was_active_edit[i]    = false;
         m_was_active_perf[i]    = false;
         m_was_active_names[i]   = false;
+        m_is_focus_track[i]     = false;
     }
 
     m_playlist_midi_jump_value = 0;
@@ -663,6 +664,27 @@ bool perform::is_dirty_names (int a_track)
     m_was_active_names[ a_track ] = false;
 
     return was_active;
+}
+
+void perform::set_focus_track(int a_track)
+{
+    if ( a_track < 0 || a_track >= c_max_track )
+        return;
+    
+    for ( unsigned int i = 0; i < c_max_track; ++i )
+    {
+        m_is_focus_track[i] = false;
+    }
+    
+    m_is_focus_track[a_track] = true;
+}
+
+bool perform::is_focus_track(int a_track)
+{
+    if ( a_track < 0 || a_track >= c_max_track )
+        return false;
+
+   return m_is_focus_track[a_track];
 }
 
 mastermidibus* perform::get_master_midi_bus( )

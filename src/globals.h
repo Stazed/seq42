@@ -43,6 +43,10 @@ const int c_file_version = 7;  // Version of our save file format.  Increment th
 7 - Use tempo list for BPM
 */
 
+const Gdk::RGBA c_color_track_blue =  Gdk::RGBA("#8FF2F5");
+struct color { double r; double g; double b; };
+const color c_track_color = { c_color_track_blue.get_red(), c_color_track_blue.get_green(), c_color_track_blue.get_blue()};
+
 /* for 32 bit & 64 bit compatible - file version 5 */
 extern short global_file_int_size;  // default sizeof(int32_t)
 extern short global_file_long_int_size; // default sizeof(int32_t) - define in mainwnd

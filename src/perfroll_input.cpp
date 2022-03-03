@@ -43,6 +43,8 @@ bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 {
     ths.grab_focus( );
 
+    int old_focus = ths.m_drop_track;
+
     if ( ths.m_mainperf->is_active_track( ths.m_drop_track ))
     {
         ths.m_mainperf->get_track( ths.m_drop_track )->unselect_triggers( );
@@ -55,6 +57,25 @@ bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
     m_current_y = (int) a_ev->y;
 
     ths.convert_xy( ths.m_drop_x, ths.m_drop_y, &ths.m_drop_tick, &ths.m_drop_track );
+
+    if ( old_focus != ths.m_drop_track )
+    {
+        if ( ths.m_mainperf->is_active_track( ths.m_drop_track ))
+        {
+            ths.m_mainperf->set_focus_track(ths.m_drop_track);
+            ths.m_mainperf->get_track( ths.m_drop_track )->set_dirty();
+        }
+        else
+        {
+            // un-set all focus here
+            ths.m_mainperf->set_focus_track(ths.m_drop_track);
+        }
+
+        if( ths.m_mainperf->is_active_track( old_focus ) )
+        {
+            ths.m_mainperf->get_track( old_focus )->set_dirty();
+        }
+    }
 
     /*      left mouse button     */
     if ( a_ev->button == 1)
@@ -307,6 +328,8 @@ void Seq42PerfInput::set_adding( bool a_adding, perfroll& ths )
 bool Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 {
     ths.grab_focus( );
+    
+    int old_focus = ths.m_drop_track;
 
     if ( ths.m_mainperf->is_active_track( ths.m_drop_track ))
     {
@@ -318,6 +341,25 @@ bool Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
     ths.m_drop_y = (int) a_ev->y;
 
     ths.convert_xy( ths.m_drop_x, ths.m_drop_y, &ths.m_drop_tick, &ths.m_drop_track );
+
+    if ( old_focus != ths.m_drop_track )
+    {
+        if ( ths.m_mainperf->is_active_track( ths.m_drop_track ))
+        {
+            ths.m_mainperf->set_focus_track(ths.m_drop_track);
+            ths.m_mainperf->get_track( ths.m_drop_track )->set_dirty();
+        }
+        else
+        {
+            // un-set all focus here
+            ths.m_mainperf->set_focus_track(ths.m_drop_track);
+        }
+
+        if( ths.m_mainperf->is_active_track( old_focus ) )
+        {
+            ths.m_mainperf->get_track( old_focus )->set_dirty();
+        }
+    }
 
     /*      left mouse button     */
     if ( a_ev->button == 1 )

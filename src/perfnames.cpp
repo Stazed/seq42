@@ -104,15 +104,26 @@ perfnames::draw_track( int track )
         cr->stroke_preserve();
         cr->fill();
 
+        /* Track name background color based on focus */
+        bool is_focus = false;
         if ( m_mainperf->is_active_track( track ))
         {
-            cr->set_source_rgb(1.0, 1.0, 1.0);    // White
+            if( m_mainperf->is_focus_track( track ))
+            {
+                is_focus = true;
+                cr->set_source_rgba(c_track_color.r, c_track_color.g, c_track_color.b, 1.0);
+            }
+            else
+            {
+                cr->set_source_rgba(c_track_color.r, c_track_color.g, c_track_color.b, 0.5);
+            }
         }
-        else
+        else    // inactive
         {
-            cr->set_source_rgb(0.6, 0.8, 1.0);    // blue
+            cr->set_source_rgb(0.6, 0.6, 0.6);    // grey
         }
 
+        /* Track name background */
         cr->rectangle(3, (c_names_y * i) + 3, m_window_x - 4, c_names_y - 4);
         cr->stroke_preserve();
         cr->fill();
@@ -132,21 +143,21 @@ perfnames::draw_track( int track )
                 m_mainperf->get_track(track)->get_midi_channel()+1
             );
 
-            // set background for bus
-            cr->set_source_rgb(1.0, 1.0, 1.0);    // White
+            // set the label color
+            if(is_focus)
+            {
+                cr->set_source_rgb(0.0, 0.0, 0.0);    // BLACK
+            }
+            else
+            {
+                cr->set_source_rgb(1.0, 1.0, 1.0);    // White
+            }
             cr->set_line_width(1.0);
-
-            // draw the white background for the bus
-            cr->rectangle(5, c_names_y * i + 3, (strlen(str) * 5) + 1, 6.0);
-            cr->stroke_preserve();
-            cr->fill();
 
             // print the string
             auto t = create_pango_layout(str);
             t->set_font_description(font);
-            t->get_pixel_size(text_width, text_height);
 
-            cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
             cr->move_to(5, (c_names_y * i) + 1);
 
             t->show_in_cairo_context(cr);
@@ -156,20 +167,11 @@ perfnames::draw_track( int track )
             snprintf(name, sizeof(name), "%-16.16s",
                      m_mainperf->get_track(track)->get_name());
 
-            // set background for name
-            cr->set_source_rgb(1.0, 1.0, 1.0);    // White
-
-            // draw the white background for the name
-            cr->rectangle(5, c_names_y * i + 12, (strlen(name) * 5) + 1, 10.0);
-            cr->stroke_preserve();
-            cr->fill();
-
             // print the track name
             auto n = create_pango_layout(name);
             n->set_font_description(font);
             n->get_pixel_size(text_width, text_height);
 
-            cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
             cr->move_to(5, (c_names_y * i) + ( (c_names_y * .5) - (text_height * .5) ) + 6);
 
             n->show_in_cairo_context(cr);
@@ -251,9 +253,9 @@ perfnames::draw_track( int track )
             m->show_in_cairo_context(cr);
         }
     }
-    else
+    else    // if we scroll vertical all the way to the bottom
     {
-        cr->set_source_rgb(0.6, 0.8, 1.0);    // blue
+        cr->set_source_rgb(0.0, 0.0, 0.0);    // BLACK
         cr->rectangle(0, (c_names_y * i) + 1, m_window_x, c_names_y);
         cr->stroke_preserve();
         cr->fill();
