@@ -141,13 +141,14 @@ tempo::draw_background()
     cr->set_operator(Cairo::OPERATOR_OVER);
 
     /* clear background */
-    cr->set_source_rgb( 1.0, 1.0, 1.0);            // white
+    cr->set_source_rgb( 0.0, 0.0, 0.0);            // Black
     cr->set_line_width( 1);
     cr->rectangle( 0, 0, m_window_x, m_window_y);
     cr->stroke_preserve();
     cr->fill();
 
-    cr->set_source_rgb( 0.0, 0.0, 0.0);            // black 
+    /* Line at bottom of tempo track */
+    cr->set_source_rgb( 1.0, 1.0, 1.0);            // White
     cr->set_line_width( 2.0);
     cr->move_to( 0, m_window_y - 1);
     cr->line_to( m_window_x, m_window_y - 1);

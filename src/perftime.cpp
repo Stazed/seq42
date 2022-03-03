@@ -112,17 +112,11 @@ perftime::draw_background()
     cr->set_operator(Cairo::OPERATOR_OVER);
 
     /* clear background */
-    cr->set_source_rgb( 1.0, 1.0, 1.0);            // white
+    cr->set_source_rgb( 0.6, 0.6, 0.6);            // Light grey
     cr->set_line_width( 1.0);
     cr->rectangle( 0, 0, m_window_x, m_window_y);
     cr->stroke_preserve();
     cr->fill();
-
-    cr->set_source_rgb( 0.0, 0.0, 0.0);            // black 
-    cr->set_line_width( 1.0);
-    cr->move_to( 0, m_window_y - 1);
-    cr->line_to( m_window_x, m_window_y - 1);
-    cr->stroke();
 
     /* draw vertical lines */
     long tick_offset = (m_4bar_offset * 16 * c_ppqn);
