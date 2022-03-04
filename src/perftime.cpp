@@ -112,7 +112,7 @@ perftime::draw_background()
     cr->set_operator(Cairo::OPERATOR_OVER);
 
     /* clear background */
-    cr->set_source_rgb( 0.6, 0.6, 0.6);            // Light grey
+    cr->set_source_rgb(c_back_light_grey.r, c_back_light_grey.g, c_back_light_grey.b);
     cr->set_line_width( 1.0);
     cr->rectangle( 0, 0, m_window_x, m_window_y);
     cr->stroke_preserve();

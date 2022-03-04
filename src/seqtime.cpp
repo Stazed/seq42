@@ -146,7 +146,13 @@ seqtime::update_surface()
     cr->move_to(0.0, m_window_y - 1);
     cr->line_to(m_window_x,  m_window_y - 1 );
     cr->stroke();
-
+    
+    cr->set_source_rgb(c_back_light_grey.r, c_back_light_grey.g, c_back_light_grey.b);
+    cr->rectangle(0.0, 0.0, m_window_x, m_window_y);
+    cr->stroke_preserve();
+    cr->fill();
+            
+    cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
     // at 32, a bar every measure
     // at 16
     /*

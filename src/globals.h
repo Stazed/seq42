@@ -53,6 +53,7 @@ const color c_track_color = { c_color_track_blue.get_red(), c_color_track_blue.g
 const color c_note_color_selected = { c_color_data_red.get_red(), c_color_data_red.get_green(), c_color_data_red.get_blue()};
 const color c_note_color = { c_color_note_blue.get_red(), c_color_note_blue.get_green(), c_color_note_blue.get_blue()};
 const color c_back_dark_grey = { 0.3, 0.3, 0.3 };
+const color c_back_light_grey = { 0.6, 0.6, 0.6 };
 
 /* for 32 bit & 64 bit compatible - file version 5 */
 extern short global_file_int_size;  // default sizeof(int32_t)

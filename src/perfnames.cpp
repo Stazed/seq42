@@ -120,7 +120,7 @@ perfnames::draw_track( int track )
         }
         else    // inactive
         {
-            cr->set_source_rgb(0.6, 0.6, 0.6);    // grey
+            cr->set_source_rgb(c_back_light_grey.r, c_back_light_grey.g, c_back_light_grey.b);
         }
 
         /* Track name background */
