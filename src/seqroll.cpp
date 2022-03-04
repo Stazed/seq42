@@ -687,7 +687,7 @@ seqroll::draw_events_on_surface()
                 note_x -= m_scroll_offset_x;
                 note_y -= m_scroll_offset_y;
 
-                cr->set_source_rgb(0.6, 0.6, 0.6);    // light grey
+                cr->set_source_rgb(1.0, 1.0, 1.0);    // white
 
                 /* draw boxes from sequence */
                 /* method 0 is background sequence */
@@ -725,11 +725,11 @@ seqroll::draw_events_on_surface()
                 {
                     if ( selected )
                     {
-                        cr->set_source_rgb(1.0, 0.27, 0.0);       // Red
+                        cr->set_source_rgb(c_note_color_selected.r, c_note_color_selected.g, c_note_color_selected.b);    // Red
                     }
                     else
                     {
-                        cr->set_source_rgb(1.0, 1.0, 1.0);        // White
+                        cr->set_source_rgb(c_note_color.r, c_note_color.g, c_note_color.b);    // blue
                     }
 
                     if ( method == 1 )
@@ -797,7 +797,6 @@ seqroll::draw_selection_on_window(const Cairo::RefPtr<Cairo::Context>& cr)
 
     /* Set line attributes */
     cr->set_line_join(Cairo::LINE_JOIN_MITER);
-    cr->set_source_rgb(1.0, 0.27, 0.0);    // Red
 
     if ( m_selecting )
     {
@@ -815,9 +814,10 @@ seqroll::draw_selection_on_window(const Cairo::RefPtr<Cairo::Context>& cr)
         m_old.y = y;
         m_old.width = w;
         m_old.height = h + c_key_y;
-
+        
+        cr->set_source_rgba(c_note_color_selected.r, c_note_color_selected.g, c_note_color_selected.b, .4); // red
         cr->rectangle(x, y, w, h + c_key_y );
-        cr->stroke();
+        cr->fill();
     }
 
     if ( m_moving || m_paste )
@@ -831,6 +831,7 @@ seqroll::draw_selection_on_window(const Cairo::RefPtr<Cairo::Context>& cr)
         x -= m_scroll_offset_x;
         y -= m_scroll_offset_y;
 
+        cr->set_source_rgb(c_note_color.r, c_note_color.g, c_note_color.b);    // blue
         cr->rectangle(x, y, m_selected.width, m_selected.height );
         cr->stroke();
 
@@ -854,6 +855,7 @@ seqroll::draw_selection_on_window(const Cairo::RefPtr<Cairo::Context>& cr)
         x -= m_scroll_offset_x;
         y -= m_scroll_offset_y;
 
+        cr->set_source_rgb(c_note_color.r, c_note_color.g, c_note_color.b);    // blue
         cr->rectangle(x, y, width, m_selected.height );
         cr->stroke();
 

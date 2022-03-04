@@ -130,6 +130,11 @@ seqdata::draw_events_on_window( )
     cr->rectangle(-1, -1, width + 2, height + 2);
     cr->paint_with_alpha(1.0);
     cr->set_operator(Cairo::OPERATOR_OVER);
+    
+    cr->set_source_rgb(c_back_dark_grey.r, c_back_dark_grey.g, c_back_dark_grey.b);
+    cr->rectangle (0.0, 0.0, m_window_x, m_window_y);
+    cr->stroke_preserve();
+    cr->fill();
 
     Pango::FontDescription font;
     int text_width;
@@ -138,6 +143,13 @@ seqdata::draw_events_on_window( )
     font.set_family(c_font);
     font.set_size(c_key_fontsize * Pango::SCALE);
     font.set_weight(Pango::WEIGHT_NORMAL);
+    
+    /* Getting the max pixel height for event numbers so we can clear it */
+    auto max = create_pango_layout(to_string(127));    // get max height
+    max->set_width(0);
+    max->set_wrap(Pango::WRAP_CHAR);
+    max->get_pixel_size(text_width, text_height);
+    int max_height = text_height;
 
     long tick;
 
@@ -188,19 +200,19 @@ seqdata::draw_events_on_window( )
 
             /* Clear background of event velocity labels - we need
              * to do this before the handles or they get cropped */
-            cr->set_source_rgb(1.0, 1.0, 1.0);  // White
+            cr->set_source_rgb(c_back_dark_grey.r, c_back_dark_grey.g, c_back_dark_grey.b);
             cr->rectangle(event_x + 3 - m_scroll_offset_x,
-                                  c_dataarea_y - 40,
-                                  8, 40);
+                                  c_dataarea_y - max_height,
+                                  8, max_height);
             cr->fill();
 
             if(selected)
             {
-                cr->set_source_rgb(1.0, 0.27, 0.0);    // Red
+                cr->set_source_rgb(c_note_color_selected.r, c_note_color_selected.g, c_note_color_selected.b);
             }
             else
             {
-                cr->set_source_rgb(0.0, 0.0, 1.0);    // blue
+                cr->set_source_rgb(c_note_color.r, c_note_color.g, c_note_color.b);    // blue
             }
 
             /* generate the value */
@@ -233,7 +245,6 @@ seqdata::draw_events_on_window( )
             t->set_wrap(Pango::WRAP_CHAR);
             t->get_pixel_size(text_width, text_height);
 
-            cr->set_source_rgb(0.0, 0.0, 0.0);  // Black
             cr->move_to(event_x + (text_width * 0.5) - m_scroll_offset_x,
                                   c_dataarea_y - text_height);
             t->show_in_cairo_context(cr);
@@ -252,12 +263,6 @@ seqdata::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
     draw_events_on_window();
 
-    /* Clear previous background */
-    cr->set_source_rgb(1.0, 1.0, 1.0);  // White
-    cr->rectangle (0.0, 0.0, m_window_x, m_window_y);
-    cr->stroke_preserve();
-    cr->fill();
-
     /* Draw the new background */
     cr->set_source(m_surface, 0.0, 0.0);
     cr->paint();
@@ -265,7 +270,7 @@ seqdata::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     /* The line drag adjustment */
     if (m_dragging)
     {
-        cr->set_source_rgb(1.0, 0.27, 0.0);    // Red
+        cr->set_source_rgb(c_note_color_selected.r, c_note_color_selected.g, c_note_color_selected.b);
         cr->move_to(m_current_x - m_scroll_offset_x, m_current_y);
         cr->line_to( m_drop_x - m_scroll_offset_x, m_drop_y);
         cr->stroke();
