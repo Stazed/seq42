@@ -38,6 +38,7 @@ class perfnames : public virtual Gtk::DrawingArea, public virtual trackmenu
 private:
 
     Cairo::RefPtr<Cairo::ImageSurface> m_surface;
+    Glib::RefPtr<Gdk::Pixbuf> m_pixbuf;
 
     perform      *m_mainperf;
 
