@@ -250,12 +250,6 @@ perftime::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
         draw_background();
     }
 
-    /* Clear previous background */
-    cr->set_source_rgb(1.0, 1.0, 1.0);  // White
-    cr->rectangle (0.0, 0.0, width, height);
-    cr->stroke_preserve();
-    cr->fill();
-
     /* Draw the new background */
     cr->set_source(m_surface, 0.0, 0.0);
     cr->paint();

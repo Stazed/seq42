@@ -242,11 +242,6 @@ seqtime::update_surface()
 bool
 seqtime::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
-    cr->set_source_rgb(1.0, 1.0, 1.0);  // White
-    cr->rectangle (0.0, 0.0, m_window_x, m_window_y);
-    cr->stroke_preserve();
-    cr->fill();
-
     cr->set_source(m_surface, 0.0, 0.0);
     cr->paint();
 
