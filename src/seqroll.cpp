@@ -554,7 +554,7 @@ seqroll::draw_progress_on_window()
 
         if ( m_old_progress_x != 0 )
         {
-            m_surface_window->set_source_rgb(0.0, 0.0, 0.0);            // Black 
+            m_surface_window->set_source_rgb(1.0, 0.0, 0.0);            // Red 
             m_surface_window->set_line_width(2.0);
             m_surface_window->move_to(m_old_progress_x, 0.0);
             m_surface_window->line_to(m_old_progress_x, m_window_y);
