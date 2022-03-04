@@ -58,7 +58,7 @@ maintime::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     cr->set_operator(Cairo::OPERATOR_OVER);
 
     /* clear the window */
-    cr->set_source_rgb(0.8, 0.8, 0.8);          // light grey 
+    cr->set_source_rgb(c_fore_light_grey.r, c_fore_light_grey.g, c_fore_light_grey.b);
     cr->rectangle(0.0, 0.0, s_width, s_height);
     cr->stroke_preserve();
     cr->fill();

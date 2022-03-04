@@ -364,7 +364,7 @@ seqroll::update_background()
 
         if ( m_scale != c_scale_off )
         {
-            cr->set_source_rgb(0.5, 0.5, 0.5);    // Dark grey
+            cr->set_source_rgb(c_back_medium_grey.r, c_back_medium_grey.g, c_back_medium_grey.b);
 
             if ( !c_scales_policy[m_scale][ ((c_num_keys - i)
                                              - m_scroll_offset_key
@@ -412,7 +412,7 @@ seqroll::update_background()
         }
         else if (i % ticks_per_beat == 0 )
         {
-            cr->set_source_rgb(0.5, 0.5, 0.5);    // Dark grey
+            cr->set_source_rgb(c_back_medium_grey.r, c_back_medium_grey.g, c_back_medium_grey.b);
             cr->set_dash(clear, 0.0);
             cr->set_line_join(Cairo::LINE_JOIN_MITER);
         }
@@ -427,7 +427,7 @@ seqroll::update_background()
 
             if( i == i_snap )
             {
-                cr->set_source_rgb(0.5, 0.5, 0.5);    // Dark grey
+                cr->set_source_rgb(c_back_medium_grey.r, c_back_medium_grey.g, c_back_medium_grey.b);
             }
             else
             {
@@ -554,7 +554,7 @@ seqroll::draw_progress_on_window()
 
         if ( m_old_progress_x != 0 )
         {
-            m_surface_window->set_source_rgb(1.0, 0.0, 0.0);            // Red 
+            m_surface_window->set_source_rgb(c_progress_line.r, c_progress_line.g, c_progress_line.b);
             m_surface_window->set_line_width(2.0);
             m_surface_window->move_to(m_old_progress_x, 0.0);
             m_surface_window->line_to(m_old_progress_x, m_window_y);
@@ -693,7 +693,7 @@ seqroll::draw_events_on_surface()
                 /* method 0 is background sequence */
                 if ( method == 0 )
                 {
-                    cr->set_source_rgb(0.0, 0.6, 0.0);    // Dark Green 
+                    cr->set_source_rgb(c_background_keys.r, c_background_keys.g, c_background_keys.b);    // Dark Green 
                 }
 
                 cr->rectangle(note_x,

@@ -316,7 +316,7 @@ perfroll::draw_progress()
         m_old_progress_ticks = progress_x;  // hold the position to clear for next line
 
         /* The new progress line */
-        m_surface_window->set_source_rgb(1.0, 0.0, 0.0);            // RED
+        m_surface_window->set_source_rgb(c_progress_line.r, c_progress_line.g, c_progress_line.b);
         m_surface_window->set_line_width(2.0);
         m_surface_window->move_to(progress_x, 0.0);
         m_surface_window->line_to(progress_x, m_window_y);

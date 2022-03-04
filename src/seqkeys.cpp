@@ -406,7 +406,7 @@ seqkeys::draw_key( int a_key, bool a_state )
 
     if ( a_state ) // piano hint key
     {
-        cr->set_source_rgb(0.0, 0.0, 1.0);          // Blue 
+        cr->set_source_rgb(c_note_highlight.r, c_note_highlight.g, c_note_highlight.b);          // Blue 
         cr->rectangle(c_keyoffset_x + 1,
                              (c_key_y * a_key) + 2 /* - m_scroll_offset_y*/,
                              c_key_x - 3,
