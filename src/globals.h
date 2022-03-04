@@ -52,6 +52,8 @@ const color c_track_color = { c_color_track_blue.get_red(), c_color_track_blue.g
 
 const color c_note_color_selected = { c_color_data_red.get_red(), c_color_data_red.get_green(), c_color_data_red.get_blue()};
 const color c_note_color = { c_color_note_blue.get_red(), c_color_note_blue.get_green(), c_color_note_blue.get_blue()};
+const color c_solo_green = { 0.5, 0.988, 0.0 };
+const color c_mute_red = { 1.0, 0.27, 0.0 };
 const color c_back_dark_grey = { 0.3, 0.3, 0.3 };
 const color c_back_light_grey = { 0.6, 0.6, 0.6 };
 

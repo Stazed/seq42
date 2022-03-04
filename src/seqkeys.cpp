@@ -109,13 +109,15 @@ seqkeys::update_surface()
     cr->paint_with_alpha(1.0);
     cr->set_operator(Cairo::OPERATOR_OVER);
 
+    /* the outline around the whole piano area */
     cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
     cr->set_line_width(1.0);
     cr->rectangle(0.0, 0.0, c_keyarea_x, c_keyarea_y);
     cr->stroke_preserve();
     cr->fill();
 
-    cr->set_source_rgb(1.0, 1.0, 1.0);    // White
+    /* The area behind the keyboard */
+    cr->set_source_rgb(c_back_light_grey.r, c_back_light_grey.g, c_back_light_grey.b);
     cr->rectangle(1.0, 1.0, c_keyoffset_x - 1, c_keyarea_y - 2);
     cr->stroke_preserve();
     cr->fill();
@@ -135,9 +137,9 @@ seqkeys::update_surface()
 
         cr->set_source_rgb(1.0, 1.0, 1.0);    // White
         cr->rectangle(c_keyoffset_x + 1,
-                                 (c_key_y * i) + 1,
-                                 c_key_x - 2,
-                                 c_key_y - 1 );
+                                 (c_key_y * i) + 2,
+                                 c_key_x - 3,
+                                 c_key_y - 3 );
         cr->stroke_preserve();
         cr->fill();
 
@@ -157,11 +159,11 @@ seqkeys::update_surface()
             }
             else if (note_color == Green_Note)
             {
-                cr->set_source_rgb(0.0, 0.4, 0.0);        // Green
+                cr->set_source_rgb(c_solo_green.r, c_solo_green.g, c_solo_green.b);
             }
             else
             {
-                cr->set_source_rgb(1.0, 0.27, 0.0);       // Red
+                cr->set_source_rgb(c_mute_red.r, c_mute_red.g, c_mute_red.b);
             }
             
             cr->rectangle(c_keyoffset_x + 1,
@@ -175,11 +177,11 @@ seqkeys::update_surface()
         {
             if( note_color == Green_Note)
             {
-                cr->set_source_rgb(0.0, 0.4, 0.0);        // Green
+                cr->set_source_rgb(c_solo_green.r, c_solo_green.g, c_solo_green.b);
             }
             else
             {
-                cr->set_source_rgb(1.0, 0.27, 0.0);       // Red
+                cr->set_source_rgb(c_mute_red.r, c_mute_red.g, c_mute_red.b);
             }
 
             cr->rectangle(c_keyoffset_x + 1,
@@ -219,11 +221,6 @@ seqkeys::update_surface()
 bool
 seqkeys::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 {
-    cr->set_source_rgb(1.0, 1.0, 1.0);  // White
-    cr->rectangle (0.0, 0.0, m_window_x, m_window_y);
-    cr->stroke_preserve();
-    cr->fill();
-
     cr->set_source(m_surface, 0.0, -m_scroll_offset_y);
     cr->paint();
 
@@ -393,11 +390,11 @@ seqkeys::draw_key( int a_key, bool a_state )
     /* Mute or solo keys */
     if(m_seq->is_note_mute(base_key))
     {
-        cr->set_source_rgb(1.0, 0.27, 0.0);       // Red
+        cr->set_source_rgb(c_mute_red.r, c_mute_red.g, c_mute_red.b);
     }
     else if(m_seq->is_note_solo(base_key))
     {
-        cr->set_source_rgb(0.0, 0.4, 0.0);        // Green
+        cr->set_source_rgb(c_solo_green.r, c_solo_green.g, c_solo_green.b);
     }
 
     cr->rectangle(c_keyoffset_x + 1,

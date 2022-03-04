@@ -189,11 +189,11 @@ perfnames::draw_track( int track )
 
             if(muted)
             {
-                cr->set_source_rgb(1.0, 0.27, 0.0);    // Red
+                cr->set_source_rgb(c_mute_red.r, c_mute_red.g, c_mute_red.b);
             }
             if(solo)
             {
-                cr->set_source_rgb(0.5, 0.988, 0.0);    // Green
+                cr->set_source_rgb(c_solo_green.r, c_solo_green.g, c_solo_green.b);
             }
 
             cr->rectangle( m_window_x - 11, (c_names_y * i) + 2, 11, c_names_y - 2);
