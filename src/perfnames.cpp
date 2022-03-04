@@ -99,7 +99,7 @@ perfnames::draw_track( int track )
 
     if ( track < c_max_track )
     {
-        cr->set_source_rgb(0.0, 0.0, 0.0);        // Black
+        cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
         cr->rectangle(0, (c_names_y * i), m_window_x - 1, c_names_y);
         cr->stroke_preserve();
         cr->fill();
@@ -146,11 +146,11 @@ perfnames::draw_track( int track )
             // set the label color
             if(is_focus)
             {
-                cr->set_source_rgb(0.0, 0.0, 0.0);    // BLACK
+                cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
             }
             else
             {
-                cr->set_source_rgb(1.0, 1.0, 1.0);    // White
+                cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
             }
             cr->set_line_width(1.0);
 
@@ -185,7 +185,7 @@ perfnames::draw_track( int track )
             if(solo || muted)
                 fill = true;
 
-            cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
+            cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
 
             if(muted)
             {
@@ -214,19 +214,19 @@ perfnames::draw_track( int track )
             {
                 snprintf(smute, sizeof(smute), "M" );
                 // background
-                cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
+                cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
             }
             else if ( solo )
             {
                 snprintf(smute, sizeof(smute), "S" );
                 // background
-                cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
+                cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
             }
             else
             {
                 snprintf(smute, sizeof(smute), "P" );
                 // background 
-                cr->set_source_rgb(1.0, 1.0, 1.0);    // White
+                cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
             }
             
             auto m = create_pango_layout(smute);
@@ -241,11 +241,11 @@ perfnames::draw_track( int track )
             // print the mute label
             if ( muted || solo )
             {
-                cr->set_source_rgb(1.0, 1.0, 1.0);    // White
+                cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
             }
             else
             {
-                cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
+                cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
             }
 
             cr->move_to(m_window_x - text_width - 2, (c_names_y * i) +  ((c_names_y * .5) - (text_height * .5) + 1 ));
@@ -255,7 +255,7 @@ perfnames::draw_track( int track )
     }
     else    // if we scroll vertical all the way to the bottom
     {
-        cr->set_source_rgb(0.0, 0.0, 0.0);    // BLACK
+        cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
         cr->rectangle(0, (c_names_y * i) + 1, m_window_x, c_names_y);
         cr->stroke_preserve();
         cr->fill();

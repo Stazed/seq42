@@ -145,7 +145,8 @@ perftime::draw_background()
     0    1    2    3    4    5
 
 #endif
-    cr->set_source_rgb( 0.6, 0.6, 0.6);            // Grey 
+
+    cr->set_source_rgb(c_back_light_grey.r, c_back_light_grey.g, c_back_light_grey.b);
     cr->set_line_width( 1.0);
 
     for ( int i=first_measure;
@@ -165,7 +166,7 @@ perftime::draw_background()
         auto t = create_pango_layout(bar);
         t->set_font_description(font);
 
-        cr->set_source_rgb( 0.0, 0.0, 0.0);    // Black
+        cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
         cr->move_to( x_pos + 2, 0);
 
         t->show_in_cairo_context(cr);
@@ -183,7 +184,7 @@ perftime::draw_background()
     if ( left >=0 && left <= m_window_x )
     {
         // set background for tempo labels to black
-        cr->set_source_rgb( 0.0, 0.0, 0.0);    // Black
+        cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
 
         auto t = create_pango_layout("L");
         font.set_weight(Pango::WEIGHT_BOLD);
@@ -196,7 +197,7 @@ perftime::draw_background()
         cr->fill();
 
         // print the 'L' label in white
-        cr->set_source_rgb( 1.0, 1.0, 1.0);    // White
+        cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
         cr->move_to( left + 1,  (m_window_y *.5) - (text_height * .5) + 4 );
 
         t->show_in_cairo_context(cr);
@@ -205,7 +206,7 @@ perftime::draw_background()
     if ( right >=0 && right <= m_window_x )
     {
         // set background for tempo labels to black
-        cr->set_source_rgb( 0.0, 0.0, 0.0);    // Black
+        cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
 
         auto t = create_pango_layout("R");
         font.set_weight(Pango::WEIGHT_BOLD);
@@ -218,7 +219,7 @@ perftime::draw_background()
         cr->fill();
 
         // print the 'R' label in white
-        cr->set_source_rgb( 1.0, 1.0, 1.0);    // White
+        cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
         cr->move_to( right - 6, (m_window_y *.5) - (text_height * .5) + 4 );
 
         t->show_in_cairo_context(cr);

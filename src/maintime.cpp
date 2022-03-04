@@ -63,7 +63,7 @@ maintime::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     cr->stroke_preserve();
     cr->fill();
 
-    cr->set_source_rgb(0.0, 0.0, 0.0);          // black 
+    cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
     cr->set_line_width(1.0);
     cr->rectangle(0.0, 0.0, (c_maintime_x - 1), (c_maintime_y - 1));
     cr->stroke();
@@ -76,13 +76,13 @@ maintime::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 
     if ( tick_x <= (c_maintime_x / 4 ))
     {
-        cr->set_source_rgb(0.6, 0.6, 0.6);    // grey
+        cr->set_source_rgb(c_back_light_grey.r, c_back_light_grey.g, c_back_light_grey.b);
         cr->rectangle(2.0, 2.0, (c_maintime_x - 4), (c_maintime_y - 4));
         cr->stroke_preserve();
         cr->fill();
     }
 
-    cr->set_source_rgb(0.0, 0.0, 0.0);        // black
+    cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
     cr->rectangle((beat_x + 2), 2.0, c_pill_width, (c_maintime_y - 4));
     cr->stroke_preserve();
     cr->fill();

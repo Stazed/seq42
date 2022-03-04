@@ -191,19 +191,19 @@ seqevent::draw_background()
         if ( i % ticks_per_m_line == 0 )
         {
             /* solid line on every beat */
-            cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
+            cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
             cr->set_line_join(Cairo::LINE_JOIN_MITER);
             cr->set_dash(clear, 0.0);
         }
         else if (i % ticks_per_beat == 0 )
         {
-            cr->set_source_rgb(1.0, 1.0, 1.0);    // White
+            cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
             cr->set_line_join(Cairo::LINE_JOIN_MITER);
             cr->set_dash(clear, 0.0);
         }
         else
         {
-            cr->set_source_rgb(1.0, 1.0, 1.0);    // White
+            cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
             cr->set_line_join(Cairo::LINE_JOIN_MITER);
             static const std::vector<double> dashed = {1.0};
             cr->set_line_width(1.5);
@@ -218,7 +218,7 @@ seqevent::draw_background()
     /* reset line style */
     cr->set_dash(clear, 0.0);
 
-    cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
+    cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
     cr->rectangle(-1, 0.0, m_window_x + 1, m_window_y - 1 );
     cr->stroke();
 }
@@ -289,7 +289,7 @@ seqevent::draw_events_on()
             /* turn into screen corrids */
             x = tick / m_zoom;
 
-            cr->set_source_rgb(1.0, 1.0, 1.0);    // white
+            cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
             cr->rectangle(x -  m_scroll_offset_x,
                                    (c_eventarea_y - c_eventevent_y)/2,
                                    c_eventevent_x,

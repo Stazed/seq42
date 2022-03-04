@@ -204,14 +204,14 @@ perfroll::fill_background_surface()
     cr->set_operator(Cairo::OPERATOR_OVER);
 
     /* clear background */
-    cr->set_source_rgb(0.0, 0.0, 0.0);    // BLACK
+    cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
     cr->set_line_width(1.0);
     cr->rectangle(0.0, 0.0, c_perfroll_background_x, c_names_y);
     cr->stroke_preserve();
     cr->fill();
 
     /* draw horizontal grey lines */
-    cr->set_source_rgb(0.6, 0.6, 0.6);    // Grey 
+    cr->set_source_rgb(c_back_light_grey.r, c_back_light_grey.g, c_back_light_grey.b);
     static const std::vector<double> dashed = {1.0};
     static const std::vector<double> clear;
     cr->set_line_width(1.0);
@@ -424,11 +424,11 @@ void perfroll::draw_track_on( int a_track )
 
                     if ( selected )
                     {
-                        cr->set_source_rgb(0.0, 0.0, 0.0);      // black
+                        cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
                     }
                     else
                     {
-                        cr->set_source_rgb(1.0, 1.0, 1.0);    // White
+                        cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
                     }
 
                     /* trigger outline */
@@ -471,11 +471,11 @@ void perfroll::draw_track_on( int a_track )
                             {
                                 if ( selected )
                                 {
-                                    cr->set_source_rgb(1.0, 1.0, 1.0);    // White
+                                    cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
                                 }
                                 else
                                 {
-                                    cr->set_source_rgb(0.6, 0.6, 0.6);    // grey
+                                    cr->set_source_rgb(c_back_light_grey.r, c_back_light_grey.g, c_back_light_grey.b);
                                 }
 
                                 cr->rectangle(tick_marker_x, (y + 4), 1.0, (h - 8) );
@@ -503,11 +503,11 @@ void perfroll::draw_track_on( int a_track )
 
                             if ( selected )
                             {
-                                cr->set_source_rgb(0.0, 0.0, 0.0);      // black
+                                cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
                             }
                             else
                             {
-                                cr->set_source_rgb(1.0, 1.0, 1.0);    // White
+                                cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
                             }
 
                             while ( (dt = seq->get_next_note_event( &tick_s, &tick_f, &note,
@@ -564,9 +564,9 @@ void perfroll::draw_track_on( int a_track )
 
                     /* draw the background for the labels */
                     if (selected)
-                        cr->set_source_rgb(1.0, 1.0, 1.0);        // White
+                        cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
                     else
-                        cr->set_source_rgb(0.0, 0.0, 0.0);        // Black
+                        cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
                     
                     cr->rectangle(x + 7, y + 2, text_width, text_height - 1);
                     cr->stroke_preserve();
@@ -574,9 +574,9 @@ void perfroll::draw_track_on( int a_track )
 
                     /* print the sequence label */
                     if (selected)
-                        cr->set_source_rgb(0.0, 0.0, 0.0);        // Black
+                        cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
                     else
-                        cr->set_source_rgb(1.0, 1.0, 1.0);        // White
+                        cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
                     
                     cr->move_to(x + 7, y + 1);
                     t->show_in_cairo_context(cr);

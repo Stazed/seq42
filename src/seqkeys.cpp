@@ -110,7 +110,7 @@ seqkeys::update_surface()
     cr->set_operator(Cairo::OPERATOR_OVER);
 
     /* the outline around the whole piano area */
-    cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
+    cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
     cr->set_line_width(1.0);
     cr->rectangle(0.0, 0.0, c_keyarea_x, c_keyarea_y);
     cr->stroke_preserve();
@@ -135,7 +135,7 @@ seqkeys::update_surface()
             note_color = Green_Note;    /* green for solo */
         }
 
-        cr->set_source_rgb(1.0, 1.0, 1.0);    // White
+        cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
         cr->rectangle(c_keyoffset_x + 1,
                                  (c_key_y * i) + 2,
                                  c_key_x - 3,
@@ -155,7 +155,7 @@ seqkeys::update_surface()
         {
             if(note_color == White_Note)    // Not a muted or solo note so set it to black 
             {
-                cr->set_source_rgb(0.0, 0.0, 0.0);        // Black
+                cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
             }
             else if (note_color == Green_Note)
             {
@@ -208,7 +208,7 @@ seqkeys::update_surface()
             t->set_font_description(font);
             t->get_pixel_size(text_width, text_height);
             
-            cr->set_source_rgb(0.0, 0.0, 0.0);    // Black
+            cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
             cr->move_to(2,  (c_key_y * i) - (text_height * .1) );
 
             t->show_in_cairo_context(cr);
@@ -380,11 +380,11 @@ seqkeys::draw_key( int a_key, bool a_state )
             key == 8 ||
             key == 10 )
     {
-        cr->set_source_rgb(0.0, 0.0, 0.0);      // Black 
+        cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
     }
     else
     {
-        cr->set_source_rgb(1.0, 1.0, 1.0);       // White 
+        cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
     }
 
     /* Mute or solo keys */
