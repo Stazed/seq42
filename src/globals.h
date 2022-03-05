@@ -43,6 +43,13 @@ const int c_file_version = 7;  // Version of our save file format.  Increment th
 7 - Use tempo list for BPM
 */
 
+/* for 32 bit & 64 bit compatible - file version 5 */
+extern short global_file_int_size;  // default sizeof(int32_t)
+extern short global_file_long_int_size; // default sizeof(int32_t) - define in mainwnd
+const uint64_t c_file_identification =  0x293A323451455389; // \211 S E Q 42 : )
+const short global_VERSION_array_size = 8;
+const short global_time_array_size = 32;
+
 /* Global colors */
 struct color { double r; double g; double b; };
 
@@ -66,13 +73,6 @@ const color c_back_light_grey = { 0.6, 0.6, 0.6 };
 const color c_fore_light_grey = { 0.8, 0.8, 0.8 };
 const color c_background_keys = { 0.0, 0.6, 0.0 };  // green
 const color c_progress_line = { 1.0, 0.0, 0.0 };    // red
-
-/* for 32 bit & 64 bit compatible - file version 5 */
-extern short global_file_int_size;  // default sizeof(int32_t)
-extern short global_file_long_int_size; // default sizeof(int32_t) - define in mainwnd
-const uint64_t c_file_identification =  0x293A323451455389; // \211 S E Q 42 : )
-const short global_VERSION_array_size = 8;
-const short global_time_array_size = 32;
 
 const int c_max_track_name = 16;
 const int c_max_seq_name = 32;
