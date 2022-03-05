@@ -183,7 +183,7 @@ perftime::draw_background()
 
     if ( left >=0 && left <= m_window_x )
     {
-        // set background for tempo labels to black
+        // set background for labels to black
         cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
 
         auto t = create_pango_layout("L");
@@ -205,7 +205,7 @@ perftime::draw_background()
 
     if ( right >=0 && right <= m_window_x )
     {
-        // set background for tempo labels to black
+        // set background for labels to black
         cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
 
         auto t = create_pango_layout("R");
