@@ -34,6 +34,8 @@ class seqtime: public Gtk::DrawingArea
 private:
 
     Cairo::RefPtr<Cairo::ImageSurface> m_surface;
+    Glib::RefPtr<Gdk::Pixbuf> m_pixbuf;
+
     Glib::RefPtr<Adjustment> m_hadjust;
 
     int m_scroll_offset_ticks;

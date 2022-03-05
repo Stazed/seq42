@@ -19,6 +19,7 @@
 //-----------------------------------------------------------------------------
 #include "event.h"
 #include "seqtime.h"
+#include "pixmaps/end.xpm"
 
 seqtime::seqtime(sequence *a_seq, int a_zoom, Glib::RefPtr<Adjustment> a_hadjust):
     m_hadjust(a_hadjust),
@@ -215,26 +216,10 @@ seqtime::update_surface()
     }
 
     long end_x = m_seq->get_length() / m_zoom - m_scroll_offset_x;
-    
-    auto t = create_pango_layout("END");
-    font.set_size((c_key_fontsize -1) * Pango::SCALE);
-    font.set_weight(Pango::WEIGHT_BOLD);
-    t->set_font_description(font);
-    t->get_pixel_size(text_width, text_height);
 
-    // set background for label to black
-    cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
-
-    // draw the black background for the 'END' label
-    cr->rectangle(end_x, m_window_y - text_height + 2, text_width + 2, text_height );
-    cr->stroke_preserve();
-    cr->fill();
-   
-    // print the 'END' label in white
-    cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
-    cr->move_to(end_x + 1, m_window_y - text_height);
-
-    t->show_in_cairo_context(cr);
+    m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(end_xpm);
+    Gdk::Cairo::set_source_pixbuf (cr, m_pixbuf, end_x - 1, m_window_y - 10);
+    cr->paint();
 
     queue_draw();
 }
