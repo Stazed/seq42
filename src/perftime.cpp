@@ -19,6 +19,8 @@
 //-----------------------------------------------------------------------------
 #include "event.h"
 #include "perftime.h"
+#include "pixmaps/mark_left.xpm"
+#include "pixmaps/mark_right.xpm"
 
 
 perftime::perftime( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment> a_hadjust ) :
@@ -95,8 +97,6 @@ perftime::draw_background()
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
 
     Pango::FontDescription font;
-    int text_width;
-    int text_height;
 
     font.set_family(c_font);
     font.set_size((c_key_fontsize - 2) * Pango::SCALE);
@@ -183,46 +183,16 @@ perftime::draw_background()
 
     if ( left >=0 && left <= m_window_x )
     {
-        // set background for labels to black
-        cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
-
-        auto t = create_pango_layout("L");
-        font.set_weight(Pango::WEIGHT_BOLD);
-        t->set_font_description(font);
-        t->get_pixel_size(text_width, text_height);
-
-        // draw the black background for the labels
-        cr->rectangle( left, m_window_y - 9, text_width  + 2, text_height + 2);
-        cr->stroke_preserve();
-        cr->fill();
-
-        // print the 'L' label in white
-        cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
-        cr->move_to( left + 1,  (m_window_y *.5) - (text_height * .5) + 4 );
-
-        t->show_in_cairo_context(cr);
+        m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(mark_left_xpm);
+        Gdk::Cairo::set_source_pixbuf (cr, m_pixbuf, left - 2, m_window_y - 10);
+        cr->paint();
     }
 
     if ( right >=0 && right <= m_window_x )
     {
-        // set background for labels to black
-        cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
-
-        auto t = create_pango_layout("R");
-        font.set_weight(Pango::WEIGHT_BOLD);
-        t->set_font_description(font);
-        t->get_pixel_size(text_width, text_height);
-
-        // draw the black background for the labels
-        cr->rectangle( right - 7, m_window_y - 9, text_width  + 2, text_height + 2);
-        cr->stroke_preserve();
-        cr->fill();
-
-        // print the 'R' label in white
-        cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
-        cr->move_to( right - 6, (m_window_y *.5) - (text_height * .5) + 4 );
-
-        t->show_in_cairo_context(cr);
+        m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(mark_right_xpm);
+        Gdk::Cairo::set_source_pixbuf (cr, m_pixbuf, right - 10, m_window_y - 10);
+        cr->paint();
     }
 }
 

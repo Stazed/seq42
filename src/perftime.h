@@ -37,6 +37,7 @@ class perftime: public Gtk::DrawingArea
 private:
 
     Cairo::RefPtr<Cairo::ImageSurface> m_surface;
+    Glib::RefPtr<Gdk::Pixbuf> m_pixbuf;
 
     perform      * const m_mainperf;
     mainwnd      * const m_mainwnd;
