@@ -2581,6 +2581,12 @@ mainwnd::update_start_BPM(double bpm)
 }
 
 void
+mainwnd::set_perfroll_marker_change()
+{
+    m_perfroll->redraw_all_tracks();
+}
+
+void
 mainwnd::set_swing_amount8(int swing_amount8)
 {
     m_mainperf->set_swing_amount8(swing_amount8);
