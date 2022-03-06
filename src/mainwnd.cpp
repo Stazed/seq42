@@ -2588,6 +2588,13 @@ mainwnd::set_perfroll_marker_change(bool a_change)
 }
 
 void
+mainwnd::set_tempo_marker_change(uint64_t a_tick)
+{
+    m_perfroll->set_tempo_marker_changed(a_tick);
+    m_perfroll->redraw_all_tracks();
+}
+
+void
 mainwnd::set_swing_amount8(int swing_amount8)
 {
     m_mainperf->set_swing_amount8(swing_amount8);

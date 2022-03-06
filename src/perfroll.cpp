@@ -53,7 +53,8 @@ perfroll::perfroll( perform *a_perf,
     m_redraw_tracks(false),
     m_have_realize(false),
     m_have_stop_reposition(false),
-    m_marker_change(false)
+    m_marker_change(false),
+    m_tempo_change(0)
 {
     Gtk::Allocation allocation = get_allocation();
     m_surface_track = Cairo::ImageSurface::create(
@@ -315,6 +316,19 @@ perfroll::draw_progress()
             m_surface_window->line_to(R_mark, m_window_y);
             m_surface_window->stroke();
         }
+        
+        if ( m_tempo_change > 0 )
+        {
+            /* Draw the tempo marker location line */
+            long tick_offset = m_4bar_offset * c_ppqn * 16;
+            int tempo_tick = ( m_tempo_change - tick_offset ) / m_perf_scale_x ;
+
+            m_surface_window->set_source_rgb(c_marker_lines.r, c_marker_lines.g, c_marker_lines.b);
+            m_surface_window->move_to(tempo_tick, 1.0);
+            m_surface_window->line_to(tempo_tick, m_window_y);
+            m_surface_window->stroke();
+        }
+        
 
         m_have_stop_reposition = true;  // in case we are stopped, we need to draw the progress line
     }
@@ -346,7 +360,7 @@ perfroll::draw_progress()
         m_surface_window->stroke();
 
         /* We don't want to scroll when changing the marker cause it will reposition the marker... */
-        if ( !m_marker_change )
+        if ( !m_marker_change && !m_tempo_change )
             auto_scroll_horz();
     }
 }

@@ -95,6 +95,7 @@ private:
     bool m_have_realize;
     bool m_have_stop_reposition;
     bool m_marker_change;
+    uint64_t m_tempo_change;
 
     void on_realize();
     bool on_button_press_event(GdkEventButton* a_ev);
@@ -145,6 +146,7 @@ public:
     void redraw_all_tracks(){m_redraw_tracks = true;}
     void have_stopped_reposition(){m_have_stop_reposition = true;}
     void set_marker_changed(bool a_change){ m_marker_change = a_change;}
+    void set_tempo_marker_changed(uint64_t a_tick){ m_tempo_change = a_tick;}
 
     /* Trigger menu callbacks */
     void new_sequence(track *a_track, trigger *a_trigger);
