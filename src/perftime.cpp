@@ -34,6 +34,8 @@ perftime::perftime( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment> a
 
     m_snap(c_ppqn),
     m_measure_length(c_ppqn * 4),
+    m_moving_left(false),
+    m_moving_right(false),
     m_draw_background(false)
 {
     Gtk::Allocation allocation = get_allocation();
@@ -44,7 +46,8 @@ perftime::perftime( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment> a
     );
 
     add_events( Gdk::BUTTON_PRESS_MASK |
-                Gdk::BUTTON_RELEASE_MASK );
+                Gdk::BUTTON_RELEASE_MASK |
+                Gdk::POINTER_MOTION_MASK );
 
     m_hadjust->signal_value_changed().connect( mem_fun( *this, &perftime::change_horz ));
 
@@ -242,22 +245,59 @@ perftime::on_button_press_event(GdkEventButton* p0)
     if ( p0->button == 1 )
     {
         m_mainperf->set_left_tick( tick );
+        m_moving_left = true;
+        m_draw_background = true;
+        queue_draw();
+        return true;
     }
 
     if ( p0->button == 3 )
     {
         m_mainperf->set_right_tick( tick + m_snap );
+        m_moving_right = true;
+        m_draw_background = true;
+        queue_draw();
+        return true;
     }
 
-    m_draw_background = true;
-    queue_draw();
-
-    return true;
+    return false;
 }
 
 bool
 perftime::on_button_release_event(GdkEventButton* p0)
 {
+    m_moving_left = false;
+    m_moving_right = false;
+    return false;
+}
+bool
+perftime::on_motion_notify_event(GdkEventMotion* a_ev)
+{
+    if ( !m_moving_left && !m_moving_right)
+        return false;
+
+    long tick = (long) a_ev->x;
+    tick *= m_perf_scale_x;
+
+    tick += (m_4bar_offset * 16 * c_ppqn);
+    tick = tick - (tick % m_snap);
+    
+    if ( tick < 0 )
+        return false;
+    
+    if( m_moving_left )
+    {
+        m_mainperf->set_left_tick( tick );
+        m_draw_background = true;
+        queue_draw();
+    }
+    else
+    {
+        m_mainperf->set_right_tick( tick + m_snap );
+        m_draw_background = true;
+        queue_draw();
+    }
+        
     return false;
 }
 

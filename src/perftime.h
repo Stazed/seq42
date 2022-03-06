@@ -50,11 +50,14 @@ private:
     int m_4bar_offset;
 
     int m_snap, m_measure_length;
+    bool m_moving_left;
+    bool m_moving_right;
     bool m_draw_background;
 
     void on_realize();
     bool on_button_press_event(GdkEventButton* a_ev);
     bool on_button_release_event(GdkEventButton* a_ev);
+    bool on_motion_notify_event(GdkEventMotion* a_ev);
     void on_size_allocate(Gtk::Allocation &a_r );
 
     void draw_background();
