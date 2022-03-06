@@ -612,11 +612,11 @@ void perfroll::draw_background_on( int a_track )
     /* Draw the 'L' and 'R' location lines */
     long L_tick = m_mainperf->get_left_tick();
     long R_tick = m_mainperf->get_right_tick();
- 
+
     int L_mark = ( L_tick - tick_offset ) / m_perf_scale_x ;
     int R_mark = ( R_tick - tick_offset ) / m_perf_scale_x ;
 
-    cr->set_source_rgb(0.0, 1.0, 0.0);
+    cr->set_source_rgb(c_marker_lines.r, c_marker_lines.g, c_marker_lines.b);
     cr->move_to(L_mark, 1.0);
     cr->line_to(L_mark, m_window_y);
     cr->stroke();

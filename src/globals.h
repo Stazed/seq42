@@ -73,6 +73,7 @@ const color c_back_light_grey = { 0.6, 0.6, 0.6 };
 const color c_fore_light_grey = { 0.8, 0.8, 0.8 };
 const color c_background_keys = { 0.0, 0.6, 0.0 };  // green
 const color c_progress_line = { 1.0, 0.0, 0.0 };    // red
+const color c_marker_lines = { 0.0, 1.0, 0.0 };     // bright green
 
 const int c_max_track_name = 16;
 const int c_max_seq_name = 32;
