@@ -295,6 +295,12 @@ perftime::on_motion_notify_event(GdkEventMotion* a_ev)
     
     if( m_moving_left )
     {
+        /* Don't allow left tick to go beyond right */
+        if (tick >= m_mainperf->get_right_tick())
+        {
+            long right_tick = tick + c_ppqn * 4;
+            m_mainperf->set_right_tick(right_tick);
+        }
         m_mainperf->set_left_tick( tick );
         m_mainwnd->set_perfroll_marker_change(true);
         m_draw_background = true;
@@ -302,6 +308,15 @@ perftime::on_motion_notify_event(GdkEventMotion* a_ev)
     }
     else
     {
+        /* Don't allow right tick to go before left */
+        if (tick <= m_mainperf->get_left_tick())
+        {
+            long left_tick = tick - c_ppqn * 4;
+            if(left_tick < 0)
+                left_tick = 0;
+            
+            m_mainperf->set_left_tick(left_tick);
+        }
         m_mainperf->set_right_tick( tick + m_snap );
         m_mainwnd->set_perfroll_marker_change(true);
         m_draw_background = true;
