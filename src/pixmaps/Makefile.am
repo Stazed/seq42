@@ -6,6 +6,7 @@ EXTRA_DIST = \
 	collapse.xpm \
 	copy.xpm \
 	down.xpm \
+	end.xpm \
 	expand.xpm \
 	font_b.xpm \
 	font_w.xpm \
@@ -15,6 +16,8 @@ EXTRA_DIST = \
 	learn.xpm \
 	length.xpm \
 	loop.xpm \
+	mark_left.xpm \
+	mark_right.xpm \
 	menu_empty.xpm \
 	menu_full.xpm \
 	midi.xpm \
@@ -39,6 +42,9 @@ EXTRA_DIST = \
 	tempo_marker.xpm \
 	thru.xpm \
 	tools.xpm \
+	track_mute.xpm \
+	track_play.xpm \
+	track_solo.xpm \
 	transportFollow.xpm \
 	transpose.xpm\
 	undo.xpm \
