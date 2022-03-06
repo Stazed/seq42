@@ -245,7 +245,7 @@ perftime::on_button_press_event(GdkEventButton* p0)
     if ( p0->button == 1 )
     {
         m_mainperf->set_left_tick( tick );
-        m_mainwnd->set_perfroll_marker_change();
+        m_mainwnd->set_perfroll_marker_change(true);
         m_moving_left = true;
         m_draw_background = true;
         queue_draw();
@@ -255,7 +255,7 @@ perftime::on_button_press_event(GdkEventButton* p0)
     if ( p0->button == 3 )
     {
         m_mainperf->set_right_tick( tick + m_snap );
-        m_mainwnd->set_perfroll_marker_change();
+        m_mainwnd->set_perfroll_marker_change(true);
         m_moving_right = true;
         m_draw_background = true;
         queue_draw();
@@ -270,6 +270,11 @@ perftime::on_button_release_event(GdkEventButton* p0)
 {
     m_moving_left = false;
     m_moving_right = false;
+
+    /* We only draw the marker lines when setting with the button pressed.
+     * So we unset the line drawing here with false */
+    m_mainwnd->set_perfroll_marker_change(false);
+
     return false;
 }
 
@@ -291,14 +296,14 @@ perftime::on_motion_notify_event(GdkEventMotion* a_ev)
     if( m_moving_left )
     {
         m_mainperf->set_left_tick( tick );
-        m_mainwnd->set_perfroll_marker_change();
+        m_mainwnd->set_perfroll_marker_change(true);
         m_draw_background = true;
         queue_draw();
     }
     else
     {
         m_mainperf->set_right_tick( tick + m_snap );
-        m_mainwnd->set_perfroll_marker_change();
+        m_mainwnd->set_perfroll_marker_change(true);
         m_draw_background = true;
         queue_draw();
     }

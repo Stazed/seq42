@@ -347,7 +347,7 @@ public:
     void set_swing_amount8(int swing_amount8);
     void set_swing_amount16(int swing_amount16);
     void update_start_BPM(double bpm);
-    void set_perfroll_marker_change();
+    void set_perfroll_marker_change(bool a_change);
     void set_window_pointer(Gtk::Window * a_win);
     void remove_window_pointer(Gtk::Window * a_win);
 

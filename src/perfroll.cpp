@@ -52,7 +52,8 @@ perfroll::perfroll( perform *a_perf,
     trans_button_press(false),
     m_redraw_tracks(false),
     m_have_realize(false),
-    m_have_stop_reposition(false)
+    m_have_stop_reposition(false),
+    m_marker_change(false)
 {
     Gtk::Allocation allocation = get_allocation();
     m_surface_track = Cairo::ImageSurface::create(
@@ -293,6 +294,28 @@ perfroll::draw_progress()
 
         m_surface_window->set_source(m_surface_track, 0.0, 0.0);
         m_surface_window->paint();
+        
+        if ( m_marker_change )
+        {
+            /* Draw the 'L' and 'R' location lines */
+            long L_tick = m_mainperf->get_left_tick();
+            long R_tick = m_mainperf->get_right_tick();
+            
+            long tick_offset = m_4bar_offset * c_ppqn * 16;
+
+            int L_mark = ( L_tick - tick_offset ) / m_perf_scale_x ;
+            int R_mark = ( R_tick - tick_offset ) / m_perf_scale_x ;
+
+            m_surface_window->set_source_rgb(c_marker_lines.r, c_marker_lines.g, c_marker_lines.b);
+            m_surface_window->move_to(L_mark, 1.0);
+            m_surface_window->line_to(L_mark, m_window_y);
+            m_surface_window->stroke();
+
+            m_surface_window->move_to(R_mark, 1.0);
+            m_surface_window->line_to(R_mark, m_window_y);
+            m_surface_window->stroke();
+        }
+
         m_have_stop_reposition = true;  // in case we are stopped, we need to draw the progress line
     }
 
@@ -608,22 +631,6 @@ void perfroll::draw_background_on( int a_track )
         cr->set_source(m_surface_background, x_pos, y);
         cr->paint();
     }
-
-    /* Draw the 'L' and 'R' location lines */
-    long L_tick = m_mainperf->get_left_tick();
-    long R_tick = m_mainperf->get_right_tick();
-
-    int L_mark = ( L_tick - tick_offset ) / m_perf_scale_x ;
-    int R_mark = ( R_tick - tick_offset ) / m_perf_scale_x ;
-
-    cr->set_source_rgb(c_marker_lines.r, c_marker_lines.g, c_marker_lines.b);
-    cr->move_to(L_mark, 1.0);
-    cr->line_to(L_mark, m_window_y);
-    cr->stroke();
-
-    cr->move_to(R_mark, 1.0);
-    cr->line_to(R_mark, m_window_y);
-    cr->stroke();
 }
 
 void

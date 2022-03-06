@@ -2581,8 +2581,9 @@ mainwnd::update_start_BPM(double bpm)
 }
 
 void
-mainwnd::set_perfroll_marker_change()
+mainwnd::set_perfroll_marker_change(bool a_change)
 {
+    m_perfroll->set_marker_changed(a_change);
     m_perfroll->redraw_all_tracks();
 }
 
