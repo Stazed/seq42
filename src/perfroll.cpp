@@ -345,7 +345,9 @@ perfroll::draw_progress()
         m_surface_window->line_to(progress_x, m_window_y);
         m_surface_window->stroke();
 
-        auto_scroll_horz();
+        /* We don't want to scroll when changing the marker cause it will reposition the marker... */
+        if ( !m_marker_change )
+            auto_scroll_horz();
     }
 }
 
