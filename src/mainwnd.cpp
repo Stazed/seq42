@@ -1277,6 +1277,14 @@ mainwnd::expand() // all tracks
 }
 
 void
+mainwnd::paste_triggers(long paste_tick) // all tracks
+{
+    m_mainperf->push_trigger_undo();
+    m_mainperf->paste_triggers ( paste_tick );
+    m_perfroll->redraw_all_tracks();
+}
+
+void
 mainwnd::set_looped()
 {
     m_mainperf->set_looping( m_button_loop->get_active());
@@ -2510,6 +2518,10 @@ mainwnd::on_key_release_event(GdkEventKey* a_ev)
             return true;
         }
     }
+
+    /* For CTRL-L paste trigger */
+    m_perftime->on_key_release_event(a_ev);
+
     return false;
 }
 void

@@ -36,6 +36,8 @@ perftime::perftime( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment> a
     m_measure_length(c_ppqn * 4),
     m_moving_left(false),
     m_moving_right(false),
+    m_moving_paste(false),
+    m_paste_tick(0),
     m_draw_background(false)
 {
     Gtk::Allocation allocation = get_allocation();
@@ -47,7 +49,9 @@ perftime::perftime( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment> a
 
     add_events( Gdk::BUTTON_PRESS_MASK |
                 Gdk::BUTTON_RELEASE_MASK |
-                Gdk::POINTER_MOTION_MASK );
+                Gdk::POINTER_MOTION_MASK |
+                Gdk::KEY_PRESS_MASK | 
+                Gdk::KEY_RELEASE_MASK);
 
     m_hadjust->signal_value_changed().connect( mem_fun( *this, &perftime::change_horz ));
 
@@ -244,15 +248,21 @@ perftime::on_button_press_event(GdkEventButton* p0)
     //m_mainperf->set_start_tick( tick );
     if ( p0->button == 1 )
     {
-        m_mainperf->set_left_tick( tick );
-        m_mainwnd->set_perfroll_marker_change(true);
-        m_moving_left = true;
-        m_draw_background = true;
-        queue_draw();
-        return true;
+        if ( p0->state & GDK_CONTROL_MASK )     // control key
+        {
+            m_moving_paste = true;
+        }
+        else    // 'L' marker
+        {
+            m_mainperf->set_left_tick( tick );
+            m_mainwnd->set_perfroll_marker_change(true);
+            m_moving_left = true;
+            m_draw_background = true;
+            queue_draw();
+            return true;
+        }
     }
-
-    if ( p0->button == 3 )
+    else if ( p0->button == 3 )
     {
         m_mainperf->set_right_tick( tick + m_snap );
         m_mainwnd->set_perfroll_marker_change(true);
@@ -270,10 +280,12 @@ perftime::on_button_release_event(GdkEventButton* p0)
 {
     m_moving_left = false;
     m_moving_right = false;
+    m_moving_paste = false;
 
     /* We only draw the marker lines when setting with the button pressed.
      * So we unset the line drawing here with false */
     m_mainwnd->set_perfroll_marker_change(false);
+    m_mainwnd->set_tempo_marker_change( 0 );     // FIXME name
 
     return false;
 }
@@ -281,7 +293,7 @@ perftime::on_button_release_event(GdkEventButton* p0)
 bool
 perftime::on_motion_notify_event(GdkEventMotion* a_ev)
 {
-    if ( !m_moving_left && !m_moving_right)
+    if ( !m_moving_left && !m_moving_right && !m_moving_paste)
         return false;
 
     long tick = (long) a_ev->x;
@@ -289,11 +301,16 @@ perftime::on_motion_notify_event(GdkEventMotion* a_ev)
 
     tick += (m_4bar_offset * 16 * c_ppqn);
     tick = tick - (tick % m_snap);
-    
+
     if ( tick < 0 )
         return false;
-    
-    if( m_moving_left )
+
+    if ( m_moving_paste )
+    {
+        m_mainwnd->set_tempo_marker_change( tick );     // FIXME name
+        m_paste_tick = tick;
+    }
+    else if( m_moving_left )
     {
         /* Don't allow left tick to go beyond right */
         if (tick >= m_mainperf->get_right_tick())
@@ -306,7 +323,7 @@ perftime::on_motion_notify_event(GdkEventMotion* a_ev)
         m_draw_background = true;
         queue_draw();
     }
-    else
+    else if( m_moving_right)
     {
         /* Don't allow right tick to go before left */
         if (tick <= m_mainperf->get_left_tick())
@@ -314,7 +331,7 @@ perftime::on_motion_notify_event(GdkEventMotion* a_ev)
             long left_tick = tick - c_ppqn * 4;
             if(left_tick < 0)
                 left_tick = 0;
-            
+
             m_mainperf->set_left_tick(left_tick);
         }
         m_mainperf->set_right_tick( tick + m_snap );
@@ -322,7 +339,25 @@ perftime::on_motion_notify_event(GdkEventMotion* a_ev)
         m_draw_background = true;
         queue_draw();
     }
-        
+
+    return false;
+}
+
+bool 
+perftime::on_key_release_event(GdkEventKey* a_ev)
+{
+    if ( m_moving_paste )
+    {
+        if ( a_ev->keyval ==  GDK_KEY_Control_L )
+        {
+            m_moving_paste = false;
+            m_mainwnd->set_tempo_marker_change( 0 );     // FIXME name
+            m_mainwnd->paste_triggers((long) m_paste_tick);
+
+            return true;
+        }
+    }
+
     return false;
 }
 

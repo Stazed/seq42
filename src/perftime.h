@@ -52,6 +52,8 @@ private:
     int m_snap, m_measure_length;
     bool m_moving_left;
     bool m_moving_right;
+    bool m_moving_paste;
+    uint64_t m_paste_tick;
     bool m_draw_background;
 
     void on_realize();
@@ -72,5 +74,6 @@ public:
 
     void set_zoom (int a_zoom);
     void set_guides( int a_snap, int a_measure );
+    bool on_key_release_event(GdkEventKey* a_ev);
 };
 

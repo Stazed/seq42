@@ -779,6 +779,89 @@ track::copy_triggers( long a_start_tick,
 }
 
 void
+track::paste_triggers (long a_start_tick,
+                      long a_distance, long a_offset)
+{
+    long end_tick = a_start_tick + a_distance - 1;
+
+    lock();
+
+  //  printf("offset = %ld: distance = %ld \n", a_offset, a_distance);
+    
+    /* if we are pasting before the 'L' 'R' markers */
+    if( a_offset < 0 )
+    {
+        a_start_tick += a_distance;
+        end_tick += a_distance;
+        
+        a_distance = 0;
+    }
+    
+  //  printf("PASTE from_start = %ld: from_end = %ld\n", a_start_tick, end_tick );
+
+    sequence *a_seq;
+    long seq_length = 0L;
+
+    list<trigger>::iterator i = m_list_trigger.begin();
+    while(  i != m_list_trigger.end() )
+    {
+        a_seq = get_trigger_sequence(&(*i));
+        if(a_seq)
+        {
+            seq_length = a_seq->get_length();
+        }
+        else
+        {
+            seq_length = 0L;
+        }
+
+        if ( (*i).m_tick_start >= a_start_tick &&
+                (*i).m_tick_start <= end_tick )
+        {
+       //     printf("PASTE m_tick_start = %ld: from_start = %ld: from_end = %ld\n",(*i).m_tick_start, a_start_tick, end_tick );
+            
+            trigger e;
+            e.m_sequence = (*i).m_sequence;
+            e.m_offset = (*i).m_offset;
+            e.m_selected = false;
+
+            e.m_tick_start  = (*i).m_tick_start + a_offset + a_distance;
+
+            if ((*i).m_tick_end <= end_tick )
+            {
+                e.m_tick_end  = (*i).m_tick_end + a_offset + a_distance;
+            }
+
+            if ((*i).m_tick_end > end_tick )
+            {
+                e.m_tick_end = end_tick + a_offset + a_distance;
+            }
+
+            if(seq_length)
+            {
+                e.m_offset += (seq_length - (a_distance % seq_length));
+                e.m_offset %= seq_length;
+
+                if ( e.m_offset < 0 )
+                    e.m_offset += seq_length;
+            }
+            else
+            {
+                e.m_offset = 0L;
+            }
+
+            m_list_trigger.push_front( e );
+        }
+
+        ++i;
+    }
+
+    m_list_trigger.sort();
+
+    unlock();
+}
+
+void
 track::split_trigger( long a_tick )
 {
     lock();

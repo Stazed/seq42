@@ -316,7 +316,7 @@ perfroll::draw_progress()
             m_surface_window->line_to(R_mark, m_window_y);
             m_surface_window->stroke();
         }
-        
+
         if ( m_tempo_change > 0 )
         {
             /* Draw the tempo marker location line */
@@ -328,7 +328,6 @@ perfroll::draw_progress()
             m_surface_window->line_to(tempo_tick, m_window_y);
             m_surface_window->stroke();
         }
-        
 
         m_have_stop_reposition = true;  // in case we are stopped, we need to draw the progress line
     }

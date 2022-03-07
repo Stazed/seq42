@@ -894,10 +894,12 @@ void perform::clear_track_triggers( int a_trk  )
     }
 }
 
-void perform::move_triggers( bool a_direction )
+void perform::move_triggers( bool a_direction, uint64_t location )
 {
     if ( m_left_tick < m_right_tick )
     {
+        long offset = location - m_left_tick;
+        
         long distance = m_right_tick - m_left_tick;
 
         for (int i=0; i< c_max_track; i++ )
@@ -905,7 +907,7 @@ void perform::move_triggers( bool a_direction )
             if ( is_active_track(i) == true )
             {
                 assert( m_tracks[i] );
-                m_tracks[i]->move_triggers( m_left_tick, distance, a_direction );
+                m_tracks[i]->move_triggers( m_left_tick + offset, distance, a_direction );
             }
         }
     }
@@ -1440,6 +1442,31 @@ void perform::copy_triggers( )
             {
                 assert( m_tracks[i] );
                 m_tracks[i]->copy_triggers( m_left_tick, distance );
+            }
+        }
+    }
+}
+
+void perform::paste_triggers (long paste_tick)
+{
+    /* Don't allow paste between the markers */
+    if ( paste_tick > m_left_tick && paste_tick < m_right_tick)
+        return;
+
+    /* Don't really need to check this since we don't allow it */
+    if ( m_left_tick < m_right_tick )
+    {
+        move_triggers(true, paste_tick);    // This expands the landing location
+
+        long distance = m_right_tick - m_left_tick;
+        long offset = paste_tick - m_left_tick;
+
+        for (int i = 0; i < c_max_track; i++ )
+        {
+            if ( is_active_track(i) == true )
+            {
+                assert( m_tracks[i] );
+                m_tracks[i]->paste_triggers( m_left_tick, distance, offset - distance );
             }
         }
     }

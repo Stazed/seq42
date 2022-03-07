@@ -420,8 +420,9 @@ public:
     void set_right_tick( long a_tick );
     long get_right_tick();
 
-    void move_triggers( bool a_direction );
+    void move_triggers( bool a_direction, uint64_t location = 0);
     void copy_triggers(  );
+    void paste_triggers (long paste_tick);
     
     void push_bpm_undo();
     void pop_bpm_undo();

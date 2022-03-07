@@ -351,6 +351,7 @@ public:
     void set_tempo_marker_change(uint64_t a_tick = 0);
     void set_window_pointer(Gtk::Window * a_win);
     void remove_window_pointer(Gtk::Window * a_win);
+    void paste_triggers(long paste_tick);
 
     friend int FF_RW_timeout(void *arg);
 };
