@@ -786,8 +786,6 @@ track::paste_triggers (long a_start_tick,
     
     lock();
 
-  //  printf("offset = %ld: distance = %ld \n", a_offset, a_distance);
-
     /* if we are pasting before the 'L' 'R' markers */
     if( a_offset < 0 )
     {
@@ -796,8 +794,6 @@ track::paste_triggers (long a_start_tick,
         
         a_distance = 0;
     }
-
-   // printf("PASTE start_tick = %ld: from_end = %ld\n", a_start_tick, end_tick );
 
     sequence *a_seq;
     long seq_length = 0L;
@@ -819,8 +815,6 @@ track::paste_triggers (long a_start_tick,
         if ( (*i).m_tick_start >= a_start_tick &&
                 (*i).m_tick_start <= end_tick )
         {
-       //     printf("PASTE m_tick_start = %ld: from_start = %ld: from_end = %ld\n",(*i).m_tick_start, a_start_tick, end_tick );
-
             trigger e;
             e.m_sequence = (*i).m_sequence;
             e.m_offset = (*i).m_offset;
@@ -838,16 +832,12 @@ track::paste_triggers (long a_start_tick,
                 e.m_tick_end = end_tick + a_offset + a_distance;
             }
 
-          //  printf("TOP m_offset = %ld\n", (*i).m_offset);
-
             if(seq_length)
             {
                // e.m_offset += (seq_length - ((-a_offset + a_distance) % seq_length));
                // e.m_offset %= seq_length;
-                
-                e.m_offset += a_offset + a_distance;
 
-             //   printf("e_offset = %ld\n", e.m_offset);
+                e.m_offset += a_offset + a_distance;
 
                 if ( e.m_offset < 0 )
                     e.m_offset += seq_length;
@@ -879,17 +869,13 @@ track::paste_triggers (long a_start_tick,
             {
                 e.m_tick_end = end_tick + a_offset + a_distance;
             }
-            
-          //  printf("Bottom m_offset = %ld: a_offset = %ld: distance = %ld\n", (*i).m_offset, a_offset, a_distance);
 
             if(seq_length)
             {
                 e.m_offset += a_offset + a_distance;
-                
+
                // e.m_offset += (seq_length - ((-a_offset + a_distance) % seq_length));
               //  e.m_offset %= seq_length;
-
-             //   printf("e_offset = %ld: seq_length = %ld\n", e.m_offset, seq_length);
 
                 if ( e.m_offset < 0 )
                     e.m_offset += seq_length;
