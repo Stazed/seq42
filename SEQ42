@@ -1,9 +1,100 @@
 SEQ42 - Midi Sequencer
 ======================
 
-release-1.1.2
+NAVIGATION FROM THE MAIN WINDOW:
 
-Midi Control:
+--------------------
+
+EDITING GRID:
+
+Mouse scroll >> scroll vertically.
+Shift + mouse scroll >> scroll horizontally.
+CTRL + mouse scroll >> zoom-in, zoom-out horizontally.
+
+z >> zoom-in.
+Shift z >> zoom-out.
+0 >> reset zoom to default.
+
+CTRL + c >> copy selected trigger to clipboard.
+CTRL + v >> paste clipboard trigger after selected trigger.
+CTRL + x >> cut selected trigger and copy to clipboard.
+Delete, backspace >> delete selected trigger.
+Middle mouse button >> paste clipboard trigger to mouse location.
+
+--------------------
+
+TRACK NAME AREA:
+
+Left mouse button >> mute track.
+Middle mouse button >> solo track.
+Right mouse button >> show menu.
+
+Left mouse button - hold and drag >> to inactive track, will move to the new location.
+Left mouse button - hold and drag >> to active track, will swap locations.
+
+Shift + Left mouse button - hold and drag >> to active track, merge(copy all triggers and sequences)
+    into the landing track. The dragged track will remain in place.
+CTRL + Left mouse button - hold and drag >> to active track, merge and delete
+    (dragged track will be deleted after merge).
+
+Mouse scroll >> scroll vertically.
+
+---------------------
+
+'L' and 'R' EDIT LOOP TRACK:
+
+Left mouse button and drag >> move 'L' marker to pointer location.
+Right mouse button and drag >> move 'R' marker to pointer location.
+
+CTRL + left mouse button and drag >> A green vertical location line will appear.
+    Release the CTRL button to insert/paste all track triggers between the 'L' and 'R'
+    markers to the location line.
+
+--------------------
+
+TEMPO CHANGES:
+
+To add a tempo change marker, left click on the Tempo grid. A BPM pop up window will appear
+in which you can type, use the spin button, use the bpm key-binding or use tap button
+to set the BPM value. Press enter or return to accept the value. Press escape to abandon
+the value. Upon acceptance, a blue tempo mark will be set at the location of the left click
+location, grid snapped. Also, to the right of the marker, the tempo value will be indicated.
+Tempo values range from 1 to 600. You can move a created marker by placing the mouse pointer
+above an existing marker. The pointer will change to an up arrow, then left click and drag
+the marker to the desired location. The markers will move based on the grid snapping that
+is selected. You cannot move the first start marker and any attempt to move to the beginning
+start location will be ignored. Use the BPM spinner to the left of the first marker to
+adjust the starting BPM.
+
+To delete a tempo marker, right click above the marker.
+
+During play, when the progress line reaches the tempo mark, the BPM value will change
+to the indicated amount. Also, the main bpm spin button will indicate the current
+tempo being played. Upon stop, the main spin button will revert back to the original 
+starting value.
+
+The first marker at the start of the song cannot be deleted. Use the main window BPM spin
+buttons as used in previous releases to adjust the starting marker.
+
+STOP Markers:
+When setting the marker BPM, a value of 0 (zero) can be used to set a stop marker.
+Stop markers are indicated by red color, and the bpm value will indicate "[stop]".
+When playing, as the progress mark encounters a stop marker, the transport will stop.
+Stop markers can be used for editing purposes, or at the end of a song to stop the transport.
+When in Playlist mode, if stopped by a stop marker, the play list will automatically increment
+to the next file on the play list after stopping.
+
+Live mode:
+In live mode, only the starting bpm will be used. No subsequent tempo marks or stop marks
+will have any effect.
+
+For the tempo map, special thanks to:
+Jonathan Moore Liles    (non-timeline)
+http://non.tuxfamily.org
+
+--------------------
+
+MIDI CONTROL:
 
 Midi control had been re-introduced to seq42 for transport control, recording, and 
 playlist adjustment. The implementation follows the original seq24 method with some
@@ -60,49 +151,9 @@ to note A0 (21) and previous is set to A#0 (22):
 
     6 [1 0 178   7   1 127] [1 0 144  21   0 127] [1 0 144  22   0 127]
 
+--------------------
 
-Tempo Changes:
-
-To add a tempo change marker, left click on the Tempo grid. A BPM pop up window will appear
-in which you can type, use the spin button, use the bpm key-binding or use tap button
-to set the BPM value. Press enter or return to accept the value. Press escape to abandon
-the value. Upon acceptance, a blue tempo mark will be set at the location of the left click
-location, grid snapped. Also, to the right of the marker, the tempo value will be indicated.
-Tempo values range from 1 to 600. You can move a created marker by placing the mouse pointer
-above an existing marker. The pointer will change to an up arrow, then left click and drag
-the marker to the desired location. The markers will move based on the grid snapping that
-is selected. You cannot move the first start marker and any attempt to move to the beginning
-start location will be ignored. Use the BPM spinner to the left of the first marker to
-adjust the starting BPM.
-
-To delete a tempo marker, right click above the marker.
-
-During play, when the progress line reaches the tempo mark, the BPM value will change
-to the indicated amount. Also, the main bpm spin button will indicate the current
-tempo being played. Upon stop, the main spin button will revert back to the original 
-starting value.
-
-The first marker at the start of the song cannot be deleted. Use the main window BPM spin
-buttons as used in previous releases to adjust the starting marker.
-
-STOP Markers:
-When setting the marker BPM, a value of 0 (zero) can be used to set a stop marker.
-Stop markers are indicated by red color, and the bpm value will indicate "[stop]".
-When playing, as the progress mark encounters a stop marker, the transport will stop.
-Stop markers can be used for editing purposes, or at the end of a song to stop the transport.
-When in Playlist mode, if stopped by a stop marker, the play list will automatically increment
-to the next file on the play list after stopping.
-
-Live mode:
-In live mode, only the starting bpm will be used. No subsequent tempo marks or stop marks
-will have any effect.
-
-For the tempo map, special thanks to:
-Jonathan Moore Liles    (non-timeline)
-http://non.tuxfamily.org
-
-
-Playlist mode:
+PLAYLIST MODE:
 
 A playlist is a text file containing multiple seq42 files (.s42), that can be quickly loaded
 for possible accompaniment with a live performance. The file should list on each line the
@@ -157,6 +208,9 @@ Simon Hickinbotham - seq24plus.
 https://github.com/franticspider/seq24plus
 
 
+BELOW THIS AREA IS OUTDATED - BUT SOME PARTS STILL APPLY!!!
+
+From original seq24....
 
 FIXME: update this document!!!!
 --------------------------------------------------------------
@@ -380,7 +434,7 @@ simple interface.
 	drop the [R] and [L] anchors on the bar indicator.  Use
 	the collapse and expand button to modify events.  Middle
 	click on the bar indicator to drop a new start position.
-	You can only change the start position when the performace
+	You can only change the start position when the performance
 	is not playing.
 
 
