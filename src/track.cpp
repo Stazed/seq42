@@ -783,7 +783,7 @@ track::paste_triggers (long a_start_tick,
                       long a_distance, long a_offset)
 {
     long end_tick = a_start_tick + a_distance - 1;
-
+    
     lock();
 
   //  printf("offset = %ld: distance = %ld \n", a_offset, a_distance);
@@ -838,14 +838,16 @@ track::paste_triggers (long a_start_tick,
                 e.m_tick_end = end_tick + a_offset + a_distance;
             }
 
-           // printf("m_offset = %ld\n", (*i).m_offset);
+          //  printf("TOP m_offset = %ld\n", (*i).m_offset);
 
             if(seq_length)
             {
-                e.m_offset += (seq_length - ((-a_offset + a_distance) % seq_length));
-                e.m_offset %= seq_length;
+               // e.m_offset += (seq_length - ((-a_offset + a_distance) % seq_length));
+               // e.m_offset %= seq_length;
+                
+                e.m_offset += a_offset + a_distance;
 
-               // printf("e_offset = %ld\n", e.m_offset);
+             //   printf("e_offset = %ld\n", e.m_offset);
 
                 if ( e.m_offset < 0 )
                     e.m_offset += seq_length;
@@ -877,13 +879,17 @@ track::paste_triggers (long a_start_tick,
             {
                 e.m_tick_end = end_tick + a_offset + a_distance;
             }
+            
+          //  printf("Bottom m_offset = %ld: a_offset = %ld: distance = %ld\n", (*i).m_offset, a_offset, a_distance);
 
             if(seq_length)
             {
-                e.m_offset += (seq_length - ((-a_offset + a_distance) % seq_length));
-                e.m_offset %= seq_length;
+                e.m_offset += a_offset + a_distance;
+                
+               // e.m_offset += (seq_length - ((-a_offset + a_distance) % seq_length));
+              //  e.m_offset %= seq_length;
 
-              //  printf("e_offset = %ld\n", e.m_offset);
+             //   printf("e_offset = %ld: seq_length = %ld\n", e.m_offset, seq_length);
 
                 if ( e.m_offset < 0 )
                     e.m_offset += seq_length;
