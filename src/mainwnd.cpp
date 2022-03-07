@@ -2600,9 +2600,9 @@ mainwnd::set_perfroll_marker_change(bool a_change)
 }
 
 void
-mainwnd::set_tempo_marker_change(uint64_t a_tick)
+mainwnd::set_marker_line_selection(uint64_t a_tick)
 {
-    m_perfroll->set_tempo_marker_changed(a_tick);
+    m_perfroll->set_marker_line_selection(a_tick);
     m_perfroll->redraw_all_tracks();
 }
 

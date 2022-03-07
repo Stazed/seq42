@@ -356,7 +356,7 @@ tempo::on_button_release_event(GdkEventButton* p0)
             /* Clear the move marker */
             m_move_marker.tick = 0; 
             m_draw_background = true;
-            m_mainwnd->set_tempo_marker_change(0);  // shut off the perfroll location line
+            m_mainwnd->set_marker_line_selection(0);  // shut off the perfroll location line
             queue_draw();
             return false;
         }
@@ -372,7 +372,7 @@ tempo::on_button_release_event(GdkEventButton* p0)
             /* Clear the move marker */
             m_move_marker.tick = 0; 
             m_draw_background = true;
-            m_mainwnd->set_tempo_marker_change(0);  // shut off the perfroll location line
+            m_mainwnd->set_marker_line_selection(0);  // shut off the perfroll location line
             queue_draw();
             return false;
         }
@@ -396,7 +396,7 @@ tempo::on_button_release_event(GdkEventButton* p0)
     }
     
     m_draw_background = true;
-    m_mainwnd->set_tempo_marker_change(0);      // shut off the perfroll location line
+    m_mainwnd->set_marker_line_selection(0);      // shut off the perfroll location line
     queue_draw();
     
     return true;
@@ -432,7 +432,7 @@ tempo::on_motion_notify_event(GdkEventMotion* a_ev)
         
         if ( m_moving )
         {
-            m_mainwnd->set_tempo_marker_change(tick);   // for the perfroll location line
+            m_mainwnd->set_marker_line_selection(tick);   // for the perfroll location line
             m_draw_background = true;
             queue_draw();
         }
@@ -444,7 +444,7 @@ tempo::on_motion_notify_event(GdkEventMotion* a_ev)
             m_init_move = false;
             m_move_marker.tick = 0;  // clear the move marker
             this->get_window()->set_cursor(Gdk::Cursor::create(this->get_window()->get_display(),  Gdk::LEFT_PTR ));
-            m_mainwnd->set_tempo_marker_change(0);      // shut off the perfroll location line
+            m_mainwnd->set_marker_line_selection(0);      // shut off the perfroll location line
         }
     }
     

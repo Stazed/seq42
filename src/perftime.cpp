@@ -285,7 +285,7 @@ perftime::on_button_release_event(GdkEventButton* p0)
     /* We only draw the marker lines when setting with the button pressed.
      * So we unset the line drawing here with false */
     m_mainwnd->set_perfroll_marker_change(false);
-    m_mainwnd->set_tempo_marker_change( 0 );     // FIXME name
+    m_mainwnd->set_marker_line_selection( 0 );
 
     return false;
 }
@@ -307,7 +307,7 @@ perftime::on_motion_notify_event(GdkEventMotion* a_ev)
 
     if ( m_moving_paste )
     {
-        m_mainwnd->set_tempo_marker_change( tick );     // FIXME name
+        m_mainwnd->set_marker_line_selection( tick );
         m_paste_tick = tick;
     }
     else if( m_moving_left )
@@ -351,7 +351,7 @@ perftime::on_key_release_event(GdkEventKey* a_ev)
         if ( a_ev->keyval ==  GDK_KEY_Control_L )
         {
             m_moving_paste = false;
-            m_mainwnd->set_tempo_marker_change( 0 );     // FIXME name
+            m_mainwnd->set_marker_line_selection( 0 );
             m_mainwnd->paste_triggers((long) m_paste_tick);
 
             return true;

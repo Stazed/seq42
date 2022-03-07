@@ -348,7 +348,7 @@ public:
     void set_swing_amount16(int swing_amount16);
     void update_start_BPM(double bpm);
     void set_perfroll_marker_change(bool a_change);
-    void set_tempo_marker_change(uint64_t a_tick = 0);
+    void set_marker_line_selection(uint64_t a_tick = 0);
     void set_window_pointer(Gtk::Window * a_win);
     void remove_window_pointer(Gtk::Window * a_win);
     void paste_triggers(long paste_tick);
