@@ -2520,9 +2520,7 @@ mainwnd::on_key_release_event(GdkEventKey* a_ev)
     }
 
     /* For CTRL-L paste trigger */
-    m_perftime->on_key_release_event(a_ev);
-
-    return false;
+    return m_perftime->on_key_release_event(a_ev);
 }
 void
 mainwnd::update_window_title()

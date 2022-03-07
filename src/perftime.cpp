@@ -348,13 +348,16 @@ perftime::on_key_release_event(GdkEventKey* a_ev)
 {
     if ( m_moving_paste )
     {
-        if ( a_ev->keyval ==  GDK_KEY_Control_L )
+        if ( a_ev->type == GDK_KEY_RELEASE )
         {
-            m_moving_paste = false;
-            m_mainwnd->set_marker_line_selection( 0 );
-            m_mainwnd->paste_triggers((long) m_paste_tick);
+            if ( (a_ev->keyval ==  GDK_KEY_Control_L) || (a_ev->keyval ==  GDK_KEY_Control_R) )
+            {
+                m_moving_paste = false;
+                m_mainwnd->set_marker_line_selection( 0 );
+                m_mainwnd->paste_triggers((long) m_paste_tick);
 
-            return true;
+                return true;
+            }
         }
     }
 
