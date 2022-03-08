@@ -705,6 +705,9 @@ track::adjust_trigger_offsets_to_length( sequence *a_seq, long a_new_len )
     unlock();
 }
 
+#if 0
+// This is replaced by paste_triggers()
+
 void
 track::copy_triggers( long a_start_tick,
                       long a_distance  )
@@ -777,6 +780,7 @@ track::copy_triggers( long a_start_tick,
 
     unlock();
 }
+#endif
 
 void
 track::paste_triggers (long a_start_tick,
@@ -834,9 +838,6 @@ track::paste_triggers (long a_start_tick,
 
             if(seq_length)
             {
-               // e.m_offset += (seq_length - ((-a_offset + a_distance) % seq_length));
-               // e.m_offset %= seq_length;
-
                 e.m_offset += a_offset + a_distance;
 
                 if ( e.m_offset < 0 )
@@ -873,9 +874,6 @@ track::paste_triggers (long a_start_tick,
             if(seq_length)
             {
                 e.m_offset += a_offset + a_distance;
-
-               // e.m_offset += (seq_length - ((-a_offset + a_distance) % seq_length));
-              //  e.m_offset %= seq_length;
 
                 if ( e.m_offset < 0 )
                     e.m_offset += seq_length;

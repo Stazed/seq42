@@ -192,7 +192,6 @@ public:
     int get_track_trigger_count();
 
     void move_triggers (long a_start_tick, long a_distance, bool a_direction);
-    void copy_triggers (long a_start_tick, long a_distance);
     void paste_triggers (long a_start_tick, long a_distance, long a_offset = 0);
     void clear_triggers ();
 

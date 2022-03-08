@@ -894,6 +894,18 @@ void perform::clear_track_triggers( int a_trk  )
     }
 }
 
+/**
+ *  Move all triggers after the location by the distance between the 
+ *  L and R markers.
+ * 
+ * @param a_direction
+ *      The direction to move the triggers, true >> forward(right),
+ *      false >> backward(left). Backward will remove any triggers
+ *      in the distance range.
+ * 
+ * @param location
+ *      The tick location for which the move should begin.
+ */
 void perform::move_triggers( bool a_direction, uint64_t location )
 {
     if ( m_left_tick < m_right_tick )
@@ -1429,24 +1441,23 @@ perform::set_have_redo()
     }
 }
 
-/* copies between L and R -> R */
+/**
+ *  Copies triggers for all tracks between L and R markers directly after the R marker.
+ */
 void perform::copy_triggers( )
 {
-    if ( m_left_tick < m_right_tick )
-    {
-        long distance = m_right_tick - m_left_tick;
-
-        for (int i=0; i< c_max_track; i++ )
-        {
-            if ( is_active_track(i) == true )
-            {
-                assert( m_tracks[i] );
-                m_tracks[i]->copy_triggers( m_left_tick, distance );
-            }
-        }
-    }
+    long paste_tick = m_right_tick;
+    paste_triggers ( paste_tick );
 }
 
+/**
+ *  Paste all triggers for all tracks between the L and R markers to the paste_tick.
+ *  This will insert and move all triggers after the pasted tick to the right by
+ *  the distance of the L and R markers.
+ * 
+ * @param paste_tick
+ *      The pasting location. Set by CTRL release from the perftime pointer.
+ */
 void perform::paste_triggers (long paste_tick)
 {
     /* Don't allow paste between the markers */
@@ -1456,7 +1467,7 @@ void perform::paste_triggers (long paste_tick)
     /* Don't really need to check this since we don't allow it */
     if ( m_left_tick < m_right_tick )
     {
-        move_triggers(true, paste_tick);    // This expands the landing location
+        move_triggers(true, paste_tick);    // This expands the landing location, true == forward(right)
 
         long distance = m_right_tick - m_left_tick;
         long offset = paste_tick - m_left_tick;
