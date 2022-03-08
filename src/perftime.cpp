@@ -356,6 +356,20 @@ perftime::on_key_release_event(GdkEventKey* a_ev)
                 m_mainwnd->set_marker_line_selection( 0 );
                 m_mainwnd->paste_triggers((long) m_paste_tick);
 
+                /* If we paste before the left marker then all the triggers get moved
+                * right, so lets move the markers as well to keep them aligned */
+                long left_tick = m_mainperf->get_left_tick();
+
+                if (m_paste_tick < (uint64_t) left_tick)
+                {
+                    long right_tick = m_mainperf->get_right_tick();
+                    long distance = right_tick - left_tick;
+                    m_mainperf->set_right_tick(right_tick + distance);
+                    m_mainperf->set_left_tick(left_tick + distance);
+                    m_draw_background = true;
+                    queue_draw();
+                }
+
                 return true;
             }
         }
