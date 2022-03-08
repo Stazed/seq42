@@ -522,7 +522,9 @@ trackmenu::trk_edit()
         else
         {
             trackedit * a_trackedit = new trackedit(a_track, m_mainwnd);
+#ifdef NSM_SUPPORT
             m_mainwnd->set_window_pointer(a_trackedit);
+#endif
         }
     }
 }
@@ -535,7 +537,9 @@ trackmenu::new_sequence()
     int seq_idx = a_track->new_sequence();
     sequence *a_sequence = a_track->get_sequence(seq_idx);
     seqedit * a_seq_edit =  new seqedit( a_sequence, m_mainperf, m_mainwnd );
+#ifdef NSM_SUPPORT
     m_mainwnd->set_window_pointer(a_seq_edit);
+#endif
 }
 
 void

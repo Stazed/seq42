@@ -132,7 +132,9 @@ bool
 trackedit::on_delete_event(GdkEventAny *a_event)
 {
     //printf( "trackedit::on_delete_event()\n" );
+#ifdef NSM_SUPPORT
     m_mainwnd->remove_window_pointer(this);
+#endif
     m_track->set_editing( false );
     delete this;
     return false;

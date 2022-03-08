@@ -1754,7 +1754,9 @@ bool
 seqedit::on_delete_event(GdkEventAny *a_event)
 {
     //printf( "seqedit::on_delete_event()\n" );
+#ifdef NSM_SUPPORT
     m_mainwnd->remove_window_pointer(this);
+#endif
 
     m_seq->set_recording( false );
     m_mainperf->get_master_midi_bus()->set_sequence_input( false, m_seq );
@@ -1879,7 +1881,9 @@ seqedit::trk_edit()
     else
     {
         trackedit * a_trackedit = new trackedit(a_track, m_mainwnd);
+#ifdef NSM_SUPPORT
         m_mainwnd->set_window_pointer(a_trackedit);
+#endif
     }
 }
 

@@ -1594,7 +1594,9 @@ mainwnd::open_seqlist()
     else
     {
         seqlist * a_seqlist = new seqlist(m_mainperf, this);
+#ifdef NSM_SUPPORT
         set_window_pointer(a_seqlist);
+#endif
     }
 }
 
@@ -2237,12 +2239,14 @@ mainwnd::file_import_dialog()
 /*callback function*/
 void mainwnd::file_exit()
 {
+#ifdef NSM_SUPPORT
     if (m_nsm && m_nsm_optional_gui)
     {
         global_nsm_gui = false;
     }
     else
     {
+#endif
         if (is_save())
         {
             if (global_is_running)
@@ -2250,19 +2254,22 @@ void mainwnd::file_exit()
 
             hide();
         }
+#ifdef NSM_SUPPORT
     }
+#endif
 }
 
 bool
 mainwnd::on_delete_event(GdkEventAny *a_e)
 {
+#ifdef NSM_SUPPORT
     if (m_nsm && m_nsm_optional_gui)
     {
         // nsm : hide gui instead of closing
         global_nsm_gui = false;
         return true;
     }
-    
+#endif
     bool result = is_save();
     if (result && global_is_running)
         stop_playing();

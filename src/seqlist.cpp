@@ -96,7 +96,9 @@ bool
 seqlist::on_delete_event(GdkEventAny *a_event)
 {
     //printf( "seqlist::on_delete_event()\n" );
+#ifdef NSM_SUPPORT
     m_main->remove_window_pointer(this);
+#endif
     m_perf->set_seqlist_open(false);
     delete this;
     return false;
@@ -235,7 +237,9 @@ seqlist::edit_seq( sequence *a_seq )
     else
     {
         seqedit * a_seq_edit = new seqedit( a_seq, m_perf, m_main );
+#ifdef NSM_SUPPORT
         m_main->set_window_pointer(a_seq_edit);
+#endif
     }
 }
 
@@ -251,7 +255,9 @@ seqlist::copy_seq( sequence *a_seq )
     snprintf(new_name, sizeof(new_name), "%s copy", new_seq->get_name());
     new_seq->set_name( new_name );
     seqedit * a_seq_edit = new seqedit( new_seq, m_perf, m_main );
+#ifdef NSM_SUPPORT
     m_main->set_window_pointer(a_seq_edit);
+#endif
 }
 
 void
