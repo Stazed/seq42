@@ -1034,14 +1034,14 @@ mainwnd::timer_callback(  )
         m_toggle_time_type = false;
         if (m_tick_time_as_bbt)
         {
-            std::string t = "<b><span foreground=\"#7FFE00\" size=\"14000\">";
+            std::string t = "<b><span foreground=\"#7FFE00\" size=\"14000\" background=\"#000000\">";
             t += tick_to_measurestring(ticks);
             t += "</span></b>";
             m_tick_time->set_markup(t);
         }
         else
         {
-            std::string t = "<b><span foreground=\"#7FFE00\" size=\"14000\">";
+            std::string t = "<b><span foreground=\"#7FFE00\" size=\"14000\" background=\"#000000\">";
             t += tick_to_timestring(ticks);
             t += "</span></b>";
             m_tick_time->set_markup(t);
@@ -2675,7 +2675,7 @@ mainwnd::tick_to_timestring (long a_tick)
     microseconds -= (hours * 60 * 60 + minutes * 60 + seconds) * 1000000UL;
 
     char tmp[32];
-    snprintf(tmp, sizeof tmp, "%03d:%d:%02d", hours, minutes, seconds);
+    snprintf(tmp, sizeof tmp, " %03d:%d:%02d ", hours, minutes, seconds);
     return std::string(tmp);
 }
 
@@ -2714,7 +2714,7 @@ mainwnd::tick_to_measurestring (long a_tick )
     tick_to_midi_measures( a_tick, measures, beats, divisions );
     snprintf
     (
-        tmp, sizeof tmp, "%03d:%d:%03d",
+        tmp, sizeof tmp, " %03d:%d:%03d ",
         measures, beats, divisions
     );
     return std::string(tmp);
