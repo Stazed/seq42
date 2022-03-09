@@ -1034,14 +1034,14 @@ mainwnd::timer_callback(  )
         m_toggle_time_type = false;
         if (m_tick_time_as_bbt)
         {
-            std::string t = "<b><span foreground=\"#7FFE00\" size=\"14000\" background=\"#000000\">";
+            std::string t = "<b><span foreground=\"#7FFE00\" size=\"x-large\" background=\"#000000\">";
             t += tick_to_measurestring(ticks);
             t += "</span></b>";
             m_tick_time->set_markup(t);
         }
         else
         {
-            std::string t = "<b><span foreground=\"#7FFE00\" size=\"14000\" background=\"#000000\">";
+            std::string t = "<b><span foreground=\"#7FFE00\" size=\"x-large\" background=\"#000000\">";
             t += tick_to_timestring(ticks);
             t += "</span></b>";
             m_tick_time->set_markup(t);
