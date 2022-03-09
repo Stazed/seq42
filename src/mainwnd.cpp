@@ -330,14 +330,14 @@ mainwnd::mainwnd(perform *a_p, Glib::RefPtr<Gtk::Application> app):
 
     /* timeline */
     hbox2->pack_start( *m_main_time, false, false );
-    
+
     m_tick_time = manage(new Gtk::Label(""));
     m_button_time_type = manage(new Gtk::Button("HMS"));
     Gtk::HBox * hbox4 = manage(new Gtk::HBox(false, 0));
     m_tick_time->set_justify(Gtk::JUSTIFY_LEFT);
-    
+
     m_button_time_type->set_focus_on_click(false);
-    
+
     m_button_time_type->signal_clicked().connect
     (
         mem_fun(*this, &mainwnd::toggle_time_format)
@@ -347,15 +347,14 @@ mainwnd::mainwnd(perform *a_p, Glib::RefPtr<Gtk::Application> app):
         m_button_time_type,
         "Toggles between B:B:T and H:M:S format, showing the selected format."
     );
- 
+
     hbox1->pack_end(*m_button_time_type, false, false);
 
     Gtk::Label * timedummy = manage(new Gtk::Label("   "));
     hbox4->pack_start(*timedummy, false, false, 0);
     hbox4->pack_start(*m_tick_time, false, false, 0);
     vbox_b->pack_start(*hbox4, false, false, 0);
-    
-    
+
     /* perfedit widgets */
     m_vadjust = Adjustment::create(0,0,1,1,1,1 );
     m_hadjust = Adjustment::create(0,0,1,1,1,1 );
@@ -374,7 +373,7 @@ mainwnd::mainwnd(perform *a_p, Glib::RefPtr<Gtk::Application> app):
                          ));
     m_perftime = manage( new perftime( m_mainperf, this, m_hadjust ));
     m_tempo = manage( new tempo( m_mainperf, this, m_hadjust ));
-    
+
     /* init table, viewports and scroll bars */
     m_table     = manage( new Table( 6, 3, false));
     m_table->set_border_width( 2 );
@@ -383,7 +382,7 @@ mainwnd::mainwnd(perform *a_p, Glib::RefPtr<Gtk::Application> app):
     m_hlbox     = manage( new HBox( false, 2 ));
 
     m_hlbox->set_border_width( 2 );
-    
+
     m_button_grow = manage( new Button());
     m_button_grow->add( *manage( new Arrow( Gtk::ARROW_RIGHT, Gtk::SHADOW_OUT )));
     m_button_grow->signal_clicked().connect( mem_fun( *this, &mainwnd::grow));
@@ -417,12 +416,12 @@ mainwnd::mainwnd(perform *a_p, Glib::RefPtr<Gtk::Application> app):
         "After 5 seconds of no taps, the tap-counter will reset to 0. "
         "Also see the File / Options / Keyboard / Tap BPM key assignment."
     );
-    
+
     Gtk::HBox *bpm_hbox = manage( new HBox( false, 2 ));
-    
+
     bpm_hbox->pack_start(*m_spinbutton_bpm, Gtk::PACK_SHRINK);
     bpm_hbox->pack_start( *m_button_tap, false, false );
-    
+
     m_table->attach( *bpm_hbox,0,1,1,3, Gtk::SHRINK, Gtk::SHRINK);
 
     m_table->attach( *m_perftime, 1, 2, 2, 3, Gtk::FILL, Gtk::SHRINK );
@@ -754,6 +753,7 @@ mainwnd::mainwnd(perform *a_p, Glib::RefPtr<Gtk::Application> app):
     m_perfroll->init_before_show();
 
     /* show everything */
+    set_position(Gtk::WIN_POS_CENTER);
     show_all();
 
     add_events( Gdk::KEY_PRESS_MASK | Gdk::KEY_RELEASE_MASK );
@@ -1027,23 +1027,27 @@ mainwnd::timer_callback(  )
         playlist_jump(m_mainperf->m_playlist_midi_jump_value);
         m_mainperf->m_playlist_midi_jump_value = PLAYLIST_ZERO;
     }
-    
+
     /* Calculate the current time/BBT, and display it. */
     if (global_is_running || m_mainperf->get_reposition() || m_toggle_time_type)
     {
         m_toggle_time_type = false;
         if (m_tick_time_as_bbt)
         {
-            std::string t = tick_to_measurestring(ticks);
-            m_tick_time->set_text(t);
+            std::string t = "<b><span foreground=\"#7FFE00\" size=\"14000\">";
+            t += tick_to_measurestring(ticks);
+            t += "</span></b>";
+            m_tick_time->set_markup(t);
         }
         else
         {
-            std::string t = tick_to_timestring(ticks); 
-            m_tick_time->set_text(t);
+            std::string t = "<b><span foreground=\"#7FFE00\" size=\"14000\">";
+            t += tick_to_timestring(ticks);
+            t += "</span></b>";
+            m_tick_time->set_markup(t);
         }
     }
-    
+
     /* Shut off the reposition flag after the reposition */
     if (!global_is_running)
     {
