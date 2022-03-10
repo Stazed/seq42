@@ -209,9 +209,9 @@ private:
     void start_playing();
     void set_continue_callback();
     void stop_playing();
+public:
     void rewind(bool a_press);
     void fast_forward(bool a_press);
-public:
     void update_window_title();
 private:
     void update_window_xpm();

@@ -24,6 +24,8 @@
 #include "pixmaps/stop.xpm"
 #include "pixmaps/play2.xpm"
 #include "pixmaps/create.xpm"
+#include "pixmaps/fastforward.xpm"
+#include "pixmaps/rewind.xpm"
 
 #define add_tooltip( obj, text ) obj->set_tooltip_text( text);
 
@@ -41,15 +43,34 @@ seqlist::seqlist (perform *a_perf, mainwnd *a_main)
     add(*m_vbox);
 
     m_hbox = manage( new HBox( false, 2 ));
-    /* Stop and play buttons */
+
+    /* Stop, rewind, play, FF buttons */
     m_button_stop = manage( new Button( ));
     m_button_stop->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( stop_xpm ))));
     m_button_stop->signal_clicked().connect( mem_fun(*this,&seqlist::stop_playing));
+    add_tooltip( m_button_stop, "Stop/Pause playing." );
     m_hbox->pack_start(*m_button_stop, false, false);
+    
+    m_button_rewind = manage( new Button() );
+    m_button_rewind->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( rewind_xpm ))));
+    m_button_rewind->signal_pressed().connect(sigc::bind (mem_fun( *this, &seqlist::rewind), true));
+    m_button_rewind->signal_released().connect(sigc::bind (mem_fun( *this, &seqlist::rewind), false));
+    add_tooltip( m_button_rewind, "Rewind." );
+    m_hbox->pack_start(*m_button_rewind, false, false);
+    
     m_button_play = manage( new Button() );
     m_button_play->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( play2_xpm  ))));
     m_button_play->signal_clicked().connect(  mem_fun( *this, &seqlist::start_playing));
+    add_tooltip( m_button_play, "Begin/Continue playing." );
     m_hbox->pack_start(*m_button_play, false, false);
+    
+    m_button_fastforward = manage( new Button() );
+    m_button_fastforward->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( fastforward_xpm ))));
+    m_button_fastforward->signal_pressed().connect(sigc::bind (mem_fun( *this, &seqlist::fast_forward), true));
+    m_button_fastforward->signal_released().connect(sigc::bind (mem_fun( *this, &seqlist::fast_forward), false));
+    add_tooltip( m_button_fastforward, "Fast Forward." );
+    m_hbox->pack_start(*m_button_fastforward, false, false);
+    
     m_button_create_triggers = manage( new Button());
     m_button_create_triggers->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( create_xpm ))));
     m_button_create_triggers->signal_clicked().connect( mem_fun( *this, &seqlist::create_triggers));
@@ -314,6 +335,18 @@ void
 seqlist::stop_playing()
 {
     m_perf->stop_playing();
+}
+
+void
+seqlist::rewind(bool a_press)
+{
+    m_main->rewind(a_press);
+}
+
+void
+seqlist::fast_forward(bool a_press)
+{
+    m_main->fast_forward(a_press);
 }
 
 void

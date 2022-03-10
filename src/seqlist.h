@@ -68,7 +68,9 @@ private:
     VBox       *m_vbox;
     HBox       *m_hbox;
     Button     *m_button_stop;
+    Button     *m_button_rewind;
     Button     *m_button_play;
+    Button     *m_button_fastforward;
     Button     *m_button_all_off;
     Button     *m_button_create_triggers;
 
@@ -83,6 +85,8 @@ private:
 
     void start_playing();
     void stop_playing();
+    void rewind(bool a_press);
+    void fast_forward(bool a_press);
     void off_sequences();
 
     void on_realize();
