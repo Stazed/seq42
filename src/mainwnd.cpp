@@ -1109,6 +1109,7 @@ void
 mainwnd::undo_trigger() // collapse and expand
 {
     m_mainperf->pop_trigger_undo();
+    m_perfroll->redraw_all_tracks();
 }
 
 void
@@ -1121,6 +1122,7 @@ void
 mainwnd::undo_perf(bool a_import)
 {
     m_mainperf->pop_perf_undo(a_import);
+    m_perfroll->redraw_all_tracks();
 }
 
 void
@@ -1177,6 +1179,7 @@ void
 mainwnd::redo_trigger()
 {
     m_mainperf->pop_trigger_redo();
+    m_perfroll->redraw_all_tracks();
 }
 
 void
@@ -1189,6 +1192,7 @@ void
 mainwnd::redo_perf(bool a_import)
 {
     m_mainperf->pop_perf_redo(a_import);
+    m_perfroll->redraw_all_tracks();
 }
 
 void
@@ -1573,6 +1577,7 @@ mainwnd::create_triggers()
         return;
 
     m_mainperf->create_triggers();
+    m_perfroll->redraw_all_tracks();
 }
 
 void

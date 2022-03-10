@@ -143,7 +143,7 @@ public:
     void draw_progress();
 
     void redraw_dirty_tracks();
-    void redraw_all_tracks(){m_redraw_tracks = true;}
+    void redraw_all_tracks(){queue_draw();}
     void have_stopped_reposition(){m_have_stop_reposition = true;}
     void set_marker_changed(bool a_change){ m_marker_change = a_change;}
     void set_marker_line_selection(uint64_t a_tick){ m_line_location = a_tick;}
