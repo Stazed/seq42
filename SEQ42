@@ -20,6 +20,8 @@ CTRL + v >> paste clipboard trigger after selected trigger.
 CTRL + x >> cut selected trigger and copy to clipboard.
 Delete, backspace >> delete selected trigger.
 Middle mouse button >> paste clipboard trigger to mouse location.
+Home key >> reposition the progress line to the L marker.
+'s' key >> reposition the L marker to the progress line.
 
 --------------------
 
