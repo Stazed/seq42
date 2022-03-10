@@ -354,13 +354,22 @@ perfnames::on_button_release_event(GdkEventButton* p0)
             return false;
         }
 
-        /* If we did not land on another active track, then move to new location */
+        /* If we land on in-active track, then move or copy to new location */
         if ( ! m_mainperf->is_active_track( m_current_trk ) )
         {
+            /* Move to landing location */
             m_mainperf->new_track( m_current_trk  );
             *(m_mainperf->get_track( m_current_trk )) = m_moving_track;
             m_mainperf->get_track( m_current_trk )->unselect_triggers();
             m_mainperf->get_track(m_current_trk)->set_dirty();
+
+            /* Alt key, put the original back to old location - since this is a copy, not move */
+            if ( p0->state & GDK_MOD1_MASK)
+            {
+                m_mainperf->new_track( m_old_track  );
+                *(m_mainperf->get_track( m_old_track )) = m_moving_track;
+                m_mainperf->get_track(m_old_track)->set_dirty();
+            }
         }
         /* If we did land on an active track and it is not being edited, then swap places. */
         else if ( !m_mainperf->is_track_in_edit( m_current_trk ) )

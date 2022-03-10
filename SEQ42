@@ -34,6 +34,8 @@ Right mouse button >> show menu.
 Left mouse button - hold and drag >> to inactive track, will move to the new location.
 Left mouse button - hold and drag >> to active track, will swap locations.
 
+ALT + Left mouse button - hold and drag >> to inactive track, copy track to landing location.
+
 Shift + Left mouse button - hold and drag >> to active track, merge(copy all triggers and sequences)
     into the landing track. The dragged track will remain in place.
 CTRL + Left mouse button - hold and drag >> to active track, merge and delete
