@@ -90,7 +90,7 @@ perfnames::draw_track( int track )
     int text_height;
 
     font.set_family(c_font);
-    font.set_size((c_key_fontsize - 1) * Pango::SCALE);
+    font.set_size((c_key_fontsize - 2) * Pango::SCALE);
     font.set_weight(Pango::WEIGHT_NORMAL);
 
     cr->set_operator(Cairo::OPERATOR_CLEAR);
@@ -127,7 +127,7 @@ perfnames::draw_track( int track )
         }
 
         /* Track name background */
-        cr->rectangle(3, (c_names_y * i) + 3, m_window_x - 4, c_names_y - 4);
+        cr->rectangle(3, (c_names_y * i) + 3, m_window_x - 4, c_names_y - 5);
         cr->stroke_preserve();
         cr->fill();
 
