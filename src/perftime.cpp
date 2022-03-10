@@ -99,6 +99,13 @@ perftime::set_guides( int a_snap, int a_measure )
 }
 
 void
+perftime::redraw()
+{
+    m_draw_background = true;
+    queue_draw();
+}
+
+void
 perftime::draw_background()
 {
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);

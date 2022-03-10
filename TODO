@@ -1,5 +1,5 @@
-[ ] Mainwnd keybinding <home> - reset transport to left(master & default) or begining of song - add button.
-[ ] Mainwnd keybinding <s> set left marker to current transport location (master & default)
+[X] Mainwnd keybinding <home> - reset transport to left(master & default) or begining of song - add button.
+[X] Mainwnd keybinding <s> set left marker to current transport location (master & default)
 
 
 [X] New file should reset to default BPM and time signature. Also clear undo & global modified flag.
@@ -28,19 +28,7 @@ delete row (if row isn't empty, deletes the track too)
 
 [X] In trigger popup menu, if the trigger has a pattern, add an option to set the pattern's play flag (if it's off) or unset it (if on).  Only show the option if not in song mode.
 
-[ ] Get rid of configurable keys in Options dialog... hard code the few
-    that are currently configurable.
-F1 play (if already playing, stop and restart)
-F2 stop
-F3 bpm down
-F4 bpm up
-
-F5 song mode 
-F6 live mode 
-F7 loop on
-F8 loop off
-
-[ ] Change bpm from int to float... and allow one decimal place in UI (134.5 for example)
+[X] Change bpm from int to float... and allow tw0 decimal place in UI (134.50 for example)
 
 [X] Show midi bus and channel in sequence list.
 
@@ -59,7 +47,7 @@ F8 loop off
     This would require a more sophisticated approach.
     Current approach pushes state of all triggers for all active tracks onto an undo stack.
     Instead would need to create some sort of "action memento" objects that contain enough
-    infomation to be able to call the appropriate methods to undo the last change.
+    information to be able to call the appropriate methods to undo the last change.
 
 [ ] Get rid of all the "dirty" stuff.  Instead make perform keep track 
     of the open windows.  It can then notify them whenever a specific track
