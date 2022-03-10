@@ -2497,6 +2497,19 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
             fflush( stdout );
             return true;
         }
+        
+        if (a_ev->keyval == GDK_KEY_Home)
+        {
+            if(m_mainperf->is_jack_running() && global_song_start_mode)
+            {
+                m_mainperf->position_jack(global_song_start_mode, m_mainperf->get_left_tick());
+            }
+            else
+            {
+                m_mainperf->set_starting_tick(m_mainperf->get_left_tick());  // this will set progress line
+                m_mainperf->set_reposition();
+            }
+        }
     }
 
     return Gtk::Window::on_key_press_event(a_ev);
