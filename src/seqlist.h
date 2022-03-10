@@ -95,6 +95,7 @@ private:
     bool on_delete_event(GdkEventAny *a_event);
     bool on_button_release_event(GdkEventButton* a_e);
     bool on_key_press_event(GdkEventKey* a_p0);
+    bool on_key_release_event(GdkEventKey* a_ev);
 
     sequence * get_selected_sequence();
     bool get_selected_playing_state();
