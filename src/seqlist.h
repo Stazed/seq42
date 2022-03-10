@@ -70,6 +70,7 @@ private:
     Button     *m_button_stop;
     Button     *m_button_play;
     Button     *m_button_all_off;
+    Button     *m_button_create_triggers;
 
     std::vector<MenuItem> m_menu_items;
 
@@ -78,6 +79,7 @@ private:
     void copy_seq( sequence *a_seq );
     void export_seq( sequence *a_seq );
     void del_seq( track *a_track, int a_seq );
+    void create_triggers();
 
     void start_playing();
     void stop_playing();

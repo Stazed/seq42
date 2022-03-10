@@ -23,6 +23,9 @@
 
 #include "pixmaps/stop.xpm"
 #include "pixmaps/play2.xpm"
+#include "pixmaps/create.xpm"
+
+#define add_tooltip( obj, text ) obj->set_tooltip_text( text);
 
 seqlist::seqlist (perform *a_perf, mainwnd *a_main)
 {
@@ -47,6 +50,15 @@ seqlist::seqlist (perform *a_perf, mainwnd *a_main)
     m_button_play->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( play2_xpm  ))));
     m_button_play->signal_clicked().connect(  mem_fun( *this, &seqlist::start_playing));
     m_hbox->pack_start(*m_button_play, false, false);
+    m_button_create_triggers = manage( new Button());
+    m_button_create_triggers->add( *manage( new Image(Gdk::Pixbuf::create_from_xpm_data( create_xpm ))));
+    m_button_create_triggers->signal_clicked().connect( mem_fun( *this, &seqlist::create_triggers));
+    add_tooltip( m_button_create_triggers, "Create triggers for all playing sequences.\n"
+            "Triggers will be placed between the L and R markers.\n"
+            "The transport must be stopped to create the triggers.\n"
+            "Any existing triggers from the same track within the\n"
+            "L and R markers will be over-written by the selected sequence");
+    m_hbox->pack_start(*m_button_create_triggers, false, false);
 
     m_button_all_off = manage( new Button("All Off") );
     m_button_all_off->signal_clicked().connect(  mem_fun( *this, &seqlist::off_sequences));
@@ -284,6 +296,12 @@ seqlist::del_seq( track *a_track, int a_seq )
     }
     m_perf->push_track_undo(m_perf->get_track_index(a_track));
     a_track->delete_sequence( a_seq );
+}
+
+void
+seqlist::create_triggers()
+{
+    m_main->create_triggers();
 }
 
 void

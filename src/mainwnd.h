@@ -256,7 +256,6 @@ private:
 
     void grow ();
     void delete_unused_seq ();
-    void create_triggers();
     void open_seqlist ();
     void set_song_mute(mute_op op);
 
@@ -352,6 +351,7 @@ public:
     void set_window_pointer(Gtk::Window * a_win);
     void remove_window_pointer(Gtk::Window * a_win);
     void paste_triggers(long paste_tick);
+    void create_triggers();
 
     friend int FF_RW_timeout(void *arg);
 };

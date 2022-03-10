@@ -5,6 +5,7 @@ EXTRA_DIST = \
 	chord.xpm\
 	collapse.xpm \
 	copy.xpm \
+	create.xpm \
 	down.xpm \
 	end.xpm \
 	expand.xpm \
