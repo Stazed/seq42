@@ -41,6 +41,9 @@ Shift + Left mouse button - hold and drag >> to active track, merge(copy all tri
 CTRL + Left mouse button - hold and drag >> to active track, merge and delete
     (dragged track will be deleted after merge).
 
+CTRL + Right mouse button >> insert track row before.
+ALT + Right mouse button >> delete track row. 
+
 Mouse scroll >> scroll vertically.
 
 ---------------------

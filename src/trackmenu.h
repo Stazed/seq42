@@ -48,9 +48,6 @@ private:
     void on_realize();
 
     void trk_new();
-
-    void trk_insert(int a_track_location);
-    void trk_delete(int a_track_location);
     void pack_tracks();
     void trk_copy();
     void trk_cut();
@@ -80,4 +77,7 @@ public:
 
     trackmenu( perform *a_p, mainwnd *a_main );
     virtual ~trackmenu( ) { };
+
+    void trk_insert(int a_track_location);
+    void trk_delete(int a_track_location);
 };

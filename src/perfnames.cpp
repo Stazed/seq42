@@ -397,10 +397,22 @@ perfnames::on_button_release_event(GdkEventButton* p0)
         }  
     }
 
-    /*  launch menu - right mouse button   */
+    /*  right mouse button - launch menu, insert row, delete row  */
     if ( p0->button == 3 )
     {
-        popup_menu();
+        /* Insert row */
+        if ( p0->state & GDK_CONTROL_MASK )
+        {
+            trk_insert(m_current_trk);
+        }
+        else if ( p0->state & GDK_MOD1_MASK)    // alt key
+        {
+            trk_delete(m_current_trk);
+        }
+        else
+        {
+            popup_menu();
+        }
     }
 
     return false;
