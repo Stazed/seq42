@@ -234,13 +234,13 @@ seqtime::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 }
 
 bool
-seqtime::on_button_press_event(GdkEventButton* p0)
+seqtime::on_button_press_event(GdkEventButton* /* p0 */)
 {
     return false;
 }
 
 bool
-seqtime::on_button_release_event(GdkEventButton* p0)
+seqtime::on_button_release_event(GdkEventButton* /* p0 */)
 {
     return false;
 }

@@ -452,7 +452,7 @@ tempo::on_motion_notify_event(GdkEventMotion* a_ev)
 }
 
 bool
-tempo::on_leave_notify_event(GdkEventCrossing* a_ev)
+tempo::on_leave_notify_event(GdkEventCrossing* /* a_ev */)
 {
     if(!m_moving)
         m_move_marker.tick = 0;

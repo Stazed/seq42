@@ -106,7 +106,6 @@ private:
     bool on_focus_in_event(GdkEventFocus*);
     bool on_focus_out_event(GdkEventFocus*);
 
-    void on_size_request(GtkRequisition* );
     void on_size_allocate(Gtk::Allocation& );
 
     bool on_key_press_event(GdkEventKey* a_p0);
@@ -122,7 +121,7 @@ private:
     void change_horz();
     void change_vert();
 
-    void trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths);
+    void trigger_menu_popup(perfroll& ths);
 
 protected:
     bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr);

@@ -314,7 +314,7 @@ seqkeys::on_motion_notify_event(GdkEventMotion* a_p0)
 }
 
 bool
-seqkeys::on_enter_notify_event(GdkEventCrossing* a_p0)
+seqkeys::on_enter_notify_event(GdkEventCrossing* /* a_p0 */)
 {
     m_enter_piano_roll = true;
     set_hint_state( true );
@@ -322,7 +322,7 @@ seqkeys::on_enter_notify_event(GdkEventCrossing* a_p0)
 }
 
 bool
-seqkeys::on_leave_notify_event(GdkEventCrossing* p0)
+seqkeys::on_leave_notify_event(GdkEventCrossing* /* p0 */)
 {
     m_enter_piano_roll = false;
     if ( m_keying )

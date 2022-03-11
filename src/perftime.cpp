@@ -283,7 +283,7 @@ perftime::on_button_press_event(GdkEventButton* p0)
 }
 
 bool
-perftime::on_button_release_event(GdkEventButton* p0)
+perftime::on_button_release_event(GdkEventButton* /* p0 */)
 {
     m_moving_left = false;
     m_moving_right = false;

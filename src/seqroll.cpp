@@ -1061,14 +1061,14 @@ seqroll::snap_x( int *a_x )
 }
 
 bool
-seqroll::on_enter_notify_event(GdkEventCrossing* a_p0)
+seqroll::on_enter_notify_event(GdkEventCrossing* /* a_p0 */)
 {
     m_seqkeys_wid->set_hint_state( true );
     return false;
 }
 
 bool
-seqroll::on_leave_notify_event(GdkEventCrossing* a_p0)
+seqroll::on_leave_notify_event(GdkEventCrossing* /* a_p0 */)
 {
     m_seqkeys_wid->set_hint_state( false );
     return false;

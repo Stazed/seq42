@@ -126,7 +126,7 @@ seqlist::~seqlist()
 }
 
 bool
-seqlist::on_delete_event(GdkEventAny *a_event)
+seqlist::on_delete_event(GdkEventAny * /* a_event */)
 {
     //printf( "seqlist::on_delete_event()\n" );
 #ifdef NSM_SUPPORT

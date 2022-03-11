@@ -189,7 +189,7 @@ void lfownd::scale_lfo_change()
     m_seqdata->queue_draw_background();
 }
 
-bool lfownd::on_focus_out_event(GdkEventFocus* p0 )
+bool lfownd::on_focus_out_event(GdkEventFocus* /* p0 */)
 {
     if(m_seq->get_hold_undo())
     {

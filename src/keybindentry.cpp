@@ -29,7 +29,7 @@
 
 
 KeyBindEntry::KeyBindEntry( unsigned int* location_to_write,
-                            perform* p, long s) :
+                            perform* p, long /* s */) :
     Entry(),
     m_key( location_to_write ),
     m_perf( p )

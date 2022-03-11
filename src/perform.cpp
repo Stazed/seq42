@@ -1525,7 +1525,7 @@ position_info solve_tempomap ( jack_nframes_t frame, void *arg )
 }
 
 /* From non-timeline - modified */
-position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void *cb, void *arg )
+position_info render_tempomap( jack_nframes_t start, jack_nframes_t length, void * /* cb */, void *arg )
 {
 #ifdef RDEBUG
     printf("start %u\n", start);
@@ -2006,7 +2006,7 @@ void* output_thread_func(void *a_pef )
     nframes = buffer_size -- is not used.
 */
 
-int jack_process_callback(jack_nframes_t nframes, void* arg)
+int jack_process_callback(jack_nframes_t /* nframes */, void* arg)
 {
     perform *m_mainperf = (perform *) arg;
 
@@ -3211,8 +3211,8 @@ void perform::jack_BBT_position(jack_position_t &pos, double jack_tick)
 void
 jack_timebase_callback
 (
-    jack_transport_state_t state,           // currently unused !!!
-    jack_nframes_t nframes,
+    jack_transport_state_t /* state */,           // currently unused !!!
+    jack_nframes_t /* nframes */,
     jack_position_t * pos,
     int new_pos,
     void * arg

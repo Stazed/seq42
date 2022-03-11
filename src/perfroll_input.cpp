@@ -203,7 +203,7 @@ void FruityPerfInput::on_left_button_pressed(GdkEventButton* a_ev, perfroll& ths
     }
 }
 
-void FruityPerfInput::on_right_button_pressed(GdkEventButton* a_ev, perfroll& ths)
+void FruityPerfInput::on_right_button_pressed(GdkEventButton* /* a_ev */, perfroll& ths)
 {
     //set_adding( false );
 
@@ -233,7 +233,7 @@ bool FruityPerfInput::on_button_release_event(GdkEventButton* a_ev, perfroll& th
 
     if ( a_ev->button == 2 )
     {
-        ths.trigger_menu_popup(a_ev,ths);
+        ths.trigger_menu_popup(ths);
     }
 
     ths.m_moving = false;
@@ -499,7 +499,7 @@ bool Seq42PerfInput::on_button_release_event(GdkEventButton* a_ev, perfroll& ths
         }
         else
         {
-            ths.trigger_menu_popup(a_ev, ths);
+            ths.trigger_menu_popup(ths);
         }
     }
 

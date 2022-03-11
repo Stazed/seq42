@@ -265,7 +265,7 @@ track::set_playing_off()
 }
 
 void
-track::reset_sequences(bool a_playback_mode)
+track::reset_sequences(bool /* a_playback_mode */)
 {
     for(unsigned i=0; i<m_vector_sequence.size(); i++)
     {

@@ -1069,11 +1069,6 @@ perfroll::on_size_allocate(Gtk::Allocation& a_r )
 }
 
 void
-perfroll::on_size_request(GtkRequisition* a_r )
-{
-}
-
-void
 perfroll::new_sequence( track *a_track, trigger *a_trigger )
 {
     m_mainperf->push_track_undo(m_mainperf->get_track_index(a_track));
@@ -1253,7 +1248,7 @@ perfroll::paste_trigger_sequence( track *p_track, sequence *a_sequence, long a_t
 }
 
 void
-perfroll::trigger_menu_popup(GdkEventButton* a_ev, perfroll& ths)
+perfroll::trigger_menu_popup(perfroll& ths)
 {
     using namespace Menu_Helpers;
     track *a_track = NULL;

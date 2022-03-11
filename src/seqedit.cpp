@@ -1751,7 +1751,7 @@ seqedit::~seqedit()
 }
 
 bool
-seqedit::on_delete_event(GdkEventAny *a_event)
+seqedit::on_delete_event(GdkEventAny * /* a_event */)
 {
     //printf( "seqedit::on_delete_event()\n" );
 #ifdef NSM_SUPPORT

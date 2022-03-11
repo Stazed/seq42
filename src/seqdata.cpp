@@ -489,7 +489,7 @@ seqdata::on_motion_notify_event(GdkEventMotion* a_p0)
 }
 
 bool
-seqdata::on_leave_notify_event(GdkEventCrossing* p0)
+seqdata::on_leave_notify_event(GdkEventCrossing* /* p0 */)
 {
     queue_draw();
     return true;

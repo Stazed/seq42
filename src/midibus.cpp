@@ -30,7 +30,7 @@ midibus::midibus( int a_localclient,
                   int a_destclient,
                   int a_destport,
                   snd_seq_t *a_seq,
-                  const char *a_client_name,
+                  const char * /* a_client_name */,
                   const char *a_port_name,
                   int a_id, int a_queue ) :
     m_id(a_id),

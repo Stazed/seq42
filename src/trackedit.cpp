@@ -129,7 +129,7 @@ trackedit::~trackedit()
 }
 
 bool
-trackedit::on_delete_event(GdkEventAny *a_event)
+trackedit::on_delete_event(GdkEventAny * /* a_event */)
 {
     //printf( "trackedit::on_delete_event()\n" );
 #ifdef NSM_SUPPORT
