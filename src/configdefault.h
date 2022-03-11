@@ -4,7 +4,7 @@
 #define PACKAGE "seq42"
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "stazed@mapson.com"
+#define PACKAGE_BUGREPORT "https://github.com/Stazed/seq42"
 
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "seq42"

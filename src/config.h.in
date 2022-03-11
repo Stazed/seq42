@@ -89,6 +89,9 @@
 /* Version number of package */
 #undef VERSION
 
+/* package website */
+#undef WEBSITE
+
 /* gnu source */
 #undef _GNU_SOURCE
 
