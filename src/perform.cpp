@@ -76,7 +76,7 @@ perform::perform()
     m_starting_tick = 0;
     
 #ifdef MIDI_CONTROL_SUPPORT
-    midi_control zero = {false,false,0,0,0};
+    midi_control zero = {false, false, 0, 0, 0, 0};
 
     for ( int i = 0; i < c_midi_controls; i++ )
     {
