@@ -22,10 +22,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#ifndef CMAKE_BUILD_SUPPORT
 #ifdef __WIN32__
 #    include "configwin32.h"
 #else
 #    include "config.h"
+#endif
 #endif
 
 #include "mainwnd.h"
