@@ -1,29 +1,35 @@
-.TH Seq24 1 "February 9 2006" "Version 0.7.0" "Seq24 Manual Page"
+.TH Seq42 1 "March 11 2022" "Version 2.0.0" "Seq42 Manual Page"
 
 .SH NAME
-Seq24 - Real time MIDI sequencer
+Seq42 - Real time MIDI sequencer
 
 
 .SH SYNOPSIS
-.B seq24
+.B seq42
 [\fIOPTIONS\fP]
 
 
 .SH DESCRIPTION
 .PP
-\fISeq24\fP is a real-time midi sequencer. It was created to
-provide a very simple interface for editing and playing
+\fISeq42\fP is a real-time midi sequencer. It was created to
+provide a very simple interface for song editing and playing
 midi 'loops'.
 
 
 .SH OPTIONS
-Seq24 accepts the following options:
+Seq42 accepts the following options:
 .TP 8
 .B  \-\-help
 Display a list of all commandline options
 .TP 8
-.B \-\-file \fI<filename>\fP
+.B \-\fI<filename>\fP
 Load MIDI file on startup
+.TP 8
+.B  \-\-version
+Show program version information
+.TP 8
+.B  \-\-manual_alsa_ports
+seq42 won't attach alsa ports
 .TP 8
 .B \-\-showmidi
 Dumps incoming midi to screen
@@ -34,31 +40,42 @@ Runs higher priority with FIFO scheduler
 .B \-\-pass_sysex
 Passes any incoming sysex messages to all outputs
 .TP 8
+.B \-\-ignore <number>
+Ignore ALSA device
+.TP 8
 .B \-\-show_keys
 Prints pressed key value
 .TP 8
 .B \-\-interaction_method <number>
 Select mouse interaction method
-	(0 = seq24) (default)
+	(0 = seq42) (default)
 	(1 = fruity loops method)
 .TP 8
+.B \-\-playlist file <file>
+Path to playlist file and name
+.TP 8
 .B \-\-jack_transport
-seq24 will sync to JACK transport
+seq42 will sync to JACK transport
 .TP 8
 .B \-\-jack_master
-seq24 will try to be JACK master
+seq42 will try to be JACK master
 .TP 8
 .B \-\-jack_master_cond
 JACK master will fail if there is already a master
 .TP 8
 .B \-\-jack_start_mode \fI<x>\fP
-When seq24 is synced to JACK, the following play modes are available:
+When seq42 is synced to JACK, the following play modes are available:
 	(0 = live mode)
 	(1 = song mode) (default)
-
+.TP 8
+.B \-\-client_name <name>
+Set alsa client name: Default = seq42
+.TP 8
+.B \-\-stats
+Show statistics
 
 .SH FILES
-\fB$HOME\fP/.seq24rc stores the user settings for seq24.
+\fB$HOME\fP/.seq42rc stores the user settings for seq42.
 
 
 .SH SUGGESTIONS AND BUG REPORTS
@@ -67,7 +84,7 @@ maintainer.
 
 
 .SH OTHER INFO
-The project homepage is at http://www.filter24.org/seq24/.
+The project homepage is at https://github.com/Stazed/seq42.
 
 It is released under the GNU GPL license.
 

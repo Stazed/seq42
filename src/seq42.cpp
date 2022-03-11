@@ -105,7 +105,6 @@ static struct
     {"jack_master",0, 0, 'J'},
     {"jack_master_cond",0,0,'C'},
     {"song_start_mode", required_argument, 0, 'M' },
-    {"jack_session_uuid", required_argument, 0, 'U'},
     {"manual_alsa_ports", 0, 0, 'm' },
     {"pass_sysex", 0, 0, 'P'},
     {"version", 0, 0, 'v'},
@@ -135,8 +134,6 @@ bool global_with_jack_master = false;
 bool global_with_jack_master_cond = false;
 bool global_song_start_mode = true;
 bool playlist_mode = false;
-
-Glib::ustring global_jack_session_uuid = "";
 
 user_midi_bus_definition   global_user_midi_bus_definitions[c_maxBuses];
 user_instrument_definition global_user_instrument_definitions[c_max_instruments];
@@ -179,7 +176,7 @@ main (int argc, char *argv[])
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long (argc, argv, "Chi:jJkmM:pPsSU:vx:X:n:", long_options, &option_index);
+        c = getopt_long (argc, argv, "Chi:jJkmM:pPsSvx:X:n:", long_options, &option_index);
 
         /* Detect the end of the options. */
         if (c == -1)
@@ -209,7 +206,6 @@ main (int argc, char *argv[])
             printf( "                                              (1 = song mode) (default)\n" );
             printf( "   -n, --client_name <name>: Set alsa client name: Default = seq42\n");
             printf( "   -S, --stats: show statistics\n" );
-            printf( "   -U, --jack_session_uuid <uuid>: set uuid for jack session\n" );
             printf( "\n\n\n" );
 
             return EXIT_SUCCESS;
@@ -275,9 +271,6 @@ main (int argc, char *argv[])
         case 'v':
             printf("%s", versiontext);
             return EXIT_SUCCESS;
-            break;
-        case 'U':
-            global_jack_session_uuid = Glib::ustring(optarg);
             break;
 
         case 'x':
