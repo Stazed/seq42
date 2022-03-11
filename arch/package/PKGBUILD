@@ -1,4 +1,5 @@
 # Maintainer: stazed<stazed@mapson.com>
+# To use:makepkg -si
 _pkgbasename=seq42
 pkgname=${_pkgbasename}-git
 pkgver=2.0.0
@@ -21,16 +22,15 @@ pkgver() {
 }
 
 build() {
-    cd "${srcdir}/${_pkgbasename}"
-
-    autoreconf -i
-    ./configure --prefix=/usr
+    mkdir -p "${srcdir}/build"
+    cd "${srcdir}/build"
+    cmake "${srcdir}/${_pkgbasename}" \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX="/usr"
     make
 }
 
 package() {
-    cd "${srcdir}/${_pkgbasename}"
-
+    cd "${srcdir}/build"
     make DESTDIR="${pkgdir}" install
-
 }
