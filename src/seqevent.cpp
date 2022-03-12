@@ -404,7 +404,7 @@ seqevent::start_paste( )
     convert_t( tick_s, &x );
     convert_t( tick_f, &w );
 
-    /* w is actually corrids now, so we have to change */
+    /* w is actually coordinates now, so we have to change */
     w = w-x;
 
     /* set the m_selected rectangle to hold the
@@ -442,8 +442,10 @@ seqevent::on_button_press_event(GdkEventButton* a_ev)
     {
     case e_fruity_interaction:
         result = m_fruity_interaction.on_button_press_event(a_ev, *this);
+        break;
     case e_seq42_interaction:
         result = m_seq42_interaction.on_button_press_event(a_ev, *this);
+        break;
     default:
         result = false;
     }
@@ -487,8 +489,10 @@ seqevent::on_button_release_event(GdkEventButton* a_ev)
     {
     case e_fruity_interaction:
         result = m_fruity_interaction.on_button_release_event(a_ev, *this);
+        break;
     case e_seq42_interaction:
         result = m_seq42_interaction.on_button_release_event(a_ev, *this);
+        break;
     default:
         result = false;
     }
@@ -504,8 +508,10 @@ seqevent::on_motion_notify_event(GdkEventMotion* a_ev)
     {
     case e_fruity_interaction:
         result = m_fruity_interaction.on_motion_notify_event(a_ev, *this);
+        break;
     case e_seq42_interaction:
         result = m_seq42_interaction.on_motion_notify_event(a_ev, *this);
+        break;
     default:
         result = false;
     }

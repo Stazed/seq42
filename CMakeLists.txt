@@ -145,7 +145,7 @@ message (STATUS)
 message (STATUS                    "____________________ User Options________________________"  )
 package_status(EnableNSM           "NSM session support. . . . . . . . . . . . . . . . . . .:"  )
 package_status(EnableMIDIControl   "MIDI transport control . . . . . . . . . . . . . . . . .:"  )
-package_status(EnableJackSupport   "Jack transport control support . . . . . . . . . . . . .:"  )
+package_status(EnableJackSupport   "Jack transport control . . . . . . . . . . . . . . . . .:"  )
 
 message (STATUS)
 message (STATUS)
