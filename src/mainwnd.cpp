@@ -1271,7 +1271,7 @@ mainwnd::collapse() // all tracks
 void
 mainwnd::copy() // all tracks
 {
-    m_mainperf->push_trigger_undo();
+    /* we push undo from copy_triggers >> paste_triggers() because of location check */
     m_mainperf->copy_triggers(  );
     m_perfroll->redraw_all_tracks();
 }
@@ -1287,7 +1287,7 @@ mainwnd::expand() // all tracks
 void
 mainwnd::paste_triggers(long paste_tick) // all tracks
 {
-    m_mainperf->push_trigger_undo();
+    /* we push undo from paste_triggers() because of location check */
     m_mainperf->paste_triggers ( paste_tick );
     m_perfroll->redraw_all_tracks();
 }

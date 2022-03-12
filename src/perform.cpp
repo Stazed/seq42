@@ -1464,6 +1464,9 @@ void perform::paste_triggers (long paste_tick)
     if ( paste_tick > m_left_tick && paste_tick < m_right_tick)
         return;
 
+    /* We have a valid paste location, so push undo before paste */
+    push_trigger_undo();
+
     /* Don't really need to check this since we don't allow it */
     if ( m_left_tick < m_right_tick )
     {
