@@ -69,6 +69,10 @@ mainwnd::mainwnd(perform *a_p, Glib::RefPtr<Gtk::Application> app):
     m_mainperf(a_p),
     m_app(app),
     m_options(NULL),
+    m_perfnames(NULL),
+    m_perfroll(NULL),
+    m_perftime(NULL),
+    m_tempo(NULL),
     m_snap(c_ppqn / 4),
     m_bp_measure(4),
     m_bw(4),
@@ -88,7 +92,7 @@ mainwnd::mainwnd(perform *a_p, Glib::RefPtr<Gtk::Application> app):
     /* main window */
     update_window_title();
     set_size_request(860, 322);
-
+    
     m_accelgroup = Gtk::AccelGroup::create();
     add_accel_group(m_accelgroup);
 
