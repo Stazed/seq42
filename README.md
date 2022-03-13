@@ -9,24 +9,45 @@ Screenshot
 What is seq42?
 --------------
 It's a fork of [seq24](https://launchpad.net/seq24) (which is a fork of the [original seq24](http://filter24.org/seq24/)), but with a greater emphasis on song editing (as opposed to live looping) and some enhancements.
-Seq24 is great for sequence editing and live looping, but it could be cumbersome to edit songs as the number of sequences grow. You could quickly reach a point where there were more sequence rows in the song editor than would fit on the screen without scrolling. This makes it difficult to keep track of the whole song alignment.
+Seq24/seq32 are great for sequence editing and live looping, but it can be cumbersome to edit songs as the number of sequences grow. You can quickly reach a point where there were more sequence rows in the song editor than would fit on the screen without scrolling. This makes it difficult to keep track of the whole song alignment.
 
 Seq42 adds a new concept of a "track".  It breaks down like this:
-
-A song in seq24 is a collection of sequences.  Each sequence has a midi bus and midi channel that it sends events to.
-A seq24 sequence also has a collection of triggers, which indicate times in a song where that sequence plays.  
 
 A song in seq42 is a collection of tracks.  Each track has a midi bus and a midi channel.  Each seq42 track has a collection of sequences (which send their events to their track's midi bus and channel) and a collection of triggers. Each trigger plays one of that track's sequences.
 In seq42, the main window is the song editor, with one row per track.  After adding a trigger to a track, you can right-click on the trigger to show a context menu with options to set the trigger to an existing sequence or create a new sequence or copy an existing sequence (possibly even from another track).
 
 Other than these conceptual changes, a seq24 user should feel at home.  The awesome sequence editor is pretty much the same.  The 8x4 sequence set window from seq24 is gone.  Instead there's a sequence list window that you can open from the main song editing window.  The sequence list displays all the sequences in the song. You can sort the list in various ways (it initializes sorted by track) and there's a check box for each sequence that you can use to toggle each sequence's play flag (when you're in live mode).
 
+Version 2.0.0 changes:
+
+Beginning with version 2.0.0 seq42 has been ported to Gtkmm-3. 
+
+New colors.
+
+The build system has been moved to CMAKE.
+
+Additional editing features.
+
 See the SEQ42 document for additional information.
 
-Version 2.0.0 changes:
-Beginning with version 2.0.0 seq42 has been ported to Gtkmm-3. 
-New colors.
-The build system has been moved to CMAKE.
+Install
+-------
+
+The dependencies are:
+
+*   cmake
+*   Gtkmm-3.0
+*   Jackd
+*   libasound2
+*   liblo   (NSM support)
+*   librt
+
+Additional dependencies required by Gtkmm-3
+*   sigc++-2.0
+*   glibmm-2.4
+*   cairomm-1.0
+*   pangomm-1.4
+*   atkmm-1.6
 
 
 What to do with a fresh repository checkout?
