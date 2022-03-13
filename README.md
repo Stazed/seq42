@@ -65,7 +65,7 @@ Using CMAKE:
 ```
 To remove:
 ```bash
-    make un-install (as root)
+    make uninstall (as root)
 ```
 
 --------------------------------------------
