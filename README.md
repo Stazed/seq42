@@ -28,6 +28,8 @@ The build system has been moved to CMAKE.
 
 Additional editing features.
 
+NSM support now has optional gui, and dirty flag.
+
 See the SEQ42 document for additional information.
 
 Install
@@ -49,6 +51,7 @@ Additional dependencies required by Gtkmm-3
 *   pangomm-1.4
 *   atkmm-1.6
 
+For compiling you will also need the development packages for the above dependencies.
 
 What to do with a fresh repository checkout?
 --------------------------------------------

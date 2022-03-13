@@ -97,7 +97,7 @@ Copy song triggers across different tracks:
     accidental duplication of sequence copies.
 
 In the trigger popup menu an option to set the pattern's play flag (if it's off) or unset it (if on).
-    The option only shows if not in song mode.
+    The option only shows if in Live mode.
 
 Export individual solo sequence from trigger menu pop-up.
     Export will not include song triggers, or proprietary performance tags.
@@ -168,9 +168,6 @@ their 'playing' box checked in the sequence list.
 
 It's a fork of [seq24](https://launchpad.net/seq24) (which is a fork of the [original seq24](http://filter24.org/seq24/)),
 but with a greater emphasis on song editing (as opposed to live looping) and some enhancements.
-Seq24 was great for sequence editing and live looping, but it was cumbersome to edit songs as the number of sequences grew.
-You could quickly reach a point where there were more sequence rows in the song editor than would fit on the screen without scrolling,
-which made it difficult to keep track of the whole song.
 
 In essence, seq42 is an advanced song editor for seq24/seq32, and the other variants.
 
@@ -315,7 +312,7 @@ The program is basically a MIDI song editor.
         Nudge the selected notes by individual ticks by holding down the
         Shift key with left or right arrows.
 
-        Notes will play when added to the sequence draw notes and move notes.
+        Notes will send MIDI play when added to the sequence or moved.
 
 	Right clicking on the event strip ( directly under
 	the paino roll grid ) will allow you to add/select/move 
@@ -326,7 +323,7 @@ The program is basically a MIDI song editor.
 	to change note velocities, channel pressure, control codes,
 	patch select, etc.  Just click + drag the mouse across 
 	the window to draw a line.  The values will match that line.
-        Any events that are selected in the paino roll or event
+        Any events that are selected in the piano roll or event
         strip can have their values modified with the mouse 
         wheel.
 
@@ -394,7 +391,7 @@ The program is basically a MIDI song editor.
 
    
      *NOTES*: 
-	To see the required key codes when pressed, run seq42 with --show_keys.
+	To see the required key codes when pressed, run seq42 with --show_keys in a terminal.
 
 	Seq42 will overwrite the .seq42rc file on quit. You should therefore
 	quit seq42 before doing modifications to the .seq42rc file.
@@ -458,7 +455,7 @@ The program is basically a MIDI song editor.
         'Playlist previous' keys. The default is the left(previous) and right(next) arrow keys.
 
         During playlist play, when the transport is stopped by a Stop marker, the playlist song will 
-        automatically be incremented down by one song. (See STOP markers above).
+        automatically be incremented down by one song. (See STOP markers).
 
         To shut off playlist mode, simply load a new file from the main menu, File/New or
         File/Open. You could also quit and restart. The main window title will no longer
@@ -467,6 +464,8 @@ The program is basically a MIDI song editor.
         If editing while in playlist mode, you will NOT be prompted to save changes when moving
         to a new song on the list. If unsaved, all editing will be lost! So if editing in playlist
         mode, be sure to save before right arrow, or left arrow!
+
+        You will not be allowed to save when using playlist mode in an NSM session.
 
         Special thanks for the playlist idea, and some code (modified) go to:
         Simon Hickinbotham - seq24plus.
