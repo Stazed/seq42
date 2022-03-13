@@ -1,11 +1,68 @@
 SEQ42 - Midi Sequencer
 ======================
 
+Import seq24/32/64 files, and any type 1 midi files. Maximum number of tracks is currently 64.
+Import supports selection of seq24/32 by set number.
+
+Export midi files - sequences in seq24/32/64 format - edit menu, export(seq24/32/64).
+Export midi song render - combines all triggers on track together. 
+    Can be used in conventional midi players. From edit menu, export song.
+    Muted tracks and tracks with NO triggers will NOT be exported.
+    This feature can also be used as a powerful editing feature as follows:
+        The user can split, slice and rearrange triggers to form a new sequence. Then mute all
+        other tracks and export to a temporary midi file. Now they can import the combined
+        triggers/sequence as a new item. This makes editing of long improvised sequences into
+        smaller or modified sequences as well as combining several sequence parts painless. Also,
+        if the user has a variety of common items such as drum beats, control codes, etc that
+        can be used in other projects, this method is very convenient. The common items can
+        be kept in one file and exported all, individually, or in part by creating triggers and muting.
+
+NSM session support:
+    Supports file saving, dirty flag, and optional gui.
+
 NAVIGATION FROM THE MAIN WINDOW:
+
+Stop / Rewind / Play / Fast Forward  buttons work with or without jack.
+
+Pause/Stop button: Toggles the method used when stopping the transport (see tooltip).
+
+BPM tap button - sequencer64 type, thanks to Chris Ahlstrom.
+
+HMS:BBT display to main window (Thanks to Chris Ahlstrom - sequencer64).
+
+Jack sync button: Temporarily disconnect from jack transport sync.
+Sequence list button: Toggle show the sequence list, editor.
+Auto scroll button: Toggle auto scroll. This applies to both the song editor and sequences.
+
+Song-level transpose function: Each track has a transpose flag,
+true by default when adding a new track. You will want to disable it on tracks
+that trigger drums or sample hits.  At any point (even while the sequencer is running)
+you can change the song's transpose value (in the range of -12 to +12) and it will
+affect the playback of all transposable tracks.  You can make the transposition
+permanent from the menu Edit/Apply song transpose.
+
+Drum machine-like swing function: Each sequence has a swing setting (none, 1/8 or 1/16).
+At the song level (along with BPM) there are two swing amount settings (one for 1/8 and one for 1/16).
+These settings are evaluated while the sequencer is playing, the notes in each sequence remain
+"straight" on the grid.
+
+Main window has a button to toggle between song and live modes (in seq24/seq32, this is in a tab in the Options dialog).
+
+All trigger, sequence, track actions can be undone/redone.
+Redo is cleared upon any new edit of track items.  This is done to eliminate the possibility
+of undo pushing to redo items such as trigger edits, then deleting the track.
+If redo were not cleared, then attempting to redo items on a track that no longer exists would not work.
+Undo/redo does not change the track edit items (name,channel,bus,transpose,mute)... except when undo/redo
+row insert/delete/pack or deleting midi import. Sequence copies will now copy the seq level undo/redo.
+For track level undo/redo, (insert/delete/pack,copy,seq copy), the track editor and sequence editor windows must be closed.
 
 --------------------
 
 EDITING GRID:
+
+Right mouse and hold on empty area of active track >> shows pencil. Then simultaneously Left mouse and drag to paint a trigger.
+Right mouse on trigger >> trigger menu.
+Left mouse on trigger >> select trigger (trigger will highlight).
 
 Mouse scroll >> scroll vertically.
 Shift + mouse scroll >> scroll horizontally.
@@ -23,19 +80,52 @@ Middle mouse button >> paste clipboard trigger to mouse location.
 Home key >> reposition the progress line to the L marker.
 's' key >> reposition the L marker to the progress line.
 
+'p' key reposition song editor play location. With mouse focus on song editor(tracks),
+press 'p' to move play position to mouse location.
+
+Split trigger (middle mouse button) will split on mouse pointer location - grid-snapped.
+
+'Fruity' input method for trigger pop-up menu (middle mouse button).
+    Split trigger is CTRL-Left mouse and paste is middle mouse or CTRL-Left mouse.
+
+Copy song triggers across different tracks:
+    This will also copy the sequence into the new track.
+    Select trigger with mouse, CTRL-C: middle mouse click on new track location.
+    After paste, the subsequent CTRL-V will revert to default behavior of pasting
+    the trigger only after previous paste. 
+    The paste across track is only allowed once per CTRL-C action to prevent
+    accidental duplication of sequence copies.
+
+In the trigger popup menu an option to set the pattern's play flag (if it's off) or unset it (if on).
+    The option only shows if not in song mode.
+
+Export individual solo sequence from trigger menu pop-up.
+    Export will not include song triggers, or proprietary performance tags.
+
 --------------------
 
 TRACK NAME AREA:
 
+Menu:
+Track row insert/delete/pack. Right click the track name - popup menu.
+All sequence editors and track edit must be closed.
+
 Left mouse button >> mute track.
 Middle mouse button >> solo track.
 Right mouse button >> show menu.
+Track mute status is saved, track solo status is not.
 
 Left mouse button - hold and drag >> to inactive track, will move to the new location.
 Left mouse button - hold and drag >> to active track, will swap locations.
 
 ALT + Left mouse button - hold and drag >> to inactive track, copy track to landing location.
 
+Merge tracks: From the menu, right click on existing track name - select Merge Sequence -
+    Select the sequence from the available list.
+    The Sequences AND song triggers will be added to the track. Now you can easily combine those seq24/32/64 tracks!!
+    Any overlapping trigger will be overwritten and/or split - just create a new sequence for them...
+
+Merge tracks: From mouse drag:
 Shift + Left mouse button - hold and drag >> to active track, merge(copy all triggers and sequences)
     into the landing track. The dragged track will remain in place.
 CTRL + Left mouse button - hold and drag >> to active track, merge and delete
@@ -59,167 +149,11 @@ CTRL + left mouse button and drag >> A green vertical location line will appear.
 
 --------------------
 
-TEMPO CHANGES:
+SEQUENCE LIST:
 
-To add a tempo change marker, left click on the Tempo grid. A BPM pop up window will appear
-in which you can type, use the spin button, use the bpm key-binding or use tap button
-to set the BPM value. Press enter or return to accept the value. Press escape to abandon
-the value. Upon acceptance, a blue tempo mark will be set at the location of the left click
-location, grid snapped. Also, to the right of the marker, the tempo value will be indicated.
-Tempo values range from 1 to 600. You can move a created marker by placing the mouse pointer
-above an existing marker. The pointer will change to an up arrow, then left click and drag
-the marker to the desired location. The markers will move based on the grid snapping that
-is selected. You cannot move the first start marker and any attempt to move to the beginning
-start location will be ignored. Use the BPM spinner to the left of the first marker to
-adjust the starting BPM.
+Edit button: Create new triggers between L and R play markers for triggers with
+their 'playing' box checked in the sequence list.
 
-To delete a tempo marker, right click above the marker.
-
-During play, when the progress line reaches the tempo mark, the BPM value will change
-to the indicated amount. Also, the main bpm spin button will indicate the current
-tempo being played. Upon stop, the main spin button will revert back to the original 
-starting value.
-
-The first marker at the start of the song cannot be deleted. Use the main window BPM spin
-buttons as used in previous releases to adjust the starting marker.
-
-STOP Markers:
-When setting the marker BPM, a value of 0 (zero) can be used to set a stop marker.
-Stop markers are indicated by red color, and the bpm value will indicate "[stop]".
-When playing, as the progress mark encounters a stop marker, the transport will stop.
-Stop markers can be used for editing purposes, or at the end of a song to stop the transport.
-When in Playlist mode, if stopped by a stop marker, the play list will automatically increment
-to the next file on the play list after stopping.
-
-Live mode:
-In live mode, only the starting bpm will be used. No subsequent tempo marks or stop marks
-will have any effect.
-
-For the tempo map, special thanks to:
-Jonathan Moore Liles    (non-timeline)
-http://non.tuxfamily.org
-
---------------------
-
-MIDI CONTROL:
-
-Midi control had been re-introduced to seq42 for transport control, recording, and 
-playlist adjustment. The implementation follows the original seq24 method with some
-minor modification.  For transport control, start, stop, fast forward, rewind
-and beginning of song are supported. To implement the midi control for existing
-users, start seq42 then quit to generate the midi control grid for existing .seq42rc
-files. For new users, the file will be created after quitting the program for the 
-first time. All transport controls are channel specific. 
-
-For midi specifications, the channels are numbered from 0 to 15 and for seq42, 
-the channels are displayed from 1 to 16 (remember to offset by -1 when setting).
-
-Note On              = 144 + channel (0 to 15)
-Note Off             = 128 + channel (0 to 15)
-Control Code (CC)    = 178 + channel (0 to 15)
-
-The following would set play to toggle start/stop with note press C8 (midi note 108)
-on channel 1; to start only with A#7 (note 106); to stop only with A7 (note 105):
-    # start playing (toggle, start, stop)
-    0 [1 0 144 108   0 127] [1 0 144 106   0 127] [1 0 144 105   0 127]
-
-The record group will toggle recording on/off for all sequences in which
-the sequence editor is open. When recording, the only midi controls that
-are available are start/stop and record. Also, the midi events used by these
-controls will not be passed thru or used by recording.
-Example to set record to toggle with A0 (note 21). The toggle group and off
-group work for record and can also be used and will always toggle:
-    # record
-    2 [0 0   0   0   0   0] [1 0 144  21   0 127] [0 0   0   0   0   0]
-
-
-Example to set Fast forward with note-on (144) B7 (note 107) when pressed, and to stop when
-the key is released note-off (128):
-    # fast forward (forward, forward, stop)
-    3 [0 0   0   0   0   0] [1 0 144 107   0 127] [1 0 128 107   0 127]
-
-Rewind works similar to fast forward.
-
-Beginning of song will move the transport to the beginning of the song or the 
-left (L) grid marker. Each section can be used and will only set to the marker.
-Following will use A#7 (note 106) to set:
-    # beginning of song 
-    5 [0 0   0   0   0   0] [1 0 144 106   0 127] [0 0   0   0   0   0]
-
-Midi control for playlist will only be active when seq42 transport is stopped. You
-can set the playlist value while running but the selected file will not be loaded
-until the sequencer stops. If the sequencer is stopped by a stop marker, then
-the playlist will set the file at the next file past the selected value. The program
-will range check for validity, and the file list starts at 1.
-For playlist, the toggle group can be used to send by CC value, the on group for next, 
-and off group for previous.
-Example to set playlist to adjust by value, CC (178), CC number 7. Playlist Next is set
-to note A0 (21) and previous is set to A#0 (22):
-
-    6 [1 0 178   7   1 127] [1 0 144  21   0 127] [1 0 144  22   0 127]
-
---------------------
-
-PLAYLIST MODE:
-
-A playlist is a text file containing multiple seq42 files (.s42), that can be quickly loaded
-for possible accompaniment with a live performance. The file should list on each line the
-full path to the .s42 file and name, ex:
-
-/home/username/seq42dir/file1.s42
-/home/username/seq42dir/file2.s42
-/home/username/seq42dir/file3.s42
-
-There should be no blank lines before, after, or between the files listed. Do not use
-place holders, full path only.
-
-Playlist mode can be invoked from the command line with the -X <path to playlist file> option.
-The playlist can also be selected from the main menu, File/Open playlist...
-
-When the playlist mode is first invoked, you will be prompted with a dialog pop-up asking
-if you wish to verify the playlist. For new playlists, or if a playlist is modified, selecting 'Yes'
-would be beneficial to check for errors.  The verification will attempt to load all the files
-on the list, in order, and if errors are encountered, will stop and indicate the offending file.
-Select 'No' or escape key if the playlist has previously been verified. If the verification is
-successful, no pop-up errors will occur, and the first file on the list will be loaded.
-
-When playlist mode is in effect, the main window SEQ42 logo will turn blue with a red "PLAYLIST" overlay.
-In addition, the main window title and song editor title will indicate "Playlist" and
-the current song and numeric value listed in the playlist file ex:
-
-    "seq42 - Playlist, Song 03 - [/home/username/seq42dir/file3.s42]"
-
-To cycle through the playlist, use the right arrow key to go down the list, and the left
-arrow key to go up the list, from the main window only. The key binding can be changed in
-the File/Options/Keyboard tab.
-
-The sequencer must be stopped in order to cycle up or down the playlist.
-
-ALERT!! - the key binding may need to be reset if a previous .seq42rc file is present 
-in your home directory. Go to File/Options/Keyboard to set the 'Playlist next' and
-'Playlist previous' keys. The default is the left(previous) and right(next) arrow keys.
-
-During playlist play, when the transport is stopped by a Stop marker, the playlist song will 
-automatically be incremented down by one song. (See STOP markers above).
-
-To shut off playlist mode, simply load a new file from the main menu, File/New or
-File/Open. You could also quit and restart. The main window title will no longer
-show the "Playlist, Song XX" listing.
-
-If editing while in playlist mode, you will NOT be prompted to save changes when moving
-to a new song on the list. If unsaved, all editing will be lost! So if editing in playlist
-mode, be sure to save before right arrow, or left arrow!
-
-Special thanks for the playlist idea, and some code (modified) go to:
-Simon Hickinbotham - seq24plus.
-https://github.com/franticspider/seq24plus
-
-
-BELOW THIS AREA IS OUTDATED - BUT SOME PARTS STILL APPLY!!!
-
-From original seq24....
-
-FIXME: update this document!!!!
 --------------------------------------------------------------
 
 [1] What & Why
@@ -232,30 +166,41 @@ FIXME: update this document!!!!
 
 [1] What & Why
 
-Seq24 is a real-time midi sequencer. It was created to 
-provide a very simple interface for editing and playing 
-midi 'loops'. After searching for a software based 
-sequencer that would provide the functionality needed for 
-a live performance, there was little found in the 
-software realm. I set out to create a very minimal sequencer 
-that excludes the bloated features of the large software 
-sequencers, and includes a small subset of features that 
-I have found usable in performing. 
+It's a fork of [seq24](https://launchpad.net/seq24) (which is a fork of the [original seq24](http://filter24.org/seq24/)),
+but with a greater emphasis on song editing (as opposed to live looping) and some enhancements.
+Seq24 was great for sequence editing and live looping, but it was cumbersome to edit songs as the number of sequences grew.
+You could quickly reach a point where there were more sequence rows in the song editor than would fit on the screen without scrolling,
+which made it difficult to keep track of the whole song.
+
+In essence, seq42 is an advanced song editor for seq24/seq32, and the other variants.
+
+seq42 adds a new concept of a "track".  It breaks down like this:
+
+A song in seq42 is a collection of tracks.  Each track has a midi bus and a midi channel.
+Each seq42 track has a collection of sequences (which send their events to their track's midi bus and channel) and a collection of triggers,
+each of which triggers one of that track's sequences.
+In seq42, the main window is the song editor, with one row per track.  After adding a trigger to a track, you can right-click on the trigger
+to show a context menu with options to set the trigger to an existing sequence or create a new sequence or copy an existing sequence
+(possibly even from another track).
+
+Other than these conceptual changes, a seq24 user should feel at home.  The awesome sequence editor is pretty much the same.
+The 8x4 sequence set window from seq24 is gone.  Instead there's a sequence list window that you can open from the main song editing window.
+The sequence list displays all the sequences in the song. You can sort the list in various ways (it initializes sorted by track) 
+and there's a check box for each sequence that you can use to toggle each sequence's play flag (when you're in live mode).
 
 -----------------------------------------------------------
 
 [2] Who 
 
-Written by Rob C. Buse.  I wrote this program to fill a
-hole.  I figure it would be a waste if I was the only one
-using it.  So, I released it under the GPL.
+The original seq24 was written by Rob C. Buse.
+The original seq42 was forked and started by Sam Brauer.
+The current seq42 is maintained by Stazed.
 
 -----------------------------------------------------------
 
 [3] Interface
 
-The program is basically a loop playing machine with a 
-simple interface.
+The program is basically a MIDI song editor.
 
 
 [3a] Main Window
@@ -273,93 +218,7 @@ simple interface.
 
 	* Help.
 	
-	Shows the About box.
-	
-	* Boxes
-
-	Each box represents a loop. By right clicking 
-	on an empty box you bring up a menu to create
-	a new loop, or edit a existing one.
-
-	Left clicking on a box will change its state
-	from muted (white) to playing (black) when
-	the sequencer is running.
-
-	By clicking and holding the left button on a sequence,
-	you can drag it to a new location on the grid.
-
-        Right Clicking will bring up a menu of available options
-        for the sequence.  Here you can select the midi bus/channel.
-        You can also clear all performance data (on/off) see section
-        [3d] for more info.
-
-	* 'Screen Sets'
-
-	You only see 32 loops in the main window.  This
-	is a screen set.  You can switch between sets
-	by using the '[' and ']' keys on your keyboard or
-	the spin widget labeled set.  
-	There are a total of 32 sets, for a total of 
-	1024 loops. 
-
-	* BPM
-
-	The ; and ' keys will increase/decrease tempo as
-	will the bpm spinner.	
-
-	* Muting and Unmuting Tracks.
-
-	Left clicking on a Tracks will toggle its playing
-	status.  Hitting its assigned keyboard key will
-	also toggle its status.  Below is the grid thats
-	mapped to the loops on the screen set.
-
-	[1    ][2    ][3    ][4    ][5    ][6    ][7    ][8    ]
-	[q    ][w    ][e    ][r    ][t    ][y    ][u    ][i    ]
-	[a    ][s    ][d    ][f    ][g    ][h    ][j    ][k    ]
-	[z    ][x    ][c    ][v    ][b    ][n    ][m    ][,    ]
-
-     	* Mute/Unmute patterns (Groups)
-
-	You can toggle the playing status of up to 32 previously 
-	defined mute/unmute patterns (groups) in the active screen 
-	set, similar to hardware sequencers. 
-	This is done either by one of the 'group toggle' keys 
-	or by a MIDI controller, both assigned in the .seq24rc file. 
-	A Mute/Unmute pattern (group) is stored by holding a 
-	'group learn' key while pressing the corresponding 
-	'group toggle' key. 
-	There are also keys assigned to turn on/off the group 
-	functionality.
-    
-    	* Replace
-
-	Holding down 'Left Ctrl' while selecting a sequence 
-	will mute all other sequences and turn on the selected
-	sequences.
-
-        * Restore
-
-	Holding 'Alt' will save the state of playing sequences
-	and restore them when 'Alt' is lifted.
-
-	Holding 'Left Ctrl' and 'Alt' at the same time will enable
-	you to flip over to new sequences briefly and then
-	flip right back upon lifting 'Alt'.
-
-        * Queue
-
-	Holding 'Right Ctrl' will queue a on/off toggle for a 
-	sequence when the loop ends. Queue also works for mute/unmute 
-	patterns (groups), in this case every sequence will toggle 
-	its status after its individual loop end. 
-
-        * keep queue
-
-	Pressing the 'keep queue' key assigned in the .seq24rc file 
-	activates permanent queue mode until you use the temporary 
-	Queue function again pressing 'Right Ctrl'. 
-
+	Shows the About box
 
 [3b] Options Window
 
@@ -367,10 +226,10 @@ simple interface.
         clock, and which incoming midi events control the sequencer.
 
 
-[3c] Edit Window
+[3c] Sequence Edit Window
 
-	Right clicking on the main window then selecting
-	New/Edit will bring up the edit window.	
+        Right clicking on a track trigger will show a trigger
+        menu. Select New/Edit Sequence will bring up the edit window.
 
 	The top bar of the sequence editor lets you 
 	change the name of the sequence, the time 
@@ -390,6 +249,13 @@ simple interface.
         the key.  You can select a sequence to draw on the 
         background to help with writing corresponding parts.
 
+        TOOLS MENU:
+        The editor has new menu items to randomize selected events
+        (adding or subtracting a random value in a range from +/-1 to +/-16).
+        This can be used on velocity or CC values.
+        Select notes that occur on specific beats (even 1/4, odd 1/4, even 1/8,
+        odd 1/8, even 1/16, odd 1/16).
+
 	Holding the mouse over any button for a short period
 	will let you view what it does.
 
@@ -399,6 +265,20 @@ simple interface.
 	to the sequences Bus and midi channel.  [Record] 
 	will capture and ALSA midi input and save it in the
 	sequence.
+
+        Midi record supports simultaneous multi-sequence record, channel specific, up to 16 channels at once.
+
+        Midi recording types. Recording button 'Merge' to select type:
+            Legacy merged looped (notes are added upon looping of sequence).
+            Overwrite looped record (notes will be cleared upon looping after
+            the first note played and overwrite previous pass).
+            Expand sequence length to fit recording (sequence does not loop and
+            will expand after reaching last 1/4 measure).
+            Expand and replace recording. 
+
+        Midi step edit is added on record(seq42 not playing), starting at transport line.
+        Sequence editor Ctrl-right arrow and Ctrl-left arrow key moves transport line by snap.
+        Home key moves transport line to start.
 
 	On both the grid window and the event window, HOLDING
 	down the right mouse button will change your cursor
@@ -410,12 +290,32 @@ simple interface.
         manipulation.
 
         Pressing  the middle mouse button will let you change 
-	the length of the note. 
+	the length of the note.
+
+        Chord note selection will draw notes based on the
+        chord selection (Thanks to LMMS for the lookup table).
+
+        Mute and solo individual notes on sequence editor.
+            Right mouse button click on piano roll will mute,
+            middle mouse button to solo. Muted keys will change color to red,
+            and solo to green. These settings will NOT be saved to file.
 
 	The left mouse button lets you select multiple events 
         which can then be clicked and moved, cut (Ctrl-X), 
         copy (Ctrl-C), or pasted (Ctrl-V).  When the notes are 
         selected, you can delete them with the Delete key.
+
+        You can use cursor keys to move selected notes up/down
+        in pitch or left/right in time.
+        Up and down move by one semitone.
+        Hold down Shift to move up or down by octave.
+        Right and left move the selected notes by the current snap amount.
+        (Note that it does not automatically snap the notes to the grid.
+        If you want that, use the quantize function first.)
+        Nudge the selected notes by individual ticks by holding down the
+        Shift key with left or right arrows.
+
+        Notes will play when added to the sequence draw notes and move notes.
 
 	Right clicking on the event strip ( directly under
 	the paino roll grid ) will allow you to add/select/move 
@@ -433,174 +333,196 @@ simple interface.
 	The [Event] button allows you to select which type of data
 	the event strip and data editor are currently displaying.
 
+[3e] .seq42rc File 
 
-[3d] Performace Edit
+    MIDI CONTROL:
 
-	Right Click on the Roll to enter draw mode, gray boxes
-	represent when the track is on.  Right and left click to
-	drop the [R] and [L] anchors on the bar indicator.  Use
-	the collapse and expand button to modify events.  Middle
-	click on the bar indicator to drop a new start position.
-	You can only change the start position when the performance
-	is not playing.
+        Midi control had been re-introduced to seq42 for transport control, recording, and 
+        playlist adjustment. The implementation follows the original seq24 method with some
+        minor modification.  For transport control, start, stop, fast forward, rewind
+        and beginning of song are supported. To implement the midi control for existing
+        users, start seq42 then quit to generate the midi control grid for existing .seq42rc
+        files. For new users, the file will be created after quitting the program for the 
+        first time. All transport controls are channel specific. 
 
+        For midi specifications, the channels are numbered from 0 to 15 and for seq42, 
+        the channels are displayed from 1 to 16 (remember to offset by -1 when setting).
 
-[3e] .seq24rc File 
+        Note On              = 144 + channel (0 to 15)
+        Note Off             = 128 + channel (0 to 15)
+        Control Code (CC)    = 178 + channel (0 to 15)
 
-        After you run seq24 for the first time, it will generate 
-        a .seq24rc file in your home directory.
+        The following would set play to toggle start/stop with note press C8 (midi note 108)
+        on channel 1; to start only with A#7 (note 106); to stop only with A7 (note 105):
+            # start playing (toggle, start, stop)
+            0 [1 0 144 108   0 127] [1 0 144 106   0 127] [1 0 144 105   0 127]
 
-        It contains the the data for remote midi control, keyboard
-        control, and midi clock.
-
-        * [midi-control]
-
-        For each sequence, we can set up midi events to turn a 
-	sequence on, off, or toggle it.  We see the following
-	lines in the [midi-control] section:
-
-        0  [0 0 0 0 0 0]   [0 0 0 0 0 0]   [0 0 0 0 0 0]            
-        1  [0 0 0 0 0 0]   [0 0 0 0 0 0]   [0 0 0 0 0 0]          
-        2  [0 0 0 0 0 0]   [0 0 0 0 0 0]   [0 0 0 0 0 0]   
-        ...
-
-        The first number is the sequence in the main window.  Each set 
-        of brackets corresponds to a midi filter.  If the incoming midi 
-        event matches the filter, it will either [toggle],[on],or[off] 
-   	the sequence  respectivaly.
-
-        The layout of each filter inside the bracket is as follows:
-
-        [(on/off) (inverse) (midi status byte (channel ignored)) 
-                                     (data1) (data2 min) (data2 max)]
-
-	If the on/off is set to 1, it will match the incoming midi 
-        to the pattern and perfrom the 	action (on/off/toggle) 
-        if the data falls in the range specified.  All values 
-	are in decimal.
-
-	The last three is the range of data that will match.
-
-	The following is an example of responding to note on events, 
-        note 0, with any velocity to turn the sequence on, and note 
-        off events, note 0, and any velocity to turn the sequence off.
-
-	  Toggle                 On                         Off
-        1 [0 0 0 0 0 0]         [1 0  144 0 0 127]          [1 0 128 0 0 127]
-
-	the inverse field will make the sequence perform the opposite 
-        action (off for on, on for off) if the data falls outside the 
-        specified range.  This is cool because you can map several 
-        sequences to a knob or fader.
-
-	The following example would map a row of sequences to one knob 
-        sending out changes for Control Code 1:
-
-	Toggle            On                    Off
-        
-        0  [0 0 0 0 0 0]  [1 1 176 1   0   15]  [0 0 0 0 0 0]
-        1  [0 0 0 0 0 0]  [1 1 176 1  16   31]  [0 0 0 0 0 0]
-        2  [0 0 0 0 0 0]  [1 1 176 1  32   47]  [0 0 0 0 0 0]
-        3  [0 0 0 0 0 0]  [1 1 176 1  48   63]  [0 0 0 0 0 0]
-        4  [0 0 0 0 0 0]  [1 1 176 1  64   79]  [0 0 0 0 0 0]
-        5  [0 0 0 0 0 0]  [1 1 176 1  80   95]  [0 0 0 0 0 0]
-        6  [0 0 0 0 0 0]  [1 1 176 1  96  111]  [0 0 0 0 0 0]
-        7  [0 0 0 0 0 0]  [1 1 176 1 112  127]  [0 0 0 0 0 0]
-        # mute in group
-       
-        This section controls 32 groups of mutes in the same way as 
-	defined for [midi-control]. A group is a set of sequences 
-	that can toggle their playing state together.
-        Every group contains all 32 sequences in the active screen 
-	set (see after).
-       
-
-     
-        [mute-group]
-
-        Here there are the definitions of the state of the 32 sequences
-        in the playing screen set when a group is selected.
-        group [state of the first 8 sequences] [second 8] [third 8] [fourth 8]
-
-        After the list of sequences and their midi events, you can 
-        set seq24 to handle midi events and change the following: 
+        The record group will toggle recording on/off for all sequences in which
+        the sequence editor is open. When recording, the only midi controls that
+        are available are start/stop and record. Also, the midi events used by these
+        controls will not be passed thru or used by recording.
+        Example to set record to toggle with A0 (note 21). The toggle group and off
+        group work for record and can also be used and will always toggle:
+            # record
+            2 [0 0   0   0   0   0] [1 0 144  21   0 127] [0 0   0   0   0   0]
 
 
-        * [midi-clock]
+        Example to set Fast forward with note-on (144) B7 (note 107) when pressed, and to stop when
+        the key is released note-off (128):
+            # fast forward (forward, forward, stop)
+            3 [0 0   0   0   0   0] [1 0 144 107   0 127] [1 0 128 107   0 127]
 
-        The midi clock fields will contain the clocking state from the last 
-        time seq24 was run.  Turn off clock with a 0, or on with a 1.
+        Rewind works similar to fast forward.
 
+        Beginning of song will move the transport to the beginning of the song or the 
+        left (L) grid marker. Each section can be used and will only set to the marker.
+        Following will use A#7 (note 106) to set:
+            # beginning of song 
+            5 [0 0   0   0   0   0] [1 0 144 106   0 127] [0 0   0   0   0   0]
 
-        * [keyboard-control]      
-        
-        The keyboard control is a dump of the keys that seq24 
-        recognises and its corresponding sequence number.
-	Note that the first number corresponds to the number of sequences in
-	the active screen set.
+        Midi control for playlist will only be active when seq42 transport is stopped. You
+        can set the playlist value while running but the selected file will not be loaded
+        until the sequencer stops. If the sequencer is stopped by a stop marker, then
+        the playlist will set the file at the next file past the selected value. The program
+        will range check for validity, and the file list starts at 1.
+        For playlist, the toggle group can be used to send by CC value, the on group for next, 
+        and off group for previous.
+        Example to set playlist to adjust by value, CC (178), CC number 7. Playlist Next is set
+        to note A0 (21) and previous is set to A#0 (22):
 
-        * [keyboard-group]
+            6 [1 0 178   7   1 127] [1 0 144  21   0 127] [1 0 144  22   0 127]
 
-        Same as keyboard-control, but to control groups.
-
-   	#bpm up and down					
-	-> keys to control bpm
-	#screen set up and down					
-	-> keys for changing the active screenset
-	#group functionality on, group functionality off, group learn
-	-> note that the group learn key is a modifier key to be held while 
-	   pressing a group toggle key
-        #replace, queue, snapshot_1, snapshot_2, keep queue
-	-> These are the other modifier keys explained in section 3a.
-	
    
      *NOTES*: 
-	To see the required key codes when pressed, run seq24 with --show_keys.
+	To see the required key codes when pressed, run seq42 with --show_keys.
 
-	Seq24 will overwrite the .seq24rc file on quit. You should therefore
-	quit seq24 before doing modifications to the .seq24rc file.
+	Seq42 will overwrite the .seq42rc file on quit. You should therefore
+	quit seq42 before doing modifications to the .seq42rc file.
 
-	Some keys should not be assigned to control sequences in seq24 as they
-	are already assigned in the seq24 menu (with ctrl). 
+	Some keys should not be assigned to control sequences in seq42 as they
+	are already assigned in the seq42 menu (with ctrl). 
 	
 
 [3f] JACK Transport
 
-        In order to run seq24 with JACK Tranport Sync, you need 
-        to enable it at the command line with the following flags:
-
-        --jack_transport : seq24 will sync to JACK transport 
+        --jack_transport : seq42 will sync to JACK transport 
                            if the JACK server is available.
         
-        --jack_master : seq24 will try to be JACK master
+        --jack_master : seq42 will try to be JACK master
         
         --jack_master_cond : The attempt to be JACK master will 
                              fail if there is already a master,
                              otherwise it will just take over.
 
-        --jack_start_mode <x> : When seq24 is synced to JACK,  
-                                The playback command comes 
-                                from the JACK server.  seq24 will 
-                                play in performance mode
-                                by default (section [3d]).  
-                                If you want live mode, set 
-                                --jack_start_mode 0.
-
-        It is best to run seq24 with another master like ardour.  You
-        can not change the BPM of seq24 while rolling in JACK sync mode.
-
+        You can not change the BPM of seq42 while rolling in JACK sync mode.
 
 -----------------------------------------------------------
 
-[4] Contact
+[4] Playlist Mode:
 
-	If you have Ideas about seq24 or a bug report,
-please email seq24@filter24.org.  If its a bug report,
-please add [BUG] to the subject.
+        A playlist is a text file containing multiple seq42 files (.s42), that can be quickly loaded
+        for possible accompaniment with a live performance. The file should list on each line the
+        full path to the .s42 file and name, ex:
+
+        /home/username/seq42dir/file1.s42
+        /home/username/seq42dir/file2.s42
+        /home/username/seq42dir/file3.s42
+
+        There should be no blank lines before, after, or between the files listed. Do not use
+        place holders, full path only.
+
+        Playlist mode can be invoked from the command line with the -X <path to playlist file> option.
+        The playlist can also be selected from the main menu, File/Open playlist...
+
+        When the playlist mode is first invoked, you will be prompted with a dialog pop-up asking
+        if you wish to verify the playlist. For new playlists, or if a playlist is modified, selecting 'Yes'
+        would be beneficial to check for errors.  The verification will attempt to load all the files
+        on the list, in order, and if errors are encountered, will stop and indicate the offending file.
+        Select 'No' or escape key if the playlist has previously been verified. If the verification is
+        successful, no pop-up errors will occur, and the first file on the list will be loaded.
+
+        When playlist mode is in effect, the main window SEQ42 logo will turn blue with a red "PLAYLIST" overlay.
+        In addition, the main window title and song editor title will indicate "Playlist" and
+        the current song and numeric value listed in the playlist file ex:
+
+            "seq42 - Playlist, Song 03 - [/home/username/seq42dir/file3.s42]"
+
+        To cycle through the playlist, use the right arrow key to go down the list, and the left
+        arrow key to go up the list, from the main window only. The key binding can be changed in
+        the File/Options/Keyboard tab.
+
+        The sequencer must be stopped in order to cycle up or down the playlist.
+
+        ALERT!! - the key binding may need to be reset if a previous .seq42rc file is present 
+        in your home directory. Go to File/Options/Keyboard to set the 'Playlist next' and
+        'Playlist previous' keys. The default is the left(previous) and right(next) arrow keys.
+
+        During playlist play, when the transport is stopped by a Stop marker, the playlist song will 
+        automatically be incremented down by one song. (See STOP markers above).
+
+        To shut off playlist mode, simply load a new file from the main menu, File/New or
+        File/Open. You could also quit and restart. The main window title will no longer
+        show the "Playlist, Song XX" listing.
+
+        If editing while in playlist mode, you will NOT be prompted to save changes when moving
+        to a new song on the list. If unsaved, all editing will be lost! So if editing in playlist
+        mode, be sure to save before right arrow, or left arrow!
+
+        Special thanks for the playlist idea, and some code (modified) go to:
+        Simon Hickinbotham - seq24plus.
+        https://github.com/franticspider/seq24plus
 
 -----------------------------------------------------------
 
-[5] License
+[5] Tempo Changes
+
+        To add a tempo change marker, left click on the Tempo grid. A BPM pop up window will appear
+        in which you can type, use the spin button, use the bpm key-binding or use tap button
+        to set the BPM value. Press enter or return to accept the value. Press escape to abandon
+        the value. Upon acceptance, a blue tempo mark will be set at the location of the left click
+        location, grid snapped. Also, to the right of the marker, the tempo value will be indicated.
+        Tempo values range from 1 to 600. You can move a created marker by placing the mouse pointer
+        above an existing marker. The pointer will change to an up arrow, then left click and drag
+        the marker to the desired location. The markers will move based on the grid snapping that
+        is selected. You cannot move the first start marker and any attempt to move to the beginning
+        start location will be ignored. Use the BPM spinner to the left of the first marker to
+        adjust the starting BPM.
+
+        To delete a tempo marker, right click above the marker.
+
+        During play, when the progress line reaches the tempo mark, the BPM value will change
+        to the indicated amount. Also, the main bpm spin button will indicate the current
+        tempo being played. Upon stop, the main spin button will revert back to the original 
+        starting value.
+
+        The first marker at the start of the song cannot be deleted. Use the main window BPM spin
+        buttons as used in previous releases to adjust the starting marker.
+
+        STOP Markers:
+        When setting the marker BPM, a value of 0 (zero) can be used to set a stop marker.
+        Stop markers are indicated by red color, and the bpm value will indicate "[stop]".
+        When playing, as the progress mark encounters a stop marker, the transport will stop.
+        Stop markers can be used for editing purposes, or at the end of a song to stop the transport.
+        When in Playlist mode, if stopped by a stop marker, the play list will automatically increment
+        to the next file on the play list after stopping.
+
+        Live mode:
+        In live mode, only the starting bpm will be used. No subsequent tempo marks or stop marks
+        will have any effect.
+
+        For the tempo map, special thanks to:
+        Jonathan Moore Liles    (non-timeline)
+        http://non.tuxfamily.org
+
+-----------------------------------------------------------
+
+[6] Contact
+
+	https://stazed@github.com/Stazed/seq42.git
+
+-----------------------------------------------------------
+
+[7] License
 
 Released under the Terms of the GPL.  See the COPYING file
 for a full readout.
