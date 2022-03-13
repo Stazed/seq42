@@ -114,7 +114,7 @@ static struct
 
 static const char versiontext[] = PACKAGE " " VERSION "\n";
 
-bool global_manual_alsa_ports = false;
+bool global_manual_alsa_ports = true;
 bool global_showmidi = false;
 bool global_priority = false;
 bool global_device_ignore = false;
