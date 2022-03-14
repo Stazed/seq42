@@ -29,7 +29,7 @@
 
 font::font( )
 {
-
+    init();
 }
 
 void
@@ -54,7 +54,7 @@ font::render_string_on_drawable(
     int font_w = 6;
     int font_h = 10;
 
-    for( int i=0; i<length; ++i )
+    for( int i = 0; i < length; ++i )
     {
         unsigned char c = (unsigned char) str[i];
 

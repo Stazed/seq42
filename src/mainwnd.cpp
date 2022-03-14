@@ -761,8 +761,6 @@ mainwnd::mainwnd(perform *a_p, Glib::RefPtr<Gtk::Application> app):
     set_position(Gtk::WIN_POS_CENTER);
     show_all();
 
-    p_font_renderer->init( );
-
     add_events( Gdk::KEY_PRESS_MASK | Gdk::KEY_RELEASE_MASK );
 
     m_timeout_connect = Glib::signal_timeout().connect(

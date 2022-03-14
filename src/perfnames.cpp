@@ -86,14 +86,6 @@ perfnames::draw_track( int track )
     int i = track - m_track_offset;
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
 
-    Pango::FontDescription font;
-    int text_width;
-    int text_height;
-
-    font.set_family(c_font);
-    font.set_size((c_key_fontsize - 2) * Pango::SCALE);
-    font.set_weight(Pango::WEIGHT_NORMAL);
-
     cr->set_operator(Cairo::OPERATOR_CLEAR);
     cr->rectangle(0, (c_names_y * i), m_window_x - 1, c_names_y);
     cr->paint_with_alpha(0.0);
