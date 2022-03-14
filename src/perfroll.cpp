@@ -505,15 +505,16 @@ void perfroll::draw_track_on( int a_track )
                         {
                             long tick_marker_x = (tick_marker / m_perf_scale_x) - x_offset;
 
-                            if ( tick_marker > tick_on ) // sequence end marker
+                            /* Sequence end marker line */
+                            if ( tick_marker > tick_on )
                             {
                                 if ( selected )
                                 {
-                                    cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
+                                    cr->set_source_rgb(c_back_dark_grey.r, c_back_dark_grey.g, c_back_dark_grey.b);
                                 }
                                 else
                                 {
-                                    cr->set_source_rgb(c_back_light_grey.r, c_back_light_grey.g, c_back_light_grey.b);
+                                    cr->set_source_rgb(c_fore_light_grey.r, c_fore_light_grey.g, c_fore_light_grey.b);
                                 }
 
                                 cr->rectangle(tick_marker_x, (y + 4), 1.0, (h - 8) );
