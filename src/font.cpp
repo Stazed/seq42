@@ -51,8 +51,8 @@ font::render_string_on_drawable(
     if ( str != NULL )
         length = strlen(str);
 
-    int font_w = 6;
-    int font_h = 10;
+    int font_w = c_font_width;
+    int font_h = c_font_height;
 
     for( int i = 0; i < length; ++i )
     {

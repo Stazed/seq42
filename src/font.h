@@ -30,6 +30,9 @@
 
 using namespace Gtk;
 
+const int c_font_width = 6;
+const int c_font_height = 10;
+
 class font
 {
 

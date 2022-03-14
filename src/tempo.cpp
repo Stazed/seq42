@@ -19,6 +19,7 @@
 //-----------------------------------------------------------------------------
 
 #include "tempo.h"
+#include "font.h"
 #include "pixmaps/tempo_marker.xpm"
 #include "pixmaps/stop_marker.xpm"
 
@@ -123,14 +124,6 @@ tempo::draw_background()
 {
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
 
-    Pango::FontDescription font;
-    int text_width;
-    int text_height;
-
-    font.set_family(c_font);
-    font.set_size((c_key_fontsize - 1) * Pango::SCALE);
-    font.set_weight(Pango::WEIGHT_BOLD);
-
     Gtk::Allocation allocation = get_allocation();
     const int width = allocation.get_width();
     const int height = allocation.get_height();
@@ -193,14 +186,14 @@ tempo::draw_background()
 
         if ( tempo_marker >=0 && tempo_marker <= m_window_x )
         {
-            // Load the xpm image
+            /* Load the xpm marker image */
             char str[10];
 
             if(current_marker.bpm == STOP_MARKER) // Stop marker
             {
                 m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(stop_marker_xpm);
 
-                Gdk::Cairo::set_source_pixbuf (cr, m_pixbuf, tempo_marker -4, 0.0);
+                Gdk::Cairo::set_source_pixbuf (cr, m_pixbuf, tempo_marker - 4, 0.0);
                 cr->paint();
 
                 snprintf
@@ -212,10 +205,10 @@ tempo::draw_background()
             else                                // tempo marker
             {
                 m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(tempo_marker_xpm);
-                Gdk::Cairo::set_source_pixbuf (cr, m_pixbuf, tempo_marker -4, 0.0);
+                Gdk::Cairo::set_source_pixbuf (cr, m_pixbuf, tempo_marker - 4, 0.0);
                 cr->paint();
 
-                // set the tempo BPM value
+                /* set the tempo BPM value */
                 snprintf
                 (
                     str, sizeof(str),
@@ -224,23 +217,14 @@ tempo::draw_background()
                 );
             }
 
-            // set background for tempo labels to black
+            /* set background for tempo labels to black and draw */
             cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
-
-            auto t = create_pango_layout(str);
-            t->set_font_description(font);
-            t->get_pixel_size(text_width, text_height);
-
-            // draw the black background for the labels
-            cr->rectangle(tempo_marker + 5, 0, text_width, text_height);
+            cr->rectangle(tempo_marker + 5, 0, (strlen(str) * c_font_width), c_font_height + 1);
             cr->stroke_preserve();
             cr->fill();
 
-            // print the BPM or [Stop] label in white
-            cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
-            cr->move_to( tempo_marker + 5, (m_window_y * .5) - (text_height * .5) - 3 );
-
-            t->show_in_cairo_context(cr);
+            /* print the BPM or [Stop] label in white */
+            p_font_renderer->render_string_on_drawable(tempo_marker + 5, (m_window_y * .5) - 8, cr, str, font::WHITE);
         }
     }
 }
