@@ -9,8 +9,8 @@ EXTRA_DIST = \
 	down.xpm \
 	end.xpm \
 	expand.xpm \
-	font_b.xpm \
-	font_w.xpm \
+	font_black.xpm \
+	font_white.xpm \
 	jack.xpm\
 	key.xpm \
 	learn2.xpm \

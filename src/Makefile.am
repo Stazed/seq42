@@ -11,6 +11,7 @@ seq42_SOURCES = \
 	configfile.cpp configfile.h \
 	controllers.h \
 	event.cpp event.h \
+	font.cpp font.h \
 	globals.h \
 	keybindentry.cpp keybindentry.h \
 	lfownd.cpp lfownd.h \
