@@ -19,6 +19,7 @@
 //-----------------------------------------------------------------------------
 #include "perfnames.h"
 #include "mainwnd.h"
+#include "font.h"
 #include "pixmaps/track_play.xpm"
 #include "pixmaps/track_solo.xpm"
 #include "pixmaps/track_mute.xpm"
@@ -145,39 +146,22 @@ perfnames::draw_track( int track )
                 m_mainperf->get_track(track)->get_midi_bus()+1,
                 m_mainperf->get_track(track)->get_midi_channel()+1
             );
-
-            // set the label color
+            
+            font::Color font_color = font::WHITE;
+            
             if(is_focus)
             {
-                cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
+                font_color = font::BLACK;
             }
-            else
-            {
-                cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
-            }
-            cr->set_line_width(1.0);
-
-            // print the string
-            auto t = create_pango_layout(str);
-            t->set_font_description(font);
-
-            cr->move_to(5, (c_names_y * i) + 1);
-
-            t->show_in_cairo_context(cr);
+            
+            p_font_renderer->render_string_on_drawable(5, c_names_y * i + 2, cr, str, font_color);
 
             /* Track name */
             char name[20];
             snprintf(name, sizeof(name), "%-16.16s",
                      m_mainperf->get_track(track)->get_name());
-
-            // print the track name
-            auto n = create_pango_layout(name);
-            n->set_font_description(font);
-            n->get_pixel_size(text_width, text_height);
-
-            cr->move_to(5, (c_names_y * i) + ( (c_names_y * .5) - (text_height * .5) ) + 6);
-
-            n->show_in_cairo_context(cr);
+            
+            p_font_renderer->render_string_on_drawable(5, c_names_y * i + 12, cr, name, font_color);
 
             /* The Play, Mute, Solo buttons */
             bool solo = m_mainperf->get_track(track)->get_song_solo();

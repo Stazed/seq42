@@ -28,6 +28,7 @@
 #include "midifile.h"
 #include "s42file.h"
 #include "sequence.h"
+#include "font.h"
 #include "seqlist.h"
 
 #include "pixmaps/seq42_32.xpm"
@@ -759,6 +760,8 @@ mainwnd::mainwnd(perform *a_p, Glib::RefPtr<Gtk::Application> app):
     /* show everything */
     set_position(Gtk::WIN_POS_CENTER);
     show_all();
+
+    p_font_renderer->init( );
 
     add_events( Gdk::KEY_PRESS_MASK | Gdk::KEY_RELEASE_MASK );
 

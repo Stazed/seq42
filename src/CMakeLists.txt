@@ -5,6 +5,7 @@ project (seq42)
 set (ProgSources
     configfile.cpp
     event.cpp
+    font.cpp
     keybindentry.cpp
     lfownd.cpp
     maintime.cpp
