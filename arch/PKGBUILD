@@ -2,7 +2,7 @@
 # To use:makepkg -si
 _pkgbasename=seq42
 pkgname=${_pkgbasename}-git
-pkgver=2.0.0.r8.g26416de
+pkgver=2.0.0.r9.g107f0d5
 pkgrel=1
 pkgdesc="A MIDI sequencer"
 arch=('i686' 'x86_64')
@@ -12,7 +12,7 @@ depends=('gtkmm3' 'jack' 'liblo')
 makedepends=('git')
 provides=("${_pkgbasename}")
 conflicts=("${_pkgbasename}")
-source=("${_pkgbasename}::git+https://github.com/Stazed/seq42.git")
+source=("git+${url}.git#branch=master")
 sha256sums=('SKIP')
 
 pkgver() {
