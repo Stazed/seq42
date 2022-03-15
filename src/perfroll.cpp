@@ -19,6 +19,7 @@
 //-----------------------------------------------------------------------------
 #include "event.h"
 #include "perfroll.h"
+#include "font.h"
 #include "seqedit.h"
 
 
@@ -409,14 +410,6 @@ void perfroll::draw_track_on( int a_track )
     cr->set_operator(Cairo::OPERATOR_DEST);
     cr->set_operator(Cairo::OPERATOR_OVER);
 
-    Pango::FontDescription font;
-    int text_width;
-    int text_height;
-
-    font.set_family(c_font);
-    font.set_size((c_key_fontsize - 2) * Pango::SCALE);
-    font.set_weight(Pango::WEIGHT_NORMAL);
-
     cr->set_line_width(1.0);
 
     long tick_offset = m_4bar_offset * c_ppqn * 16;
@@ -483,7 +476,7 @@ void perfroll::draw_track_on( int a_track )
 
                     /* sequence label and notes */
                     char label[40];
-                    int max_label = (w / 6) - 1;
+                    int max_label = (w / c_font_width) - 2;
                     if(max_label < 0) max_label = 0;
                     if(max_label > 39) max_label = 39;
                     seq = trk->get_sequence(seq_idx);
@@ -595,30 +588,28 @@ void perfroll::draw_track_on( int a_track )
                             tick_marker += sequence_length;
                         }
                     }
+
+                    /* Limit the label by the width of the trigger */
                     label[max_label] = '\0';
 
-                    auto t = create_pango_layout(label);
-                    t->set_font_description(font);
-                    t->get_pixel_size(text_width, text_height);
+                    font::Color font_color = font::WHITE;
+                    if (selected)
+                    {
+                        cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
+                        font_color = font::BLACK;
+                    }
+                    else
+                    {
+                        cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
+                    }
 
                     /* draw the background for the labels */
-                    if (selected)
-                        cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
-                    else
-                        cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
-                    
-                    cr->rectangle(x + 7, y + 2, text_width, text_height - 1);
+                    cr->rectangle(x + 8, y + 2, (strlen(label) * c_font_width), c_font_height);
                     cr->stroke_preserve();
                     cr->fill();
 
                     /* print the sequence label */
-                    if (selected)
-                        cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
-                    else
-                        cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
-                    
-                    cr->move_to(x + 7, y + 1);
-                    t->show_in_cairo_context(cr);
+                    p_font_renderer->render_string_on_drawable(x + 8, y + 2, cr, label, font_color);
                 }
             }
         }
