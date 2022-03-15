@@ -1457,12 +1457,16 @@ void perform::copy_triggers( )
  * 
  * @param paste_tick
  *      The pasting location. Set by CTRL release from the perftime pointer.
+ * 
+ * @return 
+ *      True if valid paste.
+ *      False if not a valid paste.
  */
-void perform::paste_triggers (long paste_tick)
+bool perform::paste_triggers (long paste_tick)
 {
     /* Don't allow paste between the markers */
     if ( paste_tick > m_left_tick && paste_tick < m_right_tick)
-        return;
+        return false;
 
     /* We have a valid paste location, so push undo before paste */
     push_trigger_undo();
@@ -1484,6 +1488,8 @@ void perform::paste_triggers (long paste_tick)
             }
         }
     }
+    
+    return true;
 }
 
 void perform::start_jack(  )

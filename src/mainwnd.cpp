@@ -1293,8 +1293,14 @@ void
 mainwnd::paste_triggers(long paste_tick) // all tracks
 {
     /* we push undo from paste_triggers() because of location check */
-    m_mainperf->paste_triggers ( paste_tick );
-    m_perfroll->redraw_all_tracks();
+    if( !m_mainperf->paste_triggers ( paste_tick ) )
+    {
+        invalid_paste_triggers();
+    }
+    else
+    {
+        m_perfroll->redraw_all_tracks();
+    }
 }
 
 void
@@ -2777,6 +2783,18 @@ FF_RW_timeout(void *arg)
 
     p->m_excell_FF_RW = 1.0;
     return (FALSE);
+}
+
+void
+mainwnd::invalid_paste_triggers()
+{
+    Glib::ustring query_str = "You cannot paste between the L and R markers!";
+    
+    Gtk::MessageDialog dialog( query_str, false,
+                              Gtk::MESSAGE_INFO,
+                              Gtk::BUTTONS_OK, true);
+
+    dialog.run();
 }
 
 #ifdef NSM_SUPPORT

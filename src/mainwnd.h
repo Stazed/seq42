@@ -317,6 +317,7 @@ private:
     std::string tick_to_measurestring (long a_tick);
     void tick_to_midi_measures (long a_tick, int &measures, int &beats, int &divisions);
     void close_all_windows();
+    void invalid_paste_triggers();
     
 public:
 

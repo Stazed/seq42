@@ -422,7 +422,7 @@ public:
 
     void move_triggers( bool a_direction, uint64_t location = 0);
     void copy_triggers(  );
-    void paste_triggers (long paste_tick);
+    bool paste_triggers (long paste_tick);
     
     void push_bpm_undo();
     void pop_bpm_undo();
