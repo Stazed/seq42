@@ -76,17 +76,22 @@ CTRL + c >> copy selected trigger to clipboard.
 CTRL + v >> paste clipboard trigger after selected trigger.
 CTRL + x >> cut selected trigger and copy to clipboard.
 Delete, backspace >> delete selected trigger.
-Middle mouse button >> paste clipboard trigger to mouse location.
+
+Middle mouse button >> paste clipboard trigger to mouse location of open track (not on another trigger).
+Middle mouse button >> on a trigger will split on mouse pointer location - grid-snapped.
+CTRL + middle mouse >> on a trigger will paste clipboard trigger to mouse, overwriting existing trigger.
+
 Home key >> reposition the progress line to the L marker.
 's' key >> reposition the L marker to the progress line.
 
 'p' key reposition song editor play location. With mouse focus on song editor(tracks),
 press 'p' to move play position to mouse location.
 
-Split trigger (middle mouse button) will split on mouse pointer location - grid-snapped.
-
 'Fruity' input method for trigger pop-up menu (middle mouse button).
-    Split trigger is CTRL-Left mouse and paste is middle mouse or CTRL-Left mouse.
+    middle mouse button >> on existing trigger - pop-up menu.
+    CTRL + Left mouse >> on existing trigger - split trigger at mouse location.
+    CTRL + left mouse >> off trigger - pasted clipboard trigger to mouse location.
+    CTRL + middle mouse button >> paste clipboard trigger to mouse location.
 
 Copy song triggers across different tracks:
     This will also copy the sequence into the new track.

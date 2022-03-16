@@ -97,9 +97,8 @@ bool FruityPerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
             long tick = ths.m_drop_tick;
             tick = tick - tick % ths.m_snap; // grid snap
 
-            bool state = ths.m_mainperf->get_track( ths.m_drop_track )->get_trigger_state(tick);
-
-            if ( !state )    // clicked on track (off trigger) - paste
+            // paste trigger
+            if ( a_ev->state & GDK_CONTROL_MASK )
                 ths.paste_trigger_mouse(tick);
         }
     }
@@ -231,7 +230,7 @@ bool FruityPerfInput::on_button_release_event(GdkEventButton* a_ev, perfroll& th
         m_adding_pressed = false;
     }
 
-    if ( a_ev->button == 2 )
+    if ( a_ev->button == 2 && !(a_ev->state & GDK_CONTROL_MASK) )
     {
         ths.trigger_menu_popup(ths);
     }
@@ -461,7 +460,11 @@ bool Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 
             bool state = ths.m_mainperf->get_track( ths.m_drop_track )->get_trigger_state( tick );
 
-            if ( state )    // clicked on trigger for split
+            if ( state && (a_ev->state & GDK_CONTROL_MASK) )    // clicked on trigger for paste
+            {
+                ths.paste_trigger_mouse(tick);
+            }
+            else if ( state )   // clicked on trigger for split
             {
                 ths.m_mainperf->push_trigger_undo(ths.m_drop_track);
 
