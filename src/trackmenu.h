@@ -80,4 +80,6 @@ public:
 
     void trk_insert(int a_track_location);
     void trk_delete(int a_track_location);
+    
+    void track_is_being_edited();
 };

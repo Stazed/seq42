@@ -297,7 +297,17 @@ trackmenu::trk_new()
 void
 trackmenu::trk_insert(int a_track_location)
 {
-
+    /* Don't allow insert if any track is being edited */
+    for (int i = 0; i < c_max_track; ++i)
+    {
+        if( (m_mainperf->get_track(i) != NULL) &&
+                        m_mainperf->is_track_in_edit(i) )
+        {
+            track_is_being_edited();
+            return;
+        }
+    }
+    
     m_mainperf->push_perf_undo();
     // first copy all tracks to m_insert_clipboard[];
     for(int i = 0; i < c_max_track; i++)
@@ -343,6 +353,17 @@ trackmenu::trk_insert(int a_track_location)
 void
 trackmenu::trk_delete(int a_track_location)
 {
+    /* Don't allow delete if any track is being edited */
+    for (int i = 0; i < c_max_track; ++i)
+    {
+        if( (m_mainperf->get_track(i) != NULL) &&
+                        m_mainperf->is_track_in_edit(i) )
+        {
+            track_is_being_edited();
+            return;
+        }
+    }
+    
     m_mainperf->push_perf_undo();
     // first copy all tracks to m_insert_clipboard[];
     for(int i = 0; i < c_max_track; i++)
@@ -380,6 +401,19 @@ trackmenu::trk_delete(int a_track_location)
             }
         }
     }
+}
+
+void
+trackmenu::track_is_being_edited()
+{
+    Glib::ustring query_str = "You cannot move/swap/delete/insert tracks if being edited!\n"
+            "Please close all editing windows.";
+    
+    Gtk::MessageDialog dialog( query_str, false,
+                              Gtk::MESSAGE_INFO,
+                              Gtk::BUTTONS_OK, true);
+
+    dialog.run();
 }
 
 void

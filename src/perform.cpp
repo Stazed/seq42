@@ -1279,6 +1279,7 @@ perform::push_perf_undo(bool a_import)
     m_mutex.unlock();
 }
 
+// FIXME If user undoes when a track sequence is being edited, they can have a dangling duplicate editor...
 void
 perform::pop_perf_undo(bool a_import)
 {
@@ -1334,6 +1335,7 @@ perform::pop_perf_undo(bool a_import)
     m_mutex.unlock();
 }
 
+// FIXME If user redoes when a track sequence is being edited, they can have a dangling duplicate editor...
 void
 perform::pop_perf_redo(bool a_import)
 {

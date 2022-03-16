@@ -541,15 +541,3 @@ perfnames::merge_tracks( track *a_merge_track )
     
     return is_merge_valid;
 }
-
-void
-perfnames::track_is_being_edited()
-{
-    Glib::ustring query_str = "Cannot swap tracks if being edited!";
-    
-    Gtk::MessageDialog dialog( query_str, false,
-                              Gtk::MESSAGE_INFO,
-                              Gtk::BUTTONS_OK, true);
-
-    dialog.run();
-}

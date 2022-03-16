@@ -71,8 +71,6 @@ private:
     
     void check_global_solo_tracks();
     bool merge_tracks( track *a_merge_track );
-    
-    void track_is_being_edited();
 
 public:
 
