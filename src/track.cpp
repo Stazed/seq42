@@ -527,7 +527,8 @@ track::add_trigger( long a_tick, long a_length, long a_offset, int a_seq )
 {
     lock();
 
-    trigger e;
+    trigger e, s;
+    bool split_trigger = false;
 
     e.m_offset = a_offset;
     e.m_sequence = a_seq;
@@ -541,7 +542,7 @@ track::add_trigger( long a_tick, long a_length, long a_offset, int a_seq )
 
     while ( i != m_list_trigger.end() )
     {
-        // Is it inside the new one? erase
+        // Is old trigger inside the e's ? erase
         if ((*i).m_tick_start >= e.m_tick_start &&
                 (*i).m_tick_end   <= e.m_tick_end  )
         {
@@ -550,14 +551,33 @@ track::add_trigger( long a_tick, long a_length, long a_offset, int a_seq )
             i = m_list_trigger.begin();
             continue;
         }
+        // Is e's trigger entirely inside old ?
+        // Then split the old into two around e
+        else if ((*i).m_tick_start <= e.m_tick_start &&
+                 (*i).m_tick_end >= e.m_tick_end )
+        {
+            // save the old trigger for split
+            s = (*i);
+            
+            // crop the old end to start of e
+            (*i).m_tick_end = e.m_tick_start - 1;
+            
+            // set the split to start after e's end
+            s.m_tick_start = e.m_tick_end + 1;
+            
+            // so we know to add the new split trigger
+            split_trigger = true;
+        }
         // Is the e's end inside  ?
+        // Then crop the old start to the end of e
         else if ( (*i).m_tick_end   >= e.m_tick_end &&
                   (*i).m_tick_start <= e.m_tick_end )
         {
             (*i).m_tick_start = e.m_tick_end + 1;
             //printf ( "mvstart start[%d] end[%d]\n", (*i).m_tick_start, (*i).m_tick_end );
         }
-        // Is the last start inside the new end ?
+        // Is the old end inside the e's end ?
+        // Then crop the old end to start of e
         else if ((*i).m_tick_end   >= e.m_tick_start &&
                  (*i).m_tick_start <= e.m_tick_start )
         {
@@ -569,6 +589,12 @@ track::add_trigger( long a_tick, long a_length, long a_offset, int a_seq )
     }
 
     m_list_trigger.push_front( e );
+    
+    if( split_trigger )
+    {
+        m_list_trigger.push_front( s );
+    }
+
     m_list_trigger.sort();
 
     unlock();
