@@ -59,7 +59,9 @@ public:
         int y,
         Cairo::RefPtr<Cairo::Context> cr,
         const char *str,
-        font::Color col );
+        font::Color col,
+        float scale_x = 1.0,
+        float scale_y = 1.0);
 
 };
 

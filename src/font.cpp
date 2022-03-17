@@ -44,15 +44,14 @@ font::render_string_on_drawable(
     int x, int y,
     Cairo::RefPtr<Cairo::Context> cr,
     const char *str,
-    font::Color col )
+    font::Color col,
+    float scale_x,
+    float scale_y)
 {
     int length = 0;
 
     if ( str != NULL )
         length = strlen(str);
-
-    int font_w = c_font_width;
-    int font_h = c_font_height;
 
     for( int i = 0; i < length; ++i )
     {
@@ -76,10 +75,21 @@ font::render_string_on_drawable(
         if ( col == font::WHITE )
             m_pixbuf = m_white_pixbuf;
 
-        Glib::RefPtr<Gdk::Pixbuf> a_pixbuf = Gdk::Pixbuf::create_subpixbuf(m_pixbuf, pixbuf_index_x, pixbuf_index_y , font_w, font_h);
-        
-        Gdk::Cairo::set_source_pixbuf (cr, a_pixbuf, x + (i*font_w), y);
-        
+        Glib::RefPtr<Gdk::Pixbuf> a_pixbuf = Gdk::Pixbuf::create_subpixbuf(m_pixbuf,
+                                                                           pixbuf_index_x,
+                                                                           pixbuf_index_y,
+                                                                           c_font_width,
+                                                                           c_font_height);
+
+        a_pixbuf = a_pixbuf->scale_simple( (int) (c_font_width * scale_x),
+                                          (int) (c_font_height * scale_y),
+                                          Gdk::INTERP_BILINEAR);
+
+        Gdk::Cairo::set_source_pixbuf (cr,
+                                       a_pixbuf,
+                                       x + (i * c_font_width),
+                                       y);
+
         cr->paint();
     }
 }

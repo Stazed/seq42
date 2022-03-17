@@ -147,15 +147,23 @@ perfnames::draw_track( int track )
             {
                 font_color = font::BLACK;
             }
-            
-            p_font_renderer->render_string_on_drawable(5, m_names_y * i + 2, cr, str, font_color);
+
+            p_font_renderer->render_string_on_drawable(5,
+                                                       m_names_y * i + 2,
+                                                       cr, str, font_color,
+                                                       1.0,
+                                                       m_vertical_zoom);
 
             /* Track name */
             char name[20];
             snprintf(name, sizeof(name), "%-16.16s",
                      m_mainperf->get_track(track)->get_name());
-            
-            p_font_renderer->render_string_on_drawable(5, m_names_y * i + 12, cr, name, font_color);
+
+            p_font_renderer->render_string_on_drawable(5,
+                                                       m_names_y * i + (12 * m_vertical_zoom),
+                                                       cr, name, font_color,
+                                                       1.0,
+                                                       m_vertical_zoom);
 
             /* The Play, Mute, Solo buttons */
             bool solo = m_mainperf->get_track(track)->get_song_solo();
@@ -164,18 +172,21 @@ perfnames::draw_track( int track )
             if(solo)
             {
                 m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(track_solo_xpm);
+                m_pixbuf = m_pixbuf->scale_simple(c_mute_x, (int) (c_mute_y * m_vertical_zoom), Gdk::INTERP_BILINEAR);
                 Gdk::Cairo::set_source_pixbuf (cr, m_pixbuf, m_window_x - 17, (m_names_y * i) + 3);
                 cr->paint();
             }
             else if (muted)
             {
                 m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(track_mute_xpm);
+                m_pixbuf = m_pixbuf->scale_simple(c_mute_x, (int) (c_mute_y * m_vertical_zoom), Gdk::INTERP_BILINEAR);
                 Gdk::Cairo::set_source_pixbuf (cr, m_pixbuf, m_window_x - 17, (m_names_y * i) + 3);
                 cr->paint();
             }
             else
             {
                 m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(track_play_xpm);
+                m_pixbuf = m_pixbuf->scale_simple(c_mute_x, (int) (c_mute_y * m_vertical_zoom), Gdk::INTERP_BILINEAR);
                 Gdk::Cairo::set_source_pixbuf (cr, m_pixbuf, m_window_x - 17, (m_names_y * i) + 3);
                 cr->paint();
             }

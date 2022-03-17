@@ -215,6 +215,8 @@ const int c_perf_scale_x = 32; /*ticks per pixel */
 const int c_perf_max_zoom = 8;
 const float c_perf_max_vertical_zoom = 3.0;
 const float c_perf_min_vertical_zoom = 0.5;
+const int c_mute_x = 17;
+const int c_mute_y = 18;
 
 extern bool global_showmidi;
 extern bool global_priority;
