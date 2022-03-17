@@ -213,8 +213,10 @@ const int c_names_x = 114;
 const int c_names_y = 22;
 const int c_perf_scale_x = 32; /*ticks per pixel */
 const int c_perf_max_zoom = 8;
+const float c_default_vertical_zoom = 1.0;
 const float c_perf_max_vertical_zoom = 3.0;
 const float c_perf_min_vertical_zoom = 0.5;
+const float c_vertical_zoom_step = 0.05;
 const int c_mute_x = 17;
 const int c_mute_y = 18;
 

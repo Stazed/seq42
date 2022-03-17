@@ -58,7 +58,7 @@ For track level undo/redo, (insert/delete/pack,copy,seq copy), the track editor 
 
 --------------------
 
-EDITING GRID:
+MAIN WINDOW EDITING GRID:
 
 Right mouse and hold on empty area of active track >> shows pencil. Then simultaneously Left mouse and drag to paint a trigger.
 Right mouse on trigger >> trigger menu.
@@ -67,10 +67,15 @@ Left mouse on trigger >> select trigger (trigger will highlight).
 Mouse scroll >> scroll vertically.
 Shift + mouse scroll >> scroll horizontally.
 CTRL + mouse scroll >> zoom-in, zoom-out horizontally.
+ALT + mouse scroll >> zoom-in, zoom-out vertically.
 
-z >> zoom-in.
-Shift z >> zoom-out.
-0 >> reset zoom to default.
+Key z >> horizontal zoom-in.
+Shift z >> horizontal zoom-out.
+Key 0 >> reset horizontal zoom to default.
+
+Key v >> vertical zoom-in.
+Shift v >> vertical zoom-out.
+Key 9 >> reset vertical zoom to default.
 
 CTRL + c >> copy selected trigger to clipboard.
 CTRL + v >> paste clipboard trigger after selected trigger.
@@ -140,6 +145,7 @@ CTRL + Right mouse button >> insert track row before.
 ALT + Right mouse button >> delete track row. 
 
 Mouse scroll >> scroll vertically.
+ALT + mouse scroll >> zoom-in, zoom-out vertically.
 
 ---------------------
 

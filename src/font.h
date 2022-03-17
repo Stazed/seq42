@@ -60,8 +60,8 @@ public:
         Cairo::RefPtr<Cairo::Context> cr,
         const char *str,
         font::Color col,
-        float scale_x = 1.0,
-        float scale_y = 1.0);
+        float scale_x = c_default_vertical_zoom,
+        float scale_y = c_default_vertical_zoom);
 
 };
 

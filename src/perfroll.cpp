@@ -33,8 +33,8 @@ perfroll::perfroll( perform *a_perf,
     m_perf_scale_x(c_perf_scale_x),       // 32 ticks per pixel
     m_zoom(c_perf_scale_x),               // 32 ticks per pixel
     m_names_y(c_names_y),
-    m_vertical_zoom(1.0),
-        
+    m_vertical_zoom(c_default_vertical_zoom),
+
     m_old_progress_ticks(0),
 
     m_4bar_offset(0),
@@ -826,17 +826,17 @@ perfroll::on_scroll_event( GdkEventScroll* a_ev )
         }
         return true;
     }
-    
+
     /* Vertical zoom ALT key */
     if ((a_ev->state & modifiers) == GDK_MOD1_MASK)
     {
         if (a_ev->direction == GDK_SCROLL_DOWN)
         {
-            m_mainwnd->set_vertical_zoom(m_vertical_zoom + 0.02);
+            m_mainwnd->set_vertical_zoom(m_vertical_zoom + c_vertical_zoom_step);
         }
         else if (a_ev->direction == GDK_SCROLL_UP)
         {
-            m_mainwnd->set_vertical_zoom(m_vertical_zoom - 0.02);
+            m_mainwnd->set_vertical_zoom(m_vertical_zoom - c_vertical_zoom_step);
         }
         return true;
     }
@@ -901,6 +901,7 @@ perfroll::on_motion_notify_event(GdkEventMotion* a_ev)
 bool
 perfroll::on_key_press_event(GdkEventKey* a_p0)
 {
+    /* Horizontal zoom */
     if (a_p0->keyval == GDK_KEY_Z)         /* zoom in              */
     {
         m_mainwnd->set_zoom(m_zoom / 2);
@@ -915,6 +916,26 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
     {
         m_mainwnd->set_zoom(m_zoom * 2);
         return true;
+    }
+
+    /* Vertical zoom */
+    if ( !(a_p0->state & GDK_CONTROL_MASK) )
+    {
+        if (a_p0->keyval == GDK_KEY_V)         /* zoom in              */
+        {
+            m_mainwnd->set_vertical_zoom(m_vertical_zoom + c_vertical_zoom_step);
+            return true;
+        }
+        else if (a_p0->keyval == GDK_KEY_9)         /* reset to normal zoom */
+        {
+            m_mainwnd->set_vertical_zoom(c_default_vertical_zoom);
+            return true;
+        }
+        else if (a_p0->keyval == GDK_KEY_v)         /* zoom out             */
+        {
+            m_mainwnd->set_vertical_zoom(m_vertical_zoom - c_vertical_zoom_step);
+            return true;
+        }
     }
 
     if (a_p0->keyval == m_mainperf->m_key_pointer)         /* Move to mouse position */

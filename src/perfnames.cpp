@@ -31,7 +31,7 @@ perfnames::perfnames( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment>
     m_redraw_tracks(false),
     m_track_offset(0),
     m_names_y(c_names_y),
-    m_vertical_zoom(1.0),
+    m_vertical_zoom(c_default_vertical_zoom),
     m_button_down(false),
     m_moving(false)
 {
@@ -445,15 +445,15 @@ perfnames::on_scroll_event( GdkEventScroll* a_ev )
     {
         if (a_ev->direction == GDK_SCROLL_DOWN)
         {
-            m_mainwnd->set_vertical_zoom(m_vertical_zoom + 0.02);
+            m_mainwnd->set_vertical_zoom(m_vertical_zoom + c_vertical_zoom_step);
         }
         else if (a_ev->direction == GDK_SCROLL_UP)
         {
-            m_mainwnd->set_vertical_zoom(m_vertical_zoom - 0.02);
+            m_mainwnd->set_vertical_zoom(m_vertical_zoom - c_vertical_zoom_step);
         }
         return true;
     }
-    
+
     double val = m_vadjust->get_value();
 
     if (  a_ev->direction == GDK_SCROLL_UP )
