@@ -1449,26 +1449,40 @@ perform::set_have_redo()
 void perform::copy_triggers( )
 {
     long paste_tick = m_right_tick;
-    paste_triggers ( paste_tick );
+    paste_triggers ( paste_tick, false );
 }
 
 /**
  *  Paste all triggers for all tracks between the L and R markers to the paste_tick.
  *  This will insert and move all triggers after the pasted tick to the right by
- *  the distance of the L and R markers.
+ *  the distance of the L and R markers for CTRL mask. For ALT mask it will overwrite
+ *  without expand.
  * 
  * @param paste_tick
  *      The pasting location. Set by CTRL release from the perftime pointer.
+ * 
+ * @param overwrite
+ *      True if the paste is overwrite by ALT release from perftime pointer.
+ *      Overwrite means we do not expand the triggers.
  * 
  * @return 
  *      True if valid paste.
  *      False if not a valid paste.
  */
-bool perform::paste_triggers (long paste_tick)
+bool perform::paste_triggers (long paste_tick, bool overwrite)
 {
     /* Don't allow paste between the markers */
     if ( paste_tick > m_left_tick && paste_tick < m_right_tick)
         return false;
+    
+    long distance = m_right_tick - m_left_tick;
+    
+    /* Don't allow overwrite to alter between the markers */
+    if ( overwrite )
+    {
+        if ( paste_tick + distance > m_left_tick && paste_tick < m_right_tick )
+            return false;
+    }
 
     /* We have a valid paste location, so push undo before paste */
     push_trigger_undo();
@@ -1476,9 +1490,9 @@ bool perform::paste_triggers (long paste_tick)
     /* Don't really need to check this since we don't allow it */
     if ( m_left_tick < m_right_tick )
     {
+        /* We do this for both, then reverse it for overwrite after pasting */
         move_triggers(true, paste_tick);    // This expands the landing location, true == forward(right)
 
-        long distance = m_right_tick - m_left_tick;
         long offset = paste_tick - m_left_tick;
 
         for (int i = 0; i < c_max_track; i++ )
@@ -1489,6 +1503,12 @@ bool perform::paste_triggers (long paste_tick)
                 m_tracks[i]->paste_triggers( m_left_tick, distance, offset - distance );
             }
         }
+    }
+    
+    /* This will collapse after the above expand for insertion */
+    if ( overwrite )
+    {
+        move_triggers(false, paste_tick + distance);    // collapse, false == backward(left)
     }
     
     return true;

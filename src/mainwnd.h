@@ -351,7 +351,7 @@ public:
     void set_marker_line_selection(uint64_t a_tick = 0);
     void set_window_pointer(Gtk::Window * a_win);
     void remove_window_pointer(Gtk::Window * a_win);
-    void paste_triggers(long paste_tick);
+    void paste_triggers(long paste_tick, bool overwrite);
     void create_triggers();
 
     friend int FF_RW_timeout(void *arg);

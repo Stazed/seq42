@@ -255,7 +255,7 @@ perftime::on_button_press_event(GdkEventButton* p0)
     //m_mainperf->set_start_tick( tick );
     if ( p0->button == 1 )
     {
-        if ( p0->state & GDK_CONTROL_MASK )     // control key
+        if ( (p0->state & GDK_CONTROL_MASK) || (p0->state & GDK_MOD1_MASK) )     // CTRL or ALT keys
         {
             m_moving_paste = true;
         }
@@ -361,7 +361,7 @@ perftime::on_key_release_event(GdkEventKey* a_ev)
             {
                 m_moving_paste = false;
                 m_mainwnd->set_marker_line_selection( 0 );
-                m_mainwnd->paste_triggers((long) m_paste_tick);
+                m_mainwnd->paste_triggers((long) m_paste_tick, false);
 
                 /* If we paste before the left marker then all the triggers get moved
                 * right, so lets move the markers as well to keep them aligned */
@@ -377,6 +377,13 @@ perftime::on_key_release_event(GdkEventKey* a_ev)
                     queue_draw();
                 }
 
+                return true;
+            }
+            else if ( (a_ev->keyval ==  GDK_KEY_Alt_L) || (a_ev->keyval ==  GDK_KEY_Alt_R) )
+            {
+                m_moving_paste = false;
+                m_mainwnd->set_marker_line_selection( 0 );
+                m_mainwnd->paste_triggers((long) m_paste_tick, true);
                 return true;
             }
         }
