@@ -606,12 +606,16 @@ void perfroll::draw_track_on( int a_track )
                     }
 
                     /* draw the background for the labels */
-                    cr->rectangle(x + 8, y + 2, (strlen(label) * c_font_width), c_font_height);
+                    cr->rectangle(x + 8, y + 2, (strlen(label) * c_font_width), (int) (c_font_height * m_vertical_zoom));
                     cr->stroke_preserve();
                     cr->fill();
 
                     /* print the sequence label */
-                    p_font_renderer->render_string_on_drawable(x + 8, y + 2, cr, label, font_color);
+                    p_font_renderer->render_string_on_drawable(x + 8,
+                                                               y + 2,
+                                                               cr, label, font_color,
+                                                               1.0,
+                                                               m_vertical_zoom);
                 }
             }
         }
