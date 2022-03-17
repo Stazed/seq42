@@ -818,11 +818,11 @@ perfroll::on_scroll_event( GdkEventScroll* a_ev )
     {
         if (a_ev->direction == GDK_SCROLL_DOWN)
         {
-            m_mainwnd->set_zoom(m_zoom*2);
+            m_mainwnd->set_horizontal_zoom(m_zoom*2);
         }
         else if (a_ev->direction == GDK_SCROLL_UP)
         {
-            m_mainwnd->set_zoom(m_zoom/2);
+            m_mainwnd->set_horizontal_zoom(m_zoom/2);
         }
         return true;
     }
@@ -904,17 +904,17 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
     /* Horizontal zoom */
     if (a_p0->keyval == GDK_KEY_Z)         /* zoom in              */
     {
-        m_mainwnd->set_zoom(m_zoom / 2);
+        m_mainwnd->set_horizontal_zoom(m_zoom / 2);
         return true;
     }
     else if (a_p0->keyval == GDK_KEY_0)         /* reset to normal zoom */
     {
-        m_mainwnd->set_zoom(c_perf_scale_x);
+        m_mainwnd->set_horizontal_zoom(c_perf_scale_x);
         return true;
     }
     else if (a_p0->keyval == GDK_KEY_z)         /* zoom out             */
     {
-        m_mainwnd->set_zoom(m_zoom * 2);
+        m_mainwnd->set_horizontal_zoom(m_zoom * 2);
         return true;
     }
 

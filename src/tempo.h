@@ -106,7 +106,7 @@ public:
     tempo( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment> a_hadjust );
     ~tempo();
 
-    void set_zoom (int a_zoom);
+    void set_horizontal_zoom (int a_zoom);
 
     void set_guides( int a_snap, int a_measure );
 

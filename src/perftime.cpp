@@ -59,7 +59,7 @@ perftime::perftime( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment> a
 }
 
 void
-perftime::set_zoom (int a_zoom)
+perftime::set_horizontal_zoom (int a_zoom)
 {
     if (m_mainwnd->zoom_check(a_zoom))
     {

@@ -74,7 +74,7 @@ tempo::unlock( )
 }
 
 void
-tempo::set_zoom (int a_zoom)
+tempo::set_horizontal_zoom (int a_zoom)
 {
     if (m_mainwnd->zoom_check(a_zoom))
     {

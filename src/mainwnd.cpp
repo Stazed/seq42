@@ -1490,11 +1490,11 @@ int mainwnd::get_bw()
 }
 
 void
-mainwnd::set_zoom (int z)
+mainwnd::set_horizontal_zoom (int z)
 {
     m_perfroll->set_horizontal_zoom(z);
-    m_perftime->set_zoom(z);
-    m_tempo->set_zoom(z);
+    m_perftime->set_horizontal_zoom(z);
+    m_tempo->set_horizontal_zoom(z);
 }
 
 void

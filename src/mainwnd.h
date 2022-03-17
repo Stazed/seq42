@@ -335,7 +335,7 @@ public:
     }
 
     int get_bw();
-    void set_zoom (int z);
+    void set_horizontal_zoom (int z);
     void set_vertical_zoom(float z);
     bool open_file(const Glib::ustring& fn);
     void export_sequence_midi(sequence *a_seq);
