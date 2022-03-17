@@ -33,6 +33,7 @@ perfroll::perfroll( perform *a_perf,
     m_perf_scale_x(c_perf_scale_x),       // 32 ticks per pixel
     m_zoom(c_perf_scale_x),               // 32 ticks per pixel
     m_names_y(c_names_y),
+    m_vertical_zoom(1.0),
         
     m_old_progress_ticks(0),
 
@@ -821,6 +822,20 @@ perfroll::on_scroll_event( GdkEventScroll* a_ev )
         }
         return true;
     }
+    
+    /* Vertical zoom ALT key */
+    if ((a_ev->state & modifiers) == GDK_MOD1_MASK)
+    {
+        if (a_ev->direction == GDK_SCROLL_DOWN)
+        {
+            m_mainwnd->set_vertical_zoom(m_vertical_zoom + 0.02);
+        }
+        else if (a_ev->direction == GDK_SCROLL_UP)
+        {
+            m_mainwnd->set_vertical_zoom(m_vertical_zoom - 0.02);
+        }
+        return true;
+    }
 
     if ((a_ev->state & modifiers) == GDK_SHIFT_MASK)
     {
@@ -1356,7 +1371,7 @@ perfroll::trigger_menu_popup(perfroll& ths)
 }
 
 void
-perfroll::set_zoom (int a_zoom)
+perfroll::set_horizontal_zoom (int a_zoom)
 {
     if (m_mainwnd->zoom_check(a_zoom))
     {
@@ -1369,6 +1384,16 @@ perfroll::set_zoom (int a_zoom)
         update_sizes();
         fill_background_surface();
     }
+}
+
+void
+perfroll::set_vertical_zoom (float a_zoom)
+{
+    m_vertical_zoom = a_zoom;
+    m_names_y = (int) (c_names_y * m_vertical_zoom);
+
+    fill_background_surface();
+    queue_draw();
 }
 
 long

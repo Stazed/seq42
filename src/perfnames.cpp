@@ -31,6 +31,7 @@ perfnames::perfnames( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment>
     m_redraw_tracks(false),
     m_track_offset(0),
     m_names_y(c_names_y),
+    m_vertical_zoom(1.0),
     m_button_down(false),
     m_moving(false)
 {
@@ -425,6 +426,23 @@ perfnames::on_motion_notify_event(GdkEventMotion* a_ev)
 bool
 perfnames::on_scroll_event( GdkEventScroll* a_ev )
 {
+    guint modifiers;    // Used to filter out caps/num lock etc.
+    modifiers = gtk_accelerator_get_default_mod_mask ();
+
+    /* Vertical zoom ALT key */
+    if ((a_ev->state & modifiers) == GDK_MOD1_MASK)
+    {
+        if (a_ev->direction == GDK_SCROLL_DOWN)
+        {
+            m_mainwnd->set_vertical_zoom(m_vertical_zoom + 0.02);
+        }
+        else if (a_ev->direction == GDK_SCROLL_UP)
+        {
+            m_mainwnd->set_vertical_zoom(m_vertical_zoom - 0.02);
+        }
+        return true;
+    }
+    
     double val = m_vadjust->get_value();
 
     if (  a_ev->direction == GDK_SCROLL_UP )
@@ -470,6 +488,15 @@ perfnames::redraw_dirty_tracks()
             }
         }
     }
+}
+
+void
+perfnames::set_vertical_zoom (float a_zoom)
+{
+    m_vertical_zoom = a_zoom;
+    m_names_y = (int) (c_names_y * m_vertical_zoom);
+    m_redraw_tracks = true;
+    queue_draw();
 }
 
 void

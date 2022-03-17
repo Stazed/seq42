@@ -49,6 +49,7 @@ private:
 
     int          m_track_offset;
     int          m_names_y;
+    float        m_vertical_zoom;
 
     bool         m_track_active[c_max_track];
     
@@ -76,6 +77,7 @@ private:
 public:
 
     void redraw_dirty_tracks();
+    void set_vertical_zoom (float a_zoom);
 
     perfnames( perform *a_perf, mainwnd *a_main,
                Glib::RefPtr<Adjustment> a_vadjust   );

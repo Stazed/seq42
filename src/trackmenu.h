@@ -40,7 +40,6 @@ private:
 
     Menu        *m_menu;
     perform     *m_mainperf;
-    mainwnd     *m_mainwnd;
     bool m_something_to_paste;
 
     std::vector<MenuItem> m_menu_items;
@@ -66,6 +65,7 @@ private:
 
 protected:
 
+    mainwnd     *m_mainwnd;
     track       m_moving_track;
     track       m_clipboard;
     int         m_current_trk;

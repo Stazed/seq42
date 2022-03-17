@@ -1492,9 +1492,16 @@ int mainwnd::get_bw()
 void
 mainwnd::set_zoom (int z)
 {
-    m_perfroll->set_zoom(z);
+    m_perfroll->set_horizontal_zoom(z);
     m_perftime->set_zoom(z);
     m_tempo->set_zoom(z);
+}
+
+void
+mainwnd::set_vertical_zoom(float z)
+{
+    m_perfnames->set_vertical_zoom(z);
+    m_perfroll->set_vertical_zoom(z);
 }
 
 void
