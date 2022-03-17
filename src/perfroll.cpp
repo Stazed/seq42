@@ -32,6 +32,7 @@ perfroll::perfroll( perform *a_perf,
 
     m_perf_scale_x(c_perf_scale_x),       // 32 ticks per pixel
     m_zoom(c_perf_scale_x),               // 32 ticks per pixel
+    m_names_y(c_names_y),
         
     m_old_progress_ticks(0),
 
@@ -124,11 +125,11 @@ perfroll::on_realize()
     m_vadjust->signal_value_changed().connect( mem_fun( *this, &perfroll::change_vert ));
 
     // resize handler
-    if (c_perfroll_background_x != m_surface_background->get_width() || c_names_y != m_surface_background->get_height())
+    if (c_perfroll_background_x != m_surface_background->get_width() || m_names_y != m_surface_background->get_height())
     {
         m_surface_background = Cairo::ImageSurface::create(
             Cairo::Format::FORMAT_ARGB32,
-            c_perfroll_background_x, c_names_y
+            c_perfroll_background_x, m_names_y
         );
     }
     
@@ -174,11 +175,11 @@ perfroll::update_sizes()
 
     m_vadjust->set_lower( 0 );
     m_vadjust->set_upper( c_max_track );
-    m_vadjust->set_page_size( m_window_y / c_names_y );
+    m_vadjust->set_page_size( m_window_y / m_names_y );
     m_vadjust->set_step_increment( 1 );
     m_vadjust->set_page_increment( 1 );
 
-    int v_max_value = c_max_track - (m_window_y / c_names_y);
+    int v_max_value = c_max_track - (m_window_y / m_names_y);
 
     if ( m_vadjust->get_value() > v_max_value )
     {
@@ -202,14 +203,14 @@ perfroll::fill_background_surface()
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface_background);
 
     cr->set_operator(Cairo::OPERATOR_CLEAR);
-    cr->rectangle(0, 0, c_perfroll_background_x,  c_names_y);
+    cr->rectangle(0, 0, c_perfroll_background_x,  m_names_y);
     cr->paint_with_alpha(1.0);
     cr->set_operator(Cairo::OPERATOR_OVER);
 
     /* clear background */
     cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
     cr->set_line_width(1.0);
-    cr->rectangle(0.0, 0.0, c_perfroll_background_x, c_names_y);
+    cr->rectangle(0.0, 0.0, c_perfroll_background_x, m_names_y);
     cr->stroke_preserve();
     cr->fill();
 
@@ -243,7 +244,7 @@ perfroll::fill_background_surface()
 
         /* solid line on every beat */
         cr->move_to(i * m_beat_length / m_perf_scale_x, 0.0);
-        cr->line_to(i * m_beat_length / m_perf_scale_x, c_names_y);
+        cr->line_to(i * m_beat_length / m_perf_scale_x, m_names_y);
         cr->stroke();
 
         // jump 2 if 16th notes
@@ -284,7 +285,7 @@ perfroll::draw_progress()
         m_redraw_tracks = false;
 
         int y_s = 0;
-        int y_f = m_window_y / c_names_y;
+        int y_f = m_window_y / m_names_y;
 
         for ( int y = y_s; y <= y_f; y++ )
         {
@@ -372,11 +373,11 @@ perfroll::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 
     m_have_realize = true;
 
-    if (c_perfroll_background_x != m_surface_background->get_width() || c_names_y != m_surface_background->get_height())
+    if (c_perfroll_background_x != m_surface_background->get_width() || m_names_y != m_surface_background->get_height())
     {
         m_surface_background = Cairo::ImageSurface::create(
             Cairo::Format::FORMAT_ARGB32,
-            c_perfroll_background_x, c_names_y
+            c_perfroll_background_x, m_names_y
         );
 
         fill_background_surface();
@@ -434,8 +435,8 @@ void perfroll::draw_track_on( int a_track )
                     int  w     = x_off - x_on + 1;
 
                     int x = x_on;
-                    int y = c_names_y * a_track + 1;  // + 2
-                    int h = c_names_y - 2; // - 4
+                    int y = m_names_y * a_track + 1;  // + 2
+                    int h = m_names_y - 2; // - 4
 
                     // adjust to screen coordinates
                     x = x - x_offset;
@@ -545,8 +546,8 @@ void perfroll::draw_track_on( int a_track )
                             while ( (dt = seq->get_next_note_event( &tick_s, &tick_f, &note,
                                                                     &t_selected, &velocity )) != DRAW_FIN )
                             {
-                                int note_y = ((c_names_y-6) -
-                                              ((c_names_y-6)  * (note - lowest_note)) / height) + 1;
+                                int note_y = ((m_names_y-6) -
+                                              ((m_names_y-6)  * (note - lowest_note)) / height) + 1;
 
                                 int tick_s_x = ((tick_s * length_w)  / length) + tick_marker_x;
                                 int tick_f_x = ((tick_f * length_w)  / length) + tick_marker_x;
@@ -623,7 +624,7 @@ void perfroll::draw_background_on( int a_track )
 
     a_track -= m_track_offset;
     
-    int y = c_names_y * a_track;
+    int y = m_names_y * a_track;
 
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface_track);
     cr->set_operator(Cairo::OPERATOR_DEST);
@@ -650,10 +651,10 @@ perfroll::draw_track_on_window( int a_track )
     draw_track_on( a_track );
 
     a_track -= m_track_offset;
-    int y = c_names_y * a_track;
+    int y = m_names_y * a_track;
 
     m_surface_window->set_source(m_surface_track, 0.0, 0.0);
-    m_surface_window->rectangle(a_track, y, m_window_x, c_names_y);
+    m_surface_window->rectangle(a_track, y, m_window_x, m_names_y);
     m_surface_window->fill();
     
     /* If the transport is stopped, then we need to set this
@@ -665,7 +666,7 @@ void
 perfroll::redraw_dirty_tracks()
 {
     int y_s = 0;
-    int y_f = m_window_y / c_names_y;
+    int y_f = m_window_y / m_names_y;
 
     for ( int y=y_s; y<=y_f; y++ )
     {
@@ -1024,7 +1025,7 @@ perfroll::convert_xy( int a_x, int a_y, long *a_tick, int *a_track)
     long tick_offset = m_4bar_offset * c_ppqn * 16;
 
     *a_tick = a_x * m_perf_scale_x;
-    *a_track = a_y / c_names_y;
+    *a_track = a_y / m_names_y;
 
     *a_tick += tick_offset;
     *a_track  += m_track_offset;

@@ -30,6 +30,7 @@ perfnames::perfnames( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment>
     m_vadjust(a_vadjust),
     m_redraw_tracks(false),
     m_track_offset(0),
+    m_names_y(c_names_y),
     m_button_down(false),
     m_moving(false)
 {
@@ -87,7 +88,7 @@ perfnames::draw_track( int track )
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
 
     cr->set_operator(Cairo::OPERATOR_CLEAR);
-    cr->rectangle(0, (c_names_y * i), m_window_x - 1, c_names_y);
+    cr->rectangle(0, (m_names_y * i), m_window_x - 1, m_names_y);
     cr->paint_with_alpha(0.0);
     cr->set_operator(Cairo::OPERATOR_OVER);
 
@@ -96,7 +97,7 @@ perfnames::draw_track( int track )
     if ( track < c_max_track )
     {
         cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
-        cr->rectangle(0, (c_names_y * i), m_window_x - 1, c_names_y);
+        cr->rectangle(0, (m_names_y * i), m_window_x - 1, m_names_y);
         cr->stroke_preserve();
         cr->fill();
 
@@ -120,7 +121,7 @@ perfnames::draw_track( int track )
         }
 
         /* Track name background */
-        cr->rectangle(3, (c_names_y * i) + 3, m_window_x - 4, c_names_y - 5);
+        cr->rectangle(3, (m_names_y * i) + 3, m_window_x - 4, m_names_y - 5);
         cr->stroke_preserve();
         cr->fill();
 
@@ -146,14 +147,14 @@ perfnames::draw_track( int track )
                 font_color = font::BLACK;
             }
             
-            p_font_renderer->render_string_on_drawable(5, c_names_y * i + 2, cr, str, font_color);
+            p_font_renderer->render_string_on_drawable(5, m_names_y * i + 2, cr, str, font_color);
 
             /* Track name */
             char name[20];
             snprintf(name, sizeof(name), "%-16.16s",
                      m_mainperf->get_track(track)->get_name());
             
-            p_font_renderer->render_string_on_drawable(5, c_names_y * i + 12, cr, name, font_color);
+            p_font_renderer->render_string_on_drawable(5, m_names_y * i + 12, cr, name, font_color);
 
             /* The Play, Mute, Solo buttons */
             bool solo = m_mainperf->get_track(track)->get_song_solo();
@@ -162,21 +163,19 @@ perfnames::draw_track( int track )
             if(solo)
             {
                 m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(track_solo_xpm);
-                Gdk::Cairo::set_source_pixbuf (cr, m_pixbuf, m_window_x - 17, (c_names_y * i) + 3);
+                Gdk::Cairo::set_source_pixbuf (cr, m_pixbuf, m_window_x - 17, (m_names_y * i) + 3);
                 cr->paint();
             }
             else if (muted)
             {
                 m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(track_mute_xpm);
-
-                Gdk::Cairo::set_source_pixbuf (cr, m_pixbuf, m_window_x - 17, (c_names_y * i) + 3);
+                Gdk::Cairo::set_source_pixbuf (cr, m_pixbuf, m_window_x - 17, (m_names_y * i) + 3);
                 cr->paint();
             }
             else
             {
                 m_pixbuf = Gdk::Pixbuf::create_from_xpm_data(track_play_xpm);
-
-                Gdk::Cairo::set_source_pixbuf (cr, m_pixbuf, m_window_x - 17, (c_names_y * i) + 3);
+                Gdk::Cairo::set_source_pixbuf (cr, m_pixbuf, m_window_x - 17, (m_names_y * i) + 3);
                 cr->paint();
             }
         }
@@ -184,7 +183,7 @@ perfnames::draw_track( int track )
     else    // if we scroll vertical all the way to the bottom
     {
         cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
-        cr->rectangle(0, (c_names_y * i) + 1, m_window_x, c_names_y);
+        cr->rectangle(0, (m_names_y * i) + 1, m_window_x, m_names_y);
         cr->stroke_preserve();
         cr->fill();
     }
@@ -211,7 +210,7 @@ perfnames::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
     if (m_redraw_tracks)
     {
         m_redraw_tracks = false;
-        int trks = (m_window_y / c_names_y) + 1;
+        int trks = (m_window_y / m_names_y) + 1;
 
         for ( int i=0; i< trks; i++ )
         {
@@ -230,7 +229,7 @@ perfnames::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 void
 perfnames::convert_y( int a_y, int *a_trk)
 {
-    *a_trk = a_y / c_names_y;
+    *a_trk = a_y / m_names_y;
     *a_trk  += m_track_offset;
 
     if ( *a_trk >= c_max_track )
@@ -454,7 +453,7 @@ void
 perfnames::redraw_dirty_tracks()
 {
     int y_s = 0;
-    int y_f = m_window_y / c_names_y;
+    int y_f = m_window_y / m_names_y;
 
     for ( int y=y_s; y<=y_f; y++ )
     {

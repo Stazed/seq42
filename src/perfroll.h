@@ -62,6 +62,7 @@ private:
 
     int          m_perf_scale_x; // for zoom - replace c_perf_scale_x
     int          m_zoom;
+    int          m_names_y;      // vertical zoom
 
     int          m_window_x, m_window_y;
     

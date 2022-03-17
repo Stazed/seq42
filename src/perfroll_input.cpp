@@ -14,12 +14,12 @@ void FruityPerfInput::updateMousePtr( perfroll& ths )
         if (ths.m_mainperf->get_track(drop_track)->intersectTriggers( drop_tick, start, end ))
         {
             if (start <= drop_tick && drop_tick <= start + (c_perfroll_size_box_click_w * c_perf_scale_x) &&
-                    (m_current_y % c_names_y) <= c_perfroll_size_box_click_w + 1)
+                    (m_current_y % ths.m_names_y) <= c_perfroll_size_box_click_w + 1)
             {
                 ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::RIGHT_PTR ));
             }
             else if (end - (c_perfroll_size_box_click_w * c_perf_scale_x) <= drop_tick && drop_tick <= end &&
-                     (m_current_y % c_names_y) >= c_names_y - c_perfroll_size_box_click_w - 1)
+                     (m_current_y % ths.m_names_y) >= ths.m_names_y - c_perfroll_size_box_click_w - 1)
             {
                 ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::LEFT_PTR ));
             }
@@ -156,7 +156,7 @@ void FruityPerfInput::on_left_button_pressed(GdkEventButton* a_ev, perfroll& ths
 
                     if ( tick >= start_tick &&
                             tick <= start_tick + (c_perfroll_size_box_click_w * c_perf_scale_x) &&
-                            (ths.m_drop_y % c_names_y) <= c_perfroll_size_box_click_w + 1 )
+                            (ths.m_drop_y % ths.m_names_y) <= c_perfroll_size_box_click_w + 1 )
                     {
                         // clicked left side: begin a grow/shrink for the left side
                         ths.m_growing = true;
@@ -167,7 +167,7 @@ void FruityPerfInput::on_left_button_pressed(GdkEventButton* a_ev, perfroll& ths
                     }
                     else if ( tick >= end_tick - (c_perfroll_size_box_click_w * c_perf_scale_x) &&
                               tick <= end_tick &&
-                              (ths.m_drop_y % c_names_y) >= c_names_y - c_perfroll_size_box_click_w - 1 )
+                              (ths.m_drop_y % ths.m_names_y) >= ths.m_names_y - c_perfroll_size_box_click_w - 1 )
                     {
                         // clicked right side: grow/shrink the right side
                         ths.m_growing = true;
@@ -401,7 +401,7 @@ bool Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
 
                 if ( tick >= start_tick &&
                         tick <= start_tick + (c_perfroll_size_box_click_w * c_perf_scale_x) &&
-                        (ths.m_drop_y % c_names_y) <= c_perfroll_size_box_click_w + 1 )
+                        (ths.m_drop_y % ths.m_names_y) <= c_perfroll_size_box_click_w + 1 )
                 {
                     // left resize handle clicked
                     ths.m_growing = true;
@@ -412,7 +412,7 @@ bool Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
                 }
                 else if ( tick >= end_tick - (c_perfroll_size_box_click_w * c_perf_scale_x) &&
                           tick <= end_tick &&
-                          (ths.m_drop_y % c_names_y) >= c_names_y - c_perfroll_size_box_click_w - 1 )
+                          (ths.m_drop_y % ths.m_names_y) >= ths.m_names_y - c_perfroll_size_box_click_w - 1 )
                 {
                     // right resize handle clicked
                     ths.m_growing = true;

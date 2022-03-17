@@ -48,6 +48,7 @@ private:
     int m_window_x, m_window_y;
 
     int          m_track_offset;
+    int          m_names_y;
 
     bool         m_track_active[c_max_track];
     
