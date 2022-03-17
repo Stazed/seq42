@@ -493,10 +493,13 @@ perfnames::redraw_dirty_tracks()
 void
 perfnames::set_vertical_zoom (float a_zoom)
 {
-    m_vertical_zoom = a_zoom;
-    m_names_y = (int) (c_names_y * m_vertical_zoom);
-    m_redraw_tracks = true;
-    queue_draw();
+    if (m_mainwnd->zoom_check_vertical(a_zoom))
+    {
+        m_vertical_zoom = a_zoom;
+        m_names_y = (int) (c_names_y * m_vertical_zoom);
+        m_redraw_tracks = true;
+        queue_draw();
+    }
 }
 
 void

@@ -1389,11 +1389,14 @@ perfroll::set_horizontal_zoom (int a_zoom)
 void
 perfroll::set_vertical_zoom (float a_zoom)
 {
-    m_vertical_zoom = a_zoom;
-    m_names_y = (int) (c_names_y * m_vertical_zoom);
+    if (m_mainwnd->zoom_check_vertical(a_zoom))
+    {
+        m_vertical_zoom = a_zoom;
+        m_names_y = (int) (c_names_y * m_vertical_zoom);
 
-    fill_background_surface();
-    queue_draw();
+        fill_background_surface();
+        queue_draw();
+    }
 }
 
 long
