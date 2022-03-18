@@ -1411,7 +1411,7 @@ seqedit::set_note_length( int a_note_length  )
 void
 seqedit::set_vertical_zoom( float a_zoom )
 {    
-    if ( a_zoom > 3.0 || a_zoom < 1.0)
+    if ( a_zoom > c_max_seqroll_vertical_zoom || a_zoom < c_min_seqroll_vertical_zoom )
         return;
     
     m_vertical_zoom = a_zoom;
@@ -1820,11 +1820,11 @@ seqedit::on_scroll_event( GdkEventScroll* a_ev )
     {
         if (a_ev->direction == GDK_SCROLL_DOWN)
         {
-            set_vertical_zoom(m_vertical_zoom + c_vertical_zoom_step);
+            set_vertical_zoom(m_vertical_zoom + c_vert_seqroll_zoom_step);
         }
         else if (a_ev->direction == GDK_SCROLL_UP)
         {
-            set_vertical_zoom(m_vertical_zoom - c_vertical_zoom_step);
+            set_vertical_zoom(m_vertical_zoom - c_vert_seqroll_zoom_step);
         }
         return true;
     }
@@ -1882,6 +1882,27 @@ seqedit::on_key_press_event( GdkEventKey* a_ev )
             set_zoom(m_zoom * 2);
             result = true;
         }
+
+        /* Vertical zoom */
+        if ( !(a_ev->state & GDK_CONTROL_MASK) )
+        {
+            if (a_ev->keyval == GDK_KEY_V)         /* zoom in              */
+            {
+                set_vertical_zoom(m_vertical_zoom + c_vert_seqroll_zoom_step);
+                result = true;
+            }
+            else if (a_ev->keyval == GDK_KEY_9)    /* reset to normal zoom */
+            {
+                set_vertical_zoom(c_default_vertical_zoom);
+                result = true;
+            }
+            else if (a_ev->keyval == GDK_KEY_v)    /* zoom out             */
+            {
+                set_vertical_zoom(m_vertical_zoom - c_vert_seqroll_zoom_step);
+                result = true;
+            }
+        }
+
         if (! result)
             result = Gtk::Window::on_key_press_event(a_ev);
 
