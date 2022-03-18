@@ -146,6 +146,10 @@ const int c_keyoffset_x = c_keyarea_x - c_key_x;
 /* paino roll */
 const int c_rollarea_y = c_keyarea_y;
 
+extern int g_key_y;
+extern int g_keyarea_y;
+extern int g_rollarea_y;
+
 /* events bar */
 const int c_eventarea_y = 16;
 const int c_eventevent_y = 10;

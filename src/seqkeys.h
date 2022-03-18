@@ -74,7 +74,6 @@ private:
     void draw_key( int a_key, bool a_state );
     void change_vert();
     void update_sizes();
-    void reset();
 
 protected:
     bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr);
@@ -95,4 +94,5 @@ public:
 
     void set_scale( int a_scale );
     void set_key( int a_key );
+    void reset();
 };

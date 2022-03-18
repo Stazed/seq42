@@ -83,6 +83,11 @@ const int select_odd_notes  = 16;
 
 const int reverse_pattern = 17;
 
+// extern from global.h - for vertical zoom
+int g_key_y = c_key_y;
+int g_keyarea_y = c_keyarea_y;
+int g_rollarea_y = c_rollarea_y;
+
 /* connects to a menu item, tells the performance
    to launch the timer thread */
 void
@@ -99,6 +104,7 @@ seqedit::seqedit( sequence *a_seq,
     m_mainwnd(a_main),
 
     m_zoom(m_initial_zoom),
+    m_vertical_zoom(1.0),
     m_snap(m_initial_snap),
     m_note_length(m_initial_note_length),
     m_scale(m_initial_scale),
@@ -1403,6 +1409,23 @@ seqedit::set_note_length( int a_note_length  )
 }
 
 void
+seqedit::set_vertical_zoom( float a_zoom )
+{    
+    if ( a_zoom > 3.0 || a_zoom < 1.0)
+        return;
+    
+    m_vertical_zoom = a_zoom;
+    
+    g_key_y = c_key_y * m_vertical_zoom;
+    g_keyarea_y = g_key_y * c_num_keys + 1;
+    g_rollarea_y = g_keyarea_y;
+    
+    m_seqroll_wid->reset();
+    m_seqkeys_wid->reset();
+    m_seqevent_wid->reset();
+}
+
+void
 seqedit::set_scale( int a_scale )
 {
     m_entry_scale->set_text( c_scales_text[a_scale] );
@@ -1789,6 +1812,19 @@ seqedit::on_scroll_event( GdkEventScroll* a_ev )
         {
             if (m_zoom/2 >= c_min_zoom)
                 set_zoom(m_zoom/2);
+        }
+        return true;
+    }
+
+    if ((a_ev->state & modifiers) == GDK_MOD1_MASK)
+    {
+        if (a_ev->direction == GDK_SCROLL_DOWN)
+        {
+            set_vertical_zoom(m_vertical_zoom + c_vertical_zoom_step);
+        }
+        else if (a_ev->direction == GDK_SCROLL_UP)
+        {
+            set_vertical_zoom(m_vertical_zoom - c_vertical_zoom_step);
         }
         return true;
     }

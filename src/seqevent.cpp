@@ -522,7 +522,7 @@ seqevent::on_motion_notify_event(GdkEventMotion* a_ev)
 void
 seqevent::snap_y( int *a_y )
 {
-    *a_y = *a_y - (*a_y % c_key_y);
+    *a_y = *a_y - (*a_y % g_key_y);
 }
 
 /* performs a 'snap' on x */

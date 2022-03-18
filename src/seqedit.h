@@ -194,6 +194,8 @@ private:
     int         m_zoom;
     static int  m_initial_zoom;
 
+    float       m_vertical_zoom;
+    
     /* set snap to in pulses, off = 1 */
     int         m_snap;
     static int  m_initial_snap;
@@ -221,10 +223,14 @@ private:
     /* what is the data window currently editing ? */
     unsigned char m_editing_status;
     unsigned char m_editing_cc;
-    
+
+    /* Horizontal zoom */
     void set_zoom( int a_zoom );
     void set_snap( int a_snap );
     void set_note_length( int a_note_length );
+
+    /* Vertical zoom */
+    void set_vertical_zoom( float a_zoom );
 
     void set_bp_measure( int a_beats_per_measure );
     void set_bw( int a_beat_width );
