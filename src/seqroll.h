@@ -96,6 +96,10 @@ private:
     int          m_scale;
     int          m_chord;
     int          m_key;
+    
+    /* Vertical Zoom */
+    int         m_key_y;
+    int         m_rollarea_y;
 
     int m_window_x, m_window_y;
 
@@ -192,6 +196,7 @@ public:
     void redraw();
     void redraw_events();
     void set_zoom( int a_zoom );
+    void set_vertical_zoom( int key_y, int rollarea_y);
     void set_snap( int a_snap );
     void set_note_length( int a_note_length );
     void set_ignore_redraw(bool a_ignore);

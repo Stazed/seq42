@@ -150,10 +150,6 @@ const float c_vert_seqroll_zoom_step = 0.125;
 const float c_max_seqroll_vertical_zoom = 3.0;
 const float c_min_seqroll_vertical_zoom = 1.0;
 
-extern int g_key_y;
-extern int g_keyarea_y;
-extern int g_rollarea_y;
-
 /* events bar */
 const int c_eventarea_y = 16;
 const int c_eventevent_y = 10;

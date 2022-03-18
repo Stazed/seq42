@@ -83,11 +83,6 @@ const int select_odd_notes  = 16;
 
 const int reverse_pattern = 17;
 
-// extern from global.h - for vertical zoom
-int g_key_y = c_key_y;
-int g_keyarea_y = c_keyarea_y;
-int g_rollarea_y = c_rollarea_y;
-
 /* connects to a menu item, tells the performance
    to launch the timer thread */
 void
@@ -104,7 +99,10 @@ seqedit::seqedit( sequence *a_seq,
     m_mainwnd(a_main),
 
     m_zoom(m_initial_zoom),
-    m_vertical_zoom(1.0),
+    m_key_y(c_key_y),
+    m_keyarea_y(c_keyarea_y),
+    m_rollarea_y(c_rollarea_y),
+    m_vertical_zoom(c_default_vertical_zoom),
     m_snap(m_initial_snap),
     m_note_length(m_initial_note_length),
     m_scale(m_initial_scale),
@@ -1416,13 +1414,13 @@ seqedit::set_vertical_zoom( float a_zoom )
     
     m_vertical_zoom = a_zoom;
     
-    g_key_y = c_key_y * m_vertical_zoom;
-    g_keyarea_y = g_key_y * c_num_keys + 1;
-    g_rollarea_y = g_keyarea_y;
+    m_key_y = c_key_y * m_vertical_zoom;
+    m_keyarea_y = m_key_y * c_num_keys + 1;
+    m_rollarea_y = m_keyarea_y;
     
-    m_seqroll_wid->reset();
-    m_seqkeys_wid->reset();
-    m_seqevent_wid->reset();
+    m_seqroll_wid->set_vertical_zoom(m_key_y, m_rollarea_y);
+    m_seqkeys_wid->set_vertical_zoom(m_key_y, m_keyarea_y, m_rollarea_y);
+    m_seqevent_wid->set_vertical_zoom(m_key_y);
 }
 
 void

@@ -31,12 +31,15 @@ seqkeys::seqkeys(sequence *a_seq, Glib::RefPtr<Adjustment> a_vadjust ):
     m_enter_piano_roll(false),
     m_keying(false),
     m_scale(0),
-    m_key(0)
+    m_key(0),
+    m_key_y(c_key_y),
+    m_keyarea_y(c_keyarea_y),
+    m_rollarea_y(c_rollarea_y)
 {
     m_surface = Cairo::ImageSurface::create(
         Cairo::Format::FORMAT_ARGB32,
         c_keyarea_x,
-        g_keyarea_y
+        m_keyarea_y
     );
 
     add_events( Gdk::BUTTON_PRESS_MASK |
@@ -86,6 +89,18 @@ seqkeys::set_key( int a_key )
 }
 
 void
+seqkeys::set_vertical_zoom(int key_y, int keyarea_y, int rollarea_y)
+{
+    if ( m_key_y != key_y)
+    {
+        m_key_y = key_y;
+        m_keyarea_y = keyarea_y;
+        m_rollarea_y = rollarea_y;
+        reset();
+    }
+}
+
+void
 seqkeys::reset()
 {
     change_vert();
@@ -99,20 +114,20 @@ seqkeys::update_surface()
     Cairo::RefPtr<Cairo::Context> cr = Cairo::Context::create(m_surface);
 
     cr->set_operator(Cairo::OPERATOR_CLEAR);
-    cr->rectangle(0.0, 0.0, c_keyarea_x, g_keyarea_y);
+    cr->rectangle(0.0, 0.0, c_keyarea_x, m_keyarea_y);
     cr->paint_with_alpha(1.0);
     cr->set_operator(Cairo::OPERATOR_OVER);
 
     /* the outline around the whole piano area */
     cr->set_source_rgb(c_back_black.r, c_back_black.g, c_back_black.b);
     cr->set_line_width(1.0);
-    cr->rectangle(0.0, 0.0, c_keyarea_x, g_keyarea_y);
+    cr->rectangle(0.0, 0.0, c_keyarea_x, m_keyarea_y);
     cr->stroke_preserve();
     cr->fill();
 
     /* The area behind the keyboard */
     cr->set_source_rgb(c_back_light_grey.r, c_back_light_grey.g, c_back_light_grey.b);
-    cr->rectangle(1.0, 1.0, c_keyoffset_x - 1, g_keyarea_y - 2);
+    cr->rectangle(1.0, 1.0, c_keyoffset_x - 1, m_keyarea_y - 2);
     cr->stroke_preserve();
     cr->fill();
 
@@ -131,9 +146,9 @@ seqkeys::update_surface()
 
         cr->set_source_rgb(c_fore_white.r, c_fore_white.g, c_fore_white.b);
         cr->rectangle(c_keyoffset_x + 1,
-                                 (g_key_y * i) + 2,
+                                 (m_key_y * i) + 2,
                                  c_key_x - 3,
-                                 g_key_y - 3 );
+                                 m_key_y - 3 );
         cr->stroke_preserve();
         cr->fill();
 
@@ -161,9 +176,9 @@ seqkeys::update_surface()
             }
             
             cr->rectangle(c_keyoffset_x + 1,
-                                     (g_key_y * i) + 2,
+                                     (m_key_y * i) + 2,
                                      c_key_x - 3,
-                                     g_key_y - 3 );
+                                     m_key_y - 3 );
             cr->stroke_preserve();
             cr->fill();
         }
@@ -179,9 +194,9 @@ seqkeys::update_surface()
             }
 
             cr->rectangle(c_keyoffset_x + 1,
-                         (g_key_y * i) + 2,
+                         (m_key_y * i) + 2,
                          c_key_x - 3,
-                         g_key_y - 3 );
+                         m_key_y - 3 );
             cr->stroke_preserve();
             cr->fill();
         }
@@ -198,7 +213,7 @@ seqkeys::update_surface()
 
             snprintf(notes, sizeof(notes), "%2s%1d", c_key_text[key], octave);
 
-            p_font_renderer->render_string_on_drawable(2, g_key_y * i, cr, notes, font::BLACK );
+            p_font_renderer->render_string_on_drawable(2, m_key_y * i, cr, notes, font::BLACK );
         }
     }
 }
@@ -216,7 +231,7 @@ seqkeys::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 void
 seqkeys::convert_y( int a_y, int *a_note)
 {
-    *a_note = (g_rollarea_y - a_y - 2) / g_key_y;
+    *a_note = (m_rollarea_y - a_y - 2) / m_key_y;
 }
 
 bool
@@ -383,9 +398,9 @@ seqkeys::draw_key( int a_key, bool a_state )
     }
 
     cr->rectangle(c_keyoffset_x + 1,
-                             (g_key_y * a_key) + 2 /* - m_scroll_offset_y*/,
+                             (m_key_y * a_key) + 2 /* - m_scroll_offset_y*/,
                              c_key_x - 3,
-                             g_key_y - 3 );
+                             m_key_y - 3 );
     cr->stroke_preserve();
     cr->fill();
 
@@ -393,9 +408,9 @@ seqkeys::draw_key( int a_key, bool a_state )
     {
         cr->set_source_rgb(c_note_highlight.r, c_note_highlight.g, c_note_highlight.b);          // Blue 
         cr->rectangle(c_keyoffset_x + 1,
-                             (g_key_y * a_key) + 2 /* - m_scroll_offset_y*/,
+                             (m_key_y * a_key) + 2 /* - m_scroll_offset_y*/,
                              c_key_x - 3,
-                             g_key_y - 3 );
+                             m_key_y - 3 );
         cr->stroke_preserve();
         cr->fill();
     }
@@ -406,16 +421,16 @@ seqkeys::draw_key( int a_key, bool a_state )
 void
 seqkeys::change_vert( )
 {
-    if ( m_surface->get_width() != c_keyarea_x || m_surface->get_height() != g_keyarea_y )
+    if ( m_surface->get_width() != c_keyarea_x || m_surface->get_height() != m_keyarea_y )
     {
         m_surface = Cairo::ImageSurface::create(
         Cairo::Format::FORMAT_ARGB32,
         c_keyarea_x,
-        g_keyarea_y);
+        m_keyarea_y);
     }
 
     m_scroll_offset_key = (int) m_vadjust->get_value();
-    m_scroll_offset_y = m_scroll_offset_key * g_key_y,
+    m_scroll_offset_y = m_scroll_offset_key * m_key_y,
 
     update_surface();
     queue_draw();

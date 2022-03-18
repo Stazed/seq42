@@ -36,6 +36,7 @@ seqevent::seqevent(sequence *a_seq,
 
     m_zoom(a_zoom),
     m_snap(a_snap),
+    m_key_y(c_key_y),
 
     m_selecting(false),
     m_moving_init(false),
@@ -230,6 +231,16 @@ seqevent::set_zoom( int a_zoom )
     if ( m_zoom != a_zoom )
     {
         m_zoom = a_zoom;
+        reset();
+    }
+}
+
+void
+seqevent::set_vertical_zoom(int key_y)
+{
+    if ( m_key_y != key_y )
+    {
+        m_key_y = key_y;
         reset();
     }
 }
@@ -522,7 +533,7 @@ seqevent::on_motion_notify_event(GdkEventMotion* a_ev)
 void
 seqevent::snap_y( int *a_y )
 {
-    *a_y = *a_y - (*a_y % g_key_y);
+    *a_y = *a_y - (*a_y % m_key_y);
 }
 
 /* performs a 'snap' on x */

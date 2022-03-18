@@ -51,6 +51,9 @@ seqroll::seqroll(perform *a_perf,
     m_chord(0),
     m_key(0),
 
+    m_key_y(c_key_y),
+    m_rollarea_y(c_rollarea_y),
+
     m_window_x(10),
     m_window_y(10),
 
@@ -190,11 +193,11 @@ seqroll::update_sizes()
 
     m_vadjust->set_lower( 0 );
     m_vadjust->set_upper( c_num_keys );
-    m_vadjust->set_page_size( m_window_y / g_key_y );
+    m_vadjust->set_page_size( m_window_y / m_key_y );
     m_vadjust->set_step_increment( 12 );
     m_vadjust->set_page_increment( 12 );
 
-    int v_max_value = c_num_keys - (m_window_y / g_key_y);
+    int v_max_value = c_num_keys - (m_window_y / m_key_y);
 
     if ( m_vadjust->get_value() > v_max_value )
     {
@@ -243,7 +246,7 @@ void
 seqroll::change_vert( )
 {
     m_scroll_offset_key = (int) m_vadjust->get_value();
-    m_scroll_offset_y = m_scroll_offset_key * g_key_y;
+    m_scroll_offset_y = m_scroll_offset_key * m_key_y;
 
     if ( m_ignore_redraw )
         return;
@@ -339,7 +342,7 @@ seqroll::update_background()
     cr->set_line_width(1.0);
     cr->set_dash(dashed, 1.0);
 
-    for ( int i = 0; i < (m_window_y / g_key_y) + 1; i++ )
+    for ( int i = 0; i < (m_window_y / m_key_y) + 1; i++ )
     {
         if (0 == (((c_num_keys - i) - m_scroll_offset_key + ( 12 - m_key )) % 12))
         {
@@ -358,8 +361,8 @@ seqroll::update_background()
             cr->set_dash(dashed, 1.0);
         }
 
-        cr->move_to(0.0, i * g_key_y);
-        cr->line_to(m_window_x, i * g_key_y );
+        cr->move_to(0.0, i * m_key_y);
+        cr->line_to(m_window_x, i * m_key_y );
         cr->stroke();
 
         if ( m_scale != c_scale_off )
@@ -370,9 +373,9 @@ seqroll::update_background()
                                              - m_scroll_offset_key
                                              - 1 + ( 12 - m_key )) % 12] )
             {
-                cr->rectangle(0.0, i * g_key_y + 1,
+                cr->rectangle(0.0, i * m_key_y + 1,
                                              m_window_x,
-                                             g_key_y - 1 );
+                                             m_key_y - 1 );
                 cr->stroke_preserve();
                 cr->fill();
             }
@@ -448,6 +451,17 @@ seqroll::set_zoom( int a_zoom )
     if ( m_zoom != a_zoom )
     {
         m_zoom = a_zoom;
+        reset();
+    }
+}
+
+void
+seqroll::set_vertical_zoom( int key_y, int rollarea_y)
+{
+    if ( m_key_y != key_y )
+    {
+        m_key_y = key_y;
+        m_rollarea_y = rollarea_y;
         reset();
     }
 }
@@ -644,8 +658,8 @@ seqroll::draw_events_on_surface()
             {
                 /* turn into screen corrids */
                 note_x = tick_s / m_zoom;
-                note_y = g_rollarea_y -(note * g_key_y) - g_key_y - 1 + 2;
-                note_height = g_key_y - 3;
+                note_y = m_rollarea_y -(note * m_key_y) - m_key_y - 1 + 2;
+                note_height = m_key_y - 3;
 
                 				//printf( "DEBUG: drawing note[%d] tick_s[%ld] tick_f[%ld] start_tick[%d] end_tick[%d]\n",
                 				//note, tick_s, tick_f, start_tick, end_tick );
@@ -813,10 +827,10 @@ seqroll::draw_selection_on_window(const Cairo::RefPtr<Cairo::Context>& cr)
         m_old.x = x;
         m_old.y = y;
         m_old.width = w;
-        m_old.height = h + g_key_y;
+        m_old.height = h + m_key_y;
         
         cr->set_source_rgba(c_note_color_selected.r, c_note_color_selected.g, c_note_color_selected.b, .4); // red
-        cr->rectangle(x, y, w, h + g_key_y );
+        cr->rectangle(x, y, w, h + m_key_y );
         cr->fill();
     }
 
@@ -880,7 +894,7 @@ void
 seqroll::convert_xy( int a_x, int a_y, long *a_tick, int *a_note)
 {
     *a_tick = a_x * m_zoom;
-    *a_note = (g_rollarea_y - a_y - 2) / g_key_y;
+    *a_note = (m_rollarea_y - a_y - 2) / m_key_y;
 }
 
 /* notes and ticks to screen coordinates */
@@ -888,7 +902,7 @@ void
 seqroll::convert_tn( long a_ticks, int a_note, int *a_x, int *a_y)
 {
     *a_x = a_ticks /  m_zoom;
-    *a_y = g_rollarea_y - ((a_note + 1) * g_key_y) - 1;
+    *a_y = m_rollarea_y - ((a_note + 1) * m_key_y) - 1;
 }
 
 /* checks mins / maxes..  the fills in x,y
@@ -936,7 +950,7 @@ seqroll::convert_tn_box_to_rect( long a_tick_s, long a_tick_f,
 
     xy_to_rect( x1, y1, x2, y2, a_x, a_y, a_w, a_h );
 
-    *a_h += g_key_y;
+    *a_h += m_key_y;
 }
 
 void
@@ -1043,7 +1057,7 @@ seqroll::on_motion_notify_event(GdkEventMotion* a_ev)
 void
 seqroll::snap_y( int *a_y )
 {
-    *a_y = *a_y - (*a_y % g_key_y);
+    *a_y = *a_y - (*a_y % m_key_y);
 }
 
 /* performs a 'snap' on x */
