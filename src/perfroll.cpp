@@ -31,7 +31,7 @@ perfroll::perfroll( perform *a_perf,
     m_mainwnd(a_main),
 
     m_perf_scale_x(c_perf_scale_x),       // 32 ticks per pixel
-    m_zoom(c_perf_scale_x),               // 32 ticks per pixel
+    m_horizontal_zoom(c_perf_scale_x),    // 32 ticks per pixel
     m_names_y(c_names_y),
     m_vertical_zoom(c_default_vertical_zoom),
 
@@ -741,11 +741,11 @@ perfroll::auto_scroll_horz()
     if(!m_mainperf->get_follow_transport())
         return;
 
-    if(m_zoom >= c_perf_scale_x)
+    if(m_horizontal_zoom >= c_perf_scale_x)
     {
-        double progress = (double)m_mainperf->get_tick()/m_zoom/c_ppen;
+        double progress = (double)m_mainperf->get_tick()/m_horizontal_zoom/c_ppen;
 
-        int zoom_ratio = m_zoom/c_perf_scale_x;
+        int zoom_ratio = m_horizontal_zoom/c_perf_scale_x;
 
         progress *= zoom_ratio;
 
@@ -775,14 +775,14 @@ perfroll::auto_scroll_horz()
     long progress_tick = m_mainperf->get_tick();
     long tick_offset = m_4bar_offset * c_ppqn * 16;
 
-    int progress_x =     ( progress_tick - tick_offset ) / m_zoom  + 100;
+    int progress_x =     ( progress_tick - tick_offset ) / m_horizontal_zoom  + 100;
     int page = progress_x / m_window_x;
 
     if (page != 0 || progress_x < 0)
     {
-        double left_tick = (double) progress_tick /m_zoom/c_ppen;
+        double left_tick = (double) progress_tick /m_horizontal_zoom/c_ppen;
 
-        switch(m_zoom)
+        switch(m_horizontal_zoom)
         {
 //        case 4:
 //            m_hadjust->set_value(left_tick / 8);
@@ -818,11 +818,11 @@ perfroll::on_scroll_event( GdkEventScroll* a_ev )
     {
         if (a_ev->direction == GDK_SCROLL_DOWN)
         {
-            m_mainwnd->set_horizontal_zoom(m_zoom*2);
+            m_mainwnd->set_horizontal_zoom(m_horizontal_zoom*2);
         }
         else if (a_ev->direction == GDK_SCROLL_UP)
         {
-            m_mainwnd->set_horizontal_zoom(m_zoom/2);
+            m_mainwnd->set_horizontal_zoom(m_horizontal_zoom/2);
         }
         return true;
     }
@@ -904,7 +904,7 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
     /* Horizontal zoom */
     if (a_p0->keyval == GDK_KEY_Z)         /* zoom in              */
     {
-        m_mainwnd->set_horizontal_zoom(m_zoom / 2);
+        m_mainwnd->set_horizontal_zoom(m_horizontal_zoom / 2);
         return true;
     }
     else if (a_p0->keyval == GDK_KEY_0)         /* reset to normal zoom */
@@ -914,7 +914,7 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
     }
     else if (a_p0->keyval == GDK_KEY_z)         /* zoom out             */
     {
-        m_mainwnd->set_horizontal_zoom(m_zoom * 2);
+        m_mainwnd->set_horizontal_zoom(m_horizontal_zoom * 2);
         return true;
     }
 
@@ -1400,8 +1400,8 @@ perfroll::set_horizontal_zoom (int a_zoom)
 {
     if (m_mainwnd->zoom_check(a_zoom))
     {
-        m_zoom = a_zoom;
-        m_perf_scale_x = m_zoom;
+        m_horizontal_zoom = a_zoom;
+        m_perf_scale_x = m_horizontal_zoom;
 
         if (m_perf_scale_x == 0)
             m_perf_scale_x = 1;

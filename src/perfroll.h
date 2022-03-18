@@ -61,7 +61,7 @@ private:
     int          m_beat_length;
 
     int          m_perf_scale_x; // for zoom - replace c_perf_scale_x
-    int          m_zoom;
+    int          m_horizontal_zoom;
     int          m_names_y;      // vertical zoom
     float        m_vertical_zoom;
 
