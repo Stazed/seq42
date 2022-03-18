@@ -69,12 +69,12 @@ Shift + mouse scroll >> scroll horizontally.
 CTRL + mouse scroll >> zoom-in, zoom-out horizontally.
 ALT + mouse scroll >> zoom-in, zoom-out vertically.
 
-Key z >> horizontal zoom-in.
-Shift z >> horizontal zoom-out.
+Key z >> horizontal zoom-out.
+Shift z >> horizontal zoom-in.
 Key 0 >> reset horizontal zoom to default.
 
-Key v >> vertical zoom-in.
-Shift v >> vertical zoom-out.
+Key v >> vertical zoom-out.
+Shift v >> vertical zoom-in.
 Key 9 >> reset vertical zoom to default.
 
 CTRL + c >> copy selected trigger to clipboard.
@@ -329,8 +329,21 @@ The program is basically a MIDI song editor.
 
         Notes will send MIDI play when added to the sequence or moved.
 
+        Mouse scroll >> scroll vertically.
+        Shift + mouse scroll >> scroll horizontally.
+        CTRL + mouse scroll >> zoom-in, zoom-out horizontally.
+        ALT + mouse scroll >> zoom-in, zoom-out vertically.
+
+        Key z >> horizontal zoom-out.
+        Shift z >> horizontal zoom-in.
+        Key 0 >> reset horizontal zoom to default.
+
+        Key v >> vertical zoom-out.
+        Shift v >> vertical zoom-in.
+        Key 9 >> reset vertical zoom to default.
+
 	Right clicking on the event strip ( directly under
-	the paino roll grid ) will allow you to add/select/move 
+	the piano roll grid ) will allow you to add/select/move 
 	midi events (not note on/off messages) somewhat like the 
 	piano grid.
 
