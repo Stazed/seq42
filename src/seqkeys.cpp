@@ -34,7 +34,8 @@ seqkeys::seqkeys(sequence *a_seq, Glib::RefPtr<Adjustment> a_vadjust ):
     m_key(0),
     m_key_y(c_key_y),
     m_keyarea_y(c_keyarea_y),
-    m_rollarea_y(c_rollarea_y)
+    m_rollarea_y(c_rollarea_y),
+    m_vertical_zoom(c_default_vertical_zoom)
 {
     m_surface = Cairo::ImageSurface::create(
         Cairo::Format::FORMAT_ARGB32,
@@ -89,13 +90,14 @@ seqkeys::set_key( int a_key )
 }
 
 void
-seqkeys::set_vertical_zoom(int key_y, int keyarea_y, int rollarea_y)
+seqkeys::set_vertical_zoom(int key_y, int keyarea_y, int rollarea_y, float vertical_zoom)
 {
     if ( m_key_y != key_y)
     {
         m_key_y = key_y;
         m_keyarea_y = keyarea_y;
         m_rollarea_y = rollarea_y;
+        m_vertical_zoom = vertical_zoom;
         reset();
     }
 }
@@ -213,7 +215,11 @@ seqkeys::update_surface()
 
             snprintf(notes, sizeof(notes), "%2s%1d", c_key_text[key], octave);
 
-            p_font_renderer->render_string_on_drawable(2, m_key_y * i, cr, notes, font::BLACK );
+            p_font_renderer->render_string_on_drawable(2,
+                                                       m_key_y * i,
+                                                       cr, notes, font::BLACK,
+                                                       1.0,
+                                                       m_vertical_zoom);
         }
     }
 }

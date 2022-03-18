@@ -63,6 +63,7 @@ private:
     int m_key_y;
     int m_keyarea_y;
     int m_rollarea_y;
+    float m_vertical_zoom;
 
     void on_realize();
     bool on_button_press_event(GdkEventButton* a_ev);
@@ -98,6 +99,6 @@ public:
 
     void set_scale( int a_scale );
     void set_key( int a_key );
-    void set_vertical_zoom(int key_y, int keyarea_y, int rollarea_y);
+    void set_vertical_zoom(int key_y, int keyarea_y, int rollarea_y, float vertical_zoom);
     void reset();
 };

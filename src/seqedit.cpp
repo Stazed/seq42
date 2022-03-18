@@ -1419,7 +1419,7 @@ seqedit::set_vertical_zoom( float a_zoom )
     m_rollarea_y = m_keyarea_y;
     
     m_seqroll_wid->set_vertical_zoom(m_key_y, m_rollarea_y);
-    m_seqkeys_wid->set_vertical_zoom(m_key_y, m_keyarea_y, m_rollarea_y);
+    m_seqkeys_wid->set_vertical_zoom(m_key_y, m_keyarea_y, m_rollarea_y, m_vertical_zoom);
     m_seqevent_wid->set_vertical_zoom(m_key_y);
 }
 
