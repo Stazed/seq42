@@ -53,6 +53,9 @@ font::render_string_on_drawable(
     if ( str != NULL )
         length = strlen(str);
 
+    float scale_font_w = (float) c_font_width * scale_x;
+    float scale_font_h = (float) c_font_height * scale_y;
+
     for( int i = 0; i < length; ++i )
     {
         unsigned char c = (unsigned char) str[i];
@@ -81,13 +84,13 @@ font::render_string_on_drawable(
                                                                            c_font_width,
                                                                            c_font_height);
 
-        a_pixbuf = a_pixbuf->scale_simple( (int) (c_font_width * scale_x),
-                                          (int) (c_font_height * scale_y),
+        a_pixbuf = a_pixbuf->scale_simple( (int) scale_font_w,
+                                          (int) scale_font_h,
                                           Gdk::INTERP_BILINEAR);
 
         Gdk::Cairo::set_source_pixbuf (cr,
                                        a_pixbuf,
-                                       x + (i * c_font_width),
+                                       x + (i * scale_font_w),
                                        y);
 
         cr->paint();
