@@ -420,7 +420,7 @@ public:
     void set_right_tick( long a_tick );
     long get_right_tick();
 
-    void move_triggers( bool a_direction, uint64_t location = 0);
+    void move_triggers( bool a_direction, uint64_t location );
     void copy_triggers(  );
     bool paste_triggers (long paste_tick, bool overwrite);
     

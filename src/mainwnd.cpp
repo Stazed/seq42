@@ -1269,7 +1269,7 @@ void
 mainwnd::collapse() // all tracks
 {
     m_mainperf->push_trigger_undo();
-    m_mainperf->move_triggers( false );
+    m_mainperf->move_triggers( false, m_mainperf->get_left_tick() );
     m_perfroll->redraw_all_tracks();
 }
 
@@ -1285,7 +1285,7 @@ void
 mainwnd::expand() // all tracks
 {
     m_mainperf->push_trigger_undo();
-    m_mainperf->move_triggers( true );
+    m_mainperf->move_triggers( true, m_mainperf->get_left_tick() );
     m_perfroll->redraw_all_tracks();
 }
 
