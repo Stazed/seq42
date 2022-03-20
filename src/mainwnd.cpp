@@ -2532,16 +2532,18 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
                 m_mainperf->set_starting_tick(m_mainperf->get_left_tick());  // this will set progress line
                 m_mainperf->set_reposition();
             }
+            return true;
         }
 
         if (a_ev->keyval == GDK_KEY_s)
         {
             m_mainperf->set_left_tick(m_mainperf->get_tick());
             m_perftime->redraw();
+            return true;
         }
     }
 
-    return Gtk::Window::on_key_press_event(a_ev);
+    return m_perfroll->on_key_press_event(a_ev);
 }
 
 bool

@@ -110,8 +110,6 @@ private:
 
     void on_size_allocate(Gtk::Allocation& );
 
-    bool on_key_press_event(GdkEventKey* a_p0);
-
     void convert_xy( int a_x, int a_y, long *a_ticks, int *a_track);
     void convert_x( int a_x, long *a_ticks);
     void snap_x( int *a_x );
@@ -130,6 +128,7 @@ protected:
 
 public:
 
+    bool on_key_press_event(GdkEventKey* a_p0);
     void auto_scroll_horz();
     void set_horizontal_zoom (int a_zoom);
     void set_vertical_zoom (float a_zoom);
