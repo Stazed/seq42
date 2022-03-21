@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.1)
 project (seq42)
 
-set (PACKAGE_VERSION "2.0.0")
+set (PACKAGE_VERSION "2.1.0")
 
 set (CMAKE_SKIP_RULE_DEPENDENCY OFF)
 
@@ -17,7 +17,7 @@ include (CheckCSourceCompiles)
 include(CheckCXXCompilerFlag)
 
 option (EnableNSM "Enable NSM session support" ON)
-option (BuildForDebug "Include gdb debugging support" OFF)
+option (BuildForDebug "Enable gdb debugging support" OFF)
 option (EnableMIDIControl "Enable MIDI transport control support" ON)
 option (EnableJackSupport "Enable Jack transport control support" ON)
 
