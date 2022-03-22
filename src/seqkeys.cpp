@@ -218,7 +218,7 @@ seqkeys::update_surface()
             p_font_renderer->render_string_on_drawable(2,
                                                        m_key_y * i,
                                                        cr, notes, font::BLACK,
-                                                       1.0,
+                                                       c_default_horizontal_zoom,
                                                        m_vertical_zoom);
         }
     }

@@ -32,6 +32,7 @@ perfroll::perfroll( perform *a_perf,
 
     m_perf_scale_x(c_perf_scale_x),       // 32 ticks per pixel
     m_horizontal_zoom(c_perf_scale_x),    // 32 ticks per pixel
+    m_x_zoom_ratio(c_default_horizontal_zoom),
     m_names_y(c_names_y),
     m_vertical_zoom(c_default_vertical_zoom),
 
@@ -478,7 +479,7 @@ void perfroll::draw_track_on( int a_track )
 
                     /* sequence label and notes */
                     char label[40];
-                    int max_label = (w / c_font_width) - 2;
+                    int max_label = (w / (c_font_width * m_x_zoom_ratio) ) - (2.0 / m_x_zoom_ratio)  ;
                     if(max_label < 0) max_label = 0;
                     if(max_label > 39) max_label = 39;
                     seq = trk->get_sequence(seq_idx);
@@ -606,7 +607,7 @@ void perfroll::draw_track_on( int a_track )
                     }
 
                     /* draw the background for the labels */
-                    cr->rectangle(x + 8, y + 2, (strlen(label) * c_font_width), (int) (c_font_height * m_vertical_zoom));
+                    cr->rectangle(x + 8, y + 2, (int) (strlen(label) * (c_font_width * m_x_zoom_ratio)), (int) (c_font_height * m_vertical_zoom));
                     cr->stroke_preserve();
                     cr->fill();
 
@@ -614,7 +615,7 @@ void perfroll::draw_track_on( int a_track )
                     p_font_renderer->render_string_on_drawable(x + 8,
                                                                y + 2,
                                                                cr, label, font_color,
-                                                               1.0,
+                                                               m_x_zoom_ratio,
                                                                m_vertical_zoom);
                 }
             }
@@ -1402,6 +1403,9 @@ perfroll::set_horizontal_zoom (int a_zoom)
     {
         m_horizontal_zoom = a_zoom;
         m_perf_scale_x = m_horizontal_zoom;
+        
+        /* For horizontal font resizing */
+        m_x_zoom_ratio = (float) c_perf_scale_x/m_horizontal_zoom;
 
         if (m_perf_scale_x == 0)
             m_perf_scale_x = 1;
