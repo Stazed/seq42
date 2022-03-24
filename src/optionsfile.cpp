@@ -226,6 +226,28 @@ optionsfile::parse( perform *a_perf )
     line_after( &file, "[interaction-method]" );
     sscanf( m_line, "%ld", &method );
     global_interactionmethod = (interaction_method_e)method;
+    
+    line_after( &file, "[vertical-zoom-sequence]" );
+    if ( !file.eof() )
+    {
+        sscanf( m_line, "%ld", &flag );
+
+        if( (int) flag < 1 || (int)flag > 17 )
+            flag = 1.0;
+
+        global_sequence_editor_zoom = (int) flag;
+    }
+
+    line_after( &file, "[vertical-zoom-song]" );
+    if ( !file.eof() )
+    {
+        sscanf( m_line, "%ld", &flag );
+
+        if( (int) flag < 1 || (int)flag > 50 )
+            flag = 10.0;
+
+        global_song_editor_zoom = (int) flag;
+    }
 
     file.close();
 
@@ -364,6 +386,16 @@ optionsfile::write( perform *a_perf  )
     }
     file << global_interactionmethod << "\n";
 
+    /* vertical zoom */
+    file << "\n\n\n[vertical-zoom-sequence]\n";
+    file << "# Sequence Editor - value 1 to 17 - default 1\n";
+    file << global_sequence_editor_zoom << "\n";
+
+    file << "\n\n\n[vertical-zoom-song]\n";
+    file << "# Song Editor - value 1 to 50 - default 9\n";
+    file << global_song_editor_zoom << "\n";
+ 
+    /* Key board control */    
     file << "\n\n\n[keyboard-control]\n";
 
     file << a_perf->m_key_start << "        # "

@@ -130,6 +130,8 @@ Glib::ustring playlist_file = "";
 bool global_print_keys = false;
 interaction_method_e global_interactionmethod = e_seq42_interaction;
 
+int global_sequence_editor_zoom = c_default_config_sequence_zoom;
+int global_song_editor_zoom = c_default_config_song_zoom;
 bool global_with_jack_transport = false;
 bool global_with_jack_master = false;
 bool global_with_jack_master_cond = false;

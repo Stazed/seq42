@@ -103,6 +103,7 @@ seqedit::seqedit( sequence *a_seq,
     m_keyarea_y(c_keyarea_y),
     m_rollarea_y(c_rollarea_y),
     m_vertical_zoom(c_default_vertical_zoom),
+    m_default_vertical_zoom(c_default_vertical_zoom),
     m_snap(m_initial_snap),
     m_note_length(m_initial_note_length),
     m_scale(m_initial_scale),
@@ -319,6 +320,13 @@ seqedit::seqedit( sequence *a_seq,
     set_snap( m_snap );
     set_note_length( m_note_length );
     set_background_sequence( m_bg_trk, m_bg_seq );
+
+    /* The user options default zoom */
+    m_default_vertical_zoom = c_default_vertical_zoom +  
+            (float) (global_sequence_editor_zoom - c_default_config_sequence_zoom)
+            * c_vert_seqroll_zoom_step;
+
+    set_vertical_zoom(m_default_vertical_zoom);
 
     set_bp_measure( m_seq->get_bp_measure() );
     set_bw( m_seq->get_bw() );
@@ -1891,7 +1899,7 @@ seqedit::on_key_press_event( GdkEventKey* a_ev )
             }
             else if (a_ev->keyval == GDK_KEY_9)    /* reset to normal zoom */
             {
-                set_vertical_zoom(c_default_vertical_zoom);
+                set_vertical_zoom(m_default_vertical_zoom);
                 result = true;
             }
             else if (a_ev->keyval == GDK_KEY_v)    /* zoom out             */

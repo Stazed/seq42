@@ -756,6 +756,11 @@ mainwnd::mainwnd(perform *a_p, Glib::RefPtr<Gtk::Application> app):
     m_last_time_ms  = 0;
 
     m_perfroll->init_before_show();
+    
+    /* The song editor - user default */
+    set_vertical_zoom( c_default_vertical_zoom + 
+            (float) (global_song_editor_zoom - c_default_config_song_zoom)
+            * c_vertical_zoom_step);
 
     /* show everything */
     set_position(Gtk::WIN_POS_CENTER);

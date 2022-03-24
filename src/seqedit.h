@@ -198,6 +198,7 @@ private:
     int         m_keyarea_y;
     int         m_rollarea_y;
     float       m_vertical_zoom;
+    float       m_default_vertical_zoom;    /* user configurable */
     
     /* set snap to in pulses, off = 1 */
     int         m_snap;
