@@ -756,11 +756,17 @@ mainwnd::mainwnd(perform *a_p, Glib::RefPtr<Gtk::Application> app):
     m_last_time_ms  = 0;
 
     m_perfroll->init_before_show();
-    
+
     /* The song editor - user default */
-    set_vertical_zoom( c_default_vertical_zoom + 
+    float default_vertical_zoom = c_default_vertical_zoom + 
             (float) (global_song_editor_zoom - c_default_config_song_zoom)
-            * c_vertical_zoom_step);
+            * c_vertical_zoom_step;
+
+    /* Set the default value that will be reset when the '9' key is pressed */
+    m_perfroll->set_default_vertical_zoom(default_vertical_zoom);
+
+    /* Set the actual zoom */
+    set_vertical_zoom( default_vertical_zoom );
 
     /* show everything */
     set_position(Gtk::WIN_POS_CENTER);

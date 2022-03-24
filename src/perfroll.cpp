@@ -35,6 +35,7 @@ perfroll::perfroll( perform *a_perf,
     m_x_zoom_ratio(c_default_horizontal_zoom),
     m_names_y(c_names_y),
     m_vertical_zoom(c_default_vertical_zoom),
+    m_default_vertical_zoom(c_default_vertical_zoom),
 
     m_old_progress_ticks(0),
 
@@ -927,9 +928,9 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
             m_mainwnd->set_vertical_zoom(m_vertical_zoom + c_vertical_zoom_step);
             return true;
         }
-        else if (a_p0->keyval == GDK_KEY_9)         /* reset to normal zoom */
+        else if (a_p0->keyval == GDK_KEY_9)         /* reset to user default zoom */
         {
-            m_mainwnd->set_vertical_zoom(c_default_vertical_zoom);
+            m_mainwnd->set_vertical_zoom(m_default_vertical_zoom);
             return true;
         }
         else if (a_p0->keyval == GDK_KEY_v)         /* zoom out             */
@@ -1441,3 +1442,16 @@ perfroll::get_default_trigger_length(perfroll& ths)
 
     return ret;
 }
+
+/**
+ *  Set the user default from the options file - .seq32rc
+ * 
+ * @param z
+ *      The user default adjusted to float zoom value.
+ */
+void
+perfroll::set_default_vertical_zoom(float z)
+{
+    m_default_vertical_zoom = z;
+}
+

@@ -441,6 +441,19 @@ The program is basically a MIDI song editor.
 
         You can not change the BPM of seq42 while rolling in JACK sync mode.
 
+        * [manual-alsa-ports]
+
+        Set this to 1 if you want to expose alsa ports to Jack.
+        Set to 0 if you want manual alsa connections from seq32.
+
+        * [vertical-zoom-sequence]
+
+        Sets the vertical zoom default for the sequence editor.
+
+        * [vertical-zoom-song]
+
+        Sets the vertical zoom default for the song editor tracks.
+
 -----------------------------------------------------------
 
 [4] Playlist Mode:

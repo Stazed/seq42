@@ -65,6 +65,7 @@ private:
     float        m_x_zoom_ratio;
     int          m_names_y;      // vertical zoom
     float        m_vertical_zoom;
+    float        m_default_vertical_zoom;
 
     int          m_window_x, m_window_y;
     
@@ -162,6 +163,7 @@ public:
     void paste_trigger_sequence( track *p_track, sequence *a_sequence, long a_tick );
     void copy_sequence( track *a_track, trigger *a_trigger, sequence *a_seq );
     long get_default_trigger_length( perfroll& ths );
+    void set_default_vertical_zoom(float z);
 
     perfroll( perform *a_perf,
               mainwnd *a_main,
