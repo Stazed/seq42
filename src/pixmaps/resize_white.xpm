@@ -1,0 +1,11 @@
+/* XPM */
+static const char * resize_white_xpm[] = {
+"6 6 2 1",
+" 	c None",
+".	c #FFFFFF",
+"......",
+".    .",
+".    .",
+".    .",
+".    .",
+"......"};

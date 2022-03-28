@@ -32,9 +32,8 @@ using namespace Gtk;
 
 #include "perfroll_input.h"
 
+const float c_perfroll_resize_box_default = 6.0;
 const int c_perfroll_background_x = (c_ppqn * 4 * 16) / c_perf_max_zoom;
-const int c_perfroll_size_box_w = 6;
-const int c_perfroll_size_box_click_w = c_perfroll_size_box_w+1 ;
 
 class mainwnd;
 
@@ -53,6 +52,8 @@ private:
     Cairo::RefPtr<Cairo::ImageSurface> m_surface_track;
     Cairo::RefPtr<Cairo::ImageSurface> m_surface_background;
 
+    Glib::RefPtr<Gdk::Pixbuf> m_pixbuf;
+
     perform        * const m_mainperf;
     mainwnd        * const m_mainwnd;
 
@@ -66,6 +67,8 @@ private:
     int          m_names_y;      // vertical zoom
     float        m_vertical_zoom;
     float        m_default_vertical_zoom;
+    float        m_resize_handle_w;
+    float        m_resize_handle_h;
 
     int          m_window_x, m_window_y;
     

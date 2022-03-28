@@ -13,13 +13,13 @@ void FruityPerfInput::updateMousePtr( perfroll& ths )
         long start, end;
         if (ths.m_mainperf->get_track(drop_track)->intersectTriggers( drop_tick, start, end ))
         {
-            if (start <= drop_tick && drop_tick <= start + (c_perfroll_size_box_click_w * c_perf_scale_x) &&
-                    (m_current_y % ths.m_names_y) <= c_perfroll_size_box_click_w + 1)
+            if (start <= drop_tick && drop_tick <= start + (ths.m_resize_handle_w  * ths.m_perf_scale_x) &&
+                    (m_current_y % ths.m_names_y) <= ths.m_resize_handle_h + 1)
             {
                 ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::RIGHT_PTR ));
             }
-            else if (end - (c_perfroll_size_box_click_w * c_perf_scale_x) <= drop_tick && drop_tick <= end &&
-                     (m_current_y % ths.m_names_y) >= ths.m_names_y - c_perfroll_size_box_click_w - 1)
+            else if (end - (ths.m_resize_handle_w  * ths.m_perf_scale_x) <= drop_tick && drop_tick <= end &&
+                     (m_current_y % ths.m_names_y) >= ths.m_names_y - ths.m_resize_handle_h - 1)
             {
                 ths.get_window()->set_cursor(Gdk::Cursor::create(ths.get_window()->get_display(),  Gdk::LEFT_PTR ));
             }
@@ -155,8 +155,8 @@ void FruityPerfInput::on_left_button_pressed(GdkEventButton* a_ev, perfroll& ths
                     long end_tick = ths.m_mainperf->get_track( ths.m_drop_track )->get_selected_trigger_end_tick();
 
                     if ( tick >= start_tick &&
-                            tick <= start_tick + (c_perfroll_size_box_click_w * c_perf_scale_x) &&
-                            (ths.m_drop_y % ths.m_names_y) <= c_perfroll_size_box_click_w + 1 )
+                            tick <= start_tick + (ths.m_resize_handle_w  * ths.m_perf_scale_x) &&
+                            (ths.m_drop_y % ths.m_names_y) <= ths.m_resize_handle_h + 1 )
                     {
                         // clicked left side: begin a grow/shrink for the left side
                         ths.m_growing = true;
@@ -165,9 +165,9 @@ void FruityPerfInput::on_left_button_pressed(GdkEventButton* a_ev, perfroll& ths
                                                          ths.m_mainperf->get_track( ths.m_drop_track )->
                                                          get_selected_trigger_start_tick( );
                     }
-                    else if ( tick >= end_tick - (c_perfroll_size_box_click_w * c_perf_scale_x) &&
+                    else if ( tick >= end_tick - (ths.m_resize_handle_w  * ths.m_perf_scale_x) &&
                               tick <= end_tick &&
-                              (ths.m_drop_y % ths.m_names_y) >= ths.m_names_y - c_perfroll_size_box_click_w - 1 )
+                              (ths.m_drop_y % ths.m_names_y) >= ths.m_names_y - ths.m_resize_handle_h - 1 )
                     {
                         // clicked right side: grow/shrink the right side
                         ths.m_growing = true;
@@ -400,8 +400,8 @@ bool Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
                 long end_tick = ths.m_mainperf->get_track( ths.m_drop_track )->get_selected_trigger_end_tick();
 
                 if ( tick >= start_tick &&
-                        tick <= start_tick + (c_perfroll_size_box_click_w * c_perf_scale_x) &&
-                        (ths.m_drop_y % ths.m_names_y) <= c_perfroll_size_box_click_w + 1 )
+                        tick <= start_tick + (ths.m_resize_handle_w  * ths.m_perf_scale_x) &&
+                        (ths.m_drop_y % ths.m_names_y) <= ths.m_resize_handle_h + 1 )
                 {
                     // left resize handle clicked
                     ths.m_growing = true;
@@ -410,9 +410,9 @@ bool Seq42PerfInput::on_button_press_event(GdkEventButton* a_ev, perfroll& ths)
                                                      ths.m_mainperf->get_track( ths.m_drop_track )->
                                                      get_selected_trigger_start_tick( );
                 }
-                else if ( tick >= end_tick - (c_perfroll_size_box_click_w * c_perf_scale_x) &&
+                else if ( tick >= end_tick - (ths.m_resize_handle_w  * ths.m_perf_scale_x) &&
                           tick <= end_tick &&
-                          (ths.m_drop_y % ths.m_names_y) >= ths.m_names_y - c_perfroll_size_box_click_w - 1 )
+                          (ths.m_drop_y % ths.m_names_y) >= ths.m_names_y - ths.m_resize_handle_h - 1 )
                 {
                     // right resize handle clicked
                     ths.m_growing = true;
