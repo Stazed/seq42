@@ -772,69 +772,41 @@ perfroll::auto_scroll_horz()
     if(!m_mainperf->get_follow_transport())
         return;
 
-    if(m_horizontal_zoom >= c_perf_scale_x)
-    {
-        double progress = (double)m_mainperf->get_tick()/m_horizontal_zoom/c_ppen;
-
-        int zoom_ratio = m_horizontal_zoom/c_perf_scale_x;
-
-        progress *= zoom_ratio;
-
-        int offset = zoom_ratio;
-        if(zoom_ratio != 1)
-            offset *= -2;
-
-        double page_size_adjust = (m_hadjust->get_page_size()/zoom_ratio)/2;
-        double get_value_adjust = m_hadjust->get_value()*zoom_ratio;
-
-        if(progress > page_size_adjust || (get_value_adjust > progress))
-            m_hadjust->set_value(progress - page_size_adjust + offset);
-        /*
-        printf
-        (
-            "get_value [%f]: get_page_size[%f]: progress[%f]: page_size_adjust[%f]: get_value_adjust[%f] \n",
-            m_hadjust->get_value(),
-            m_hadjust->get_page_size(),
-            progress,
-            page_size_adjust,
-            get_value_adjust
-        );
-        */
-        return;
-    }
-
     long progress_tick = m_mainperf->get_tick();
     long tick_offset = m_4bar_offset * c_ppqn * 16;
 
-    int progress_x =     ( progress_tick - tick_offset ) / m_horizontal_zoom  + 100;
+    int progress_x =     ( progress_tick - tick_offset ) / m_horizontal_zoom;
     int page = progress_x / m_window_x;
 
-    if (page != 0 || progress_x < 0)
+    /* 50 so we rewind short of beginning and 0.75 short of the end on forward */
+    if (page != 0 || ((progress_x - 50) < 0) || (progress_x > (m_window_x * 0.75)))
     {
         double left_tick = (double) progress_tick /m_horizontal_zoom/c_ppen;
 
-        switch(m_horizontal_zoom)
+        float adjust =  ( (float) m_horizontal_zoom / c_perf_scale_x  );
+
+        double rewind = 0.0;
+
+        /* The 50 is to scroll before the progress line goes behind the beginning if rewinding */
+        if ( ((progress_x - 50) < 0) )
         {
-//        case 4:
-//            m_hadjust->set_value(left_tick / 8);
-//            break;
-        case 8:
-            m_hadjust->set_value(left_tick / 4);
-            break;
-        case 16:
-            m_hadjust->set_value(left_tick / 2 );
-            break;
-/*        case 32:
-            m_hadjust->set_value(left_tick );
-            break;
-        case 64:
-            m_hadjust->set_value(left_tick * 2 );
-            break;
-        case 128:
-            m_hadjust->set_value(left_tick * 4 );
-            break;*/
-        default:
-            break;
+            rewind = 1.0;
+        }
+
+        double set_hadjust = (left_tick * adjust) - rewind;
+
+        if( left_tick > 0 && set_hadjust > 0.0)
+        {
+            m_hadjust->set_value( set_hadjust );
+        }
+
+        /* When stopped, reset scroll based on left tick */
+        if ( !global_is_running )
+        {
+            if ( progress_tick == m_mainperf->get_left_tick() )
+            {
+                m_hadjust->set_value(set_hadjust);
+            }
         }
     }
 }
@@ -849,11 +821,11 @@ perfroll::on_scroll_event( GdkEventScroll* a_ev )
     {
         if (a_ev->direction == GDK_SCROLL_DOWN)
         {
-            m_mainwnd->set_horizontal_zoom(m_horizontal_zoom*2);
+            m_mainwnd->set_horizontal_zoom(m_horizontal_zoom + 2);
         }
         else if (a_ev->direction == GDK_SCROLL_UP)
         {
-            m_mainwnd->set_horizontal_zoom(m_horizontal_zoom/2);
+            m_mainwnd->set_horizontal_zoom(m_horizontal_zoom - 2);
         }
         return true;
     }
@@ -935,7 +907,7 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
     /* Horizontal zoom */
     if (a_p0->keyval == GDK_KEY_Z)         /* zoom in              */
     {
-        m_mainwnd->set_horizontal_zoom(m_horizontal_zoom / 2);
+        m_mainwnd->set_horizontal_zoom(m_horizontal_zoom - 2);
         return true;
     }
     else if (a_p0->keyval == GDK_KEY_0)         /* reset to normal zoom */
@@ -945,7 +917,7 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
     }
     else if (a_p0->keyval == GDK_KEY_z)         /* zoom out             */
     {
-        m_mainwnd->set_horizontal_zoom(m_horizontal_zoom * 2);
+        m_mainwnd->set_horizontal_zoom(m_horizontal_zoom + 2);
         return true;
     }
 
