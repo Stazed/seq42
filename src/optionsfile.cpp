@@ -248,6 +248,17 @@ optionsfile::parse( perform *a_perf )
 
         global_song_editor_vertical_zoom = (int) flag;
     }
+    
+    line_after( &file, "[horizontal-zoom-song]" );
+    if ( !file.eof() )
+    {
+        sscanf( m_line, "%ld", &flag );
+
+        if( (int) flag < 0 || (int)flag > 60 )
+            flag = 12.0;
+
+        global_song_editor_horizontal_zoom = (int) flag;
+    }
 
     file.close();
 
@@ -394,6 +405,10 @@ optionsfile::write( perform *a_perf  )
     file << "\n\n\n[vertical-zoom-song]\n";
     file << "# Song Editor - value 1 to 50 - default 9\n";
     file << global_song_editor_vertical_zoom << "\n";
+    
+    file << "\n\n\n[horizontal-zoom-song]\n";
+    file << "# Song Editor - value 0 to 60 - default 12\n";
+    file << global_song_editor_horizontal_zoom << "\n";
  
     /* Key board control */    
     file << "\n\n\n[keyboard-control]\n";

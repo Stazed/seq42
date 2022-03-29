@@ -132,6 +132,7 @@ interaction_method_e global_interactionmethod = e_seq42_interaction;
 
 int global_sequence_editor_vertical_zoom = c_default_config_sequence_zoom;
 int global_song_editor_vertical_zoom = c_default_config_song_zoom;
+int global_song_editor_horizontal_zoom = c_default_config_song_horizontal_zoom;
 bool global_with_jack_transport = false;
 bool global_with_jack_master = false;
 bool global_with_jack_master_cond = false;

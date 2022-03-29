@@ -34,6 +34,7 @@ perfroll::perfroll( perform *a_perf,
 
     m_perf_scale_x(c_perf_scale_x),       // 32 ticks per pixel
     m_horizontal_zoom(c_perf_scale_x),    // 32 ticks per pixel
+    m_default_horizontal_zoom(c_perf_scale_x),
     m_x_zoom_ratio(c_default_horizontal_zoom),
     m_names_y(c_names_y),
     m_vertical_zoom(c_default_vertical_zoom),
@@ -912,7 +913,7 @@ perfroll::on_key_press_event(GdkEventKey* a_p0)
     }
     else if (a_p0->keyval == GDK_KEY_0)         /* reset to normal zoom */
     {
-        m_mainwnd->set_horizontal_zoom(c_perf_scale_x);
+        m_mainwnd->set_horizontal_zoom(m_default_horizontal_zoom);
         return true;
     }
     else if (a_p0->keyval == GDK_KEY_z)         /* zoom out             */
@@ -1454,5 +1455,17 @@ void
 perfroll::set_default_vertical_zoom(float z)
 {
     m_default_vertical_zoom = z;
+}
+
+/**
+ *  Set the user default from the options file - .seq32rc
+ * 
+ * @param z
+ *      The user default.
+ */
+void
+perfroll::set_default_horizontal_zoom(int z)
+{
+    m_default_horizontal_zoom = z;
 }
 

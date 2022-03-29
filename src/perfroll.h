@@ -63,10 +63,11 @@ private:
 
     int          m_perf_scale_x; // for zoom - replace c_perf_scale_x
     int          m_horizontal_zoom;
+    int          m_default_horizontal_zoom; // user default
     float        m_x_zoom_ratio;
     int          m_names_y;      // vertical zoom
     float        m_vertical_zoom;
-    float        m_default_vertical_zoom;
+    float        m_default_vertical_zoom;   // user default
     float        m_resize_handle_w;
     float        m_resize_handle_h;
 
@@ -167,6 +168,7 @@ public:
     void copy_sequence( track *a_track, trigger *a_trigger, sequence *a_seq );
     long get_default_trigger_length( perfroll& ths );
     void set_default_vertical_zoom(float z);
+    void set_default_horizontal_zoom(int z);
 
     perfroll( perform *a_perf,
               mainwnd *a_main,

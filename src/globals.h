@@ -224,11 +224,13 @@ const float c_perf_min_vertical_zoom = 0.5;
 const float c_vertical_zoom_step = 0.05;
 const int c_default_config_sequence_zoom = 1;
 const int c_default_config_song_zoom = 10;
+const int c_default_config_song_horizontal_zoom = 12;   
 const int c_mute_x = 17;
 const int c_mute_y = 18;
 
 extern int global_sequence_editor_vertical_zoom;
 extern int global_song_editor_vertical_zoom;
+extern int global_song_editor_horizontal_zoom;
 extern bool global_showmidi;
 extern bool global_priority;
 extern bool global_stats;
