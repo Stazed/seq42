@@ -357,13 +357,18 @@ seqedit::create_menus()
 
     char b[20];
 
+    int step = 0;
     /* zoom */
-    for (int i = c_min_zoom; i <= c_max_zoom; i*=2)
+    for (int i = c_min_zoom; i <= c_max_zoom; i += step)
     {
         snprintf(b, sizeof(b), "1:%d", i);
         MenuItem * menu_item = new MenuItem(b);
         menu_item->signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_zoom), i ) );
         m_menu_zoom->append(*menu_item);
+
+        step = 2;
+        if(i == c_min_zoom)
+            step = 1;
     }
 
     /* note snap */
@@ -1811,13 +1816,25 @@ seqedit::on_scroll_event( GdkEventScroll* a_ev )
     {
         if (a_ev->direction == GDK_SCROLL_DOWN)
         {
-            if (m_zoom*2 <= c_max_zoom)
-                set_zoom(m_zoom*2);
+            int step = 2;
+            if(m_zoom == c_min_zoom)
+                step = 1;
+
+            if (m_zoom + step <= c_max_zoom)
+            {
+                set_zoom(m_zoom + step);
+            }
         }
         else if (a_ev->direction == GDK_SCROLL_UP)
         {
-            if (m_zoom/2 >= c_min_zoom)
-                set_zoom(m_zoom/2);
+            int step = 2;
+            if(m_zoom == 2)
+                step = 1;
+
+            if (m_zoom - step >= c_min_zoom)
+            {   
+                set_zoom(m_zoom - step);
+            }
         }
         return true;
     }
@@ -1875,7 +1892,11 @@ seqedit::on_key_press_event( GdkEventKey* a_ev )
         bool result = false;
         if (a_ev->keyval == GDK_KEY_Z)              /* zoom in              */
         {
-            set_zoom(m_zoom / 2);
+            int step = 2;
+            if(m_zoom == 2)
+                step = 1;
+
+            set_zoom(m_zoom - step);
             result = true;
         }
         else if (a_ev->keyval == GDK_KEY_0)         /* reset to normal zoom */
@@ -1885,7 +1906,11 @@ seqedit::on_key_press_event( GdkEventKey* a_ev )
         }
         else if (a_ev->keyval == GDK_KEY_z)         /* zoom out             */
         {
-            set_zoom(m_zoom * 2);
+            int step = 2;
+            if(m_zoom == c_min_zoom)
+                step = 1;
+
+            set_zoom(m_zoom + step);
             result = true;
         }
 
