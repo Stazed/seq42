@@ -759,7 +759,7 @@ mainwnd::mainwnd(perform *a_p, Glib::RefPtr<Gtk::Application> app):
 
     /* The song editor - user default */
     float default_vertical_zoom = c_default_vertical_zoom + 
-            (float) (global_song_editor_zoom - c_default_config_song_zoom)
+            (float) (global_song_editor_vertical_zoom - c_default_config_song_zoom)
             * c_vertical_zoom_step;
 
     /* Set the default value that will be reset when the '9' key is pressed */
