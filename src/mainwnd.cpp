@@ -2541,6 +2541,7 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
             return true;
         }
 
+        /* Set progress line to L marker */
         if (a_ev->keyval == GDK_KEY_Home)
         {
             if(m_mainperf->is_jack_running() && global_song_start_mode)
@@ -2555,11 +2556,38 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
             return true;
         }
 
+        /* Set progress line to R marker */
+        if (a_ev->keyval == GDK_KEY_End)
+        {
+            if(m_mainperf->is_jack_running() && global_song_start_mode)
+            {
+                m_mainperf->position_jack(global_song_start_mode, m_mainperf->get_right_tick());
+            }
+            else
+            {
+                m_mainperf->set_starting_tick(m_mainperf->get_right_tick());  // this will set progress line
+                m_mainperf->set_reposition();
+            }
+            return true;
+        }
+
+        /* Set L marker to progress line */
         if (a_ev->keyval == GDK_KEY_s)
         {
             m_mainperf->set_left_tick(m_mainperf->get_tick());
             m_perftime->redraw();
             return true;
+        }
+
+        /* Set R marker to progress line */
+        if ( (a_ev->type == GDK_KEY_PRESS) && (a_ev->state & GDK_SHIFT_MASK) )
+        {
+            if (a_ev->keyval == GDK_KEY_S)
+            {
+                m_mainperf->set_right_tick(m_mainperf->get_tick());
+                m_perftime->redraw();
+                return true;
+            }
         }
     }
 

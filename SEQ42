@@ -87,7 +87,9 @@ Middle mouse button >> on a trigger will split on mouse pointer location - grid-
 CTRL + middle mouse >> on a trigger will paste clipboard trigger to mouse, overwriting existing trigger.
 
 Home key >> reposition the progress line to the L marker.
+End key >> reposition the progress line to the R marker.
 's' key >> reposition the L marker to the progress line.
+Shift + 's' key >> reposition the R marker to the progress line.
 
 'p' key reposition song editor play location. With mouse focus on song editor(tracks),
 press 'p' to move play position to mouse location.
@@ -453,6 +455,10 @@ The program is basically a MIDI song editor.
         * [vertical-zoom-song]
 
         Sets the vertical zoom default for the song editor tracks.
+
+        * [horizontal-zoom-song]
+
+        Sets the horizontal zoom default for the song editor tracks.
 
 -----------------------------------------------------------
 
