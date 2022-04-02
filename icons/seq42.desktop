@@ -2,7 +2,7 @@
 Name=Seq42
 GenericName= Seq42
 Comment=MIDI Sequencer
-Icon=seq42_48.png
+Icon=seq42_48
 Type=Application
 Categories=AudioVideo;Audio;X-Jack;Midi;X-MIDI;
 Exec=seq42
