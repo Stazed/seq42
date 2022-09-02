@@ -42,7 +42,7 @@ set (ProgSources
 set(ExternLibraries
     ${GTKMM_LIBRARIES}
     ${ALSA_LIBRARIES}
-    ${JACK_LIBRARIES}
+    ${JACK_LINK_LIBRARIES}
     ${LIBLO_LIBRARIES}
     rt
 )
