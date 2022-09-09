@@ -147,7 +147,7 @@ public:
     /* overloads */
 
     bool operator> ( const event &rhsevent );
-    bool operator< ( const event &rhsevent );
+    bool operator< ( const event &rhsevent ) const;
 
     bool operator<=( const unsigned long &rhslong );
     bool operator> ( const unsigned long &rhslong );

@@ -283,7 +283,7 @@ event::operator>( const event &a_rhsevent )
 }
 
 bool
-event::operator<( const event &a_rhsevent )
+event::operator<( const event &a_rhsevent ) const
 {
     if ( m_timestamp == a_rhsevent.m_timestamp )
     {
