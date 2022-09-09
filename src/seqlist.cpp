@@ -142,7 +142,7 @@ seqlist::get_selected_playing_state()
 {
     if(m_TreeView.get_selection()->count_selected_rows()!=1)
     {
-        return NULL;
+        return false;
     }
     Gtk::TreeModel::Children::iterator iter_selected = m_TreeView.get_selection()->get_selected();
     Gtk::TreeModel::Row current_row = *iter_selected;
