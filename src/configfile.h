@@ -33,17 +33,12 @@ protected:
     int m_pos;
     Glib::ustring m_name;
 
-    /* holds our data */
-    unsigned char *m_d;
-
     list<unsigned char> m_l;
 
     char m_line[1024];
 
-    bool m_done;
-
     void next_data_line( ifstream *a_file);
-    void line_after( ifstream *a_file, string a_tag);
+    void line_after( ifstream *a_file, const string &a_tag);
 
 public:
 

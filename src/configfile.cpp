@@ -23,7 +23,8 @@
 
 configfile::configfile(const Glib::ustring& a_name) :
     m_pos(0),
-    m_name(a_name)
+    m_name(a_name),
+    m_line()
 {
 }
 
@@ -43,7 +44,7 @@ configfile::next_data_line( ifstream *a_file)
 }
 
 void
-configfile::line_after( ifstream *a_file, string a_tag)
+configfile::line_after( ifstream *a_file, const string &a_tag)
 {
     /* run to start */
     a_file->clear();
