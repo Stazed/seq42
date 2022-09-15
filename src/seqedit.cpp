@@ -83,13 +83,6 @@ const int select_odd_notes  = 16;
 
 const int reverse_pattern = 17;
 
-/* connects to a menu item, tells the performance
-   to launch the timer thread */
-void
-seqedit::menu_action_quantise()
-{
-}
-
 seqedit::seqedit( sequence *a_seq,
                   perform *a_perf, mainwnd *a_main) :
 
@@ -1158,17 +1151,17 @@ seqedit::popup_sequence_menu()
                 snprintf(name, sizeof(name), "[%d] %s", t+1, a_track->get_name());
                 menu_t = manage( new Menu());
 
-                MenuItem * menu_item = new MenuItem(name);
-                menu_item->set_submenu(*menu_t);
-                m_menu_sequences->append(*menu_item);
+                MenuItem * menu_item_name = new MenuItem(name);
+                menu_item_name->set_submenu(*menu_t);
+                m_menu_sequences->append(*menu_item_name);
             }
 
             sequence *a_seq = a_track->get_sequence( s );
-            snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
+            snprintf(name, sizeof(name),"[%u] %s", s+1, a_seq->get_name());
 
-            MenuItem * menu_item = new MenuItem(name);
-            menu_item->signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), t, s));
-            menu_t->append(*menu_item);
+            MenuItem * menu_item_name = new MenuItem(name);
+            menu_item_name->signal_activate().connect(sigc::bind(mem_fun(*this, &seqedit::set_background_sequence), t, s));
+            menu_t->append(*menu_item_name);
         }
     }
 
@@ -1179,8 +1172,6 @@ seqedit::popup_sequence_menu()
 void
 seqedit::set_background_sequence( int a_trk, int a_seq )
 {
-    char name[60];
-
     m_initial_bg_trk = m_bg_trk = a_trk;
     m_initial_bg_seq = m_bg_seq = a_seq;
 
@@ -1193,6 +1184,7 @@ seqedit::set_background_sequence( int a_trk, int a_seq )
     }
     else
     {
+        char name[60];
         snprintf(name, sizeof(name),"[%d/%d] %s", a_trk+1, a_seq+1, seq->get_name());
         m_entry_sequence->set_text(name);
         m_seqroll_wid->set_background_sequence( true, a_trk, a_seq );

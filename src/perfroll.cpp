@@ -1333,7 +1333,7 @@ perfroll::trigger_menu_popup(perfroll& ths)
             for (unsigned s = 0; s < a_track->get_number_of_sequences(); s++ )
             {
                 sequence *a_seq = a_track->get_sequence( s );
-                snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
+                snprintf(name, sizeof(name),"[%u] %s", s+1, a_seq->get_name());
 
                 MenuItem * menu_item = new MenuItem(name);
                 menu_item->signal_activate().connect(sigc::bind(mem_fun(ths, &perfroll::set_trigger_sequence), a_track, a_trigger, s));
@@ -1380,7 +1380,7 @@ perfroll::trigger_menu_popup(perfroll& ths)
                 }
 
                 sequence *a_seq = some_track->get_sequence( s );
-                snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
+                snprintf(name, sizeof(name),"[%u] %s", s+1, a_seq->get_name());
 
                 MenuItem * menu_item9 = new MenuItem(name);
                 menu_item9->signal_activate().connect(sigc::bind(mem_fun(ths, &perfroll::copy_sequence), a_track, a_trigger, a_seq));

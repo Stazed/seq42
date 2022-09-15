@@ -31,9 +31,9 @@ class userfile  : public configfile
 
 public:
 
-    userfile( string a_name );
+    explicit userfile( string a_name );
     ~userfile( );
 
-    bool parse( perform *a_perf );
-    bool write( perform *a_perf );
+    bool parse( perform *a_perf ) override;
+    bool write( perform *a_perf ) override;
 };

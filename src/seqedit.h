@@ -269,8 +269,6 @@ private:
     void fill_top_bar();
     void create_menus();
 
-    void menu_action_quantise();
-
     void popup_menu( Menu *a_menu );
     void popup_event_menu();
     void popup_record_menu();

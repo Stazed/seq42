@@ -64,7 +64,7 @@ _Pragma("GCC diagnostic pop")
     uint32_t list_size = a_perf->m_list_total_marker.size();
     file.write((const char *) &list_size, sizeof (list_size));
     list<tempo_mark>::iterator i;
-    for (i = a_perf->m_list_total_marker.begin(); i != a_perf->m_list_total_marker.end(); i++)
+    for (i = a_perf->m_list_total_marker.begin(); i != a_perf->m_list_total_marker.end(); ++i)
     {
         file.write((const char *) &(*i).tick, sizeof ((*i).tick));
         file.write((const char *) &(*i).bpm, sizeof ((*i).bpm));
@@ -85,20 +85,20 @@ _Pragma("GCC diagnostic pop")
     file.write((const char *) &swing_amount16, global_file_int_size);
 
     int active_tracks = 0;
-    for (int i = 0; i < c_max_track; i++)
+    for (int j = 0; j < c_max_track; j++)
     {
-        if (a_perf->is_active_track(i)) active_tracks++;
+        if (a_perf->is_active_track(j)) active_tracks++;
     }
     file.write((const char *) &active_tracks, global_file_int_size);
 
-    for (int i = 0; i < c_max_track; i++)
+    for (int k = 0; k < c_max_track; k++)
     {
-        if (a_perf->is_active_track(i))
+        if (a_perf->is_active_track(k))
         {
-            int trk_idx = i; // file version 3
+            int trk_idx = k; // file version 3
             file.write((const char *) &trk_idx, global_file_int_size);
 
-            if (!a_perf->get_track(i)->save(&file))
+            if (!a_perf->get_track(k)->save(&file))
             {
                 return false;
             }
@@ -236,10 +236,9 @@ s42file::load(const Glib::ustring& a_filename, perform *a_perf, mainwnd *a_main)
     int active_tracks;
     file.read((char *) &active_tracks, global_file_int_size);
 
-    int trk_index = 0;
     for (int i = 0; i < active_tracks; i++)
     {
-        trk_index = i;
+        int trk_index = i;
         if (version > 2)
         {
             file.read((char *) &trk_index, global_file_int_size);

@@ -81,7 +81,7 @@ cb_nsm_open ( const char *save_file_path,   // See API Docs 2.2.2
 int
 cb_nsm_save ( char **,  void *userdata)
 {
-    mainwnd *seq42_window =  (mainwnd*) userdata;
+    mainwnd *seq42_window =  static_cast<mainwnd *>(userdata);
 
     seq42_window->file_save();
 

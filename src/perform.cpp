@@ -311,7 +311,7 @@ sequence* perform::get_sequence( int a_trk, int a_seq )
     }
 }
 
-int perform::get_track_index( track *a_track )
+int perform::get_track_index(const track *a_track )
 {
     for (int i=0; i< c_max_track; i++ )
     {
@@ -457,14 +457,10 @@ perform::FF_rewind()
 
 void perform::toggle_song_mode()
 {
-    if(global_song_start_mode)
-        global_song_start_mode = false;
-    else
-    {
-        global_song_start_mode = true;
-    }
+    global_song_start_mode = !global_song_start_mode;
 }
 
+/* Never used */
 void perform::toggle_jack_mode()
 {
     set_jack_mode(!m_jack_running);
@@ -475,6 +471,7 @@ void perform::set_jack_mode(bool a_mode)
     m_toggle_jack = a_mode;
 }
 
+/* Never used */
 bool perform::get_toggle_jack()
 {
     return m_toggle_jack;
@@ -505,6 +502,7 @@ void perform::toggle_follow_transport()
     set_follow_transport(!m_follow_transport);
 }
 
+/* Never used */
 void perform::set_jack_stop_tick(long a_tick)
 {
     m_jack_stop_tick = a_tick;
@@ -865,7 +863,7 @@ void perform::tempo_change()
 {
     list<tempo_mark>::iterator i;
 
-    for ( i = m_list_play_marker.begin(); i != m_list_play_marker.end(); i++ )
+    for ( i = m_list_play_marker.begin(); i != m_list_play_marker.end(); ++i )
     {
         if((uint64_t)m_tick >= (i)->tick)
         {
@@ -1843,7 +1841,7 @@ perform::set_tempo_load(bool a_load)
     m_load_tempo_list = a_load;
 }
 
-/* Currently not used */
+/* Never used */
 void
 perform::set_start_tempo(double a_bpm)
 {
@@ -1952,6 +1950,7 @@ void perform::set_playback_mode( bool a_playback_mode )
     m_playback_mode = a_playback_mode;
 }
 
+/* Never used */
 bool perform::get_playback_mode()
 {
     return m_playback_mode;
@@ -1992,7 +1991,7 @@ long perform::get_max_trigger()
 void* output_thread_func(void *a_pef )
 {
     /* set our performance */
-    perform *p = (perform *) a_pef;
+    perform *p = static_cast<perform *>(a_pef);
     assert(p);
 
     struct sched_param schp;
@@ -2657,23 +2656,23 @@ void perform::output_func()
 #ifndef __WIN32__
                 delta.tv_sec  =  (stats_loop_finish.tv_sec  - stats_loop_start.tv_sec  );
                 delta.tv_nsec =  (stats_loop_finish.tv_nsec - stats_loop_start.tv_nsec );
-                long delta_us = (delta.tv_sec * 1000000) + (delta.tv_nsec / 1000);
+                long delta_us2 = (delta.tv_sec * 1000000) + (delta.tv_nsec / 1000);
 #else
                 delta = stats_loop_finish - stats_loop_start;
-                long delta_us = delta * 1000;
+                long delta_us2 = delta * 1000;
 #endif // __WIN32__
 
-                int index = delta_us / 100;
+                int index = delta_us2 / 100;
                 if ( index >= 100  ) index = 99;
 
                 stats_all[index]++;
 
-                if ( delta_us > stats_max )
-                    stats_max = delta_us;
-                if ( delta_us < stats_min )
-                    stats_min = delta_us;
+                if ( delta_us2 > stats_max )
+                    stats_max = delta_us2;
+                if ( delta_us2 < stats_min )
+                    stats_min = delta_us2;
 
-                stats_avg += delta_us;
+                stats_avg += delta_us2;
                 stats_loop_index++;
 
                 if ( stats_loop_index > 200 )
@@ -2762,7 +2761,7 @@ void perform::output_func()
 void* input_thread_func(void *a_pef )
 {
     /* set our performance */
-    perform *p = (perform *) a_pef;
+    perform *p = static_cast<perform *>(a_pef);
     assert(p);
 
     struct sched_param schp;
