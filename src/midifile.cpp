@@ -156,7 +156,10 @@ bool midifile::parse (perform * a_perf, mainwnd *a_main, int screen_set)
     track * a_track;
     event e;
 
-    /* read in header */
+    /* Read in header - do not change the scope of these as they increment
+       the class m_pos varible from call to read_byte().
+       Cppcheck will complain about value assigned but not used.
+    */
     ID = read_long ();
     TrackLength = read_long ();
     Format = read_short ();
@@ -188,11 +191,10 @@ bool midifile::parse (perform * a_perf, mainwnd *a_main, int screen_set)
     a_perf->push_perf_undo(true);   // true for import file
 
     /* seq24 screen set import */
-    int screen_set_start = 0;
     unsigned short Track_End = NumTracks;
     if(screen_set >= 0)
     {
-        screen_set_start = screen_set * SEQ24_SCREEN_SET_SIZE;
+        int screen_set_start = screen_set * SEQ24_SCREEN_SET_SIZE;
 
         if((screen_set_start + SEQ24_SCREEN_SET_SIZE) < Track_End)
             Track_End = screen_set_start + SEQ24_SCREEN_SET_SIZE;
@@ -205,11 +207,6 @@ bool midifile::parse (perform * a_perf, mainwnd *a_main, int screen_set)
     {
         /* done for each track */
         bool done = false;
-
-        /* events */
-        unsigned char status = 0, type, data[2], laststatus;
-        long len;
-        unsigned long proprietary = 0;
 
         /* Get ID + Length */
         ID = read_long ();
@@ -229,6 +226,11 @@ bool midifile::parse (perform * a_perf, mainwnd *a_main, int screen_set)
         {
             /* we know we have a good track, so we can create
                a new seq42 track to dump it */
+
+            /* events */
+            unsigned char status = 0, type, data[2];
+            long len;
+            unsigned long proprietary = 0;
 
             a_track = new track();
 
@@ -254,7 +256,7 @@ bool midifile::parse (perform * a_perf, mainwnd *a_main, int screen_set)
                 Delta = read_var ();
 
                 /* get status */
-                laststatus = status;
+                unsigned char laststatus = status;
                 status = m_d[m_pos];
 
                 /* is it a status bit ? */
@@ -368,7 +370,7 @@ bool midifile::parse (perform * a_perf, mainwnd *a_main, int screen_set)
                             {
                                 int num_triggers = len / 4;
 
-                                for (int i = 0; i < num_triggers; i += 2)
+                                for (int j = 0; j < num_triggers; j += 2)
                                 {
                                     unsigned long on = read_long ();
                                     unsigned long length = (read_long () - on);
@@ -381,7 +383,7 @@ bool midifile::parse (perform * a_perf, mainwnd *a_main, int screen_set)
                                 int num_triggers = len / 12;
 
                                 //printf( "num_triggers[%d]\n", num_triggers );
-                                for (int i = 0; i < num_triggers; i++)
+                                for (int k = 0; k < num_triggers; k++)
                                 {
                                     unsigned long on = read_long ();
                                     unsigned long off = read_long ();
@@ -640,7 +642,7 @@ bool midifile::parse (perform * a_perf, mainwnd *a_main, int screen_set)
                     printf( "corrupt data in mutegroup section\n" );
                 }
 
-                for (int i = 0; i < 32; i++) // c_seqs_in_set == 4 * 8 = 32 (from seq24)
+                for (int x = 0; x < 32; x++) // c_seqs_in_set == 4 * 8 = 32 (from seq24)
                 {
                     read_long (); // a_perf->select_group_mute(read_long ());
                     for (int k = 0; k < 32; ++k)
@@ -690,7 +692,7 @@ bool midifile::parse (perform * a_perf, mainwnd *a_main, int screen_set)
             }
             
             /* if use_tempo_map is false we should still run through the reads in case additional tags are added later */
-            for(int i = 0; i < length; ++i)
+            for(int x = 0; x < length; ++x)
             {
                 a_marker.tick = read_long();
                 double a_bpm = (double) read_long ();
@@ -938,11 +940,11 @@ bool midifile::write_sequences (perform * a_perf, sequence *a_solo_seq)
         write_long(c_tempo_map);
         write_long(a_perf->m_list_total_marker.size());
         list<tempo_mark>::iterator i;
-        for ( i = a_perf->m_list_total_marker.begin(); i != a_perf->m_list_total_marker.end(); i++ )
+        for ( i = a_perf->m_list_total_marker.begin(); i != a_perf->m_list_total_marker.end(); ++i )
         {
             write_long((*i).tick);
-            long scaled_bpm = long((*i).bpm * c_bpm_scale_factor);
-            write_long (scaled_bpm);
+            long l_scaled_bpm = long((*i).bpm * c_bpm_scale_factor);
+            write_long (l_scaled_bpm);
             write_long((*i).bw);
             write_long((*i).bp_measure);
            // don't need start frame or microseconds since it will be re-calculated on load
@@ -959,7 +961,7 @@ bool midifile::write_sequences (perform * a_perf, sequence *a_solo_seq)
     file.rdbuf()->pubsetbuf(file_buffer, sizeof file_buffer);
 
     for (list < unsigned char >::iterator i = m_l.begin ();
-            i != m_l.end (); i++)
+            i != m_l.end (); ++i)
     {
         char c = *i;
         file.write(&c, 1);
@@ -1052,12 +1054,11 @@ bool midifile::write_song (perform *a_perf, file_type_e type ,track *a_solo_trac
             std::vector<trigger> trig_vect;
             list<char> l;
             sequence * seq = NULL;
-            int vect_size = 1;                          // for solo trigger
             
             if(type == E_MIDI_SONG_FORMAT || type == E_MIDI_SOLO_TRACK)
             {
                 a_track->get_trak_triggers(trig_vect);  // all triggers for the track
-                vect_size = trig_vect.size();
+                int vect_size = trig_vect.size();
                 
                 /*  sequence name - this will assume the first sequence used is the name for the whole track */
                 for (int i = 0; i < vect_size; i++)
@@ -1190,7 +1191,7 @@ bool midifile::write_song (perform *a_perf, file_type_e type ,track *a_solo_trac
     file.rdbuf()->pubsetbuf(file_buffer, sizeof file_buffer);
 
     for (list < unsigned char >::iterator i = m_l.begin ();
-            i != m_l.end (); i++)
+            i != m_l.end (); ++i)
     {
         char c = *i;
         file.write(&c, 1);

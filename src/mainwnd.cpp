@@ -1851,9 +1851,9 @@ void mainwnd::export_midi(const Glib::ustring& fn, file_type_e type, void *a_seq
     midifile f(fn);
 
     if(type == E_MIDI_SEQ24_FORMAT || type == E_MIDI_SOLO_SEQUENCE )
-        result = f.write_sequences(m_mainperf, (sequence*)a_seq_or_track);  // seq24 format will be nullptr
+        result = f.write_sequences( m_mainperf, static_cast<sequence*>(a_seq_or_track) );  // seq24 format will be nullptr
     else
-        result = f.write_song(m_mainperf, type,(track*)a_seq_or_track);     // song format will be nullptr
+        result = f.write_song( m_mainperf, type, static_cast<track*>(a_seq_or_track) );     // song format will be nullptr
     
 
     if (!result)
@@ -2829,7 +2829,7 @@ mainwnd::toggle_time_format ()
 int
 FF_RW_timeout(void *arg)
 {
-    perform *p = (perform *) arg;
+    perform *p = static_cast<perform*>(arg);
 
     if(FF_RW_button_type != FF_RW_RELEASE)
     {
