@@ -1398,6 +1398,9 @@ mainwnd::set_jack_mode ()
         m_mainperf->set_starting_tick(m_mainperf->get_tick());
 }
 
+/**
+ * Never used.
+ */
 void
 mainwnd::toggle_jack()
 {
@@ -1815,9 +1818,9 @@ void mainwnd::file_save_as(file_type_e type, void *a_seq_or_track)
                                        "Do you want to overwrite it?",
                                        false,
                                        Gtk::MESSAGE_WARNING, Gtk::BUTTONS_YES_NO, true);
-            auto result = warning.run();
+            auto wresult = warning.run();
 
-            if (result == Gtk::RESPONSE_NO)
+            if (wresult == Gtk::RESPONSE_NO)
                 return;
         }
 
@@ -1885,15 +1888,13 @@ void mainwnd::new_open_error_dialog()
 
 bool mainwnd::open_file(const Glib::ustring& fn)
 {
-    bool result;
-
     if(m_mainperf->clear_all())
     {
         m_tempo->clear_tempo_list();
         set_xpose(0);
         
         s42file f;
-        result = f.load(fn, m_mainperf, this);
+        bool result = f.load(fn, m_mainperf, this);
 
         global_is_modified = !result;
 
@@ -2192,7 +2193,7 @@ void
 mainwnd::toLower(basic_string<char>& s)
 {
     for (basic_string<char>::iterator p = s.begin();
-            p != s.end(); p++)
+            p != s.end(); ++p)
     {
         *p = tolower(*p);
     }
@@ -2764,7 +2765,7 @@ mainwnd::tick_to_timestring (long a_tick)
     int hours = seconds / (60 * 60);
     minutes -= hours * 60;
     seconds -= (hours * 60 * 60) + (minutes * 60);
-    microseconds -= (hours * 60 * 60 + minutes * 60 + seconds) * 1000000UL;
+//    microseconds -= (hours * 60 * 60 + minutes * 60 + seconds) * 1000000UL;
 
     char tmp[32];
     snprintf(tmp, sizeof tmp, " %03d:%d:%02d ", hours, minutes, seconds);

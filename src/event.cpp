@@ -78,6 +78,9 @@ event::set_status( const char a_status, bool a_record  )
         m_status = (char) (a_status & EVENT_CLEAR_CHAN_MASK);
 }
 
+/**
+ * Never used.
+ */
 void
 event::make_clock( )
 {
@@ -134,12 +137,18 @@ event::get_status( )
     return m_status;
 }
 
+/**
+ * Never used.
+ */
 void
 event::start_sysex( void  )
 {
     m_sysex.clear();
 }
 
+/**
+ * Never used.
+ */
 bool
 event::append_sysex( unsigned char *a_data, long a_size )
 {
@@ -156,7 +165,9 @@ event::append_sysex( unsigned char *a_data, long a_size )
     return ret;
 }
 
-
+/**
+ * Never used.
+ */
 unsigned char *
 event::get_sysex()
 {
@@ -169,6 +180,9 @@ event::set_size( long a_size )
     m_sysex.resize(a_size);
 }
 
+/**
+ * Never used.
+ */
 long
 event::get_size()
 {
@@ -216,7 +230,7 @@ event::print()
 {
     printf
     (
-        "[%06ld] [%04X] %02X ",
+        "[%06lu] [%04X] %02X ",
         m_timestamp,
         (unsigned char)m_sysex.size(),
         m_status

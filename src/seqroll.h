@@ -39,7 +39,8 @@ public:
 class seqroll;
 struct FruitySeqRollInput
 {
-    FruitySeqRollInput() : m_adding( false ), m_canadd( true ), m_erase_painting( false )
+    FruitySeqRollInput() : m_adding( false ), m_canadd( true ), m_erase_painting( false ),
+    m_drag_paste_start_pos()
     {}
     bool on_button_press_event(GdkEventButton* a_ev, seqroll& ths);
     bool on_button_release_event(GdkEventButton* a_ev, seqroll& ths);

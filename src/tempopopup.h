@@ -65,7 +65,7 @@ private:
 
 public:
 
-    tempopopup (tempo *a_tempo);
+    explicit tempopopup (tempo *a_tempo);
     
     void popup_tempo_win(int x, int y);
     

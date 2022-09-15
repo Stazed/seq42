@@ -857,7 +857,17 @@ mastermidibus::flush()
 }
 
 /* fills the array with our buses */
-mastermidibus::mastermidibus()
+mastermidibus::mastermidibus() :
+m_buses_out(),
+m_buses_in(),
+m_bus_announce(),
+m_queue(),
+m_ppqn(),
+m_bpm(),
+m_num_poll_descriptors(),
+m_poll_descriptors(),
+m_dumping_input(),
+m_seq()
 {
     /* temp return */
     int ret;
@@ -1071,7 +1081,6 @@ mastermidibus::init( )
 
 #endif
 #ifdef __WIN32__
-    int client;
 
     int num_buses = 16;
 
@@ -1155,7 +1164,7 @@ void
 mastermidibus::play( unsigned char a_bus, event *a_e24, unsigned char a_channel )
 {
     lock();
-    if ( m_buses_out_active[a_bus] && a_bus < m_num_out_buses )
+    if ( a_bus < m_num_out_buses && m_buses_out_active[a_bus] )
     {
         m_buses_out[a_bus]->play( a_e24, a_channel );
     }
@@ -1170,7 +1179,7 @@ mastermidibus::set_clock( unsigned char a_bus, clock_e a_clock_type )
     {
         m_init_clock[a_bus] = a_clock_type;
     }
-    if ( m_buses_out_active[a_bus] && a_bus < m_num_out_buses )
+    if ( a_bus < m_num_out_buses && m_buses_out_active[a_bus] )
     {
         m_buses_out[a_bus]->set_clock( a_clock_type );
     }
@@ -1180,7 +1189,7 @@ mastermidibus::set_clock( unsigned char a_bus, clock_e a_clock_type )
 clock_e
 mastermidibus::get_clock( unsigned char a_bus )
 {
-    if ( m_buses_out_active[a_bus] && a_bus < m_num_out_buses )
+    if ( a_bus < m_num_out_buses && m_buses_out_active[a_bus] )
     {
         return m_buses_out[a_bus]->get_clock();
     }
@@ -1209,7 +1218,7 @@ mastermidibus::set_input( unsigned char a_bus, bool a_inputing )
         m_init_input[a_bus] = a_inputing;
     }
 
-    if ( m_buses_in_active[a_bus] && a_bus < m_num_in_buses )
+    if ( a_bus < m_num_in_buses && m_buses_in_active[a_bus] )
     {
         m_buses_in[a_bus]->set_input( a_inputing );
     }
@@ -1219,7 +1228,7 @@ mastermidibus::set_input( unsigned char a_bus, bool a_inputing )
 bool
 mastermidibus::get_input( unsigned char a_bus )
 {
-    if ( m_buses_in_active[a_bus] && a_bus < m_num_in_buses )
+    if ( a_bus < m_num_in_buses && m_buses_in_active[a_bus] )
     {
         return m_buses_in[a_bus]->get_input();
     }
@@ -1229,7 +1238,7 @@ mastermidibus::get_input( unsigned char a_bus )
 string
 mastermidibus::get_midi_out_bus_name( int a_bus )
 {
-    if ( m_buses_out_active[a_bus] && a_bus < m_num_out_buses )
+    if ( a_bus < m_num_out_buses && m_buses_out_active[a_bus] )
     {
         return m_buses_out[a_bus]->get_name();
     }
@@ -1260,7 +1269,7 @@ mastermidibus::get_midi_out_bus_name( int a_bus )
 string
 mastermidibus::get_midi_in_bus_name( int a_bus )
 {
-    if ( m_buses_in_active[a_bus] && a_bus < m_num_in_buses )
+    if ( a_bus < m_num_in_buses && m_buses_in_active[a_bus] )
     {
         return m_buses_in[a_bus]->get_name();
     }

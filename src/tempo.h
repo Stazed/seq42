@@ -153,7 +153,7 @@ private:
     
     public:
 
-    Bpm_spinbutton(const Glib::RefPtr<Adjustment>& adjustment, double climb_rate =  0.0, guint digits =  0);
+    explicit Bpm_spinbutton(const Glib::RefPtr<Adjustment>& adjustment, double climb_rate =  0.0, guint digits =  0);
     
     void set_have_enter(bool a_enter);
     bool get_have_enter();

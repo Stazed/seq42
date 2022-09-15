@@ -62,7 +62,7 @@ private:
 
 public:
 
-    midifile(const Glib::ustring&);
+    explicit midifile(const Glib::ustring&);
 
     ~midifile();
 
