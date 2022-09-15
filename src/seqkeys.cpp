@@ -26,10 +26,13 @@ seqkeys::seqkeys(sequence *a_seq, Glib::RefPtr<Adjustment> a_vadjust ):
     m_vadjust(a_vadjust),
     m_scroll_offset_key(0),
     m_scroll_offset_y(0),
+    m_window_x(),
+    m_window_y(),
     m_hint_state(false),
     m_hint_key(0),
     m_enter_piano_roll(false),
     m_keying(false),
+    m_keying_note(),
     m_scale(0),
     m_key(0),
     m_key_y(c_key_y),
@@ -243,11 +246,11 @@ seqkeys::convert_y( int a_y, int *a_note)
 bool
 seqkeys::on_button_press_event(GdkEventButton *a_e)
 {
-    int y,note;
+    int note;
 
     if ( a_e->type == GDK_BUTTON_PRESS )
     {
-        y = (int) a_e->y + m_scroll_offset_y;
+        int y = (int) a_e->y + m_scroll_offset_y;
 
         /* Left mouse button - play the note */
         if ( a_e->button == 1 )

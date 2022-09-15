@@ -38,6 +38,8 @@ seqroll::seqroll(perform *a_perf,
                  Glib::RefPtr<Adjustment> a_hadjust,
                  Glib::RefPtr<Adjustment> a_vadjust,
                  ToggleButton *a_toggle_play):
+    m_old(),
+    m_selected(),
     m_seq(a_seq),
     m_perform(a_perf),
     m_seqdata_wid(a_seqdata_wid),
@@ -46,6 +48,7 @@ seqroll::seqroll(perform *a_perf,
 
     m_zoom(a_zoom),
     m_snap(a_snap),
+    m_note_length(),
 
     m_scale(0),
     m_chord(0),
@@ -57,6 +60,9 @@ seqroll::seqroll(perform *a_perf,
     m_window_x(10),
     m_window_y(10),
 
+    m_status(),
+    m_cc(),
+
     m_selecting(false),
     m_moving(false),
     m_moving_init(false),
@@ -66,6 +72,13 @@ seqroll::seqroll(perform *a_perf,
     m_is_drag_pasting(false),
     m_is_drag_pasting_start(false),
     m_justselected_one(false),
+    m_drop_x(),
+    m_drop_y(),
+    m_move_delta_x(),
+    m_move_delta_y(),
+    m_current_x(),
+    m_current_y(),
+    m_move_snap_offset_x(),
 
     m_old_progress_x(0),
 
@@ -495,10 +508,7 @@ seqroll::set_scale( int a_scale )
 void
 seqroll::set_chord( int a_chord )
 {
-    if ( m_chord != a_chord )
-    {
-        m_chord = a_chord;
-    }
+    m_chord = a_chord;
 }
 
 /* sets the key */
@@ -1428,8 +1438,6 @@ void FruitySeqRollInput::updateMousePtr(seqroll& ths)
 
 bool FruitySeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& ths)
 {
-    int numsel;
-
     long tick_s;
     long tick_f;
     int note_h;
@@ -1547,7 +1555,7 @@ bool FruitySeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& th
                     }
 
                     /* on direct click select only one event */
-                    numsel = ths.m_seq->select_note_events( tick_s,note_h,tick_s,note_h,
+                    int numsel = ths.m_seq->select_note_events( tick_s,note_h,tick_s,note_h,
                                                             sequence::e_select_one );
                     // prevent deselect in button_release()
                     if (numsel)
@@ -1978,8 +1986,6 @@ Seq42SeqRollInput::set_adding( bool a_adding, seqroll& ths )
 
 bool Seq42SeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& ths)
 {
-    int numsel;
-
     long tick_s;
     long tick_f;
     int note_h;
@@ -2077,7 +2083,7 @@ bool Seq42SeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& ths
                     }
 
                     /* on direct click select only one event */
-                    numsel = ths.m_seq->select_note_events( tick_s,note_h,tick_s,note_h,
+                    int numsel = ths.m_seq->select_note_events( tick_s,note_h,tick_s,note_h,
                                                             sequence::e_select_one );
 
                     /* none selected, start selection box */
