@@ -869,9 +869,6 @@ m_poll_descriptors(),
 m_dumping_input(),
 m_seq()
 {
-    /* temp return */
-    int ret;
-
     /* set initial number buses */
     m_num_out_buses = 0;
     m_num_in_buses = 0;
@@ -889,7 +886,7 @@ m_seq()
 
 #ifdef HAVE_LIBASOUND
     /* open the sequencer client */
-    ret = snd_seq_open(&m_alsa_seq, "default",  SND_SEQ_OPEN_DUPLEX, 0);
+    int ret = snd_seq_open(&m_alsa_seq, "default",  SND_SEQ_OPEN_DUPLEX, 0);
 
     if ( ret < 0 )
     {
