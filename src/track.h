@@ -108,7 +108,7 @@ public:
     void delete_sequence( int a_num );
 
     sequence *get_sequence( int a_seq );
-    int get_sequence_index( sequence *a_sequence );
+    int get_sequence_index(const sequence *a_sequence );
 
     // How many sequences does this track have?
     unsigned int get_number_of_sequences();
@@ -116,7 +116,7 @@ public:
     //
     //  Gets and Sets
     //
-    void set_name (string a_name);
+    void set_name (const string &a_name);
     void set_name (char *a_name);
     /* returns string of name */
     const char *get_name ();

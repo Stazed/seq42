@@ -167,7 +167,7 @@ tempo::draw_background()
 
     /* Draw the markers */
     list<tempo_mark>::iterator i;
-    for ( i = m_list_marker.begin(); i != m_list_marker.end(); i++ )
+    for ( i = m_list_marker.begin(); i != m_list_marker.end(); ++i )
     {
         tempo_mark current_marker = *(i);
 
@@ -492,7 +492,7 @@ tempo::add_marker(tempo_mark a_mark)
     lock();
     bool start_tick = false;
     list<tempo_mark>::iterator i;
-    for ( i = m_list_marker.begin(); i != m_list_marker.end(); i++ )
+    for ( i = m_list_marker.begin(); i != m_list_marker.end(); ++i )
     {
         if((i)->tick == a_mark.tick )       // don't allow duplicates - last one wins 
         {
@@ -618,9 +618,6 @@ tempo::calculate_marker_start()
     /* calculate the jack start tick without the stop markers */
     for ( i = ++m_list_no_stop_markers.begin(); i != m_list_no_stop_markers.end(); ++i )
     {
-        if(i == m_list_no_stop_markers.end())
-            break;
-        
         list<tempo_mark>::iterator n = i; 
             --n;
 
@@ -747,7 +744,7 @@ tempo::get_hold_undo ()
     return m_list_undo_hold.size();
 }
 
-
+/* Debug - never used */
 void
 tempo::print_marker_info(list<tempo_mark> a_list)
 {
@@ -774,7 +771,7 @@ tempo::check_above_marker(uint64_t mouse_tick, bool a_delete, bool exact )
     lock();
     
     list<tempo_mark>::iterator i;
-    for ( i = m_list_marker.begin(); i != m_list_marker.end(); i++ )
+    for ( i = m_list_marker.begin(); i != m_list_marker.end(); ++i )
     {
         uint64_t start_marker = (i)->tick - (60.0 * (float) (m_perf_scale_x / 32.0) );
         uint64_t end_marker = (i)->tick + (260.0 * (float) (m_perf_scale_x / 32.0) );
@@ -894,6 +891,7 @@ Bpm_spinbutton::get_have_leave()
     return m_have_leave;
 }
 
+/* Never used */
 void
 Bpm_spinbutton::set_have_typing(bool a_type)
 {

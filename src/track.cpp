@@ -22,24 +22,25 @@
 #include <fstream>
 #include <gtkmm.h>
 
-track::track()
+track::track() :
+    m_trigger_export(nullptr),
+    m_name(c_dummy),
+    m_editing(false),
+    m_raise(false),
+    m_midi_channel(0),
+    m_bus(0),
+    m_song_mute(false),
+    m_song_solo(false),
+    m_transposable(true),
+    m_masterbus(nullptr),
+    m_default_velocity(100),
+    m_trigger_copied(false),
+
+    m_dirty_perf(true),
+    m_dirty_names(true),
+
+    m_is_NULL(false)
 {
-    m_editing = false;
-    m_raise = false;
-    m_name = c_dummy;
-    m_bus = 0;
-    m_midi_channel = 0;
-    m_song_mute = false;
-    m_song_solo = false;
-    m_transposable = true;
-    m_trigger_copied = false;
-    m_trigger_export = nullptr;
-
-    m_dirty_perf = true;
-    m_dirty_names = true;
-
-    m_default_velocity = 100;
-    m_is_NULL = false;
 }
 
 track::~track()
@@ -138,7 +139,7 @@ track::set_name( char *a_name )
 }
 
 void
-track::set_name( string a_name )
+track::set_name(const string &a_name )
 {
     m_name = a_name;
     set_dirty();
@@ -191,7 +192,7 @@ track::get_sequence( int a_seq )
 }
 
 int
-track::get_sequence_index( sequence *a_seq )
+track::get_sequence_index(const sequence *a_seq )
 {
     for(unsigned i=0; i<m_vector_sequence.size(); i++)
     {
@@ -286,7 +287,7 @@ track::push_trigger_undo()
     list<trigger>::iterator i;
 
     for ( i  = m_list_trigger_undo.top().begin();
-            i != m_list_trigger_undo.top().end(); i++ )
+            i != m_list_trigger_undo.top().end(); ++i )
     {
         (*i).m_selected = false;
     }
@@ -416,7 +417,7 @@ void track::delete_sequence( int a_num )
             {
                 i->m_sequence--;
             }
-            i++;
+            ++i;
         }
         delete a_seq;
         a_seq = NULL;
@@ -456,7 +457,7 @@ track::play( long a_tick, bool a_playback_mode )
             {
                 break;
             }
-            i++;
+            ++i;
         }
     }
 
@@ -503,7 +504,7 @@ track::get_trigger_count_for_seqidx(int a_seq)
         {
             count++;
         }
-        i++;
+        ++i;
     }
     return count;
 }
@@ -826,7 +827,7 @@ track::paste_triggers (long a_start_tick,
     }
 
     sequence *a_seq;
-    long seq_length = 0L;
+    long seq_length;
 
     list<trigger>::iterator i = m_list_trigger.begin();
     while(  i != m_list_trigger.end() )
@@ -1008,7 +1009,7 @@ track::move_triggers( long a_start_tick,
     }
 
     sequence *a_seq;
-    long seq_length = 0L;
+    long seq_length;
 
     i = m_list_trigger.begin();
     while(  i != m_list_trigger.end() )
@@ -1134,8 +1135,7 @@ track::move_selected_triggers_to( long a_tick, bool a_adjust_offset, trigger_edi
         {
             s = i;
 
-            if (     i != m_list_trigger.end() &&
-                     ++i != m_list_trigger.end())
+            if (++i != m_list_trigger.end())
             {
                 max_tick = (*i).m_tick_start - 1;
             }
@@ -1266,7 +1266,7 @@ track::get_trigger( long a_tick )
     trigger *ret = NULL;
     list<trigger>::iterator i;
 
-    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ )
+    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); ++i )
     {
         if ( (*i).m_tick_start <= a_tick &&
                 (*i).m_tick_end >= a_tick)
@@ -1313,11 +1313,11 @@ track::get_trigger_sequence( trigger *a_trigger )
 
 void track::set_trigger_sequence( trigger *a_trigger, int a_sequence )
 {
-    // to make all newly added sequences align seq start with trigger start
-    a_trigger->m_offset = a_trigger->m_tick_start;
-
     if(a_trigger != NULL)
     {
+        // to make all newly added sequences align seq start with trigger start
+        a_trigger->m_offset = a_trigger->m_tick_start;
+
         a_trigger->m_sequence = a_sequence;
         set_dirty();
     }
@@ -1352,7 +1352,7 @@ track::select_trigger( long a_tick )
     bool ret = false;
     list<trigger>::iterator i;
 
-    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ )
+    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); ++i )
     {
         if ( (*i).m_tick_start <= a_tick &&
                 (*i).m_tick_end   >= a_tick)
@@ -1375,7 +1375,7 @@ track::unselect_triggers()
     bool ret = false;
     list<trigger>::iterator i;
 
-    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ )
+    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); ++i )
     {
         (*i).m_selected = false;
     }
@@ -1392,7 +1392,7 @@ track::del_selected_trigger()
 
     list<trigger>::iterator i;
 
-    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ )
+    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); ++i )
     {
         if ( i->m_selected )
         {
@@ -1418,7 +1418,7 @@ track::copy_selected_trigger()
 
     list<trigger>::iterator i;
 
-    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); i++ )
+    for ( i = m_list_trigger.begin(); i != m_list_trigger.end(); ++i )
     {
         if ( i->m_selected )
         {
@@ -1496,7 +1496,7 @@ track::get_next_trigger( long *a_tick_on, long *a_tick_off, bool *a_selected, lo
         *a_offset =   (*m_iterator_draw_trigger).m_offset;
         *a_tick_off = (*m_iterator_draw_trigger).m_tick_end;
         *a_seq_idx =  (*m_iterator_draw_trigger).m_sequence;
-        m_iterator_draw_trigger++;
+        ++m_iterator_draw_trigger;
         return true;
     }
     return false;
@@ -1513,12 +1513,12 @@ track::print()
 
     for(unsigned i=0; i<m_vector_sequence.size(); i++)
     {
-        printf("sequence[%d] address=%p name=\"%s\"\n", i, m_vector_sequence[i], m_vector_sequence[i]->get_name() );
+        printf("sequence[%u] address=%p name=\"%s\"\n", i, m_vector_sequence[i], m_vector_sequence[i]->get_name() );
         m_vector_sequence[i]->print();
     }
     int i=0;
     for( list<trigger>::iterator iter = m_list_trigger.begin();
-            iter != m_list_trigger.end(); iter++ )
+            iter != m_list_trigger.end(); ++iter )
     {
         /*long d= c_ppqn / 8;*/
         //printf ("trigger[%d] address=%p tick_start[%ld] tick_end[%ld] off[%ld] sequence=[%p]\n", i, &(*iter), (*iter).m_tick_start, (*iter).m_tick_end, (*iter).m_offset, (*iter).m_sequence );
@@ -1580,7 +1580,7 @@ _Pragma("GCC diagnostic pop")
     file->write((const char *) &num_triggers, global_file_int_size);
 
     for( list<trigger>::iterator iter = m_list_trigger.begin();
-            iter != m_list_trigger.end(); iter++ )
+            iter != m_list_trigger.end(); ++iter )
     {
         file->write((const char *) &(iter->m_tick_start), global_file_long_int_size);
         file->write((const char *) &(iter->m_tick_end), global_file_long_int_size);
