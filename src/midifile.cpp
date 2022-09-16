@@ -161,7 +161,8 @@ bool midifile::parse (perform * a_perf, mainwnd *a_main, int screen_set)
        Cppcheck will complain about value assigned but not used.
     */
     ID = read_long ();
-    TrackLength = read_long ();
+    /*TrackLength = */ read_long ();    // Fix Cppcheck style message - need to read to increment m_pos
+                                        // but the return is not used.
     Format = read_short ();
     NumTracks = read_short ();
     ppqn = read_short ();
