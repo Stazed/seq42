@@ -31,7 +31,7 @@ class userfile  : public configfile
 
 public:
 
-    explicit userfile( string a_name );
+    explicit userfile(const string &a_name );
     ~userfile( );
 
     bool parse( perform *a_perf ) override;

@@ -21,7 +21,7 @@
 #include "userfile.h"
 #include <iostream>
 
-userfile::userfile( string a_name ) :
+userfile::userfile(const string &a_name ) :
     configfile( a_name )
 {
 }

@@ -25,18 +25,19 @@
 
 // Constructor
 
-trackmenu::trackmenu( perform *a_p, mainwnd *a_main  )
+trackmenu::trackmenu( perform *a_p, mainwnd *a_main  ) :
+    m_menu(NULL),
+    m_mainperf(a_p),
+    m_something_to_paste(false),
+    m_mainwnd(a_main),
+    m_current_trk(0),
+    m_old_track(0)
 {
     using namespace Menu_Helpers;
-
-    m_mainperf = a_p;
-    m_mainwnd = a_main;
-    m_menu = NULL;
 
     // init the clipboard, so that we don't get a crash
     // on paste with no previous copy...
     m_clipboard.set_master_midi_bus( a_p->get_master_midi_bus() );
-    m_something_to_paste = false;
 }
 
 void
@@ -189,7 +190,7 @@ trackmenu::popup_menu()
                 }
 
                 sequence *a_seq = some_track->get_sequence( s );
-                snprintf(name, sizeof(name),"[%d] %s", s+1, a_seq->get_name());
+                snprintf(name, sizeof(name),"[%u] %s", s+1, a_seq->get_name());
 
                 MenuItem * menu_item = new MenuItem(name);
                 menu_item->signal_activate().connect(sigc::bind(mem_fun(*this,&trackmenu::trk_merge_seq),some_track, a_seq) );
@@ -257,9 +258,9 @@ trackmenu::popup_menu()
                                    string(")") );
                 }
 
-                MenuItem * menu_item = new MenuItem(name);
-                menu_item->signal_activate().connect(sigc::bind(mem_fun(*this,&trackmenu::set_bus_and_midi_channel), i, j));
-                menu_channels->append(*menu_item);
+                MenuItem * menu_item_name = new MenuItem(name);
+                menu_item_name->signal_activate().connect(sigc::bind(mem_fun(*this,&trackmenu::set_bus_and_midi_channel), i, j));
+                menu_channels->append(*menu_item_name);
             }
         }
     }
