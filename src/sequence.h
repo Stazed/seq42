@@ -171,7 +171,7 @@ public:
     void set_track (track *a_track);
     track *get_track ();
 
-    void set_name (string a_name);
+    void set_name (const string &a_name);
     void set_name (char *a_name);
     /* returns string of name */
     const char *get_name ();

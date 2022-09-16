@@ -26,7 +26,9 @@ seqtime::seqtime(sequence *a_seq, int a_zoom, Glib::RefPtr<Adjustment> a_hadjust
     m_scroll_offset_ticks(0),
     m_scroll_offset_x(0),
     m_seq(a_seq),
-    m_zoom(a_zoom)
+    m_zoom(a_zoom),
+    m_window_x(),
+    m_window_y()
 {
     Gtk::Allocation allocation = get_allocation();
     m_surface = Cairo::ImageSurface::create(
