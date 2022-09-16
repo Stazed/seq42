@@ -335,11 +335,6 @@ sequence::play(long a_tick, trigger *a_trigger)
 
     event transposed_event;
 
-    unsigned long orig_event_timestamp;
-    unsigned long swung_event_timestamp;
-    unsigned long max_swung_event_timestamp;
-    unsigned long offset_timestamp;
-
     /* play the notes in our frame */
     if ( m_playing )
     {
@@ -347,14 +342,17 @@ sequence::play(long a_tick, trigger *a_trigger)
 
         while ( e != m_list_event.end())
         {
-            orig_event_timestamp = (*e).get_timestamp();
-            swung_event_timestamp = orig_event_timestamp;
+            unsigned long offset_timestamp;
+            unsigned long orig_event_timestamp = (*e).get_timestamp();
+            unsigned long swung_event_timestamp = orig_event_timestamp;
 
             if(swing_amount && ((*e).is_note_on() || (*e).is_note_off()) )
             {
                 // FIXME: apply swing_amount to event_timestamp
                 // Is this implementation too simplistic???
                 // Even if not, refactor to reduce duplication of logic.
+                unsigned long max_swung_event_timestamp;
+
                 if(swing_mode == c_swing_eighths)
                 {
                     if(orig_event_timestamp % c_ppqn)
@@ -664,7 +662,7 @@ sequence::remove(list<event>::iterator i)
 // lock();  remove();  reset_draw_marker(); unlock()
 // finds e in m_list_event, removes the first iterator matching that.
 void
-sequence::remove( event* e )
+sequence::remove(const event* e )
 {
     list<event>::iterator i = m_list_event.begin();
     while( i != m_list_event.end() )
@@ -801,19 +799,16 @@ sequence::get_clipboard_box( long *a_tick_s, int *a_note_h,
     *a_note_h = 0;
     *a_note_l = 128;
 
-    long time;
-    int note;
-
     lock();
 
     for ( i = m_list_clipboard.begin(); i != m_list_clipboard.end(); ++i )
     {
-        time = (*i).get_timestamp();
+        long time = (*i).get_timestamp();
 
         if ( time < *a_tick_s ) *a_tick_s = time;
         if ( time > *a_tick_f ) *a_tick_f = time;
 
-        note = (*i).get_note();
+        int note = (*i).get_note();
 
         if ( note < *a_note_l ) *a_note_l = note;
         if ( note > *a_note_h ) *a_note_h = note;
@@ -1773,7 +1768,6 @@ void
 sequence::paste_selected( long a_tick, int a_note )
 {
     list<event>::iterator i;
-    int highest_note = 0;
 
     lock();
     list<event> clipboard = m_list_clipboard;
@@ -1786,6 +1780,8 @@ sequence::paste_selected( long a_tick, int a_note )
     if ((*clipboard.begin()).is_note_on() ||
             (*clipboard.begin()).is_note_off() )
     {
+        int highest_note = 0;
+
         for ( i = clipboard.begin(); i != clipboard.end(); ++i )
             if ( (*i).get_note( ) > highest_note ) highest_note = (*i).get_note();
 
@@ -2012,12 +2008,13 @@ sequence::add_note( long a_tick, long a_length, int a_note, bool a_paint)
     lock();
 
     event e;
-    bool ignore = false;
 
     if ( a_tick >= 0 &&
             a_note >= 0 &&
             a_note < c_num_keys )
     {
+        bool ignore = false;
+
         /* if we care about the painted, run though
          * our events, delete the painted ones that
          * overlap the one we want to add */
@@ -2139,7 +2136,7 @@ sequence::add_event( long a_tick,
 
 
 bool
-sequence::stream_event( event *a_ev )
+sequence::stream_event(const event *a_ev )
 {
     bool channel_match = false;
 
@@ -3532,14 +3529,13 @@ sequence::fill_list( list<char> *a_list, int a_pos, bool write_triggers )
     {
         track *a_track = get_track();
         list < trigger > seq_list_trigger;
-        trigger *a_trig;
 
         std::vector<trigger> trig_vect;
         a_track->get_trak_triggers(trig_vect); // all triggers for the track
 
         for(unsigned ii = 0; ii < trig_vect.size(); ii++)
         {
-            a_trig = &trig_vect[ii];
+            trigger *a_trig = &trig_vect[ii];
 
             if(a_trig->m_sequence == a_track->get_sequence_index(this)) // select only triggers for this sequence
             {
@@ -3634,16 +3630,13 @@ sequence::song_fill_list_seq_event( list<char> *a_list, trigger *a_trig, long pr
 
     for(int ii = 0; ii <= times_played; ii++ )
     {
-        /* events */
-        long timestamp = 0, delta_time = 0;
-
         list<event>::iterator i;
 
         for ( i = m_list_event.begin(); i != m_list_event.end(); ++i )
         {
             event e = (*i);
 
-            timestamp = e.get_timestamp();
+            long timestamp = e.get_timestamp();
             timestamp += timestamp_adjust;
 
             /* if the event is after the trigger start */
@@ -3690,7 +3683,7 @@ sequence::song_fill_list_seq_event( list<char> *a_list, trigger *a_trig, long pr
                     continue;
             }
 
-            delta_time = timestamp - prev_timestamp;
+            long delta_time = timestamp - prev_timestamp;
             prev_timestamp = timestamp;
 
             //printf ( "timestamp[%ld]: e.get_timestamp[%ld]: deltatime[%ld]: prev_timestamp[%ld]\n" , timestamp, e.get_timestamp(),delta_time,prev_timestamp );
