@@ -307,7 +307,7 @@ seqedit::seqedit( sequence *a_seq,
     /* sets scroll bar to the middle */
     //gfloat middle = m_vscroll->get_adjustment()->get_upper() / 3;
     //m_vscroll->get_adjustment()->set_value(middle);
-    m_seqroll_wid->set_ignore_redraw(true);
+    //m_seqroll_wid->set_ignore_redraw(true);
 
     set_zoom( m_zoom );
     set_snap( m_snap );
