@@ -404,9 +404,20 @@ seqroll::update_background()
     if ( measures_per_line <= 0 )
         measures_per_line = 1;
 
-    float zoom_factor = 6;
+    float zoom_factor;
     switch(m_zoom)
     {
+        case 1:
+        case 2:
+        case 4:
+        case 8:
+        case 16:
+        case 32:
+        {
+            zoom_factor = 6.0;
+        }
+        break;
+        
         case 6: zoom_factor = 8.0;
         break;
 
@@ -440,7 +451,7 @@ seqroll::update_background()
         case 30: zoom_factor = 6.4;
         break;
 
-        case 32: zoom_factor = 6.0;
+        default: zoom_factor = 6.0;
         break;
     }
 
