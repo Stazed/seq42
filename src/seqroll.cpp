@@ -395,18 +395,58 @@ seqroll::update_background()
         }
     }
 
-    /*int measure_length_64ths =  m_seq->get_bp_measure() * 64 /
-        m_seq->get_bw();*/
+   int measure_length_32nds =  m_seq->get_bp_measure() * 32 /
+                                m_seq->get_bw();
 
-    //printf ( "measure_length_64ths[%d]\n", measure_length_64ths );
+    //printf ( "measure_length_32nds[%d]\n", measure_length_32nds );
 
-    //int measures_per_line = (256 / measure_length_64ths) / (32 / m_zoom);
-    //if ( measures_per_line <= 0
-    int measures_per_line = 1;
+    int measures_per_line = (128 / measure_length_32nds) / (32 / m_zoom);
+    if ( measures_per_line <= 0 )
+        measures_per_line = 1;
+
+    float zoom_factor = 6;
+    switch(m_zoom)
+    {
+        case 6: zoom_factor = 8.0;
+        break;
+
+        case 10: zoom_factor = 4.8;
+        break;
+
+        case 12: zoom_factor = 8.0;
+        break;
+
+        case 14: zoom_factor = 6.85714285714;
+        break;
+
+        case 18: zoom_factor = 5.33333333333;
+        break;
+
+        case 20: zoom_factor = 9.6;
+        break;
+
+        case 22: zoom_factor = 8.72727272727;
+        break;
+
+        case 24: zoom_factor = 8.0;
+        break;
+
+        case 26: zoom_factor = 7.38461538462;
+        break;
+
+        case 28: zoom_factor = 6.85714285714;
+        break;
+
+        case 30: zoom_factor = 6.4;
+        break;
+
+        case 32: zoom_factor = 6.0;
+        break;
+    }
 
     int ticks_per_measure =  m_seq->get_bp_measure() * (4 * c_ppqn) / m_seq->get_bw();
     int ticks_per_beat =  (4 * c_ppqn) / m_seq->get_bw();
-    int ticks_per_step = 6 * m_zoom;
+    int ticks_per_step = zoom_factor * m_zoom;
     int ticks_per_m_line =  ticks_per_measure * measures_per_line;
     int start_tick = m_scroll_offset_ticks -
                      (m_scroll_offset_ticks % ticks_per_step );
