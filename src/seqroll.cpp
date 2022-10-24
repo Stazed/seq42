@@ -414,41 +414,41 @@ seqroll::update_background()
         case 16:
         case 32:
         {
-            zoom_factor = 6.0;
+            zoom_factor = 6.0;                  // 6, 12, 24, 48, 96, 192
         }
         break;
         
-        case 6: zoom_factor = 8.0;
+        case 6:
+        case 12:
+        case 24:
+        {
+             zoom_factor = 8.0;                 // 48, 96, 192
+        }
         break;
 
-        case 10: zoom_factor = 4.8;
+        case 10: zoom_factor = 4.8;             // 48
         break;
 
-        case 12: zoom_factor = 8.0;
+        case 14:
+        case 28:
+        {
+             zoom_factor = 6.85714285714;       // 96, 192
+        }
         break;
 
-        case 14: zoom_factor = 6.85714285714;
+        case 18: zoom_factor = 5.33333333333;   // 96
         break;
 
-        case 18: zoom_factor = 5.33333333333;
+        case 20: zoom_factor = 9.6;             // 192
         break;
 
-        case 20: zoom_factor = 9.6;
+        case 22: zoom_factor = 8.72727272727;   // 192
         break;
 
-        case 22: zoom_factor = 8.72727272727;
+        case 26: zoom_factor = 7.38461538462;   // 192
         break;
 
-        case 24: zoom_factor = 8.0;
-        break;
-
-        case 26: zoom_factor = 7.38461538462;
-        break;
-
-        case 28: zoom_factor = 6.85714285714;
-        break;
-
-        case 30: zoom_factor = 6.4;
+        case 30: zoom_factor = 6.4;             // 192
         break;
 
         default: zoom_factor = 6.0;
