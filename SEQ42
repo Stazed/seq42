@@ -314,6 +314,10 @@ The program is basically a MIDI song editor.
             middle mouse button to solo. Muted keys will change color to red,
             and solo to green. These settings will NOT be saved to file.
 
+        To display the MIDI number instead of the letter value of the note.
+            Right mouse button + CTRL to toggle between letter and MIDI number
+            when on the piano roll.
+
 	The left mouse button lets you select multiple events 
         which can then be clicked and moved, cut (Ctrl-X), 
         copy (Ctrl-C), or pasted (Ctrl-V).  When the notes are 

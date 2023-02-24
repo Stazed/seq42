@@ -38,7 +38,8 @@ seqkeys::seqkeys(sequence *a_seq, Glib::RefPtr<Adjustment> a_vadjust ):
     m_key_y(c_key_y),
     m_keyarea_y(c_keyarea_y),
     m_rollarea_y(c_rollarea_y),
-    m_vertical_zoom(c_default_vertical_zoom)
+    m_vertical_zoom(c_default_vertical_zoom),
+    m_show_note_letters(true)
 {
     m_surface = Cairo::ImageSurface::create(
         Cairo::Format::FORMAT_ARGB32,
@@ -206,23 +207,42 @@ seqkeys::update_surface()
             cr->fill();
         }
 
-        if ( key == m_key  )
+        if ( m_show_note_letters )
         {
-            /* The key letter to the left of the piano roll */
-            char notes[20];
+            if ( key == m_key  )
+            {
+                /* The key letter to the left of the piano roll */
+                char notes[20];
 
-            /* notes */
-            int octave = ((c_num_keys - i - 1) / 12) - 1;
-            if ( octave < 0 )
-                octave *= -1;
+                /* notes */
+                int octave = ((c_num_keys - i - 1) / 12) - 1;
+                if ( octave < 0 )
+                    octave *= -1;
 
-            snprintf(notes, sizeof(notes), "%2s%1d", c_key_text[key], octave);
+                snprintf(notes, sizeof(notes), "%2s%1d", c_key_text[key], octave);
 
-            p_font_renderer->render_string_on_drawable(2,
-                                                       m_key_y * i,
-                                                       cr, notes, font::BLACK,
-                                                       c_default_horizontal_zoom,
-                                                       m_vertical_zoom);
+                p_font_renderer->render_string_on_drawable(2,
+                                                        m_key_y * i,
+                                                        cr, notes, font::BLACK,
+                                                        c_default_horizontal_zoom,
+                                                        m_vertical_zoom);
+            }
+        }
+        else
+        {
+            /* The MIDI number to the left of the piano roll */
+            char number[8];
+
+            int midi_value = c_num_keys - i - 1;
+            if ((midi_value % 2) == 0)
+            {
+                snprintf(number, sizeof number, "%3d", midi_value);
+                p_font_renderer->render_string_on_drawable(2,
+                                                        m_key_y * i,
+                                                        cr, number, font::BLACK,
+                                                        c_default_horizontal_zoom,
+                                                        m_vertical_zoom);
+            }
         }
     }
 }
@@ -264,7 +284,8 @@ seqkeys::on_button_press_event(GdkEventButton *a_e)
         }
 
         /* Right mouse button - mute the note */
-        if (m_enter_piano_roll &&  a_e->button == 3 )
+        if (m_enter_piano_roll &&  (a_e->button == 3 &&
+            !(a_e->state & GDK_CONTROL_MASK)) )
         {
             convert_y( y,&note );
             m_seq->set_mute_note( note );
@@ -273,11 +294,20 @@ seqkeys::on_button_press_event(GdkEventButton *a_e)
         }
 
         /* middle mouse button, or left-ctrl click (for 2 button mice) */
-        if ( m_enter_piano_roll && (a_e->button == 2   ||
+        else if ( m_enter_piano_roll && (a_e->button == 2   ||
                             (a_e->button == 1 && (a_e->state & GDK_CONTROL_MASK))))
         {
             convert_y( y,&note );
             m_seq->set_solo_note( note );
+            update_surface();
+            queue_draw();
+        }
+
+        /* Right mouse and CTRL for using MIDI numbers for display */
+        else if (m_enter_piano_roll &&  (a_e->button == 3 &&
+             (a_e->state & GDK_CONTROL_MASK)) )
+        {
+            m_show_note_letters = ! m_show_note_letters;
             update_surface();
             queue_draw();
         }

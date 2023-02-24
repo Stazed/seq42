@@ -64,6 +64,7 @@ private:
     int m_keyarea_y;
     int m_rollarea_y;
     float m_vertical_zoom;
+    bool m_show_note_letters;
 
     void on_realize();
     bool on_button_press_event(GdkEventButton* a_ev);
