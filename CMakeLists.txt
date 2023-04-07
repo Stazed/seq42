@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.1)
 project (seq42)
 
-set (PACKAGE_VERSION "2.1.2")
+set (PACKAGE_VERSION "2.1.3")
 
 set (CMAKE_SKIP_RULE_DEPENDENCY OFF)
 
