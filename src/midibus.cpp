@@ -521,6 +521,10 @@ midibus::continue_from( long a_tick )
         snd_seq_event_t evc;
         snd_seq_event_t ev;
 
+        /* memsets it to 0  */
+        snd_seq_ev_clear(&ev);
+        snd_seq_ev_clear(&evc);
+
         ev.type = SND_SEQ_EVENT_CONTINUE;
         evc.type = SND_SEQ_EVENT_SONGPOS;
         evc.data.control.value = beats;
@@ -558,6 +562,10 @@ midibus::start()
     if ( m_clock_type != e_clock_off )
     {
         snd_seq_event_t ev;
+
+        /* memsets it to 0  */
+        snd_seq_ev_clear(&ev);
+
         ev.type = SND_SEQ_EVENT_START;
         snd_seq_ev_set_fixed( &ev );
         snd_seq_ev_set_priority( &ev, 1 );
@@ -620,6 +628,10 @@ midibus::stop()
     if ( m_clock_type != e_clock_off )
     {
         snd_seq_event_t ev;
+
+        /* memsets it to 0  */
+        snd_seq_ev_clear(&ev);
+
         ev.type = SND_SEQ_EVENT_STOP;
         snd_seq_ev_set_fixed( &ev );
         snd_seq_ev_set_priority( &ev, 1 );
@@ -662,6 +674,9 @@ midibus::clock( long a_tick )
             if ( m_lasttick % ( c_ppqn / 24 ) == 0 )
             {
                 snd_seq_event_t ev;
+
+                /* memsets it to 0  */
+                snd_seq_ev_clear(&ev);
                 ev.type = SND_SEQ_EVENT_CLOCK;
 
                 /* set tag to 127 so the sequences
