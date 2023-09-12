@@ -1,6 +1,6 @@
 #CMake file for Seq42
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.5.1)
 project (seq42)
 
 set (PACKAGE_VERSION "2.1.3")
