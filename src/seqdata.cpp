@@ -306,7 +306,7 @@ seqdata::on_scroll_event( GdkEventScroll* a_ev )
     {
         m_seq->decrement_selected( m_status, m_cc );
     }
-
+    
     queue_draw();
 
     return true;
@@ -491,6 +491,12 @@ seqdata::on_motion_notify_event(GdkEventMotion* a_p0)
 bool
 seqdata::on_leave_notify_event(GdkEventCrossing* /* p0 */)
 {
+    if(m_seq->get_hold_undo())
+    {
+        m_seq->push_undo(true);
+        m_seq->set_hold_undo(false);
+    }
+
     queue_draw();
     return true;
 }
