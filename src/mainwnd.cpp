@@ -2592,7 +2592,10 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
         }
     }
 
-    return m_perfroll->on_key_press_event(a_ev);
+    if(m_perfroll->on_key_press_event(a_ev))
+        return true;
+
+    return m_spinbutton_bpm->on_key_press_event(a_ev);
 }
 
 bool

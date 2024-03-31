@@ -831,9 +831,10 @@ Bpm_spinbutton::Bpm_spinbutton(const Glib::RefPtr<Adjustment>& adjustment, doubl
     m_have_enter(false),
     m_have_leave(false),
     m_is_typing(false),
+    m_is_focused(false),
     m_hold_bpm(0.0)
 {
-    
+
 }
 
 bool
@@ -857,6 +858,20 @@ Bpm_spinbutton::on_leave_notify_event(GdkEventCrossing* event)
     return Gtk::Widget::on_leave_notify_event(event);
 }
 
+bool 
+Bpm_spinbutton::on_focus_in_event(GdkEventFocus* focus_event)
+{
+    m_is_focused = true;
+    return Gtk::Widget::on_focus_in_event(focus_event);
+}
+
+bool
+Bpm_spinbutton::on_focus_out_event(GdkEventFocus* gdk_event)
+{
+    m_is_focused = false;
+    return Gtk::Widget::on_focus_out_event(gdk_event);
+}
+
 bool
 Bpm_spinbutton::on_key_press_event( GdkEventKey* a_ev )
 {
@@ -865,6 +880,10 @@ Bpm_spinbutton::on_key_press_event( GdkEventKey* a_ev )
         m_is_typing = true;
         m_hold_bpm = 0.0;
     }
+    
+    if(!m_have_enter && !m_is_focused)
+        return false;
+
     return Gtk::Widget::on_key_press_event(a_ev);
 }
 
