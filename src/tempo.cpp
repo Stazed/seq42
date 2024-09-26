@@ -841,9 +841,17 @@ bool
 Bpm_spinbutton::on_enter_notify_event(GdkEventCrossing* event)
 {
     m_have_enter = true;
-    m_have_leave = false;
     m_is_typing = false;
-    m_hold_bpm = this->get_value();
+
+    /* If we have a previous leave then it is because the user moved from one of the +- buttons
+       to the other without exiting the whole spin button. In this case re-setting
+       m_hold_bpm will cause the undo & global_is_modified to fail since the comparison
+       of change, i.e m_hold_undo and m_adjust_bpm->get_value() will be the same. 
+       We must only set hold when first entering the widget and not when moving inside.*/
+    if(!m_have_leave)
+        m_hold_bpm = this->get_value();
+    else
+        m_have_leave = false;
 
     return Gtk::Widget::on_enter_notify_event(event);
 }
