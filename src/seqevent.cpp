@@ -19,6 +19,7 @@
 //-----------------------------------------------------------------------------
 #include "event.h"
 #include "seqevent.h"
+#include "themes.h"
 
 
 seqevent::seqevent(sequence *a_seq,

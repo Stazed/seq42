@@ -23,6 +23,7 @@
 #include "seqedit.h"
 #include "pixmaps/resize_black.xpm"
 #include "pixmaps/resize_white.xpm"
+#include "themes.h"
 
 
 perfroll::perfroll( perform *a_perf,

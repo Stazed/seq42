@@ -23,6 +23,7 @@
 #include "pixmaps/track_play.xpm"
 #include "pixmaps/track_solo.xpm"
 #include "pixmaps/track_mute.xpm"
+#include "themes.h"
 
 perfnames::perfnames( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment> a_vadjust ):
     trackmenu(a_perf, a_main),

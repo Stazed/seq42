@@ -19,6 +19,7 @@
 //-----------------------------------------------------------------------------
 #include "event.h"
 #include "seqroll.h"
+#include "themes.h"
 
 const long c_handlesize = 16;
 

@@ -19,6 +19,7 @@
 //-----------------------------------------------------------------------------
 #include "seqkeys.h"
 #include "font.h"
+#include "themes.h"
 
 
 seqkeys::seqkeys(sequence *a_seq, Glib::RefPtr<Adjustment> a_vadjust ):

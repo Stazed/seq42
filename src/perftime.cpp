@@ -21,6 +21,7 @@
 #include "perftime.h"
 #include "pixmaps/mark_left.xpm"
 #include "pixmaps/mark_right.xpm"
+#include "themes.h"
 
 
 perftime::perftime( perform *a_perf, mainwnd *a_main, Glib::RefPtr<Adjustment> a_hadjust ) :

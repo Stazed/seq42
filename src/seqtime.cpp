@@ -20,6 +20,7 @@
 #include "event.h"
 #include "seqtime.h"
 #include "pixmaps/end.xpm"
+#include "themes.h"
 
 seqtime::seqtime(sequence *a_seq, int a_zoom, Glib::RefPtr<Adjustment> a_hadjust):
     m_hadjust(a_hadjust),
