@@ -134,6 +134,7 @@ struct position_info
     BBT bbt;
     
     position_info() :
+        frame(0),
         tempo(0.0),
         beats_per_bar(0),
         beat_type(0),
@@ -208,7 +209,7 @@ private:
 
     /* vector of tracks */
     track *m_tracks[c_max_track];
-    track m_clipboard;
+//    track m_clipboard;
     track m_undo_tracks[c_max_undo_track];
     track m_redo_tracks[c_max_undo_track];
     int m_undo_track_count;
