@@ -2581,7 +2581,7 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
         }
 
         /* Set R marker to progress line */
-        if ( (a_ev->type == GDK_KEY_PRESS) && (a_ev->state & GDK_SHIFT_MASK) )
+        if ( (a_ev->state & GDK_SHIFT_MASK) )
         {
             if (a_ev->keyval == GDK_KEY_S)
             {
