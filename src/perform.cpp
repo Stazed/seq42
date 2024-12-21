@@ -37,43 +37,108 @@ using namespace Gtk;
 
 bool global_solo_track_set = false;
 
-perform::perform()
+perform::perform() :
+    m_key_playlist_next(GDK_KEY_Right),
+    m_key_playlist_prev(GDK_KEY_Left),
+    m_playlist_midi_jump_value(0),
+    m_playlist_midi_control_set(false),
+    m_playlist_stop_mark(false),
+
+    m_playlist_mode(false),
+    m_playlist_file(""),
+    m_playlist_nfiles(0),
+    m_playlist_current_idx(0),
+
+    m_undo_track_count(0),
+    m_redo_track_count(0),
+    m_undo_perf_count(0),
+    m_redo_perf_count(0),
+    
+    m_seqlist_open(false),
+    m_seqlist_toggle(false),
+
+    m_out_thread(0),
+    m_in_thread(0),
+    m_out_thread_launched(false),
+    m_in_thread_launched(false),
+
+    m_inputing(true),
+    m_outputing(true),
+    m_looping(false),
+    m_reposition(false),
+
+    m_playback_mode(false),
+    m_follow_transport(true),
+
+    thread_trigger_width_ms(c_thread_trigger_width_ms),
+
+    m_left_tick(0),
+    m_right_tick(c_ppqn * 16),
+    m_starting_tick(0),
+
+    m_tick(0),
+    m_usemidiclock(false),
+    m_midiclockrunning(false),
+    m_midiclocktick(0),
+    m_midiclockpos(-1),
+
+    m_bp_measure(4),
+    m_bw(4),
+
+#ifdef MIDI_CONTROL_SUPPORT
+    m_recording_set(false),
+    m_list_sequence_editing(0),
+    m_list_sequence_recording_set(0),
+#endif
+
+#ifdef JACK_SUPPORT
+    m_jack_client(NULL),
+    m_jack_frame_current(0),
+    m_jack_frame_last(0),
+    m_jack_frame_rate(0),
+    m_jack_pos(),
+    m_jack_transport_state(),
+    m_jack_transport_state_last(),
+    m_jack_tick(0.0),
+#endif  // JACK_SUPPORT
+
+    m_jack_running(false),
+    m_toggle_jack(false),
+    m_jack_master(false),
+    m_jack_stop_tick(0),
+    m_load_tempo_list(false),
+    m_continue(false),
+
+    m_excell_FF_RW(1.0),
+
+    m_have_undo(false), // for button sensitive
+    m_have_redo(false), // for button sensitive
+
+    m_key_bpm_up(GDK_KEY_apostrophe),
+    m_key_bpm_dn(GDK_KEY_semicolon),
+    m_key_tap_bpm(GDK_KEY_F9),
+
+    m_key_start(GDK_KEY_space),
+    m_key_stop(GDK_KEY_Escape),
+    m_key_forward(GDK_KEY_f),
+    m_key_rewind(GDK_KEY_r),
+    m_key_pointer(GDK_KEY_p),
+
+    m_key_loop(GDK_KEY_quoteleft),
+    m_key_song(GDK_KEY_F1),
+    m_key_jack(GDK_KEY_F2),
+    m_key_seqlist(GDK_KEY_F3),
+    m_key_follow_trans(GDK_KEY_F4)
 {
     for (int i=0; i< c_max_track; i++)
     {
-        m_tracks[i] = NULL;
+        m_tracks[i]             = NULL;
         m_tracks_active[i]      = false;
         m_was_active_edit[i]    = false;
         m_was_active_perf[i]    = false;
         m_was_active_names[i]   = false;
         m_is_focus_track[i]     = false;
     }
-
-    m_playlist_midi_jump_value = 0;
-    m_playlist_midi_control_set = false;
-    m_playlist_stop_mark = false;
-    m_playlist_mode = false;
-    m_playlist_file = "";
-    m_playlist_nfiles = 0;
-    m_playlist_current_idx = 0;
-    
-    m_seqlist_open = false;
-    m_seqlist_toggle = false;
-    m_looping = false;
-    m_reposition = false;
-    m_inputing = true;
-    m_outputing = true;
-    m_tick = 0;
-    m_midiclockrunning = false;
-    m_usemidiclock = false;
-    m_midiclocktick = 0;
-    m_midiclockpos = -1;
-
-    thread_trigger_width_ms = c_thread_trigger_width_ms;
-
-    m_left_tick = 0;
-    m_right_tick = c_ppqn * 16;
-    m_starting_tick = 0;
     
 #ifdef MIDI_CONTROL_SUPPORT
     midi_control zero = {false, false, 0, 0, 0, 0};
@@ -90,58 +155,6 @@ perform::perform()
         m_note_is_used[i] = 0;
 
 #endif // MIDI_CONTROL_SUPPORT
-    
-    m_key_bpm_up = GDK_KEY_apostrophe;
-    m_key_bpm_dn = GDK_KEY_semicolon;
-    m_key_tap_bpm = GDK_KEY_F9;
-
-    m_key_start  = GDK_KEY_space;
-    m_key_stop   = GDK_KEY_Escape;
-    m_key_forward   = GDK_KEY_f;
-    m_key_rewind   = GDK_KEY_r;
-    m_key_pointer   = GDK_KEY_p;
-
-    m_key_loop   = GDK_KEY_quoteleft;
-    m_key_song   = GDK_KEY_F1;
-    m_key_jack   = GDK_KEY_F2;
-    m_key_seqlist   = GDK_KEY_F3;
-    m_key_follow_trans  = GDK_KEY_F4;
-    
-    //playlist next/prev keys:
-    m_key_playlist_next = GDK_KEY_Right;
-    m_key_playlist_prev = GDK_KEY_Left;
-    
-    m_jack_stop_tick = 0;
-    m_load_tempo_list = false;
-    m_continue = false;
-
-    m_jack_running = false;
-    m_toggle_jack = false;
-
-    m_jack_master = false;
-
-    m_out_thread_launched = false;
-    m_in_thread_launched = false;
-
-    m_playback_mode = false;
-    m_follow_transport = true;
-
-    m_bp_measure = 4;
-    m_bw = 4;
-    
-#ifdef MIDI_CONTROL_SUPPORT
-    m_recording_set = false;
-    m_list_sequence_editing = 0;
-    m_list_sequence_recording_set = 0;
-#endif
-    m_excell_FF_RW = 1.0;
-
-    m_have_undo = false; // for button sensitive
-    m_have_redo = false; // for button sensitive
-    m_undo_track_count = 0;
-    m_redo_track_count = 0;
-    m_undo_perf_count = 0;
-    m_redo_perf_count = 0;
 }
 
 void perform::init()
@@ -443,7 +456,7 @@ perform::FF_rewind()
         else                                    // Fast Forward
             a_tick = m_tick + measure_ticks;
 
-        if(m_jack_running && global_song_start_mode)
+        if(m_jack_running)
         {
             position_jack(global_song_start_mode, a_tick);
         }
@@ -515,7 +528,7 @@ void perform::set_left_tick( long a_tick )
 
     if(global_song_start_mode && (m_jack_master || !m_jack_running))
     {
-        if(m_jack_master && global_song_start_mode && m_jack_running)
+        if(m_jack_master && m_jack_running)
             position_jack(global_song_start_mode, a_tick);
         else
             m_tick = a_tick;
@@ -556,7 +569,7 @@ void perform::set_right_tick( long a_tick )
 
             if(global_song_start_mode && (m_jack_master || !m_jack_running))
             {
-                if(m_jack_master && global_song_start_mode && m_jack_running)
+                if(m_jack_master && m_jack_running)
                     position_jack(global_song_start_mode, m_left_tick);
                 else
                     m_tick = m_left_tick;
