@@ -46,7 +46,8 @@ midibus::midibus( int a_localclient,
     m_local_addr_client(a_localclient),
     m_local_addr_port(-1),
 
-    m_queue(a_queue)
+    m_queue(a_queue),
+    m_lasttick(-1)
 {
     char name[60];
     if ( global_user_midi_bus_definitions[m_id].alias.length() > 0 )
@@ -89,7 +90,9 @@ midibus::midibus( int a_localclient,
     m_dest_addr_client(-1),
     m_dest_addr_port(-1),
     m_local_addr_client(a_localclient),
-    m_queue(a_queue)
+    m_local_addr_port(-1),
+    m_queue(a_queue),
+    m_lasttick(-1)
 {
     /* copy names */
     char tmp[60];
@@ -882,7 +885,10 @@ m_bpm(),
 m_num_poll_descriptors(),
 m_poll_descriptors(),
 m_dumping_input(),
-m_seq()
+m_seq(),
+m_transpose(0),
+m_swing_amount8(0),
+m_swing_amount16(0)
 {
     /* set initial number buses */
     m_num_out_buses = 0;
