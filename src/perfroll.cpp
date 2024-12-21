@@ -32,6 +32,10 @@ perfroll::perfroll( perform *a_perf,
     m_mainperf(a_perf),
     m_mainwnd(a_main),
 
+    m_snap(0),
+    m_measure_length(0),
+    m_beat_length(0),
+
     m_perf_scale_x(c_perf_scale_x),       // 32 ticks per pixel
     m_horizontal_zoom(c_perf_scale_x),    // 32 ticks per pixel
     m_default_horizontal_zoom(c_perf_scale_x),
@@ -42,12 +46,18 @@ perfroll::perfroll( perform *a_perf,
     m_resize_handle_w(c_perfroll_resize_box_default),
     m_resize_handle_h(c_perfroll_resize_box_default),
 
+    m_window_x(0),
+    m_window_y(0),
+
     m_old_progress_ticks(0),
 
     m_4bar_offset(0),
     m_track_offset(0),
     m_roll_length_ticks(0),
+    m_drop_x(0),
     m_drop_y(0),
+    m_drop_tick(0),
+    m_drop_tick_trigger_offset(0),
     m_drop_track(-1),   // set invalid so focus on track 0 will not be same as old focus
 
     m_vadjust(a_vadjust),
