@@ -1653,8 +1653,7 @@ bool FruitySeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& th
                     }
 
                     // grab/move the note
-                    if ( center_mouse_handle &&
-                            a_ev->button == 1 && !(a_ev->state & GDK_CONTROL_MASK) )
+                    if ( center_mouse_handle && !(a_ev->state & GDK_CONTROL_MASK) )
                     {
                         ths.m_seqkeys_wid->set_listen_button_press(a_ev); // play note
 
@@ -1683,7 +1682,7 @@ bool FruitySeqRollInput::on_button_press_event(GdkEventButton* a_ev, seqroll& th
                         ths.m_current_x = ths.m_drop_x = snapped_x;
                     }
                     // ctrl left click when stuff is already selected
-                    else if (a_ev->button == 1 && (a_ev->state & GDK_CONTROL_MASK) &&
+                    else if ( (a_ev->state & GDK_CONTROL_MASK) &&
                              ths.m_seq->select_note_events( tick_s, note_h,
                                                             tick_s, note_h,
                                                             sequence::e_is_selected ))
