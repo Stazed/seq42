@@ -27,9 +27,17 @@ seqdata::seqdata(sequence *a_seq, int a_zoom, Glib::RefPtr<Adjustment> a_hadjust
     m_zoom(a_zoom),
     m_hadjust(a_hadjust),
 
+    m_window_x(0),
+    m_window_y(0),
+    m_drop_x(0),
+    m_drop_y(0),
+    m_current_x(0),
+    m_current_y(0),
+
     m_scroll_offset_ticks(0),
     m_scroll_offset_x(0),
     m_status(0x00),
+    m_cc(0x00),
 
     m_dragging(false),
     m_drag_handle(false)
