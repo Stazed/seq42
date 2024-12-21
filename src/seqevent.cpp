@@ -75,6 +75,7 @@ seqevent::seqevent(sequence *a_seq,
     set_double_buffered( false );
 
     memset(&m_old, 0, sizeof m_old);
+    memset(&m_selected, 0, sizeof m_selected);
 }
 
 void
