@@ -18,4 +18,4 @@ configure
 /src/Makefile.in
 /src/pixmaps/Makefile.in
 missing
-
+build/
