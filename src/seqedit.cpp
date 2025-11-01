@@ -936,7 +936,8 @@ seqedit::fill_top_bar()
     add_tooltip( m_button_length, "Sequence length in Bars." );
     m_entry_length = manage( new Entry());
     m_entry_length->set_width_chars(2);
-    m_entry_length->set_editable( false );
+    m_entry_length->signal_activate().connect(
+        mem_fun( *this, &seqedit::measures_entry_callback));
 
     m_hbox->pack_start( *m_button_length, false, false );
     m_hbox->pack_start( *m_entry_length, false, false );
@@ -1495,6 +1496,44 @@ seqedit::measures_button_callback( int a_length_measures )
         set_measures(a_length_measures,true);
         global_is_modified = true;
     }
+}
+
+void
+seqedit::measures_entry_callback( )
+{
+    Glib::ustring entryText = m_entry_length->get_text();
+    try {
+        int number = std::stoi(entryText);
+        if(number == 0)
+        {
+            measures_warning_message("Invalid entry of '0' measures\n");
+        }
+        else
+        if(m_measures != number)
+        {
+            set_measures(number, true);
+            global_is_modified = true;
+        }
+    }
+    catch (const std::invalid_argument& e)
+    {
+        measures_warning_message("Invalid entry for measures\n");
+    }
+    catch (const std::out_of_range& e)
+    {
+        measures_warning_message("Invalid entry for measures\n");
+    }
+}
+
+void
+seqedit::measures_warning_message( Glib::ustring message )
+{
+    Gtk::MessageDialog warning(message,
+                           false,
+                           Gtk::MESSAGE_WARNING, BUTTONS_OK, true);
+
+    auto result = warning.run();
+    set_measures(m_measures, true);
 }
 
 void
