@@ -933,11 +933,12 @@ seqedit::fill_top_bar()
     m_button_length->signal_clicked().connect(
         sigc::bind<Menu *>( mem_fun( *this, &seqedit::popup_menu),
                             m_menu_length  ));
-    add_tooltip( m_button_length, "Sequence length in Bars." );
+    add_tooltip( m_button_length, "Set sequence length in Bars." );
     m_entry_length = manage( new Entry());
     m_entry_length->set_width_chars(2);
     m_entry_length->signal_activate().connect(
         mem_fun( *this, &seqedit::measures_entry_callback));
+    add_tooltip( m_entry_length, "Enter sequence length in Bars." );
 
     m_hbox->pack_start( *m_button_length, false, false );
     m_hbox->pack_start( *m_entry_length, false, false );
