@@ -19,7 +19,7 @@ include(CheckCXXCompilerFlag)
 option (EnableNSM "Enable NSM session support" ON)
 option (BuildForDebug "Enable gdb debugging support" OFF)
 option (EnableMIDIControl "Enable MIDI transport control support" ON)
-option (EnableJackSupport "Enable Jack transport control support" ON)
+option (EnableJackTransportSupport "Enable Jack transport control support" ON)
 
 
 set(CMAKE_BUILD_TYPE "Release")
@@ -57,12 +57,12 @@ else (LIBRT)
 endif (LIBRT)
 
 
-if (EnableJackSupport)
+if (EnableJackTransportSupport)
     pkg_check_modules (JACK REQUIRED jack>=0.115.6)
     if (JACK_FOUND)
-        add_definitions(-D'JACK_SUPPORT=1')
+        add_definitions(-D'JACK_TRANSPORT_SUPPORT=1')
     endif (JACK_FOUND)
-endif (EnableJackSupport)
+endif (EnableJackTransportSupport)
 
 if (EnableMIDIControl)
     add_definitions(-D'MIDI_CONTROL_SUPPORT=1')
@@ -145,7 +145,7 @@ message (STATUS)
 message (STATUS                    "____________________ User Options________________________"  )
 package_status(EnableNSM           "NSM session support. . . . . . . . . . . . . . . . . . .:"  )
 package_status(EnableMIDIControl   "MIDI transport control . . . . . . . . . . . . . . . . .:"  )
-package_status(EnableJackSupport   "Jack transport control . . . . . . . . . . . . . . . . .:"  )
+package_status(EnableJackTransportSupport   "Jack transport control . . . . . . . . . . . . . . . . .:"  )
 
 message (STATUS)
 message (STATUS)

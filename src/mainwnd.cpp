@@ -50,9 +50,9 @@
 #include "pixmaps/fastforward.xpm"
 #include "pixmaps/rewind.xpm"
 
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
 #include "pixmaps/jack.xpm"
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
 
 using namespace sigc;
 
@@ -290,7 +290,7 @@ mainwnd::mainwnd(perform *a_p, Glib::RefPtr<Gtk::Application> app):
         m_button_mode->set_active( true );
     }
 
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
     m_button_jack = manage( new ToggleButton() );
     m_button_jack->add(*manage( new Image(Gdk::Pixbuf::create_from_xpm_data( jack_xpm ))));
     m_button_jack->signal_toggled().connect(  mem_fun( *this, &mainwnd::set_jack_mode ));
@@ -320,7 +320,7 @@ mainwnd::mainwnd(perform *a_p, Glib::RefPtr<Gtk::Application> app):
     hbox1->pack_start( *m_button_fastforward, false, false );
     hbox1->pack_start( *m_button_loop, false, false );
     hbox1->pack_start( *m_button_mode, false, false );
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
     hbox1->pack_start(*m_button_jack, false, false );
 #endif
     hbox1->pack_start( *m_button_seq, false, false );
@@ -920,7 +920,7 @@ mainwnd::timer_callback(  )
         m_button_mode->set_active(global_song_start_mode);
     }
 
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
     if (m_button_jack->get_active() != m_mainperf->get_toggle_jack()) // for seqroll keybinding
     {
         toggle_jack();
@@ -934,7 +934,7 @@ mainwnd::timer_callback(  )
     {
         m_button_jack->set_sensitive(true);
     }
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
     
 #ifdef NSM_SUPPORT
     if(m_nsm)
@@ -2498,13 +2498,13 @@ mainwnd::on_key_press_event(GdkEventKey* a_ev)
             return true;
         }
 
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
         if ( a_ev->keyval ==  m_mainperf->m_key_jack )
         {
             toggle_jack();
             return true;
         }
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
         // the start/end key may be the same key (i.e. SPACE)
         // allow toggling when the same key is mapped to both triggers (i.e. SPACEBAR)
         bool dont_toggle = m_mainperf->m_key_start != m_mainperf->m_key_stop;

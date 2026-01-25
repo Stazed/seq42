@@ -91,7 +91,7 @@ perform::perform() :
     m_list_sequence_recording_set(0),
 #endif
 
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
     m_jack_client(NULL),
     m_jack_frame_current(0),
     m_jack_frame_last(0),
@@ -100,7 +100,7 @@ perform::perform() :
     m_jack_transport_state(),
     m_jack_transport_state_last(),
     m_jack_tick(0.0),
-#endif  // JACK_SUPPORT
+#endif  // JACK_TRANSPORT_SUPPORT
 
     m_jack_running(false),
     m_toggle_jack(false),
@@ -165,7 +165,7 @@ void perform::init()
 void perform::init_jack()
 {
 
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
 
     if ( global_with_jack_transport  && !m_jack_running)
     {
@@ -244,12 +244,12 @@ void perform::init_jack()
         while (0);
     }
 
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
 }
 
 void perform::deinit_jack()
 {
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
 
     if ( m_jack_running)
     {
@@ -274,7 +274,7 @@ void perform::deinit_jack()
         printf( "[JACK sync disabled]\n");
     }
 
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
 }
 
 bool perform::clear_all()
@@ -1528,22 +1528,22 @@ bool perform::paste_triggers (long paste_tick, bool overwrite)
 void perform::start_jack(  )
 {
     //printf( "perform::start_jack()\n" );
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
     if ( m_jack_running)
         jack_transport_start (m_jack_client );
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
 }
 
 void perform::stop_jack(  )
 {
     //printf( "perform::stop_jack()\n" );
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
     if( m_jack_running )
         jack_transport_stop (m_jack_client);
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
 }
 
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
 jack_nframes_t tick_to_jack_frame(uint64_t a_tick, double a_bpm, void *arg)
 {
     perform *perf = (perform *) arg;
@@ -1686,13 +1686,13 @@ done:
 
     return pos;
 }
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
 
 void perform::position_jack( bool a_state, long a_tick )
 {
     //printf( "perform::position_jack()\n" );
 
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
     if(m_list_no_stop_markers.empty())
         return;
 
@@ -1787,7 +1787,7 @@ void perform::position_jack( bool a_state, long a_tick )
     if(global_is_running)
         m_reposition = false;
 
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
 }
 
 void perform::start(bool a_state)
@@ -2039,7 +2039,7 @@ void* output_thread_func(void *a_pef )
     return 0;
 }
 
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
 
 /*
     This process callback is called by jack whether stopped or rolling.
@@ -2145,7 +2145,7 @@ int jack_sync_callback(jack_transport_state_t state,
     return 1;
 }
 #endif // USE_JACK_BBT_POSITION
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
 
 void perform::output_func()
 {
@@ -2213,7 +2213,7 @@ void perform::output_func()
 
         bool init_clock = true;
 
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
         double jack_ticks_converted = 0.0;
         double jack_ticks_converted_last = 0.0;
         double jack_ticks_delta = 0.0;
@@ -2235,7 +2235,7 @@ void perform::output_func()
         if(m_jack_running && m_jack_master && !m_playback_mode)// live mode master start at zero
             position_jack(false, 0);
 
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
 
         for( int i=0; i<100; i++ )
         {
@@ -2329,7 +2329,7 @@ void perform::output_func()
             }
 
             //printf ( "delta_tick[%ld]: delta_tick_num[%lld]: bpm [%d]\n", delta_tick, delta_tick_num, bpm  );
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
 
             // no init until we get a good lock
 
@@ -2478,7 +2478,7 @@ void perform::output_func()
             } /* if m_jack running */
             else
             {
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
                 /* if we reposition key-p, FF, rewind, adjust delta_tick for change
                  * then reset to adjusted starting  */
                 if ( m_playback_mode && !m_usemidiclock && m_reposition)
@@ -2500,9 +2500,9 @@ void perform::output_func()
                 dumping = true;
 
 
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
             }
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
 
             /* init_clock will be true when we run for the first time, or
              * as soon as jack gets a good lock on playback */
@@ -2517,25 +2517,25 @@ void perform::output_func()
             {
                 if ( m_looping && m_playback_mode )
                 {
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
                     static bool jack_position_once = false;
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
                     if ( current_tick >= get_right_tick() )
                     {
                         //printf("current_tick [%f]: right_tick [%ld]\n", current_tick, get_right_tick());
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
                         if(m_jack_running && m_jack_master && !jack_position_once)
                         {
                             position_jack(true, m_left_tick);
                             jack_position_once = true;
                         }
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
                         double leftover_tick = current_tick - (get_right_tick());
 
-#ifdef JACK_SUPPORT     // don't play during JackTransportStarting to avoid xruns on FF or rewind
+#ifdef JACK_TRANSPORT_SUPPORT     // don't play during JackTransportStarting to avoid xruns on FF or rewind
                         if(m_jack_running && m_jack_transport_state != JackTransportStarting)
                             play( get_right_tick() - 1 );
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
                         if(!m_jack_running)
                             play( get_right_tick() - 1 );
 
@@ -2547,16 +2547,16 @@ void perform::output_func()
                         if(!m_jack_running)
                             reset_tempo_play_marker_list(); // since we cleared it as we went along
                     }
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
                     else
                         jack_position_once = false;
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
                 }
                 /* play */
-#ifdef JACK_SUPPORT // don't play during JackTransportStarting to avoid xruns on FF or rewind
+#ifdef JACK_TRANSPORT_SUPPORT // don't play during JackTransportStarting to avoid xruns on FF or rewind
                 if(m_jack_running && m_jack_transport_state != JackTransportStarting)
                     play( (long) current_tick );
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
                 if(!m_jack_running)
                     play( (long) current_tick );
 
@@ -2726,7 +2726,7 @@ void perform::output_func()
         }
 
         /* m_tick is the progress play tick that displays the progress line */
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
         if(m_playback_mode && m_jack_master) // master in song mode
         {
             if(!m_continue)
@@ -2736,7 +2736,7 @@ void perform::output_func()
         {
             position_jack(m_playback_mode,0);
         }
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
         if(!m_usemidiclock) // will be true if stopped by midi event
         {
             if(m_playback_mode && !m_jack_running) // song mode default
@@ -2760,12 +2760,12 @@ void perform::output_func()
         m_master_bus.flush();
         m_master_bus.stop();
 
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
         if(m_jack_running)
         {
             m_jack_stop_tick = get_current_jack_position(jack_get_current_transport_frame( m_jack_client ),(void *)this);
         }
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
     }
 
     pthread_exit(0);
@@ -3210,7 +3210,7 @@ unsigned short perform::combine_bytes(unsigned char First, unsigned char Second)
    return(_14bit);
 }
 
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
 #ifdef USE_JACK_BBT_POSITION
 /*  was called by jack_timebase_callback() & position_jack()>(debug)  */
 void perform::jack_BBT_position(jack_position_t &pos, double jack_tick)
@@ -3490,7 +3490,7 @@ int main ()
 #endif // 0
 
 
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
 
 bool
 perform::track_is_song_exportable(int a_track)

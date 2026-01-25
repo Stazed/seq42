@@ -629,11 +629,11 @@ tempo::calculate_marker_start()
         (*i).microseconds_start = ticks_to_delta_time_us(current.tick - previous.tick, previous.bpm, c_ppqn);
         (*i).microseconds_start += previous.microseconds_start;
 
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
         /* Jack frame offset*/
         (*i).start = tick_to_jack_frame(current.tick - previous.tick , previous.bpm, m_mainperf );
         (*i).start += previous.start;
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
     }
 
     /* reset the main list with the calculated starts */

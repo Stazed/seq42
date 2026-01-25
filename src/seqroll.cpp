@@ -1225,13 +1225,13 @@ seqroll::on_key_press_event(GdkEventKey* a_p0)
                 m_perform->toggle_song_mode();
                 return true;
             }
-#ifdef JACK_SUPPORT
+#ifdef JACK_TRANSPORT_SUPPORT
             if ( a_p0->keyval ==  m_perform->m_key_jack )
             {
                 m_perform->toggle_jack_mode();
                 return true;
             }
-#endif // JACK_SUPPORT
+#endif // JACK_TRANSPORT_SUPPORT
         }
 
         if ( a_p0->keyval ==  GDK_KEY_Up )
