@@ -20,14 +20,6 @@
 
 #pragma once
 
-#ifndef CMAKE_BUILD_SUPPORT
-#ifdef HAVE_CONFIG_H
-#    include "config.h"
-#else
-#    include "configdefault.h"
-#endif
-#endif
-
 #include <string>
 #include <gtkmm.h>
 

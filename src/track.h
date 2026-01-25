@@ -28,6 +28,13 @@ class track;
 #include "mutex.h"
 #include <vector>
 
+#ifdef JACK_MIDI_SUPPORT
+#include "midibus_jack.h"
+using mastermidibus = mastermidibus_jack;
+#else
+#include "midibus.h"
+#endif
+
 enum trigger_edit
 {
     GROW_START = 0, //grow the start of the trigger

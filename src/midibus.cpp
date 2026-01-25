@@ -20,6 +20,8 @@
 
 #include "midibus.h"
 
+#ifndef JACK_MIDI_SUPPORT
+
 #ifdef HAVE_LIBASOUND
 #    include <sys/poll.h>
 #endif
@@ -1692,3 +1694,4 @@ mastermidibus::dump_midi_input(event a_in)
     }
 }
 
+#endif  // JACK_MIDI_SUPPORT

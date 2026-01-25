@@ -28,7 +28,17 @@ class sequence;
 #include <stack>
 
 #include "event.h"
+
+#ifdef JACK_MIDI_SUPPORT
+#include "midibus_jack.h"
+class mastermidibus_jack;
+class midibus_jack;
+using mastermidibus = mastermidibus_jack;
+using midibus = midibus_jack;
+#else
 #include "midibus.h"
+#endif
+
 #include "globals.h"
 #include "mutex.h"
 #include "track.h"

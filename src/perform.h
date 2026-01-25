@@ -24,7 +24,14 @@ class perform;
 
 #include "globals.h"
 #include "event.h"
+
+#ifdef JACK_MIDI_SUPPORT
+#include "midibus_jack.h"
+using mastermidibus = mastermidibus_jack;
+#else
 #include "midibus.h"
+#endif
+
 #include "midifile.h"
 #include "sequence.h"
 #include "track.h"

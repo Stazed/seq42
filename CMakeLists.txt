@@ -11,7 +11,6 @@ add_definitions (-D'VERSION="${PACKAGE_VERSION}"')
 add_definitions(-D'WEBSITE="https://github.com/Stazed/seq42"')
 add_definitions(-D'PACKAGE="seq42"')
 #add_definitions(-D'HELPDIR="${CMAKE_INSTALL_PREFIX}/share/doc/seq42"')
-add_definitions(-D'CMAKE_BUILD_SUPPORT=1')
 
 include (CheckCSourceCompiles)
 include(CheckCXXCompilerFlag)
@@ -20,6 +19,7 @@ option (EnableNSM "Enable NSM session support" ON)
 option (BuildForDebug "Enable gdb debugging support" OFF)
 option (EnableMIDIControl "Enable MIDI transport control support" ON)
 option (EnableJackTransportSupport "Enable Jack transport control support" ON)
+option (EnableJackMidiSupport "Enable Jack MIDI port support" ON)
 
 
 set(CMAKE_BUILD_TYPE "Release")
@@ -63,6 +63,17 @@ if (EnableJackTransportSupport)
         add_definitions(-D'JACK_TRANSPORT_SUPPORT=1')
     endif (JACK_FOUND)
 endif (EnableJackTransportSupport)
+
+if (EnableJackMidiSupport)
+    if (JACK_FOUND)     # We already got it so don't bother checking it again
+        add_definitions(-D'JACK_MIDI_SUPPORT=1')
+    else ()
+        pkg_check_modules (JACK REQUIRED jack>=0.115.6)
+        if (JACK_FOUND)
+            add_definitions(-D'JACK_MIDI_SUPPORT=1')
+        endif (JACK_FOUND)
+    endif()
+endif (EnableJackMidiSupport)
 
 if (EnableMIDIControl)
     add_definitions(-D'MIDI_CONTROL_SUPPORT=1')
@@ -146,6 +157,7 @@ message (STATUS                    "____________________ User Options___________
 package_status(EnableNSM           "NSM session support. . . . . . . . . . . . . . . . . . .:"  )
 package_status(EnableMIDIControl   "MIDI transport control . . . . . . . . . . . . . . . . .:"  )
 package_status(EnableJackTransportSupport   "Jack transport control . . . . . . . . . . . . . . . . .:"  )
+package_status(EnableJackMidiSupport        "Jack MIDI support. . . . . . . . . . . . . . . . . . . .:"  )
 
 message (STATUS)
 message (STATUS)

@@ -12,6 +12,7 @@ set (ProgSources
     mainwnd.cpp
     midibus.cpp
     midibus_portmidi.cpp
+    midibus_jack.cpp
     midifile.cpp
     s42file.cpp
     mutex.cpp

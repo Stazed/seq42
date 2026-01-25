@@ -19,7 +19,14 @@
 //-----------------------------------------------------------------------------
 
 #include "perform.h"
+
+#ifdef JACK_MIDI_SUPPORT
+#include "midibus_jack.h"
+using mastermidibus = mastermidibus_jack;
+#else
 #include "midibus.h"
+#endif
+
 #include "event.h"
 #include "s42file.h"
 #include <stdio.h>
@@ -28,6 +35,7 @@
 #  include <time.h>
 #endif // __WIN32__
 #include <sched.h>
+#include <cassert>
 
 //For keys
 #include <gtkmm/accelkey.h>
