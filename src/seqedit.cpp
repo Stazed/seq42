@@ -1293,7 +1293,7 @@ seqedit::popup_event_menu()
     m_menu_data->append(*menu_separator2);
 
     /* create control change */
-    for ( int i = 0; i < 8; i++ )
+    for ( unsigned i = 0; i < 8; i++ )
     {
         snprintf(b, sizeof(b), "Controls %d-%d", (i*16), (i*16) + 15);
         Menu *menu_cc = manage( new Menu() );
@@ -1540,7 +1540,7 @@ seqedit::measures_warning_message( Glib::ustring message )
                            false,
                            Gtk::MESSAGE_WARNING, BUTTONS_OK, true);
 
-    auto result = warning.run();
+    warning.run();
     set_measures(m_measures, true);
 }
 
