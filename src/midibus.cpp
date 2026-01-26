@@ -1087,7 +1087,7 @@ mastermidibus::init( )
         SND_SEQ_CLIENT_SYSTEM,
         SND_SEQ_PORT_SYSTEM_ANNOUNCE,
         m_alsa_seq,
-        "system", "annouce",
+        "system", "announce",
         0, m_queue
     );
 
