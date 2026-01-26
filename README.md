@@ -67,6 +67,16 @@ To remove:
 ```bash
     make uninstall (as root)
 ```
+
+Seq42 version 2.2.0
+-------------------
+Begining with version 2.2.0 JACK MIDI has been added and set as the default. If you prefer legacy ALSA,
+you can disable JACK MIDI and ALSA MIDI will be built :
+
+```bash
+    cmake -DEnableJackMidiSupport=OFF ..
+```
+
 ## SAST Tools
 
 [PVS-Studio](https://pvs-studio.com/en/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) - static analyzer for C, C++, C#, and Java code.
