@@ -186,7 +186,9 @@ class perform
 public:
 
     void set_midibus_type(unsigned int type);
-    midi_backend get_midibus_type() {return m_midibus_type;}
+    void set_backend_type(midi_backend type) {m_backend_type = type;}   // set backend on next start (options menu)
+    midi_backend get_midibus_type() {return m_midibus_type;}    // current running backend
+    midi_backend get_backend_type() {return m_backend_type;}    // backend on next start
 
     //Playlist mode
     void 	set_playlist_mode(bool mode);
@@ -235,7 +237,8 @@ private:
     bool m_is_focus_track[ c_max_track ];
 
     /* our midibus */
-    midi_backend m_midibus_type;
+    midi_backend m_midibus_type;    // Our current running backend
+    midi_backend m_backend_type;    // What will be used for optionsfile on saving for restart
     mastermidibus_iface *m_master_bus;
 
     /* pthread info */

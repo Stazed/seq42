@@ -62,6 +62,7 @@ perform::perform() :
     m_seqlist_toggle(false),
 
     m_midibus_type(midi_backend::alsa),
+    m_backend_type(midi_backend::alsa),
 
     m_out_thread(0),
     m_in_thread(0),
@@ -165,7 +166,7 @@ perform::perform() :
 
 void perform::set_midibus_type(unsigned int type)
 {
-    m_midibus_type = static_cast<midi_backend>(type);
+    m_midibus_type = m_backend_type = static_cast<midi_backend>(type);
     m_master_bus = static_cast<mastermidibus_iface *>(create_mastermidibus(m_midibus_type).release());
 }
 

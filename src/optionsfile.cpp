@@ -310,7 +310,7 @@ optionsfile::write( perform *a_perf  )
     file << "#\n\n\n";
 
     file << "[use-jack-midi-bus]\n";
-    file << static_cast<unsigned int>(a_perf->get_midibus_type());
+    file << static_cast<unsigned int>(a_perf->get_backend_type()); // the requested for restart
     file << "\n\n\n";
 
 #ifdef MIDI_CONTROL_SUPPORT

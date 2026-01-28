@@ -52,6 +52,7 @@ private:
     void clock_mod_callback( Glib::RefPtr<Gtk::Adjustment> adj );
 
     void input_callback( int a_bus, Button *a_button );
+    void backend_callback (Button * i_button);
 
     void transport_callback( button a_type, Button *a_button );
 
