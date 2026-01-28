@@ -20,8 +20,8 @@
 
 #pragma once
 
-#ifndef JACK_MIDI_SUPPORT
 /* forward declarations*/
+#include "mastermidibus_iface.h"
 class mastermidibus;
 class midibus;
 
@@ -42,13 +42,6 @@ const int c_midibus_output_size = 0x100000;
 const int c_midibus_input_size =  0x100000;
 const int c_midibus_sysex_chunk = 0x100;
 
-enum clock_e
-{
-    e_clock_off,
-    e_clock_pos,
-    e_clock_mod
-
-};
 
 class midibus
 {
@@ -165,7 +158,7 @@ public:
     static int get_clock_mod();
 };
 
-class mastermidibus
+class mastermidibus : public mastermidibus_iface
 {
 private:
 
@@ -220,11 +213,9 @@ private:
 public:
 
     mastermidibus();
-    ~mastermidibus();
-    //midibus *get_default_bus();
-    //midibus *get_bus( int a_bus );
+    ~mastermidibus() override;
 
-    void init();
+    void init() override;
 
 #if HAVE_LIBASOUND
     snd_seq_t* get_alsa_seq( )
@@ -233,71 +224,71 @@ public:
     };
 #endif
 
-    int get_num_out_buses();
-    int get_num_in_buses();
+    int get_num_out_buses() override;
+    int get_num_in_buses() override;
 
-    void set_bpm(double a_bpm);
-    void set_ppqn(int a_ppqn);
-    double get_bpm()
+    void set_bpm(double a_bpm) override;
+    void set_ppqn(int a_ppqn) override;
+    double get_bpm() override
     {
         return m_bpm;
     }
-    int get_ppqn()
+    int get_ppqn() override
     {
         return m_ppqn;
     }
 
-    string get_midi_out_bus_name( int a_bus );
-    string get_midi_in_bus_name( int a_bus );
+    string get_midi_out_bus_name( int a_bus ) override;
+    string get_midi_in_bus_name( int a_bus ) override;
 
-    void set_transpose( int a_transpose )
+    void set_transpose( int a_transpose ) override
     {
         m_transpose = a_transpose;
     }
-    int get_transpose()
+    int get_transpose() override
     {
         return m_transpose;
     }
 
-    void set_swing_amount8(int a_swing_amount)
+    void set_swing_amount8(int a_swing_amount) override
     {
         if ( a_swing_amount < 0 )  a_swing_amount = 0;
         if ( a_swing_amount > c_max_swing_amount ) a_swing_amount = c_max_swing_amount;
         m_swing_amount8 = a_swing_amount;
     }
-    int get_swing_amount8( )
+    int get_swing_amount8( ) override
     {
         return  m_swing_amount8;
     }
 
-    void set_swing_amount16(int a_swing_amount)
+    void set_swing_amount16(int a_swing_amount) override
     {
         if ( a_swing_amount < 0 )  a_swing_amount = 0;
         if ( a_swing_amount > c_max_swing_amount ) a_swing_amount = c_max_swing_amount;
         m_swing_amount16 = a_swing_amount;
     }
-    int get_swing_amount16( )
+    int get_swing_amount16( ) override
     {
         return  m_swing_amount16;
     }
 
     void print();
-    void flush();
+    void flush() override;
 
-    void start();
-    void stop();
+    void start() override;
+    void stop() override;
 
-    void clock(  long a_tick );
-    void continue_from( long a_tick );
-    void init_clock( long a_tick );
+    void clock(  long a_tick ) override;
+    void continue_from( long a_tick ) override;
+    void init_clock( long a_tick ) override;
 
-    int poll_for_midi( );
-    bool is_more_input( );
-    bool get_midi_event( event *a_in );
-    void set_sequence_input( bool a_state, sequence *a_seq );
-    void dump_midi_input(event a_in);
+    int poll_for_midi( ) override;
+    bool is_more_input( ) override;
+    bool get_midi_event( event *a_in ) override;
+    void set_sequence_input( bool a_state, sequence *a_seq ) override;
+    void dump_midi_input(event a_in) override;
 
-    bool is_dumping( )
+    bool is_dumping( ) override
     {
         return m_dumping_input;
     }
@@ -306,19 +297,18 @@ public:
     {
         return m_seq;
     }
-    void sysex( event *a_event );
+    void sysex( event *a_event ) override;
 
     void port_start( int a_client, int a_port );
     void port_exit( int a_client, int a_port );
 
-    void play( unsigned char a_bus, event *a_e24, unsigned char a_channel );
+    void play( unsigned char a_bus, event *a_e24, unsigned char a_channel ) override;
 
-    void set_clock( unsigned char a_bus, clock_e a_clock_type );
-    clock_e get_clock( unsigned char a_bus );
+    void set_clock( unsigned char a_bus, clock_e a_clock_type ) override;
+    clock_e get_clock( unsigned char a_bus ) override;
 
-    void set_input( unsigned char a_bus, bool a_inputing );
-    bool get_input( unsigned char a_bus );
+    void set_input( unsigned char a_bus, bool a_inputing ) override;
+    bool get_input( unsigned char a_bus ) override;
 };
 
 #endif
-#endif  // JACK_MIDI_SUPPORT
