@@ -70,12 +70,9 @@ To remove:
 
 Seq42 version 2.2.0
 -------------------
-Begining with version 2.2.0 JACK MIDI has been added and set as the default. If you prefer legacy ALSA,
-you can disable JACK MIDI and ALSA MIDI will be built :
+Begining with version 2.2.0 JACK MIDI has been added and can be selected from:
 
-```bash
-    cmake -DEnableJackMidiSupport=OFF ..
-```
+File/Options.../MIDI Input/Backend tab.
 
 ## SAST Tools
 
