@@ -25,12 +25,12 @@ option (EnableJackMidiSupport "Enable Jack MIDI port support" ON)
 set(CMAKE_BUILD_TYPE "Release")
 
 set (BuildOptionsBasic
-    "-std=c++11 -O3"
+    "-std=c++14 -O3"
     CACHE STRING "basic X86 complier options"
 )
 
 set (BuildOptionsDebug
-    "-std=c++11 -O0 -g3 -ggdb -Wall -Wextra -Wpointer-arith"
+    "-std=c++14 -O0 -g3 -ggdb -Wall -Wextra -Wpointer-arith"
     CACHE STRING "Debug build flags"
 )
 

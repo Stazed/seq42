@@ -18,16 +18,11 @@
 //
 //-----------------------------------------------------------------------------
 
+class mastermidibus_iface;
+
 #include "seqedit.h"
 #include "sequence.h"
-
-#ifdef JACK_MIDI_SUPPORT
-#include "midibus_jack.h"
-using mastermidibus = mastermidibus_jack;
-#else
-#include "midibus.h"
-#endif
-
+#include "mastermidibus_iface.h"
 #include "controllers.h"
 #include "event.h"
 #include "options.h"

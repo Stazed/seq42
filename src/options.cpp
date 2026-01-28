@@ -21,6 +21,8 @@
 #include "options.h"
 #include "keybindentry.h"
 #include <sstream>
+#include "midibus.h"
+#include "midibus_jack.h"
 
 #define add_tooltip( obj, text ) obj->set_tooltip_text( text);
 
@@ -111,8 +113,18 @@ options::add_midi_clock_page()
         }
     }
 
-    Glib::RefPtr<Gtk::Adjustment> clock_mod_adj = Gtk::Adjustment::create(midibus::get_clock_mod(),
+    Glib::RefPtr<Gtk::Adjustment> clock_mod_adj;
+    if(m_perf->get_midibus_type() == midi_backend::jack)
+    {
+        clock_mod_adj = Gtk::Adjustment::create(midibus_jack::get_clock_mod(),
             1, 16 << 10, 1 );
+    }
+    else
+    {
+        clock_mod_adj = Gtk::Adjustment::create(midibus::get_clock_mod(),
+            1, 16 << 10, 1 );
+    }
+
     SpinButton *clock_mod_spin = new SpinButton( clock_mod_adj );
 
     HBox *hbox2 = manage (new HBox ());
@@ -377,7 +389,14 @@ options::clock_callback_mod (int a_bus, RadioButton *a_button)
 void
 options::clock_mod_callback( Glib::RefPtr<Gtk::Adjustment> adj )
 {
-    midibus::set_clock_mod((int)adj->get_value());
+    if(m_perf->get_midibus_type() == midi_backend::jack)
+    {
+        midibus_jack::set_clock_mod((int)adj->get_value());
+    }
+    else
+    {
+        midibus::set_clock_mod((int)adj->get_value());
+    }
 }
 
 void

@@ -23,6 +23,8 @@
 #include <string>
 
 #include "optionsfile.h"
+#include "midibus.h"
+#include "midibus_jack.h"
 
 extern Glib::ustring last_used_dir;
 extern Glib::ustring last_midi_dir;
@@ -43,6 +45,13 @@ optionsfile::parse( perform *a_perf )
 
     /* run to start */
     file.seekg( 0, ios::beg );
+
+    unsigned int bus_type = 0;  // ALSA
+    line_after( &file, "[use-jack-midi-bus]" );
+    sscanf( m_line, "%u", &bus_type );
+    
+    a_perf->set_midibus_type(bus_type);
+    next_data_line( &file );
 
 #ifdef MIDI_CONTROL_SUPPORT
     line_after( &file, "[midi-control]" );
@@ -105,7 +114,17 @@ optionsfile::parse( perform *a_perf )
     {
         long bus_on, bus;
         sscanf( m_line, "%ld %ld", &bus, &bus_on );
-        a_perf->get_master_midi_bus( )->set_clock( bus, (clock_e) bus_on );
+
+        if (a_perf->get_midibus_type() == midi_backend::jack)
+        {
+            mastermidibus_jack * m_jack = static_cast<mastermidibus_jack *>(a_perf->get_master_midi_bus( ));
+            m_jack->set_clock(bus, (clock_e) bus_on );
+        }
+        else
+        {
+            mastermidibus * m_alsa = static_cast<mastermidibus *>(a_perf->get_master_midi_bus( ));
+            m_alsa->set_clock( bus, (clock_e) bus_on );
+        }
         next_data_line( &file );
     }
 
@@ -189,7 +208,15 @@ optionsfile::parse( perform *a_perf )
     long ticks = 64;
     line_after( &file, "[midi-clock-mod-ticks]" );
     sscanf( m_line, "%ld", &ticks );
-    midibus::set_clock_mod(ticks);
+
+    if (a_perf->get_midibus_type() == midi_backend::jack)
+    {
+        midibus_jack::set_clock_mod(ticks);
+    }
+    else
+    {
+        midibus::set_clock_mod(ticks);
+    }
 
     /* manual alsa ports */
     line_after( &file, "[manual-alsa-ports]" );
@@ -282,6 +309,10 @@ optionsfile::write( perform *a_perf  )
     file << "# Seq 42 Init File\n";
     file << "#\n\n\n";
 
+    file << "[use-jack-midi-bus]\n";
+    file << static_cast<unsigned int>(a_perf->get_midibus_type());
+    file << "\n\n\n";
+
 #ifdef MIDI_CONTROL_SUPPORT
     file << "[midi-control]\n";
     file <<  c_midi_controls << "\n";
@@ -364,7 +395,15 @@ optionsfile::write( perform *a_perf  )
 
     /* midi clock mod  */
     file << "\n\n[midi-clock-mod-ticks]\n";
-    file << midibus::get_clock_mod() << "\n";
+
+    if (a_perf->get_midibus_type() == midi_backend::jack)
+    {
+        file << midibus_jack::get_clock_mod() << "\n";
+    }
+    else
+    {
+        file << midibus::get_clock_mod() << "\n";
+    }
 
     /* bus input data */
     buses = a_perf->get_master_midi_bus( )->get_num_in_buses();

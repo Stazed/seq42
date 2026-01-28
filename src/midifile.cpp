@@ -236,7 +236,7 @@ bool midifile::parse (perform * a_perf, mainwnd *a_main, int screen_set)
             a_track = new track();
 
             a_track->set_name((char*)"Midi Import");
-            a_track->set_master_midi_bus (&a_perf->m_master_bus);
+            a_track->set_master_midi_bus (a_perf->m_master_bus);
 
             int seq_idx = a_track->new_sequence();
             sequence *seq = a_track->get_sequence(seq_idx);

@@ -2860,7 +2860,7 @@ sequence::get_midi_channel( )
     return m_track->get_midi_channel();
 }
 
-mastermidibus *
+mastermidibus_iface *
 sequence::get_master_midi_bus( )
 {
     return m_track->get_master_midi_bus();
@@ -2881,7 +2881,7 @@ void
 sequence::put_event_on_bus( event *a_e )
 {
     lock();
-    mastermidibus * a_mmb = get_master_midi_bus();
+    mastermidibus_iface * a_mmb = get_master_midi_bus();
 
     unsigned char note = a_e->get_note();
     bool skip = false;
@@ -2917,7 +2917,7 @@ void
 sequence::off_playing_notes()
 {
     lock();
-    mastermidibus * a_mmb = get_master_midi_bus();
+    mastermidibus_iface * a_mmb = get_master_midi_bus();
 
     event e;
 

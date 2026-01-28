@@ -233,7 +233,7 @@ trackmenu::popup_menu()
         m_menu->append(m_menu_items[15]);
 
         /* midi buses */
-        mastermidibus *masterbus = m_mainperf->get_master_midi_bus();
+        mastermidibus_iface *masterbus = m_mainperf->get_master_midi_bus();
         for ( int i = 0; i < masterbus->get_num_out_buses(); i++ )
         {
             Menu *menu_channels = manage( new Menu() );

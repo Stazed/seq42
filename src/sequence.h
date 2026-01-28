@@ -22,23 +22,14 @@
 #pragma once
 
 class sequence;
+class mastermidibus_iface;
 
 #include <string>
 #include <list>
 #include <stack>
 
 #include "event.h"
-
-#ifdef JACK_MIDI_SUPPORT
-#include "midibus_jack.h"
-class mastermidibus_jack;
-class midibus_jack;
-using mastermidibus = mastermidibus_jack;
-using midibus = midibus_jack;
-#else
-#include "midibus.h"
-#endif
-
+#include "mastermidibus_iface.h"
 #include "globals.h"
 #include "mutex.h"
 #include "track.h"
@@ -293,7 +284,7 @@ public:
     char get_midi_bus ();
     unsigned char get_midi_channel ();
 
-    mastermidibus * get_master_midi_bus ();
+    mastermidibus_iface * get_master_midi_bus ();
 
     enum select_action_e
     {

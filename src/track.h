@@ -22,18 +22,14 @@
 #pragma once
 
 class track;
+class mastermidibus_iface;
 
 #include "trigger.h"
 #include "sequence.h"
 #include "mutex.h"
-#include <vector>
+#include "mastermidibus_iface.h"
 
-#ifdef JACK_MIDI_SUPPORT
-#include "midibus_jack.h"
-using mastermidibus = mastermidibus_jack;
-#else
-#include "midibus.h"
-#endif
+#include <vector>
 
 enum trigger_edit
 {
@@ -82,7 +78,7 @@ private:
     bool m_transposable;
 
     /* outputs to sequence to this Bus on midichannel */
-    mastermidibus *m_masterbus;
+    mastermidibus_iface *m_masterbus;
 
     long m_default_velocity;
 
@@ -144,8 +140,8 @@ public:
     void set_midi_bus (char a_mb);
     char get_midi_bus ();
 
-    void set_master_midi_bus (mastermidibus * a_mmb);
-    mastermidibus *get_master_midi_bus ();
+    void set_master_midi_bus (mastermidibus_iface * a_mmb);
+    mastermidibus_iface *get_master_midi_bus ();
 
     void set_default_velocity(long a_vel);
     long get_default_velocity();

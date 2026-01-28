@@ -176,7 +176,7 @@ trackedit::popup_midibus_menu()
     m_menu_midibus = manage( new Menu());
 
     /* midi buses */
-    mastermidibus *masterbus = m_track->get_master_midi_bus();
+    mastermidibus_iface *masterbus = m_track->get_master_midi_bus();
     for ( int i = 0; i < masterbus->get_num_out_buses(); i++ )
     {
         MenuItem * menu_item = new MenuItem(masterbus->get_midi_out_bus_name(i));
@@ -255,7 +255,7 @@ void
 trackedit::set_midi_bus( int a_midibus )
 {
     m_track->set_midi_bus( a_midibus );
-    mastermidibus *mmb =  m_track->get_master_midi_bus();
+    mastermidibus_iface *mmb =  m_track->get_master_midi_bus();
     m_entry_bus->set_text( mmb->get_midi_out_bus_name( a_midibus ));
 }
 

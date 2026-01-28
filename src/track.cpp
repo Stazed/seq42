@@ -338,7 +338,7 @@ track::clear_trigger_undo_redo ()
 }
 
 void
-track::set_master_midi_bus( mastermidibus *a_mmb )
+track::set_master_midi_bus( mastermidibus_iface *a_mmb )
 {
     lock();
 
@@ -347,7 +347,7 @@ track::set_master_midi_bus( mastermidibus *a_mmb )
     unlock();
 }
 
-mastermidibus *
+mastermidibus_iface *
 track::get_master_midi_bus()
 {
     return m_masterbus;
