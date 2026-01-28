@@ -47,11 +47,19 @@ optionsfile::parse( perform *a_perf )
     file.seekg( 0, ios::beg );
 
     unsigned int bus_type = 0;  // ALSA
+
+    // Don't bother with bus_type scan if JACK MIDI not used, use ALSA
+#ifdef JACK_MIDI_SUPPORT
     line_after( &file, "[use-jack-midi-bus]" );
     sscanf( m_line, "%u", &bus_type );
-    
-    a_perf->set_midibus_type(bus_type);
     next_data_line( &file );
+#endif
+
+    if(!a_perf->set_midibus_type(bus_type))
+    {
+        file.close();
+        return false;
+    }
 
 #ifdef MIDI_CONTROL_SUPPORT
     line_after( &file, "[midi-control]" );
@@ -117,8 +125,10 @@ optionsfile::parse( perform *a_perf )
 
         if (a_perf->get_midibus_type() == midi_backend::jack)
         {
+#ifdef JACK_MIDI_SUPPORT
             mastermidibus_jack * m_jack = static_cast<mastermidibus_jack *>(a_perf->get_master_midi_bus( ));
             m_jack->set_clock(bus, (clock_e) bus_on );
+#endif
         }
         else
         {
@@ -211,7 +221,9 @@ optionsfile::parse( perform *a_perf )
 
     if (a_perf->get_midibus_type() == midi_backend::jack)
     {
+#ifdef JACK_MIDI_SUPPORT
         midibus_jack::set_clock_mod(ticks);
+#endif
     }
     else
     {
@@ -398,7 +410,9 @@ optionsfile::write( perform *a_perf  )
 
     if (a_perf->get_midibus_type() == midi_backend::jack)
     {
+#ifdef JACK_MIDI_SUPPORT
         file << midibus_jack::get_clock_mod() << "\n";
+#endif
     }
     else
     {

@@ -351,6 +351,12 @@ main (int argc, char *argv[])
     }
 #endif // NSM_SUPPORT
 
+    if (!p.get_master_midi_bus())
+    {
+        printf("FATAL ERROR!!!\n - Cannot create MIDI bus\nIs JACK running?\nIs ALSA installed?");
+        return 0;
+    }
+
     p.init();
 
     p.launch_input_thread();

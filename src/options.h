@@ -52,8 +52,9 @@ private:
     void clock_mod_callback( Glib::RefPtr<Gtk::Adjustment> adj );
 
     void input_callback( int a_bus, Button *a_button );
+#ifdef JACK_MIDI_SUPPORT
     void backend_callback (Button * i_button);
-
+#endif
     void transport_callback( button a_type, Button *a_button );
 
     void mouse_seq42_callback(Gtk::RadioButton*);

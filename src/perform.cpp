@@ -164,10 +164,17 @@ perform::perform() :
 #endif // MIDI_CONTROL_SUPPORT
 }
 
-void perform::set_midibus_type(unsigned int type)
+bool perform::set_midibus_type(unsigned int type)
 {
     m_midibus_type = m_backend_type = static_cast<midi_backend>(type);
     m_master_bus = static_cast<mastermidibus_iface *>(create_mastermidibus(m_midibus_type).release());
+    
+    if (m_master_bus == nullptr)
+    {
+        return false;
+    }
+
+    return true;
 }
 
 void perform::init()

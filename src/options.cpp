@@ -116,8 +116,10 @@ options::add_midi_clock_page()
     Glib::RefPtr<Gtk::Adjustment> clock_mod_adj;
     if(m_perf->get_midibus_type() == midi_backend::jack)
     {
+#ifdef JACK_MIDI_SUPPORT
         clock_mod_adj = Gtk::Adjustment::create(midibus_jack::get_clock_mod(),
             1, 16 << 10, 1 );
+#endif
     }
     else
     {
@@ -148,8 +150,11 @@ options::add_midi_input_page()
 
     VBox *vbox = manage(new VBox ());
     vbox->set_border_width(6);
+#ifdef JACK_MIDI_SUPPORT
     m_notebook->append_page(*vbox, "MIDI _Input/Backend", true);
-
+#else
+    m_notebook->append_page(*vbox, "MIDI _Input", true);
+#endif
     for (int i = 0; i < buses; i++)
     {
         CheckButton *check = manage(new CheckButton(
@@ -160,11 +165,12 @@ options::add_midi_input_page()
 
         vbox->pack_start(*check, false, false);
     }
-
+#ifdef JACK_MIDI_SUPPORT
     CheckButton *j_check = manage(new CheckButton( "Enable JACK MIDI backend (Requires restart)", 0));
     j_check->signal_toggled().connect(sigc::bind(mem_fun(*this, &options::backend_callback), j_check));
     j_check->set_active( static_cast<bool>( m_perf->get_backend_type() ) );
     vbox->pack_start(*j_check, false, false);
+#endif
 }
 
 /*Keyboard page*/
@@ -396,7 +402,9 @@ options::clock_mod_callback( Glib::RefPtr<Gtk::Adjustment> adj )
 {
     if(m_perf->get_midibus_type() == midi_backend::jack)
     {
+#ifdef JACK_MIDI_SUPPORT
         midibus_jack::set_clock_mod((int)adj->get_value());
+#endif
     }
     else
     {
@@ -411,7 +419,7 @@ options::input_callback (int a_bus, Button * i_button)
     bool input = a_button->get_active ();
     m_perf->get_master_midi_bus ()->set_input (a_bus, input);
 }
-
+#ifdef JACK_MIDI_SUPPORT
 void
 options::backend_callback (Button * i_button)
 {
@@ -419,7 +427,7 @@ options::backend_callback (Button * i_button)
     bool input = a_button->get_active ();
     m_perf->set_backend_type(static_cast<midi_backend>(input));
 }
-
+#endif
 void
 options::mouse_seq42_callback(Gtk::RadioButton *btn)
 {

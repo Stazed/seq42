@@ -185,7 +185,7 @@ class perform
 {
 public:
 
-    void set_midibus_type(unsigned int type);
+    bool set_midibus_type(unsigned int type);
     void set_backend_type(midi_backend type) {m_backend_type = type;}   // set backend on next start (options menu)
     midi_backend get_midibus_type() {return m_midibus_type;}    // current running backend
     midi_backend get_backend_type() {return m_backend_type;}    // backend on next start
