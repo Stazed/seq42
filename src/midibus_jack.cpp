@@ -306,6 +306,7 @@ mastermidibus_jack::mastermidibus_jack()
         m_buses_out_active[i] = false;
         m_buses_out_init[i] = false;
         m_buses_out[i] = nullptr;
+        m_init_clock[i] = e_clock_off;
     }
 
     // Input ringbuffer for decoded raw MIDI packets
@@ -550,6 +551,7 @@ void mastermidibus_jack::init()
         if (m_buses_out[i]->init_out_sub())
         {
             m_buses_out_active[i] = true;
+            set_clock(i,m_init_clock[i]);   // Comes from optionsfile
         }
         else
         {
@@ -685,12 +687,19 @@ void mastermidibus_jack::play(unsigned char a_bus, event *a_e24, unsigned char a
 
 void mastermidibus_jack::set_clock(unsigned char a_bus, clock_e a_clock_type)
 {
-    if (a_bus >= (unsigned char)m_num_out_buses)
-        return;
-
     lock();
-    if (m_buses_out[a_bus] && m_buses_out_active[a_bus])
-        m_buses_out[a_bus]->set_clock(a_clock_type);
+    if ( a_bus < c_maxBuses )
+    {
+        // From optionsfile on reading .seq42rc
+        // We set m_init_clock here before jack is initialized and if all
+        // goes well on jack init() then we set m_buses_out to this later.
+        // This is necessary since jack is not initialized at time of reading .seq42rc file.
+        m_init_clock[a_bus] = a_clock_type;
+    }
+    if ( m_buses_out[a_bus] && m_buses_out_active[a_bus] )
+    {
+        m_buses_out[a_bus]->set_clock( a_clock_type );
+    }
     unlock();
 }
 

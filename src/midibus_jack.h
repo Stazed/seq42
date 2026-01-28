@@ -38,6 +38,7 @@
 #include <string>
 #include <vector>
 
+#include "mastermidibus_iface.h"
 #include "event.h"
 #include "sequence.h"
 #include "mutex.h"
@@ -46,12 +47,6 @@
 using std::string;
 using std::vector;
 
-enum clock_e
-{
-    e_clock_off,
-    e_clock_pos,
-    e_clock_mod
-};
 
 /* forward declarations*/
 class mastermidibus_jack;
@@ -144,7 +139,7 @@ public:
  * JACK master: owns the JACK client, registers ports, runs process callback,
  * provides polling-style input API to the rest of seq42.
  */
-class mastermidibus_jack
+class mastermidibus_jack : public mastermidibus_iface
 {
 private:
     jack_client_t * m_client {};
@@ -156,6 +151,7 @@ private:
     midibus_jack * m_buses_out[c_maxBuses] {};
     bool           m_buses_out_active[c_maxBuses] {};
     bool           m_buses_out_init[c_maxBuses] {};
+    clock_e        m_init_clock[c_maxBuses];
 
     // Single JACK MIDI input port (typical for sequencers)
     jack_port_t * m_in_port {};
@@ -198,61 +194,61 @@ private:
 
 public:
     mastermidibus_jack();
-    ~mastermidibus_jack();
+    ~mastermidibus_jack() override;
 
-    void init();
+    void init() override;
 
-    int get_num_out_buses() const { return m_num_out_buses; }
-    int get_num_in_buses()  const { return m_num_in_buses; }
+    int get_num_out_buses() override { return m_num_out_buses; }
+    int get_num_in_buses() override { return m_num_in_buses; }
 
-    void set_bpm(double a_bpm);
-    void set_ppqn(int a_ppqn);
+    void set_bpm(double a_bpm) override;
+    void set_ppqn(int a_ppqn) override;
 
-    double get_bpm() const { return m_bpm.load(); }
-    int get_ppqn()   const { return m_ppqn.load(); }
+    double get_bpm() override { return m_bpm.load(); }
+    int get_ppqn() override { return m_ppqn.load(); }
 
-    string get_midi_out_bus_name(int a_bus);
-    string get_midi_in_bus_name(int /*a_bus*/) { return string("[0] JACK MIDI in"); }
+    string get_midi_out_bus_name(int a_bus) override;
+    string get_midi_in_bus_name(int /*a_bus*/) override { return string("[0] JACK MIDI in"); }
 
-    void set_transpose(int a_transpose) { m_transpose = a_transpose; }
-    int  get_transpose() const { return m_transpose; }
+    void set_transpose(int a_transpose) override { m_transpose = a_transpose; }
+    int  get_transpose() override { return m_transpose; }
 
-    void set_swing_amount8(int a_swing_amount);
-    int  get_swing_amount8() const { return m_swing_amount8; }
+    void set_swing_amount8(int a_swing_amount) override;
+    int  get_swing_amount8() override { return m_swing_amount8; }
 
-    void set_swing_amount16(int a_swing_amount);
-    int  get_swing_amount16() const { return m_swing_amount16; }
+    void set_swing_amount16(int a_swing_amount) override;
+    int  get_swing_amount16() override { return m_swing_amount16; }
 
     void print();
-    void flush(); // no-op
+    void flush() override; // no-op
 
     // Transport-ish
-    void start();
-    void stop();
-    void clock(long a_tick);
-    void continue_from(long a_tick);
-    void init_clock(long a_tick);
+    void start() override;
+    void stop() override;
+    void clock(long a_tick) override;
+    void continue_from(long a_tick) override;
+    void init_clock(long a_tick) override;
 
     // Input polling-style API
-    int  poll_for_midi();
-    bool is_more_input();
-    bool get_midi_event(event *a_in);
+    int  poll_for_midi() override;
+    bool is_more_input() override;
+    bool get_midi_event(event *a_in) override;
 
-    void set_sequence_input(bool a_state, sequence *a_seq);
-    void dump_midi_input(event a_in);
-    bool is_dumping() const { return m_dumping_input; }
+    void set_sequence_input(bool a_state, sequence *a_seq) override;
+    void dump_midi_input(event a_in) override;
+    bool is_dumping() override { return m_dumping_input; }
     sequence* get_sequence() const { return m_seq; }
 
-    void sysex(event *a_event);
+    void sysex(event *a_event) override;
 
     // Output
-    void play(unsigned char a_bus, event *a_e24, unsigned char a_channel);
+    void play(unsigned char a_bus, event *a_e24, unsigned char a_channel) override;
 
-    void set_clock(unsigned char a_bus, clock_e a_clock_type);
-    clock_e get_clock(unsigned char a_bus);
+    void set_clock(unsigned char a_bus, clock_e a_clock_type) override;
+    clock_e get_clock(unsigned char a_bus) override;
 
-    void set_input(unsigned char /*a_bus*/, bool /*a_inputing*/) {} // JACK input is single port
-    bool get_input(unsigned char /*a_bus*/) { return true; }
+    void set_input(unsigned char /*a_bus*/, bool /*a_inputing*/) override {} // JACK input is single port
+    bool get_input(unsigned char /*a_bus*/) override { return true; }
 
     jack_client_t * client() const { return m_client; }
 };
