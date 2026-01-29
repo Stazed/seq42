@@ -102,6 +102,7 @@ static struct
     {"pass_sysex", 0, 0, 'P'},
     {"version", 0, 0, 'v'},
     {"client_name", required_argument, 0, 'n'},
+    {"Backend_midi", required_argument, 0, 'b'},
     {0, 0, 0, 0}
 };
 
@@ -166,14 +167,14 @@ main (int argc, char *argv[])
     }
 
     /* parse parameters */
-    int c;
+    int c, backend = -1;
 
     while (true)
     {
         /* getopt_long stores the option index here. */
         int option_index = 0;
 
-        c = getopt_long (argc, argv, "Chi:jJkmM:pPsSvx:X:n:", long_options, &option_index);
+        c = getopt_long (argc, argv, "Chi:jJkmM:pPsSvx:X:n:b:", long_options, &option_index);
 
         /* Detect the end of the options. */
         if (c == -1)
@@ -202,6 +203,9 @@ main (int argc, char *argv[])
             printf( "                          modes are available (0 = live mode)\n");
             printf( "                                              (1 = song mode) (default)\n" );
             printf( "   -n, --client_name <name>: Set alsa client name: Default = seq42\n");
+#ifdef JACK_MIDI_SUPPORT
+            printf( "   -b, --backend_midi <type>: Set to '0' for ALSA, '1' for JACK\n");
+#endif
             printf( "   -S, --stats: show statistics\n" );
             printf( "\n\n\n" );
 
@@ -279,6 +283,16 @@ main (int argc, char *argv[])
             playlist_file = Glib::ustring(optarg);
             break;
 
+        case 'b':
+#ifdef JACK_MIDI_SUPPORT
+            backend = atoi( optarg );
+
+            // sanity check
+            if (backend < 0 || backend > 1)
+                backend = -1;
+#endif
+            break;
+            
         default:
             break;
         }
@@ -286,6 +300,17 @@ main (int argc, char *argv[])
 
     /* the main performance object */
     perform p;
+
+    bool using_command_line_backend = false;
+    if(backend >= 0)
+    {
+        if(!p.set_midibus_type((unsigned int) backend))
+        {
+            printf("FATAL ERROR!!!\n - Cannot create MIDI bus!!!");
+            return 0;
+        }
+        using_command_line_backend = true;
+    }
 
     /* read user preferences files */
     if ( getenv( HOME ) != NULL )
@@ -300,7 +325,7 @@ main (int argc, char *argv[])
 
             optionsfile options( total_file );
 
-            if ( !options.parse( &p ) )
+            if ( !options.parse( &p, using_command_line_backend ) )
             {
                 printf( "Error Reading [%s]\n", total_file.c_str());
             }
@@ -353,7 +378,7 @@ main (int argc, char *argv[])
 
     if (!p.get_master_midi_bus())
     {
-        printf("FATAL ERROR!!!\n - Cannot create MIDI bus\nIs JACK running?\nIs ALSA installed?");
+        printf("FATAL ERROR!!!\n - Cannot create MIDI bus!!!");
         return 0;
     }
 

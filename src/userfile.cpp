@@ -32,7 +32,7 @@ userfile::~userfile( )
 }
 
 bool
-userfile::parse( perform * /* a_perf */ )
+userfile::parse( perform * /* a_perf */, bool /*command_line*/ )
 {
     /* open binary file */
     ifstream file ( m_name.c_str(), ios::in | ios::ate );

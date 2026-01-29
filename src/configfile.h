@@ -45,7 +45,7 @@ public:
     configfile(const Glib::ustring& a_name);
     virtual ~configfile();
 
-    virtual bool parse( perform *a_perf ) = 0;
+    virtual bool parse( perform *a_perf, bool command_line ) = 0;
     virtual bool write( perform *a_perf ) = 0;
 
 };

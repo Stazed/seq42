@@ -34,6 +34,6 @@ public:
     explicit userfile(const string &a_name );
     ~userfile( );
 
-    bool parse( perform *a_perf ) override;
+    bool parse( perform *a_perf, bool command_line = false) override;
     bool write( perform *a_perf ) override;
 };

@@ -35,7 +35,7 @@ optionsfile::optionsfile(const Glib::ustring& a_name) :
 }
 
 bool
-optionsfile::parse( perform *a_perf )
+optionsfile::parse( perform *a_perf, bool command_line )
 {
     /* open binary file */
     ifstream file ( m_name.c_str(), ios::in | ios::ate );
@@ -55,10 +55,21 @@ optionsfile::parse( perform *a_perf )
     next_data_line( &file );
 #endif
 
-    if(!a_perf->set_midibus_type(bus_type))
+    if(command_line)
     {
-        file.close();
-        return false;
+        // We don't need to set_midibus_type() here because it is already set in seq42.cpp main().
+
+        // This will keep the config file from changing because of command line.
+        a_perf->set_backend_type((midi_backend) bus_type);
+    }
+    else
+    {
+        // Using the config file for bus type
+        if(!a_perf->set_midibus_type(bus_type))
+        {
+            file.close();
+            return false;
+        }
     }
 
 #ifdef MIDI_CONTROL_SUPPORT
