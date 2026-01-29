@@ -152,6 +152,7 @@ private:
     bool           m_buses_out_active[c_maxBuses] {};
     bool           m_buses_out_init[c_maxBuses] {};
     clock_e        m_init_clock[c_maxBuses];
+    bool           m_init_input;
 
     // Single JACK MIDI input port (typical for sequencers)
     jack_port_t * m_in_port {};
@@ -247,8 +248,8 @@ public:
     void set_clock(unsigned char a_bus, clock_e a_clock_type) override;
     clock_e get_clock(unsigned char a_bus) override;
 
-    void set_input(unsigned char /*a_bus*/, bool /*a_inputing*/) override {} // JACK input is single port
-    bool get_input(unsigned char /*a_bus*/) override { return true; }
+    void set_input(unsigned char /*a_bus*/, bool a_inputing) override {m_init_input = a_inputing;} // JACK input is single port
+    bool get_input(unsigned char /*a_bus*/) override { return m_init_input; }
 
     jack_client_t * client() const { return m_client; }
 };

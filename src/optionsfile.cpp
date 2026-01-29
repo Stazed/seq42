@@ -210,7 +210,20 @@ optionsfile::parse( perform *a_perf )
     {
         long bus_on, bus;
         sscanf( m_line, "%ld %ld", &bus, &bus_on );
-        a_perf->get_master_midi_bus( )->set_input( bus, (bool) bus_on );
+
+        if (a_perf->get_midibus_type() == midi_backend::jack)
+        {
+#ifdef JACK_MIDI_SUPPORT
+            mastermidibus_jack * m_jack = static_cast<mastermidibus_jack *>(a_perf->get_master_midi_bus( ));
+            m_jack->set_input( bus, (bool) bus_on );
+#endif
+        }
+        else
+        {
+            mastermidibus * m_alsa = static_cast<mastermidibus *>(a_perf->get_master_midi_bus( ));
+            m_alsa->set_input( bus, (bool) bus_on );
+        }
+
         next_data_line( &file );
     }
 

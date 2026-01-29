@@ -309,6 +309,8 @@ mastermidibus_jack::mastermidibus_jack()
         m_init_clock[i] = e_clock_off;
     }
 
+    m_init_input = false;
+
     // Input ringbuffer for decoded raw MIDI packets
     m_in_rb = jack_ringbuffer_create(c_in_rb_bytes);
     if (m_in_rb)
