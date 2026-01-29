@@ -72,7 +72,12 @@ Seq42 version 2.2.0
 -------------------
 Begining with version 2.2.0 JACK MIDI has been added and can be selected from:
 
-File/Options.../MIDI Input/Backend tab.
+    File/Options.../MIDI Input/Backend tab.
+
+Or from command line with:
+```bash
+    seq42 -b 1
+```
 
 ## SAST Tools
 
