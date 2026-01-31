@@ -23,7 +23,7 @@
 #include <string>
 
 #include "optionsfile.h"
-#include "midibus.h"
+#include "midibus_alsa.h"
 #include "midibus_jack.h"
 
 extern Glib::ustring last_used_dir;
@@ -143,7 +143,7 @@ optionsfile::parse( perform *a_perf, bool command_line )
         }
         else
         {
-            mastermidibus * m_alsa = static_cast<mastermidibus *>(a_perf->get_master_midi_bus( ));
+            mastermidibus_alsa * m_alsa = static_cast<mastermidibus_alsa *>(a_perf->get_master_midi_bus( ));
             m_alsa->set_clock( bus, (clock_e) bus_on );
         }
         next_data_line( &file );
@@ -231,7 +231,7 @@ optionsfile::parse( perform *a_perf, bool command_line )
         }
         else
         {
-            mastermidibus * m_alsa = static_cast<mastermidibus *>(a_perf->get_master_midi_bus( ));
+            mastermidibus_alsa * m_alsa = static_cast<mastermidibus_alsa *>(a_perf->get_master_midi_bus( ));
             m_alsa->set_input( bus, (bool) bus_on );
         }
 
@@ -251,7 +251,7 @@ optionsfile::parse( perform *a_perf, bool command_line )
     }
     else
     {
-        midibus::set_clock_mod(ticks);
+        midibus_alsa::set_clock_mod(ticks);
     }
 
     /* manual alsa ports */
@@ -440,7 +440,7 @@ optionsfile::write( perform *a_perf  )
     }
     else
     {
-        file << midibus::get_clock_mod() << "\n";
+        file << midibus_alsa::get_clock_mod() << "\n";
     }
 
     /* bus input data */

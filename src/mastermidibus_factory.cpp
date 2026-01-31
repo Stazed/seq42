@@ -21,7 +21,7 @@
 #include "mastermidibus_factory.h"
 
 #ifdef HAVE_LIBASOUND
-#include "midibus.h"
+#include "midibus_alsa.h"
 #endif
 
 #ifdef JACK_MIDI_SUPPORT
@@ -42,7 +42,7 @@ create_mastermidibus(midi_backend which)
 
     case midi_backend::alsa:
 #ifdef HAVE_LIBASOUND
-        return std::make_unique<mastermidibus>();
+        return std::make_unique<mastermidibus_alsa>();
 #else
         return nullptr;
 #endif

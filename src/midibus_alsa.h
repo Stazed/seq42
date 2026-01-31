@@ -22,8 +22,8 @@
 
 /* forward declarations*/
 #include "mastermidibus_iface.h"
-class mastermidibus;
-class midibus;
+class mastermidibus_alsa;
+class midibus_alsa;
 
 #ifndef HAVE_LIBASOUND
 #include "midibus_portmidi.h"
@@ -43,7 +43,7 @@ const int c_midibus_input_size =  0x100000;
 const int c_midibus_sysex_chunk = 0x100;
 
 
-class midibus
+class midibus_alsa
 {
 
 private:
@@ -88,7 +88,7 @@ public:
 #if HAVE_LIBASOUND
     /* constructor, client#, port#, sequencer,
        name of client, name of port */
-    midibus( int a_localclient,
+    midibus_alsa( int a_localclient,
              int a_destclient,
              int a_destport,
              snd_seq_t  *a_seq,
@@ -97,7 +97,7 @@ public:
              int a_id,
              int a_queue );
 
-    midibus( int a_localclient,
+    midibus_alsa( int a_localclient,
              snd_seq_t  *a_seq,
              int a_id,
              int a_queue );
@@ -107,7 +107,7 @@ public:
     midibus( char a_id, int a_queue );
 #endif
 
-    ~midibus();
+    ~midibus_alsa();
 
     bool init_out(  );
     bool init_in(  );
@@ -140,7 +140,7 @@ public:
     //void remove_queued_on_events( int a_tag );
 
     /* master midi bus sets up the bus */
-    friend class mastermidibus;
+    friend class mastermidibus_alsa;
 
     /* address of client */
 #if HAVE_LIBASOUND
@@ -158,7 +158,7 @@ public:
     static int get_clock_mod();
 };
 
-class mastermidibus : public mastermidibus_iface
+class mastermidibus_alsa : public mastermidibus_iface
 {
 private:
 
@@ -170,9 +170,9 @@ private:
     int m_num_out_buses;
     int m_num_in_buses;
 
-    midibus *m_buses_out[c_maxBuses];
-    midibus *m_buses_in[c_maxBuses];
-    midibus *m_bus_announce;
+    midibus_alsa *m_buses_out[c_maxBuses];
+    midibus_alsa *m_buses_in[c_maxBuses];
+    midibus_alsa *m_bus_announce;
 
     bool m_buses_out_active[c_maxBuses];
     bool m_buses_in_active[c_maxBuses];
@@ -212,8 +212,8 @@ private:
 
 public:
 
-    mastermidibus();
-    ~mastermidibus() override;
+    mastermidibus_alsa();
+    ~mastermidibus_alsa() override;
 
     void init() override;
 

@@ -21,7 +21,7 @@
 #include "options.h"
 #include "keybindentry.h"
 #include <sstream>
-#include "midibus.h"
+#include "midibus_alsa.h"
 #include "midibus_jack.h"
 
 #define add_tooltip( obj, text ) obj->set_tooltip_text( text);
@@ -123,7 +123,7 @@ options::add_midi_clock_page()
     }
     else
     {
-        clock_mod_adj = Gtk::Adjustment::create(midibus::get_clock_mod(),
+        clock_mod_adj = Gtk::Adjustment::create(midibus_alsa::get_clock_mod(),
             1, 16 << 10, 1 );
     }
 
@@ -408,7 +408,7 @@ options::clock_mod_callback( Glib::RefPtr<Gtk::Adjustment> adj )
     }
     else
     {
-        midibus::set_clock_mod((int)adj->get_value());
+        midibus_alsa::set_clock_mod((int)adj->get_value());
     }
 }
 
