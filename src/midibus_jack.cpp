@@ -332,6 +332,30 @@ mastermidibus_jack::mastermidibus_jack()
 
 mastermidibus_jack::~mastermidibus_jack()
 {
+    if (m_client)
+    {
+        // 1) deactivate
+        jack_deactivate(m_client);
+
+        // 2) Unregister ports (optional)
+        if (m_in_port)
+        {
+            jack_port_unregister(m_client, m_in_port);
+            m_in_port = nullptr;
+        }
+
+        for (int i = 0; i < m_num_out_buses; ++i)
+        {
+            if (m_buses_out[i] && m_buses_out[i]->port())
+                jack_port_unregister(m_client, m_buses_out[i]->port());
+        }
+
+        // 3) Close client
+        jack_client_close(m_client);
+        m_client = nullptr;
+    }
+
+    // 4) Now safe to delete buses / free ringbuffers
     for (int i = 0; i < m_num_out_buses; ++i)
         delete m_buses_out[i];
 
@@ -339,12 +363,6 @@ mastermidibus_jack::~mastermidibus_jack()
     {
         jack_ringbuffer_free(m_in_rb);
         m_in_rb = nullptr;
-    }
-
-    if (m_client)
-    {
-        jack_client_close(m_client);
-        m_client = nullptr;
     }
 }
 
