@@ -324,6 +324,12 @@ main (int argc, char *argv[])
             if ( !options.parse( &p, using_command_line_backend ) )
             {
                 printf( "Error Reading [%s]\n", total_file.c_str());
+
+                // Set to default
+                if ( !using_command_line_backend )
+                {
+                    p.set_midibus_type(0);  // alsa
+                }
             }
         }
         else
@@ -353,7 +359,15 @@ main (int argc, char *argv[])
         }
     }
     else
+    {
         printf( "Error calling getenv( \"%s\" )\n", HOME );
+
+        // Set to default
+        if ( !using_command_line_backend )
+        {
+            p.set_midibus_type(0);  // alsa
+        }
+    }
 
 #ifdef NSM_SUPPORT
     // Initialize NSM before creation of alsa ports with p.init()
