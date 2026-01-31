@@ -399,8 +399,8 @@ public:
 
     void launch_input_thread();
     void launch_output_thread();
-    void init_jack();
-    void deinit_jack();
+    void init_jack();   // transport control
+    void deinit_jack(); // transport control
 
     void add_track( track *a_track, int a_pref );
     void delete_track( int a_num );

@@ -63,6 +63,7 @@ perform::perform() :
 
     m_midibus_type(midi_backend::alsa),
     m_backend_type(midi_backend::alsa),
+    m_master_bus(nullptr),
 
     m_out_thread(0),
     m_in_thread(0),
@@ -184,8 +185,10 @@ void perform::init()
 
 void perform::init_jack()
 {
-
 #ifdef JACK_TRANSPORT_SUPPORT
+
+    Glib::ustring jack_transport_name = global_client_name;
+    jack_transport_name += "-transport";
 
     if ( global_with_jack_transport  && !m_jack_running)
     {
@@ -197,7 +200,7 @@ void perform::init_jack()
         do
         {
             /* become a new client of the JACK server */
-            m_jack_client = jack_client_open(PACKAGE, JackNullOption, NULL );
+            m_jack_client = jack_client_open(jack_transport_name.c_str(), JackNullOption, NULL );
 
             if (m_jack_client == 0)
             {
@@ -270,7 +273,6 @@ void perform::init_jack()
 void perform::deinit_jack()
 {
 #ifdef JACK_TRANSPORT_SUPPORT
-
     if ( m_jack_running)
     {
         //printf ( "deinit_jack() m_jack_running[%d]\n", m_jack_running );
@@ -293,7 +295,6 @@ void perform::deinit_jack()
     {
         printf( "[JACK sync disabled]\n");
     }
-
 #endif // JACK_TRANSPORT_SUPPORT
 }
 
