@@ -304,11 +304,7 @@ main (int argc, char *argv[])
     bool using_command_line_backend = false;
     if(backend >= 0)
     {
-        if(!p.set_midibus_type((unsigned int) backend))
-        {
-            printf("FATAL ERROR!!!\n - Cannot create MIDI bus!!!");
-            return 0;
-        }
+        p.set_midibus_type((unsigned int) backend);
         using_command_line_backend = true;
     }
 
@@ -328,6 +324,18 @@ main (int argc, char *argv[])
             if ( !options.parse( &p, using_command_line_backend ) )
             {
                 printf( "Error Reading [%s]\n", total_file.c_str());
+            }
+        }
+        else
+        {
+            printf( "Options file does not exist\n");
+            // Set the default midibus if this is first time running,
+            // since we didn't set in from the options file.
+            // If first time and they used command line, then midibus was set 
+            // already above.
+            if ( !using_command_line_backend )
+            {
+                p.set_midibus_type(0);  // alsa
             }
         }
 
