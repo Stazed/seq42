@@ -50,7 +50,7 @@ optionsfile::parse( perform *a_perf, bool command_line )
 
     // Don't bother with bus_type scan if JACK MIDI not used, use ALSA
 #ifdef JACK_MIDI_SUPPORT
-    line_after( &file, "[use-jack-midi-bus]" );
+    line_after( &file, "[midi-backend]" );
     sscanf( m_line, "%u", &bus_type );
     next_data_line( &file );
 #endif
@@ -345,7 +345,8 @@ optionsfile::write( perform *a_perf  )
     file << "# Seq 42 Init File\n";
     file << "#\n\n\n";
 
-    file << "[use-jack-midi-bus]\n";
+    file << "[midi-backend]\n";
+    file << "# set MIDI backend to ALSA = 0: JACK = 1\n";
     file << static_cast<unsigned int>(a_perf->get_backend_type()); // the requested for restart
     file << "\n\n\n";
 
@@ -459,8 +460,9 @@ optionsfile::write( perform *a_perf  )
 
     /* manual alsa ports */
     file << "\n\n\n[manual-alsa-ports]\n";
-    file << "# set to 1 if you want seq42 to create its own alsa ports and\n";
-    file << "# not connect to other clients\n";
+    file << "# This entry is invalid if using JACK MIDI backend.\n";
+    file << "# Set to 1 if you want seq42 to create its own alsa ports and\n";
+    file << "# not connect to other clients.\n";
     file << global_manual_alsa_ports << "\n";
 
     /* interaction-method */
