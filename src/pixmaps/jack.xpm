@@ -7,7 +7,7 @@ static const char *jack_xpm[] = {
 "X c #FFFFFF",
 "o c #A454A0E29D89",
 "O c #833A7FA57BEC",
-"C c #None",
+"C c None",
 /* pixels */
 "o.........................oCCCCCCCCCCCCCCCCCCCC",
 "...........................CCCCCCCCCCCCCCCCCCCC",
