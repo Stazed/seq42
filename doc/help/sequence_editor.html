@@ -28,8 +28,8 @@
 <p><img src="images/sequence_editor.png" alt="Sequence Editor Window" align="middle" border="1" height="450" width="900"></p>
 
 <ul>
-  <li>Right-clicking on a track trigger shows a trigger menu. Select New/Edit Sequence to open the editor.</li>
-  <li>Hover over buttons briefly to see tooltips.</li>
+  <li>Right-clicking on a track trigger from the <a href="main_window.html">[3] Main Window</a> shows a trigger menu. Select New/Edit Sequence to open the sequence editor.</li>
+  <li>Hover over buttons briefly in the sequence editor to see tooltips.</li>
 </ul>
 
 <h2>Top bar</h2>
@@ -38,7 +38,7 @@
   <li>First item changes the sequence name.</li>
   <li>Down-arrow buttons set time signature.</li>
   <li><b>Length</b> sets sequence loop length.</li>
-  <li><b>Swing</b> controls whether main-window swing applies to this sequence and how.</li>
+  <li><b>Swing</b> controls whether main-window swing applies to this sequence and how it should be applied.</li>
   <li><b>Bus</b> selects ALSA/JACK port device and MIDI channel.</li>
 </ul>
 
@@ -46,19 +46,15 @@
 <p><img src="images/second_bar_seq.png" alt="Second Bar Sequence Editor Window" align="middle" border="1" height="33" width="900"></p>
 <ul>
   <li><b>Undo</b> rolls back sequence changes for this session.</li>
-  <li><b>Q</b> quantizes selected notes based on current grid snap.</li>
-</ul>
-
-<h2>Tools menu (hammer icon)</h2>
-<ul>
-  <li><b>Select</b>: select notes by criteria.</li>
-  <li><b>Modify time</b>: adjust selected notes’ timing.</li>
-  <li><b>Modify pitch</b>: transpose selected notes.</li>
-  <li><b>Randomize Event Values</b>: randomize velocity/CC values (range +/-1 to +/-16).</li>
-</ul>
-
-<h2>Grid / Zoom / Key / Scale / Chords</h2>
-<ul>
+  <li><b>Redo</b> re-applies edits up from the previous Undo.</li>
+  <li><b>Q</b> button will quantize selected notes based on current grid snap.</li>
+  <li><b>Tools menu (hammer icon)</b>
+    <ul>
+        <li><b>Select</b>: select notes by criteria.</li>
+        <li><b>Modify time</b>: adjust selected notes’ timing.</li>
+        <li><b>Modify pitch</b>: transpose selected notes.</li>
+        <li><b>Randomize Event Values</b>: randomize velocity/CC values (range +/-1 to +/-16).</li>
+    </ul>
   <li><b>Grid Snap</b> sets precision for note creation and movement.</li>
   <li><b>Zoom</b> sets horizontal zoom.</li>
   <li><b>Key</b> shows selected note key on the left piano roll.</li>
@@ -83,24 +79,34 @@
     left-click to insert notes.
   </li>
   <li>Left click selects note; drag to box-select multiple notes (selected notes turn red).</li>
-  <li>Left-drag selected notes to move them.</li>
-  <li>Middle-drag over a note changes length; can adjust multiple selected notes at once.</li>
+  <li>Left drag selected notes to move them.</li>
+  <li>Middle drag over a note changes length and can adjust multiple selected notes at once.</li>
   <li>Backspace/Delete removes selected notes.</li>
-  <li>Left/Right arrows move selected notes by grid snap.</li>
-  <li>Shift + Left/Right moves selected notes by very small amounts.</li>
-  <li>Up/Down moves notes by semitone; Shift + Up/Down moves by octave.</li>
+  <li>Left/Right keyboard arrows move selected notes by grid snap.</li>
+  <li><b>Shift</b> + Left/Right keyboard arrows moves selected notes by very small amounts.</li>
+  <li>Up/Down keyboard arrows moves notes by semitone.</li>
+  <li><b>Shift</b> + Up/Down keyboard arrows moves by octave.</li>
   <li>With chord selection enabled, drawing creates multiple notes by chord and type.</li>
-  <li>Cut/Copy/Paste: Ctrl-X / Ctrl-C / Ctrl-V.</li>
+  
+  <li><b>Ctrl+C</b>: copy selected notes to clipboard.</li>
+  <li><b>Ctrl+V</b>: paste clipboard notes.</li>
+  <li><b>Ctrl+X</b>: cut selected notes and copy to clipboard.</li>
+
   <li>Notes play when added or moved.</li>
 
   <li>Mouse wheel: scroll vertically.</li>
-  <li>Shift + wheel: scroll horizontally.</li>
-  <li>Ctrl + wheel: zoom horizontally.</li>
-  <li>Alt + wheel: zoom vertically.</li>
+  <li><b>Shift</b> + wheel: scroll horizontally.</li>
+  <li><b>Ctrl</b> + wheel: zoom horizontally.</li>
+  <li><b>Alt</b> + wheel: zoom vertically.</li>
 
-  <li><b>z</b>: horizontal zoom-out; <b>Shift+z</b>: zoom-in; <b>0</b>: reset horizontal zoom.</li>
-  <li><b>v</b>: vertical zoom-out; <b>Shift+v</b>: zoom-in; <b>9</b>: reset vertical zoom.</li>
+  <li><b>z</b> key: horizontal zoom-out.</li>
+  <li><b>Shift+z</b>: horizontal zoom-in.</li>
+  <li><b>0</b>: reset horizontal zoom.</li>
+  <li><b>v</b> key: vertical zoom-out.</li>
+  <li><b>Shift+v</b>: vertical zoom-in.</li>
+  <li><b>9</b>: reset vertical zoom.</li>
   <li>Default vertical zoom can be set in <a href="seq42rc.html">[7] User Configuration File (.seq42rc)</a>.</li>
+
 </ul>
 
 <h2>Event Editor</h2>
@@ -108,18 +114,16 @@
 <ul>
   <li><b>Event</b> button selects which event type is displayed/edited.</li>
   <li>The event strip adds/selects/moves MIDI events (non note on/off), similar to the piano grid.</li>
-  <li>
-    The data editor under the strip changes velocities, channel pressure, CC values, patch select, etc.
-    Left click + drag draws a line; values follow the line.
-    <ul>
-      <li>If no events are selected, all events match the draw line.</li>
-      <li>If events are selected, only selected events change.</li>
-    </ul>
-  </li>
 </ul>
 
 <h2>Data Editor</h2>
 <p><img src="images/data_editor.png" alt="Data Editor" align="middle" border="1" height="129" width="740"></p>
+<ul>
+    <li>The data editor under the strip changes velocities, channel pressure, CC values, patch select, etc.</li>
+    <li>Left click + drag draws a line, values follow the line.</li>
+    <li>If no events are selected(red), all events match the draw line.</li>
+    <li>If events are selected(red), only selected events change.</li>
+</ul>
 
 <h2>LFO Editor</h2>
 <p><img src="images/LFO_editor.png" alt="LFO Editor" align="middle" border="1" height="300" width="552"></p>
@@ -129,29 +133,44 @@
   <li>If no events are selected, all events are adjusted; otherwise only selected events change.</li>
 </ul>
 
-<h2>Additional controls</h2>
+<h2>Additional controls (bottom)</h2>
+<p><img src="images/third_bar_seq.png" alt="Third Bar" align="middle" border="1" height="33" width="900"></p>
 <ul>
-  <li><b>Background Sequence</b>: draw another sequence behind (dark green) as a reference.</li>
-  <li><b>Sequence dump</b>: mute/unmute the sequence in live play.</li>
-  <li><b>Pass thru</b>: send MIDI in to MIDI out.</li>
-  <li><b>Recording</b>: add incoming MIDI to the sequence.</li>
-  <li><b>Quantize</b>: grid-snap incoming MIDI recording.</li>
+  <li><b>Event</b> button selects which event type is displayed/edited. The current selected event type is displayed to the right of the button.</li>
+  <li><b>LFO</b> button opens the LFO editor window.</li>
+  <li><b>Background Sequence</b> will draw another sequence of notes on the sequence grid in the background(dark green) as a reference.
+    <ul>
+        <li>The current background sequence name will display to the right of the Background Sequence button.</li>
+    </ul>
+  <li><b>Sequence dump</b> during live play will mute/unmute the sequence.</li>
+  <li><b>Pass thru</b> will send MIDI in to MIDI out.</li>
+  <li><b>Recording</b> will add incoming MIDI messages (notes, CC events, etc) to the sequence.</li>
+  <li><b>Quantize</b> will grid-snap incoming MIDI recording.</li>
+  <li><b>Merge Button</b>
+    <ul>
+      <li><b>Legacy merged looped</b>: notes added upon looping.</li>
+      <li><b>Overwrite looped record</b>: clear notes on each loop after first note and overwrite previous pass.</li>
+      <li><b>Expand sequence length to fit recording</b>: sequence does not loop and expands after reaching last 1/4 measure.</li>
+      <li><b>Expand and replace</b>: expand and replace previous events on the sequence.</li>
+      <li>MIDI record supports simultaneous multi-sequence record, channel specific, up to 16 channels at once.</li>
+      <li>The Merge Button label will change according to the currently selected recording method.</li>
+    </ul>
+  <li><b>Free Button</b> allows you to set the velocity of notes when recording.
+    <ul>
+        <li><b>Free</b>: notes velocities are recorded without adjustment.</li>
+        <li><b>Fixed</b>: notes velocities are adjusted as they are recorded to the given fixed amount.</li>
+        <li>The Free Button label will change according to the currently selected recording method.</li>
+    </ul>
 </ul>
-
-<h2>Merge MIDI recording types</h2>
-<ul>
-  <li><b>Legacy merged looped</b>: notes added upon looping.</li>
-  <li><b>Overwrite looped record</b>: clear notes on each loop after first note; overwrite previous pass.</li>
-  <li><b>Expand sequence length to fit recording</b>: sequence does not loop; expands after reaching last 1/4 measure.</li>
-  <li><b>Expand and replace</b>: expand and replace previous events on the sequence.</li>
-  <li>MIDI record supports simultaneous multi-sequence record, channel specific, up to 16 channels at once.</li>
-</ul>
-
+  
 <h2>MIDI step edit</h2>
 <ul>
   <li>Step edit is available when recording and seq42 is not playing, starting at the transport line.</li>
-  <li>Ctrl+Right and Ctrl+Left move transport line by snap.</li>
-  <li>Home moves transport line to start.</li>
+  <li><b>Ctrl</b> + Right arrow key will move the transport line by snap to the right.</li>
+  <li><b>Ctrl</b> + Left arrow key will move transport line by snap to the left.</li>
+  <li><b>Home</b> key moves transport line to start.</li>
+  <li>The <b>Free</b> recording method will set all note velocities to 100 for step edit.
+      The other velocity settings work the same as recording when rolling.</li>
 </ul>
 
 <hr>
