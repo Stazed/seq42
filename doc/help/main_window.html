@@ -1,0 +1,260 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8">
+  <title>SEQ42 Help - Main Window</title>
+  <meta name="AUTHOR" content="Seq42 Contributors">
+  <meta name="CHANGED" content="20260203;00000000">
+</head>
+
+<body dir="ltr" style="color: rgb(0,0,0); background-color: rgb(255,255,255);" lang="en-US">
+<a name="top"></a>
+
+<table cellpadding="8" cellspacing="0" width="100%">
+  <tbody>
+    <tr bgcolor="#888A85">
+      <td>
+        <h1 style="margin:0;"><b>[3] Main Window</b></h1>
+      </td>
+      <td align="right" style="white-space:nowrap;">
+        <a href="help.html" style="color: rgb(0,0,0);"><b>Contents</b></a>
+        &nbsp;|&nbsp;
+        <a href="#top" style="color: rgb(0,0,0);"><b>Top</b></a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p><img src="images/main_window.png" alt="Main Window" align="middle" border="1" height="400" width="1000"></p>
+
+<p><img src="images/main_menu.png" alt="Main Menu" align="middle" border="1" height="28" width="134"></p>
+<h2>File menu</h2>
+<ul>
+  <li><b>File/New</b>: Create a new seq42 project file. Seq42 supports a native file format (<b>.s42</b>) that is not compatible with standard MIDI files.</li>
+  <li><b>Open</b>: Open an existing seq42 (<b>.s42</b>) file.</li>
+  <li><b>Recent Files</b>: Display/select recent (<b>.s42</b>) files that were loaded or created.</li>
+  <li><b>Open Playlist</b>: Select a playlist file (see <a href="playlist_mode.html">[8] Playlist Mode</a>).</li>
+  <li><b>Save</b>: Save the current seq42 file loaded. If no current file is loaded then the same as <b>Save as...</b></li>
+  <li><b>Save as...</b>: Save the current project to a given new seq42 file.</li>
+  <li><b>Options</b>: Open the options window (see <a href="options_window.html">[4] Options Window</a>).</li>
+  <li><b>Exit</b>: Quit the program. If there are changes, you will be prompted to save/cancel.</li>
+</ul>
+
+<h2>Edit menu</h2>
+<ul>
+  <li><b>Sequence list</b>: Opens the sequence list window (see <a href="sequence_list.html">[6] Sequence List Window</a>).</li>
+  <li><b>Apply song transpose</b>: This will make any transposed sequences on a track that indicated Transposable be shifted in
+      the <a href="sequence_editor.html">[5] Sequence Editor Window</a> by the transpose amount as indicated on the main window transpose.</li>
+  <li>
+    <b>Delete unused sequences</b>: Use with caution. This will remove any unused
+    (sequences without any song triggers) from the project.
+  </li>
+  <li>
+    <b>Create triggers between L and R for 'playing' sequences</b>:
+    The playing sequences are determined by the “Playing” checkbox from the sequence list window.
+  </li>
+  <li><b>Mute all tracks</b>: Will mute all used tracks on the main window.</li>
+  <li><b>Unmute all tracks</b>: Will unmute all tracks on the main window.</li>
+  <li><b>Toggle mute all tracks</b>: Will toggle mute all main window tracks.</li>
+  <li>
+    <b>Import MIDI</b>: Import any SMF type 1 MIDI file into the current project. This will append the imported file to existing projects. It will not overwrite tracks.
+  </li>
+  <li>
+    <b>Midi export (Seq 24/32/64)</b>: Export the current project using the specific format of Seq 24/32/64 for type 1 MIDI. This will separate all triggers into individual tracks that will work with those sequencers.
+  </li>
+  <li>
+    <b>Midi export song</b>: Export the main window project as a type 1 MIDI file. This will combine all triggers and sequences on a track for standard MIDI type 1 format.
+  </li>
+</ul>
+
+<h2>Help</h2>
+<ul>
+  <li><b>About</b>: Shows the About box.</li>
+</ul>
+
+<h2>Top bar</h2>
+<p><img src="images/top_bar_main.png" alt="Top_Bar" align="middle" border="1" height="39" width="799"></p>
+<ul>
+  <li><b>S</b> controls whether the sequencer pauses or resets to the starting position when stopped (see tooltip).</li>
+  <li>Transport buttons Stop, Rewind, Play, Fast Forward the sequencer.</li>
+  <li><b>L &#61; R</b> loops the range between the L and R markers when in song mode.</li>
+  <li><b>Song</b> will toggle between Song and Live performance (Live will use <a href="sequence_list.html">[6] Sequence List Window</a>).</li>
+  <li><b>JACK</b> controls whether the sequencer connects to JACK transport. You can toggle transport control on/off to temporarily disable while editing.</li>
+  <li><b>Sequence list</b> launches the <a href="sequence_list.html">[6] Sequence List Window</a>.</li>
+  <li><b>Transport Follow</b> toggles whether the grid follows the play progress line. This disables progress follow globally, including in the <a href="sequence_editor.html">[5] Sequence Editor Window</a>.</li>
+  <li><b>HMS</b> toggles the display clock between HMS (Hours/Minutes/Seconds) and BBT (Beats/Bar/Ticks).</li>
+</ul>
+
+<h2>Second bar</h2>
+<p><img src="images/second_bar_main.png" alt="Second_Bar" align="middle" border="1" height="30" width="923"></p>
+<ul>
+  <li>Down-arrow buttons set main window time signature Beats/Length.</li>
+  <li><b>Grid snap</b> sets the precision of trigger snapping on the main grid.</li>
+  <li>
+    <b>Transpose</b> sets global transpose of tracks with “Transposable” enabled in the track name window.
+    You can make transpose permanent via <b>Edit &gt; Apply song transpose</b>.
+  </li>
+  <li>
+    <b>Swing</b> applies swing to notes (sequence-based). See <a href="sequence_editor.html">[5] Sequence Editor Window</a> for sequence swing.
+  </li>
+  <li><b>Undo</b> reverts main window edits (grid, name, tempo) for the current session. It does not revert transpose or swing.</li>
+  <li><b>Redo</b> re-applies edits up to the last manual edit change for the same items as Undo.</li>
+  <li><b>Collapse</b> removes triggers between L and R markers and shifts triggers on the right of the R marker, left to fill the gap.</li>
+  <li><b>Expand</b> inserts empty grid space between L and R (may split triggers).</li>
+  <li><b>Expand and Copy</b> inserts new triggers to the right of R, copying triggers between L and R.</li>
+</ul>
+
+<h2>Tempo Track</h2>
+<p><img src="images/tempo_track.png" alt="Tempo Track" align="middle" border="1" height="18" width="361"></p>
+<ul>
+  <li>Left click on the tempo grid to add a tempo marker. A BPM pop-up appears. Set BPM via typing, spin buttons, key-binding (F9 default), or tap.</li>
+  <li>Press Enter/Return to accept. Escape cancels. Accepted markers are grid-snapped and shown in blue, with BPM displayed to the right.</li>
+  <li>Tempo range is 1 to 600. Drag markers (up-arrow cursor) to move them, respecting grid snap.</li>
+  <li>The first start marker cannot be moved from the start location and cannot be deleted. Use the main BPM spinner to change starting BPM.</li>
+  <li>Right click above a marker to delete it (except the first marker).</li>
+  <li>During playback, reaching a tempo mark changes BPM. The main BPM spinner reflects current tempo. On stop, it returns to the original start value.</li>
+</ul>
+
+<h3>STOP markers</h3>
+<ul>
+  <li>Set BPM to <b>0</b> to create a stop marker.</li>
+  <li>Stop markers are red and display “[stop]”.</li>
+  <li>When playback reaches a stop marker, transport stops.</li>
+  <li>In <a href="playlist_mode.html">[8] Playlist Mode</a>, if stopped by a stop marker, the playlist automatically increments to the next file.</li>
+  <li>In live mode, only the starting BPM is used. Subsequent tempo/stop marks have no effect.</li>
+</ul>
+
+<h2>'L' and 'R' Edit Loop Track</h2>
+<p><img src="images/L_R_loop.png" alt="L & R Loop" align="middle" border="1" height="21" width="169"></p>
+<ul>
+  <li>Left mouse drag: move <b>L</b> marker to pointer location.</li>
+  <li>Right mouse drag: move <b>R</b> marker to pointer location.</li>
+  <li>
+    <b>CTRL</b> + left drag: shows a green location line. Release CTRL to expand insert/paste all track triggers between L and R to the line.
+  </li>
+  <li>
+    <b>ALT</b> + left drag: shows a green location line. Release ALT to overwrite/paste all track triggers between L and R to the line.
+  </li>
+  <li>Use Collapse/Expand buttons to modify triggers based on L and R marker positions.</li>
+</ul>
+
+<h2>Track Name area</h2>
+<p><img src="images/track_name.png" alt="Track Name" align="middle" border="1" height="221" width="173"></p>
+<ul>
+  <li>Left click: mute track.</li>
+  <li>Left click + drag to unused track: move to new location.</li>
+  <li>Left click + drag to active track: swap locations.</li>
+  <li><b>ALT</b> + left drag to inactive track: copy track to landing location.</li>
+  <li><b>CTRL</b> + left drag to active track: merge (copy) sequences and triggers to landing track, and remove the starting track.</li>
+  <li><b>Shift</b> + left drag to active track: merge (copy) sequences and triggers to landing track, without removing the starting track.</li>
+  <li>Middle click: solo track.</li>
+  <li>Right click on name area of an unused track (left of grid): popup menu:
+    <ul>
+      <li><b>New</b>: show track name window (name, output bus, MIDI channel, Transposable).</li>
+      <li><b>Insert</b>: add a new track above the current track.</li>
+      <li><b>Delete</b>: remove the current track.</li>
+      <li><b>Pack</b>: remove unused tracks.</li>
+      <li><b>Paste</b>: duplicate tracks copied to clipboard to the current track.</li>
+    </ul>
+  </li>
+  <li>Right click on a used track: additional popup items:
+    <ul>
+      <li><b>Edit</b>: edit track settings.</li>
+      <li><b>Copy</b>: copy track to clipboard (paste to unused track).</li>
+      <li><b>Cut</b>: remove track and copy to clipboard.</li>
+      <li><b>Clear triggers</b>: remove all triggers from the track grid.</li>
+      <li><b>New Sequence</b>: open <a href="sequence_editor.html">[5] Sequence Editor Window</a> and add a new sequence to the track.</li>
+      <li><b>Midi bus</b>: set track bus and MIDI channel.</li>
+      <li><b>Merge Sequence</b>: drop down menu of sequences from other tracks to copy into current track (only shown when available).
+          This will also copy and merger any triggers from the selected sequence to the current track grid.</li>
+    </ul>
+  </li>
+  <li>Mouse wheel: scroll vertically.</li>
+  <li><b>ALT</b> + mouse wheel: zoom vertically in/out.</li>
+</ul>
+
+<h2>Editing Grid</h2>
+<p><img src="images/editing_grid.png" alt="Editing Grid" align="middle" border="1" height="220" width="530"></p>
+<ul>
+  <li>Right click mouse button and hold on empty area of active track and a pencil will appear. While holding the right button,
+      Left click mouse button and drag to paint a trigger.</li>
+  <li>Right click mouse on a trigger will show a trigger menu.</li>
+  <li>Left click on trigger will select and highlight the trigger.</li>
+
+  <li>Mouse wheel will scroll vertically.</li>
+  <li><b>Shift</b> + mouse wheel to scroll horizontally.</li>
+  <li><b>CTRL</b> + mouse wheel to zoom horizontally in/out.</li>
+  <li><b>ALT</b> + mouse wheel to zoom vertically in/out.</li>
+
+  <li><b>z</b> key: horizontal zoom-out.</li>
+  <li><b>Shift+z</b>: horizontal zoom-in.</li>
+  <li><b>0</b>: reset horizontal zoom.</li>
+  <li><b>v</b> key: vertical zoom-out.</li>
+  <li><b>Shift+v</b>: vertical zoom-in.</li>
+  <li><b>9</b>: reset vertical zoom.</li>
+
+  <li><b>Ctrl+C</b>: copy selected trigger to clipboard.</li>
+  <li><b>Ctrl+V</b>: paste clipboard trigger after selected trigger.</li>
+  <li><b>Ctrl+X</b>: cut selected trigger and copy to clipboard.</li>
+  <li><b>Delete/Backspace</b>: delete selected trigger.</li>
+
+  <li>Middle click on empty space of an open track will paste clipboard trigger to mouse location (not on another trigger).</li>
+  <li>Middle click on a trigger will split at mouse location (grid-snapped).</li>
+  <li><b>Ctrl</b> + middle click on a trigger will paste clipboard trigger to mouse, overwriting existing trigger.</li>
+
+  <li><b>Home</b>: move progress line to L marker.</li>
+  <li><b>End</b>: move progress line to R marker.</li>
+  <li><b>s</b>: set L marker to progress line.</li>
+  <li><b>Shift+s</b>: set R marker to progress line.</li>
+  <li><b>p</b>: with focus on song editor grid, move play position to mouse location.</li>
+</ul>
+
+<h3>Trigger Menu</h3>
+<ul>
+  <li><b>Edit sequence</b>: open <a href="sequence_editor.html">[5] Sequence Editor Window</a> for the trigger’s sequence.</li>
+  <li><b>Export sequence</b>: export the trigger’s sequence to a type 1 MIDI file.</li>
+  <li><b>Export trigger</b>: export the trigger to a type 1 MIDI file.</li>
+  <li><b>New sequence</b>: create a new sequence for this trigger (opens editor).</li>
+  <li><b>Set sequence</b>: drop down of sequences in the trigger’s track to attach to the trigger.</li>
+  <li><b>Delete trigger</b>: delete the trigger.</li>
+  <li><b>Copy sequence</b>: copy/duplicate a sequence (current or other tracks) and attach to this trigger.</li>
+</ul>
+
+<h2>Special Cases</h2>
+
+<h3>Copying triggers across tracks</h3>
+<ul>
+  <li>This also copies the sequence into the new track.</li>
+  <li>Select trigger, <b>Ctrl+C</b>, then middle click on the new track location to paste.</li>
+  <li>After this paste, subsequent <b>Ctrl+V</b> reverts to default behavior (paste after previous paste).</li>
+  <li>Cross-track paste is allowed only once per <b>Ctrl+C</b> to prevent accidental duplication.</li>
+</ul>
+
+<h3>'Fruity' input method for trigger pop-up menu (middle mouse button)</h3>
+<ul>
+  <li>Middle click on existing trigger: pop-up menu.</li>
+  <li><b>Ctrl</b> + left click on existing trigger: split at mouse location.</li>
+  <li><b>Ctrl</b> + left click off trigger: paste clipboard trigger to mouse location.</li>
+  <li><b>Ctrl</b> + middle click: paste clipboard trigger to mouse location.</li>
+</ul>
+
+<hr>
+
+<table cellpadding="4" cellspacing="0" width="100%">
+  <tbody>
+    <tr>
+      <td align="left">
+        Prev: <a href="who.html">[2] Who</a>
+      </td>
+      <td align="center">
+        <a href="help.html">Contents</a>
+      </td>
+      <td align="right">
+        Next: <a href="options_window.html">[4] Options Window</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>

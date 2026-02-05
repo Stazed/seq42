@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8">
+  <title>SEQ42 Help - User Configuration File (.seq42rc)</title>
+  <meta name="AUTHOR" content="Seq42 Contributors">
+  <meta name="CHANGED" content="20260203;00000000">
+</head>
+
+<body dir="ltr" style="color: rgb(0,0,0); background-color: rgb(255,255,255);" lang="en-US">
+<a name="top"></a>
+
+<table cellpadding="8" cellspacing="0" width="100%">
+  <tbody>
+    <tr bgcolor="#888A85">
+      <td>
+        <h1 style="margin:0;"><b>[7] User Configuration File (.seq42rc)</b></h1>
+      </td>
+      <td align="right" style="white-space:nowrap;">
+        <a href="help.html" style="color: rgb(0,0,0);"><b>Contents</b></a>
+        &nbsp;|&nbsp;
+        <a href="#top" style="color: rgb(0,0,0);"><b>Top</b></a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<h2>MIDI CONTROL</h2>
+<ul>
+  <li>MIDI control is available for transport control, recording, and <a href="playlist_mode.html">[8] Playlist Mode</a> adjustment.</li>
+  <li>The implementation follows the original seq24 method with minor modifications.</li>
+  <li>Transport control supports start, stop, fast forward, rewind, and beginning of song.</li>
+  <li>For new users, the file is created after quitting the program for the first time.</li>
+  <li>All transport controls are channel specific.</li>
+</ul>
+
+<p>
+  MIDI channels are numbered 0 to 15 in the configuration. Seq42 displays channels 1 to 16 in the UI
+  (offset by -1 when setting values).
+</p>
+
+<h3>MIDI message values</h3>
+<pre>
+Note On              = 144 + channel (0 to 15)
+Note Off             = 128 + channel (0 to 15)
+Control Code (CC)    = 178 + channel (0 to 15)
+</pre>
+
+<h3>Examples</h3>
+
+<p>
+Example: Set play to toggle start/stop with note C8 (MIDI note 108) on channel 1; start-only with A#7 (106); stop-only with A7 (105):
+</p>
+
+<pre>
+# start playing (toggle, start, stop)
+0 [1 0 144 108   0 127] [1 0 144 106   0 127] [1 0 144 105   0 127]
+</pre>
+
+<p>
+Record group: toggles recording on/off for all sequences with an open sequence editor.
+When recording, only start/stop and record are available, and their events are not passed thru or recorded.
+Example: set record toggle with A0 (note 21):
+</p>
+
+<pre>
+# record
+2 [0 0   0   0   0   0] [1 0 144  21   0 127] [0 0   0   0   0   0]
+</pre>
+
+<p>
+Fast forward example: note-on (144) B7 (107) when pressed, stop on key release note-off (128):
+</p>
+
+<pre>
+# fast forward (forward, forward, stop)
+3 [0 0   0   0   0   0] [1 0 144 107   0 127] [1 0 128 107   0 127]
+</pre>
+
+<p>
+Beginning of song moves transport to the beginning of the song or the left (L) grid marker.
+Example uses A#7 (106):
+</p>
+
+<pre>
+# beginning of song
+5 [0 0   0   0   0   0] [1 0 144 106   0 127] [0 0   0   0   0   0]
+</pre>
+
+<p>
+Playlist MIDI control is only active when transport is stopped. You can select while running,
+but the file will not load until the sequencer stops. The file list starts at 1 and values are range-checked.
+Toggle group can set by CC value; on group for next; off group for previous.
+Example: playlist adjust by CC #7; next=A0 (21); previous=A#0 (22):
+</p>
+
+<pre>
+6 [1 0 178   7   1 127] [1 0 144  21   0 127] [1 0 144  22   0 127]
+</pre>
+
+<h2>[manual-alsa-ports]</h2>
+<ul>
+  <li>Set to 1 to expose ALSA ports to JACK.</li>
+  <li>Set to 0 for manual ALSA connections from seq42.</li>
+  <li>No effect if using the JACK MIDI backend.</li>
+</ul>
+
+<h2>[vertical-zoom-sequence]</h2>
+<ul>
+  <li>Sets default vertical zoom for the sequence editor.</li>
+</ul>
+
+<h2>[vertical-zoom-song]</h2>
+<ul>
+  <li>Sets default vertical zoom for the song editor tracks on the <a href="main_window.html">[3] Main Window</a>.</li>
+</ul>
+
+<h2>[horizontal-zoom-song]</h2>
+<ul>
+  <li>Sets default horizontal zoom for the song editor tracks on the <a href="main_window.html">[3] Main Window</a>.</li>
+</ul>
+
+<hr>
+
+<table cellpadding="4" cellspacing="0" width="100%">
+  <tbody>
+    <tr>
+      <td align="left">
+        Prev: <a href="sequence_list.html">[6] Sequence List Window</a>
+      </td>
+      <td align="center">
+        <a href="help.html">Contents</a>
+      </td>
+      <td align="right">
+        Next: <a href="playlist_mode.html">[8] Playlist Mode</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>

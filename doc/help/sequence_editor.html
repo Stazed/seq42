@@ -1,0 +1,176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8">
+  <title>SEQ42 Help - Sequence Editor Window</title>
+  <meta name="AUTHOR" content="Seq42 Contributors">
+  <meta name="CHANGED" content="20260203;00000000">
+</head>
+
+<body dir="ltr" style="color: rgb(0,0,0); background-color: rgb(255,255,255);" lang="en-US">
+<a name="top"></a>
+
+<table cellpadding="8" cellspacing="0" width="100%">
+  <tbody>
+    <tr bgcolor="#888A85">
+      <td>
+        <h1 style="margin:0;"><b>[5] Sequence Editor Window</b></h1>
+      </td>
+      <td align="right" style="white-space:nowrap;">
+        <a href="help.html" style="color: rgb(0,0,0);"><b>Contents</b></a>
+        &nbsp;|&nbsp;
+        <a href="#top" style="color: rgb(0,0,0);"><b>Top</b></a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p><img src="images/sequence_editor.png" alt="Sequence Editor Window" align="middle" border="1" height="450" width="900"></p>
+
+<ul>
+  <li>Right-clicking on a track trigger shows a trigger menu. Select New/Edit Sequence to open the editor.</li>
+  <li>Hover over buttons briefly to see tooltips.</li>
+</ul>
+
+<h2>Top bar</h2>
+<p><img src="images/top_bar_seq.png" alt="Top Bar Sequence Editor Window" align="middle" border="1" height="34" width="900"></p>
+<ul>
+  <li>First item changes the sequence name.</li>
+  <li>Down-arrow buttons set time signature.</li>
+  <li><b>Length</b> sets sequence loop length.</li>
+  <li><b>Swing</b> controls whether main-window swing applies to this sequence and how.</li>
+  <li><b>Bus</b> selects ALSA/JACK port device and MIDI channel.</li>
+</ul>
+
+<h2>Second Bar</h2>
+<p><img src="images/second_bar_seq.png" alt="Second Bar Sequence Editor Window" align="middle" border="1" height="33" width="900"></p>
+<ul>
+  <li><b>Undo</b> rolls back sequence changes for this session.</li>
+  <li><b>Q</b> quantizes selected notes based on current grid snap.</li>
+</ul>
+
+<h2>Tools menu (hammer icon)</h2>
+<ul>
+  <li><b>Select</b>: select notes by criteria.</li>
+  <li><b>Modify time</b>: adjust selected notes’ timing.</li>
+  <li><b>Modify pitch</b>: transpose selected notes.</li>
+  <li><b>Randomize Event Values</b>: randomize velocity/CC values (range +/-1 to +/-16).</li>
+</ul>
+
+<h2>Grid / Zoom / Key / Scale / Chords</h2>
+<ul>
+  <li><b>Grid Snap</b> sets precision for note creation and movement.</li>
+  <li><b>Zoom</b> sets horizontal zoom.</li>
+  <li><b>Key</b> shows selected note key on the left piano roll.</li>
+  <li><b>Scale</b> can gray out notes that do not fit the selected scale and key.</li>
+  <li><b>Chord selection</b> allows drawing notes as chords (LMMS table).</li>
+</ul>
+
+<h2>Piano roll (left side)</h2>
+<p><img src="images/piano_roll_seq.png" alt="Piano Roll" align="middle" border="1" height="250" width="37"></p>
+<ul>
+  <li>Right click: mute key (changes to red).</li>
+  <li>Middle click: solo key (changes to green).</li>
+  <li>Mute/solo key settings are not saved to file.</li>
+  <li>Right click + Ctrl toggles letter vs MIDI number display on piano roll.</li>
+</ul>
+
+<h2>Sequence Grid</h2>
+<p><img src="images/sequence_grid.png" alt="Sequence Grid" align="middle" border="1" height="284" width="800"></p>
+<ul>
+  <li>
+    Drawing notes: hold right mouse button to enter draw mode (pencil), then while still holding right,
+    left-click to insert notes.
+  </li>
+  <li>Left click selects note; drag to box-select multiple notes (selected notes turn red).</li>
+  <li>Left-drag selected notes to move them.</li>
+  <li>Middle-drag over a note changes length; can adjust multiple selected notes at once.</li>
+  <li>Backspace/Delete removes selected notes.</li>
+  <li>Left/Right arrows move selected notes by grid snap.</li>
+  <li>Shift + Left/Right moves selected notes by very small amounts.</li>
+  <li>Up/Down moves notes by semitone; Shift + Up/Down moves by octave.</li>
+  <li>With chord selection enabled, drawing creates multiple notes by chord and type.</li>
+  <li>Cut/Copy/Paste: Ctrl-X / Ctrl-C / Ctrl-V.</li>
+  <li>Notes play when added or moved.</li>
+
+  <li>Mouse wheel: scroll vertically.</li>
+  <li>Shift + wheel: scroll horizontally.</li>
+  <li>Ctrl + wheel: zoom horizontally.</li>
+  <li>Alt + wheel: zoom vertically.</li>
+
+  <li><b>z</b>: horizontal zoom-out; <b>Shift+z</b>: zoom-in; <b>0</b>: reset horizontal zoom.</li>
+  <li><b>v</b>: vertical zoom-out; <b>Shift+v</b>: zoom-in; <b>9</b>: reset vertical zoom.</li>
+  <li>Default vertical zoom can be set in <a href="seq42rc.html">[7] User Configuration File (.seq42rc)</a>.</li>
+</ul>
+
+<h2>Event Editor</h2>
+<p><img src="images/event_editor.png" alt="Event Editor" align="middle" border="1" height="14" width="700"></p>
+<ul>
+  <li><b>Event</b> button selects which event type is displayed/edited.</li>
+  <li>The event strip adds/selects/moves MIDI events (non note on/off), similar to the piano grid.</li>
+  <li>
+    The data editor under the strip changes velocities, channel pressure, CC values, patch select, etc.
+    Left click + drag draws a line; values follow the line.
+    <ul>
+      <li>If no events are selected, all events match the draw line.</li>
+      <li>If events are selected, only selected events change.</li>
+    </ul>
+  </li>
+</ul>
+
+<h2>Data Editor</h2>
+<p><img src="images/data_editor.png" alt="Data Editor" align="middle" border="1" height="129" width="740"></p>
+
+<h2>LFO Editor</h2>
+<p><img src="images/LFO_editor.png" alt="LFO Editor" align="middle" border="1" height="300" width="552"></p>
+<ul>
+  <li><b>LFO</b> button opens an LFO editor window.</li>
+  <li>Hover sliders for tooltips.</li>
+  <li>If no events are selected, all events are adjusted; otherwise only selected events change.</li>
+</ul>
+
+<h2>Additional controls</h2>
+<ul>
+  <li><b>Background Sequence</b>: draw another sequence behind (dark green) as a reference.</li>
+  <li><b>Sequence dump</b>: mute/unmute the sequence in live play.</li>
+  <li><b>Pass thru</b>: send MIDI in to MIDI out.</li>
+  <li><b>Recording</b>: add incoming MIDI to the sequence.</li>
+  <li><b>Quantize</b>: grid-snap incoming MIDI recording.</li>
+</ul>
+
+<h2>Merge MIDI recording types</h2>
+<ul>
+  <li><b>Legacy merged looped</b>: notes added upon looping.</li>
+  <li><b>Overwrite looped record</b>: clear notes on each loop after first note; overwrite previous pass.</li>
+  <li><b>Expand sequence length to fit recording</b>: sequence does not loop; expands after reaching last 1/4 measure.</li>
+  <li><b>Expand and replace</b>: expand and replace previous events on the sequence.</li>
+  <li>MIDI record supports simultaneous multi-sequence record, channel specific, up to 16 channels at once.</li>
+</ul>
+
+<h2>MIDI step edit</h2>
+<ul>
+  <li>Step edit is available when recording and seq42 is not playing, starting at the transport line.</li>
+  <li>Ctrl+Right and Ctrl+Left move transport line by snap.</li>
+  <li>Home moves transport line to start.</li>
+</ul>
+
+<hr>
+
+<table cellpadding="4" cellspacing="0" width="100%">
+  <tbody>
+    <tr>
+      <td align="left">
+        Prev: <a href="options_window.html">[4] Options Window</a>
+      </td>
+      <td align="center">
+        <a href="help.html">Contents</a>
+      </td>
+      <td align="right">
+        Next: <a href="sequence_list.html">[6] Sequence List Window</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>

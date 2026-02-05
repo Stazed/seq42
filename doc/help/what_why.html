@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8">
+  <title>SEQ42 Help - What &amp; Why</title>
+  <meta name="AUTHOR" content="Seq42 Contributors">
+  <meta name="CHANGED" content="20260203;00000000">
+</head>
+
+<body dir="ltr" style="color: rgb(0,0,0); background-color: rgb(255,255,255);" lang="en-US">
+<a name="top"></a>
+
+<table cellpadding="8" cellspacing="0" width="100%">
+  <tbody>
+    <tr bgcolor="#888A85">
+      <td>
+        <h1 style="margin:0;"><b>[1] What &amp; Why</b></h1>
+      </td>
+      <td align="right" style="white-space:nowrap;">
+        <a href="help.html" style="color: rgb(0,0,0);"><b>Contents</b></a>
+        &nbsp;|&nbsp;
+        <a href="#top" style="color: rgb(0,0,0);"><b>Top</b></a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p>
+  Seq42 is a fork of
+  <a href="https://launchpad.net/seq24">seq24</a>
+  (which is a fork of the
+  <a href="http://filter24.org/seq24/">original seq24</a>),
+  with a greater emphasis on song editing (as opposed to live looping) and some enhancements.
+</p>
+
+<ul>
+  <li>In essence, seq42 is an advanced song editor for seq24/seq32 and other variants.</li>
+  <li>
+    Seq42 adds a new concept of a <b>track</b>. It breaks down like this:
+    <ul>
+      <li>A song in seq42 is a collection of tracks. Each track has a MIDI bus and a MIDI channel.</li>
+      <li>
+        Each seq42 track has:
+        <ul>
+          <li>a collection of sequences (which send their events to their track’s MIDI bus and channel)</li>
+          <li>a collection of triggers, each of which triggers one of that track’s sequences</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>
+    In seq42, the main window is the song editor, with one row per track. After adding a trigger to a track,
+    you can right-click on the trigger to show a context menu with options to set the trigger to an existing
+    sequence or create a new sequence or copy an existing sequence (possibly even from another track).
+  </li>
+  <li>Other than these conceptual changes, a seq24/seq32 user should feel at home. The sequence editor is largely the same.</li>
+  <li>
+    The 8x4 sequence set window from seq24 is gone. Instead there’s a
+    <a href="sequence_list.html">[6] Sequence List Window</a>
+    you can open from the main song editing window.
+  </li>
+</ul>
+
+<hr>
+
+<table cellpadding="4" cellspacing="0" width="100%">
+  <tbody>
+    <tr>
+      <td align="left">
+        &nbsp;
+      </td>
+      <td align="center">
+        <a href="help.html">Contents</a>
+      </td>
+      <td align="right">
+        Next: <a href="who.html">[2] Who</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>

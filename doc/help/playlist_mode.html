@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8">
+  <title>SEQ42 Help - Playlist Mode</title>
+  <meta name="AUTHOR" content="Seq42 Contributors">
+  <meta name="CHANGED" content="20260203;00000000">
+</head>
+
+<body dir="ltr" style="color: rgb(0,0,0); background-color: rgb(255,255,255);" lang="en-US">
+<a name="top"></a>
+
+<table cellpadding="8" cellspacing="0" width="100%">
+  <tbody>
+    <tr bgcolor="#888A85">
+      <td>
+        <h1 style="margin:0;"><b>[8] Playlist Mode</b></h1>
+      </td>
+      <td align="right" style="white-space:nowrap;">
+        <a href="help.html" style="color: rgb(0,0,0);"><b>Contents</b></a>
+        &nbsp;|&nbsp;
+        <a href="#top" style="color: rgb(0,0,0);"><b>Top</b></a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<ul>
+  <li>A playlist is a text file containing multiple seq42 files (<b>.s42</b>) that can be quickly loaded for accompaniment with live performance.</li>
+  <li>The file lists on each line the full path to the .s42 file.</li>
+</ul>
+
+<h2>Playlist file format</h2>
+<pre>
+/home/username/seq42dir/file1.s42
+/home/username/seq42dir/file2.s42
+/home/username/seq42dir/file3.s42
+</pre>
+
+<ul>
+  <li>No blank lines before, after, or between entries.</li>
+  <li>No placeholders; full paths only.</li>
+</ul>
+
+<h2>How to enter playlist mode</h2>
+<ul>
+  <li>Command line: <b>-X</b> &lt;path to playlist file&gt;</li>
+  <li>Main menu: <b>File &gt; Open playlist...</b></li>
+</ul>
+
+<h2>Verification prompt</h2>
+<ul>
+  <li>When playlist mode is first invoked, you may be prompted to verify the playlist.</li>
+  <li>For new or modified playlists, selecting <b>Yes</b> checks for errors by attempting to load each file in order.</li>
+  <li>If an error occurs, verification stops and indicates the offending file.</li>
+  <li>Select <b>No</b> (or Escape) if the playlist has previously been verified.</li>
+  <li>If verification succeeds, the first file in the list is loaded.</li>
+</ul>
+
+<h2>Visual indicators</h2>
+<p><img src="images/playlist_logo.png" alt="Playlist Logo" align="middle" border="1" height="32" width="127"></p>
+<ul>
+  <li>SEQ42 logo turns blue with a red “PLAYLIST” overlay.</li>
+  <li>Main window title and song editor title indicate “Playlist” plus current song number and path.</li>
+</ul>
+
+<pre>
+Example: "seq42 - Playlist, Song 03 - [/home/username/seq42dir/file3.s42]"
+</pre>
+
+<h2>Navigating the playlist</h2>
+<ul>
+  <li>From the main window: Right arrow moves down the list; Left arrow moves up.</li>
+  <li>The sequencer must be stopped to change playlist entries.</li>
+  <li>Key binding can be changed in <b>File &gt; Options &gt; Keyboard</b>.</li>
+</ul>
+
+<h2>Stop markers and playlist advance</h2>
+<ul>
+  <li>During playlist play, if transport is stopped by a Stop marker, the playlist increments down by one song.</li>
+  <li>See STOP markers in <a href="main_window.html">[3] Main Window</a> (Tempo Track section).</li>
+</ul>
+
+<h2>Leaving playlist mode</h2>
+<ul>
+  <li>Load a new file via <b>File/New</b> or <b>File/Open</b>, or restart the program.</li>
+  <li>Window title will no longer show “Playlist, Song XX”.</li>
+</ul>
+
+<h2>Editing warnings</h2>
+<ul>
+  <li>If you edit while in playlist mode, you will <b>not</b> be prompted to save when moving to a new song.</li>
+  <li>If unsaved, edits are lost. Editing while in playlist mode is discouraged.</li>
+  <li>You cannot save while in playlist mode in an NSM session.</li>
+</ul>
+
+<h2>Acknowledgements</h2>
+<p>
+  Special thanks for the playlist idea and some (modified) code go to:
+  Simon Hickinbotham - seq24plus.
+</p>
+<p>
+  <a href="https://github.com/franticspider/seq24plus">https://github.com/franticspider/seq24plus</a>
+</p>
+
+<hr>
+
+<table cellpadding="4" cellspacing="0" width="100%">
+  <tbody>
+    <tr>
+      <td align="left">
+        Prev: <a href="seq42rc.html">[7] User Configuration File (.seq42rc)</a>
+      </td>
+      <td align="center">
+        <a href="help.html">Contents</a>
+      </td>
+      <td align="right">
+        Next: <a href="contact.html">[9] Contact</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>
