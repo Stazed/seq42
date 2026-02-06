@@ -48,7 +48,20 @@ pkg_check_modules (GLIBMM REQUIRED glibmm-2.4)
 pkg_check_modules (CAIROMM REQUIRED cairomm-1.0)
 pkg_check_modules (PANGOMM REQUIRED pangomm-1.4)
 pkg_check_modules (ATKMM REQUIRED atkmm-1.6)
-pkg_check_modules(WEBKIT2GTK REQUIRED webkit2gtk-4.0)
+
+# Try WebKitGTK 4.1 first, then 4.0
+pkg_check_modules(WEBKIT2GTK QUIET webkit2gtk-4.1)
+
+if (NOT WEBKIT2GTK_FOUND)
+    pkg_check_modules(WEBKIT2GTK QUIET webkit2gtk-4.0)
+endif()
+
+if (NOT WEBKIT2GTK_FOUND)
+    message(FATAL_ERROR
+        "WebKitGTK not found (tried webkit2gtk-4.1 and webkit2gtk-4.0)")
+endif()
+
+message(STATUS "Using WebKit2GTK ${WEBKIT2GTK_VERSION}")
 
 find_library (LIBRT rt)
 if (LIBRT)
