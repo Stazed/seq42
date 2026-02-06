@@ -43,6 +43,7 @@ The dependencies are:
 *   libasound2
 *   liblo   (NSM support)
 *   librt
+*   webkit2gtk-4.0 or webkit2gtk-4.1 (Help Display)
 
 Additional dependencies required by Gtkmm-3
 *   sigc++-2.0
