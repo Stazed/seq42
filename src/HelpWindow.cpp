@@ -134,28 +134,35 @@ HelpWindow::HelpWindow()
 
             auto* self = static_cast<HelpWindow*>(user_data);
 
+            // ---- Internal file:// navigation ----
             if (g_str_has_prefix(uri, "file://"))
             {
                 gchar* path = g_filename_from_uri(uri, nullptr, nullptr);
                 if (path)
                 {
-                    const bool ok =
+                    const bool inside_help =
                         g_str_has_prefix(path, self->m_help_root.c_str());
                     g_free(path);
-                    if (!ok)
+
+                    if (!inside_help)
                     {
                         webkit_policy_decision_ignore(decision);
                         return TRUE;
                     }
                 }
-            }
-            else
-            {
-                webkit_policy_decision_ignore(decision);
-                return TRUE;
+                return FALSE; // allow
             }
 
-            return FALSE;    // allow
+            // ---- External URI: open via XDG ----
+            gtk_show_uri_on_window(
+                GTK_WINDOW(self->gobj()),
+                uri,
+                GDK_CURRENT_TIME,
+                nullptr
+            );
+
+            webkit_policy_decision_ignore(decision);
+            return TRUE;
         }),
         this);
 
