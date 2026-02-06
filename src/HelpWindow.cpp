@@ -108,7 +108,6 @@ HelpWindow::HelpWindow()
     // “Doc viewer” profile
     WebKitSettings* s = webkit_web_view_get_settings(m_view);
     webkit_settings_set_enable_javascript(s, FALSE);
-    webkit_settings_set_enable_plugins(s, FALSE);
 
     m_find_controller = webkit_web_view_get_find_controller(m_view);
 
@@ -123,9 +122,14 @@ HelpWindow::HelpWindow()
                 return FALSE;
 
             auto* nav = WEBKIT_NAVIGATION_POLICY_DECISION(decision);
+            WebKitNavigationAction* action =
+                webkit_navigation_policy_decision_get_navigation_action(nav);
+
             WebKitURIRequest* req =
-                webkit_navigation_policy_decision_get_request(nav);
+                webkit_navigation_action_get_request(action);
+
             const char* uri = webkit_uri_request_get_uri(req);
+
             if (!uri) return FALSE;
 
             auto* self = static_cast<HelpWindow*>(user_data);
