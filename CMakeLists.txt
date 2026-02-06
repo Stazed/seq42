@@ -10,7 +10,7 @@ set (CMAKE_SKIP_RULE_DEPENDENCY OFF)
 add_definitions (-D'VERSION="${PACKAGE_VERSION}"')
 add_definitions(-D'WEBSITE="https://github.com/Stazed/seq42"')
 add_definitions(-D'PACKAGE="seq42"')
-#add_definitions(-D'HELPDIR="${CMAKE_INSTALL_PREFIX}/share/doc/seq42"')
+add_definitions(-D'SEQ42_HELPDIR="${CMAKE_INSTALL_PREFIX}/share/doc/seq42"')
 
 include (CheckCSourceCompiles)
 include(CheckCXXCompilerFlag)
@@ -48,6 +48,7 @@ pkg_check_modules (GLIBMM REQUIRED glibmm-2.4)
 pkg_check_modules (CAIROMM REQUIRED cairomm-1.0)
 pkg_check_modules (PANGOMM REQUIRED pangomm-1.4)
 pkg_check_modules (ATKMM REQUIRED atkmm-1.6)
+pkg_check_modules(WEBKIT2GTK REQUIRED webkit2gtk-4.0)
 
 find_library (LIBRT rt)
 if (LIBRT)
@@ -118,6 +119,7 @@ endif (BuildForDebug)
 add_subdirectory(src)
 add_subdirectory(man)
 add_subdirectory(icons)
+add_subdirectory(doc)
 
 
 ##Summarize The Full Configuration
@@ -147,6 +149,7 @@ package_status(GLIBMM_FOUND        "Glibmm-2.4 . . . . . . . . . . . . . . . . .
 package_status(CAIROMM_FOUND       "Cairomm-1.0. . . . . . . . . . . . . . . . . . . . . . .:"  )
 package_status(PANGOMM_FOUND       "Pangomm-1.4. . . . . . . . . . . . . . . . . . . . . . .:"  )
 package_status(ATKMM_FOUND         "Atkmm-1.6. . . . . . . . . . . . . . . . . . . . . . . .:"  )
+package_status(WEBKIT2GTK_FOUND    "Webkit2GTK . . . . . . . . . . . . . . . . . . . . . . .:"  )
 
 if (EnableNSM)
     package_status(LIBLO_FOUND         "Liblo support. . . . . . . . . . . . . . . . . . . . . .:"  )

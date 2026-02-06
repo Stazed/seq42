@@ -30,6 +30,7 @@
 #include "perfroll.h"
 #include "perftime.h"
 #include "tempo.h"
+#include "HelpWindow.h"
 
 #ifdef NSM_SUPPORT
 #include "nsm.h"
@@ -69,7 +70,9 @@ private:
     std::vector<MenuItem> m_edit_menu_items;
     std::vector<MenuItem> m_snap_menu_items;
     std::vector<MenuItem> m_bw_menu_items;
+    HelpWindow m_help_window;
     MenuItem m_help_menu_item;
+    MenuItem m_help_manual_item;
     MenuItem m_help_submenu_item;
     Glib::RefPtr<Gtk::AccelGroup> m_accelgroup;
     SeparatorMenuItem   m_menu_separator1;
@@ -196,6 +199,7 @@ private:
     void file_import_dialog();
     void options_dialog();
     void about_dialog();
+    void user_manual();
 
     void adj_callback_bpm( );
     void bw_button_callback(int a_beat_width);
