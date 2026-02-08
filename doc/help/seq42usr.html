@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="CONTENT-TYPE" content="text/html; charset=utf-8">
+  <title>SEQ42 Help - User Configuration File (.seq42usr)</title>
+  <meta name="AUTHOR" content="Seq42 Contributors">
+  <meta name="CHANGED" content="20260203;00000000">
+</head>
+
+<body dir="ltr" style="color: rgb(0,0,0); background-color: rgb(255,255,255);" lang="en-US">
+<a name="top"></a>
+
+<table cellpadding="8" cellspacing="0" width="100%">
+  <tbody>
+    <tr bgcolor="#888A85">
+      <td>
+        <h1 style="margin:0;"><b>[8] User File (.seq42usr)</b></h1>
+      </td>
+      <td align="right" style="white-space:nowrap;">
+        <a href="help.html" style="color: rgb(0,0,0);"><b>Contents</b></a>
+        &nbsp;|&nbsp;
+        <a href="#top" style="color: rgb(0,0,0);"><b>Top</b></a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<ul>
+    <li>The <b>.seq42usr</b> file allows you to set custom MIDI bus names, midi channel, and midi control codes per channel. </li>
+    <li>See the <b>seq42usr.example</b> file in the repository root directory.</li>
+</ul>
+
+<h2>[user-midi-bus-definitions]</h2>
+<ul>
+    <li>This sets the number of custom bus names that will be changed from this file.</li>
+    <li>For the number of bus names, a <b>[user-midi-bus-X]</b> item must be listed.</li>
+    <li>For example if <b>[user-midi-bus-definitions]</b> is set to <b>3</b> then there must be three
+        defined: <b>[user-midi-bus-0]</b>, <b>[user-midi-bus-1]</b>, and <b>[user-midi-bus-2]</b></li>
+    <li>Note that listed items start counting with <b>0</b> and not <b>1</b>.</li>
+</ul>
+
+<h2>[user-midi-bus-X]</h2>
+<ul>
+    <li>The first item is the custom name of the midi bus. This name will change the ALSA/JACK port name
+        created for ALSA/JACK backend.</li>
+    <li>The second item lists the number of channels to be set with a custom definition. A maximum of <b>16</b> channels is allowed.</li>
+    <li>The third item is the instrument definitions to be associated with the number of channels as indicated.</li>
+    <li>For each channel list the channel number followed by a space, then the instrument definition number as below.</li>
+</ul>
+<pre>
+        0 1
+        1 1 
+        2 1
+        3 1
+        4 1
+        5 1
+        6 1
+        7 1
+        8 3
+        9 3
+        10 3
+        11 0
+        12 0
+        13 0
+        14 0
+        15 2
+</pre>
+
+<h2>[user-instrument-definitions]</h2>
+<ul>
+    <li>Indicate the number or instrument definitions to be listed.</li>
+    <li>For the number listed a separate <b>[user-instrument-X]</b> must be defined.</li>
+</ul>
+
+<h2>[user-instrument-X]</h2>
+<ul>
+    <li>The first item is the name which will be displayed for MIDI channel.</li>
+    <li>The second item is the number of custom MIDI controller <b>CC</b> labels that will be defined.</li>
+    <li>Following is the listed MIDI controller <b>CC</b> custom labels to be used.</li>
+    <li>The custom <b>CC</b> labels will show in the <a href="sequence_editor.html">[5] Sequence Editor Window</a>
+        <b>Event</b> button drop down menu.</li>
+    
+</ul>
+
+<hr>
+
+<table cellpadding="4" cellspacing="0" width="100%">
+  <tbody>
+    <tr>
+      <td align="left">
+        Prev: <a href="seq42rc.html">[7] User Configuration File (.seq42rc)</a>
+      </td>
+      <td align="center">
+        <a href="help.html">Contents</a>
+      </td>
+      <td align="right">
+        Next: <a href="playlist_mode.html">[9] Playlist Mode</a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+</body>
+</html>
