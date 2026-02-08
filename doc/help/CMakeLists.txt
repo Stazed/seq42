@@ -8,6 +8,7 @@ install (FILES help.html
     options_window.html
     playlist_mode.html 
     seq42rc.html
+    seq42usr.html
     sequence_editor.html
     sequence_list.html
     what_why.html
