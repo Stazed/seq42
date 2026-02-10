@@ -236,15 +236,15 @@ mainwnd::mainwnd(perform *a_p, Glib::RefPtr<Gtk::Application> app):
     m_menu_edit->append(m_edit_menu_items[10]);
 
     /* help menu items */
+    m_help_manual_item.set_label("_Manual");
+    m_help_manual_item.set_use_underline(true);
+    m_help_manual_item.signal_activate().connect(mem_fun(*this, &mainwnd::user_manual));
+    m_menu_help->append(m_help_manual_item);
+
     m_help_menu_item.set_label("_About...");
     m_help_menu_item.set_use_underline(true);
     m_help_menu_item.signal_activate().connect(mem_fun(*this, &mainwnd::about_dialog));
     m_menu_help->append(m_help_menu_item);
-    
-    m_help_manual_item.set_label("_User Manual");
-    m_help_manual_item.set_use_underline(true);
-    m_help_manual_item.signal_activate().connect(mem_fun(*this, &mainwnd::user_manual));
-    m_menu_help->append(m_help_manual_item);
 
     /* top line items */
     hbox1 = manage( new HBox( false, 2 ) );
