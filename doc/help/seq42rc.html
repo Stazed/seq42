@@ -43,7 +43,7 @@
 <pre>
 Note On              = 144 + channel (0 to 15)
 Note Off             = 128 + channel (0 to 15)
-Control Code (CC)    = 178 + channel (0 to 15)
+Control Code (CC)    = 176 + channel (0 to 15)
 </pre>
 
 <h3>Examples</h3>
@@ -65,7 +65,7 @@ Example: set record toggle with A0 (note 21):
 
 <pre>
 # record
-2 [0 0   0   0   0   0] [1 0 144  21   0 127] [0 0   0   0   0   0]
+1 [0 0   0   0   0   0] [1 0 144  21   0 127] [0 0   0   0   0   0]
 </pre>
 
 <p>
@@ -73,8 +73,8 @@ Fast forward example: note-on (144) B7 (107) when pressed, stop on key release n
 </p>
 
 <pre>
-# fast forward (forward, forward, stop)
-3 [0 0   0   0   0   0] [1 0 144 107   0 127] [1 0 128 107   0 127]
+# fast forward (forward, forward, stop).
+2 [0 0   0   0   0   0] [1 0 144 107   0 127] [1 0 128 107   0 127]
 </pre>
 
 <p>
@@ -84,7 +84,7 @@ Example uses A#7 (106):
 
 <pre>
 # beginning of song
-5 [0 0   0   0   0   0] [1 0 144 106   0 127] [0 0   0   0   0   0]
+4 [0 0   0   0   0   0] [1 0 144 106   0 127] [0 0   0   0   0   0]
 </pre>
 
 <p>
@@ -95,7 +95,7 @@ Example: playlist adjust by CC #7; next=A0 (21); previous=A#0 (22):
 </p>
 
 <pre>
-6 [1 0 178   7   1 127] [1 0 144  21   0 127] [1 0 144  22   0 127]
+5 [1 0 176   7   1 127] [1 0 144  21   0 127] [1 0 144  22   0 127]
 </pre>
 
 <h2>[manual-alsa-ports]</h2>
