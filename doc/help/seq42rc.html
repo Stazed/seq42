@@ -49,7 +49,7 @@ Control Code (CC)    = 176 + channel (0 to 15)
 <h3>Examples</h3>
 
 <p>
-Example: Set play to toggle start/stop with note C8 (MIDI note 108) on channel 1; start-only with A#7 (106); stop-only with A7 (105):
+Example: Set play to toggle start/stop with note C8 (MIDI note 108) on channel 1, start-only with A#7 (106), stop-only with A7 (105):
 </p>
 
 <pre>
@@ -88,10 +88,10 @@ Example uses A#7 (106):
 </pre>
 
 <p>
-Playlist MIDI control is only active when transport is stopped. You can select while running,
+<a href="playlist_mode.html">[9] Playlist Mode</a> control is only active when transport is stopped. You can select while running,
 but the file will not load until the sequencer stops. The file list starts at 1 and values are range-checked.
-Toggle group can set by CC value; on group for next; off group for previous.
-Example: playlist adjust by CC #7; next=A0 (21); previous=A#0 (22):
+Toggle group can set by CC value, on group for next, off group for previous.
+Example: playlist adjust by CC #7, next=A0 (21), previous=A#0 (22):
 </p>
 
 <pre>
