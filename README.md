@@ -18,7 +18,22 @@ In seq42, the main window is the song editor, with one row per track.  After add
 
 Other than these conceptual changes, a seq24 user should feel at home.  The awesome sequence editor is pretty much the same.  The 8x4 sequence set window from seq24 is gone.  Instead there's a sequence list window that you can open from the main song editing window.  The sequence list displays all the sequences in the song. You can sort the list in various ways (it initializes sorted by track) and there's a check box for each sequence that you can use to toggle each sequence's play flag (when you're in live mode).
 
-Version 2.0.0 changes:
+Seq42 version 2.2.0
+-------------------
+Begining with version 2.2.0 JACK MIDI has been added and can be selected from:
+
+    File/Options.../MIDI Input/Backend tab.
+
+Or from command line with:
+```bash
+    seq42 -b 1
+```
+
+Also a Help/Manual dialog has been added for additional information.
+
+
+Seq42 version 2.0.0:
+--------------------
 
 Beginning with version 2.0.0 seq42 has been ported to Gtkmm-3. 
 
@@ -29,8 +44,6 @@ The build system has been moved to CMAKE.
 Additional editing features.
 
 NSM support now has optional gui, and dirty flag.
-
-See the SEQ42 document for additional information.
 
 Install
 -------
@@ -67,17 +80,6 @@ Using CMAKE:
 To remove:
 ```bash
     make uninstall (as root)
-```
-
-Seq42 version 2.2.0
--------------------
-Begining with version 2.2.0 JACK MIDI has been added and can be selected from:
-
-    File/Options.../MIDI Input/Backend tab.
-
-Or from command line with:
-```bash
-    seq42 -b 1
 ```
 
 ## SAST Tools
