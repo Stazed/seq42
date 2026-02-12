@@ -106,11 +106,11 @@
 <h2>Tempo Track</h2>
 <p><img src="images/tempo_track.png" alt="Tempo Track" align="middle" border="1" height="18" width="361"></p>
 <ul>
-  <li>Left click on the tempo grid to add a tempo marker. A BPM pop-up appears. Set BPM via typing, spin buttons, key-binding (F9 default), or tap.</li>
+  <li>Left mouse click on the tempo grid to add a tempo marker. A BPM pop-up appears. Set BPM via typing, spin buttons, key-binding (F9 default), or tap.</li>
   <li>Press Enter/Return to accept. Escape cancels. Accepted markers are grid-snapped and shown in blue, with BPM displayed to the right.</li>
   <li>Tempo range is 1 to 600. Drag markers (up-arrow cursor) to move them, respecting grid snap.</li>
   <li>The first start marker cannot be moved from the start location and cannot be deleted. Use the main BPM spinner to change starting BPM.</li>
-  <li>Right click above a marker to delete it (except the first marker).</li>
+  <li>Right mouse click above a marker to delete it (except the first marker).</li>
   <li>During playback, reaching a tempo mark changes BPM. The main BPM spinner reflects current tempo. On stop, it returns to the original start value.</li>
 </ul>
 
@@ -129,11 +129,11 @@
   <li>Left mouse drag: move <b>L</b> marker to pointer location.</li>
   <li>Right mouse drag: move <b>R</b> marker to pointer location.</li>
   <li>
-      <b>CTRL</b> + left drag: shows a green vertical location line. Release <b>CTRL</b>
+      <b>CTRL</b> + left mouse drag: shows a green vertical location line. Release <b>CTRL</b>
       to expand insert/paste all track triggers between <b>L</b> and <b>R</b> to the line.
   </li>
   <li>
-      <b>ALT</b> + left drag: shows a green vertical location line. Release <b>ALT</b>
+      <b>ALT</b> + left mouse drag: shows a green vertical location line. Release <b>ALT</b>
       to overwrite/paste all track triggers between <b>L</b> and <b>R</b> to the line.
   </li>
   <li>Use Collapse/Expand buttons to modify triggers based on <b>L</b> and <b>R</b> marker positions.</li>
@@ -149,14 +149,14 @@
 <h2>Track Name area</h2>
 <p><img src="images/track_name.png" alt="Track Name" align="middle" border="1" height="221" width="173"></p>
 <ul>
-  <li>Left click: mute track.</li>
-  <li>Left click + drag to unused track: move to new location.</li>
-  <li>Left click + drag to active track: swap locations.</li>
-  <li><b>ALT</b> + left drag to inactive track: copy track to landing location.</li>
-  <li><b>CTRL</b> + left drag to active track: merge (copy) sequences and triggers to landing track, and remove the starting track.</li>
-  <li><b>Shift</b> + left drag to active track: merge (copy) sequences and triggers to landing track, without removing the starting track.</li>
-  <li>Middle click: solo track.</li>
-  <li>Right click on name area of an unused track: popup menu:
+  <li>Left mouse click: mute track.</li>
+  <li>Left mouse click + drag to unused track: move to new location.</li>
+  <li>Left mouse click + drag to active track: swap locations.</li>
+  <li><b>ALT</b> + left mouse drag to inactive track and release mouse: copy track to landing location.</li>
+  <li><b>CTRL</b> + left mouse drag to active track and release mouse: merge (copy) sequences and triggers to landing track, and remove the starting track.</li>
+  <li><b>Shift</b> + left mouse drag to active track and release mouse: merge (copy) sequences and triggers to landing track, without removing the starting track.</li>
+  <li>Middle mouse click: solo track.</li>
+  <li>Right  mouse click on name area of an unused track: popup menu:
     <ul>
       <li><b>New</b>: show track name window (name, output bus, MIDI channel, Transposable).</li>
       <li><b>Insert</b>: add a new track above the current track.</li>
@@ -165,7 +165,7 @@
       <li><b>Paste</b>: duplicate tracks copied to clipboard to the current track.</li>
     </ul>
   </li>
-  <li>Right click on a used track: additional popup items:
+  <li>Right mouse click on a used track: additional popup items:
     <ul>
       <li><b>Edit</b>: edit track settings.</li>
       <li><b>Copy</b>: copy track to clipboard (paste to unused track).</li>
@@ -187,7 +187,7 @@
   <li>Right click mouse button and hold on empty area of active track and a pencil will appear. While holding the right button,
       Left click mouse button and drag to paint a trigger.</li>
   <li>Right click mouse on a trigger will show a trigger menu to attach a sequence to the trigger (see Trigger Menu below). </li>
-  <li>Left click on trigger will select and highlight the trigger.</li>
+  <li>Left click mouse on trigger will select and highlight the trigger.</li>
   <li>Resize triggers by grabbing and dragging the small boxes on the top left and bottom right of the trigger.</li>
   <li>The trigger will display the name of the sequence attached to the trigger.</li>
   <li>If no sequence is attached to the trigger, the name displayed will be "Empty".</li>
@@ -209,9 +209,9 @@
   <li><b>Ctrl+X</b>: cut selected trigger and copy to clipboard.</li>
   <li><b>Delete/Backspace</b>: delete selected trigger.</li>
 
-  <li>Middle click on empty space of an open track will paste clipboard trigger to mouse location (not on another trigger).</li>
-  <li>Middle click on a trigger will split at mouse location (grid-snapped).</li>
-  <li><b>Ctrl</b> + middle click on a trigger will paste clipboard trigger to mouse, overwriting existing trigger.</li>
+  <li>Middle mouse click on empty space of an open track will paste clipboard trigger to mouse location (not on another trigger).</li>
+  <li>Middle mouse click on a trigger will split at mouse location (grid-snapped).</li>
+  <li><b>Ctrl</b> + middle mouse click on a trigger will paste clipboard trigger to mouse, overwriting existing trigger.</li>
 
   <li><b>Home</b>: move progress line to L marker.</li>
   <li><b>End</b>: move progress line to R marker.</li>
@@ -236,7 +236,7 @@
 <h3>Copying triggers across tracks</h3>
 <ul>
   <li>This also copies the sequence into the new track.</li>
-  <li>Left click mouse to select a trigger, then <b>Ctrl+C</b> to copy it to the clipboard, then middle click on the new track location to paste.</li>
+  <li>Left click mouse to select a trigger, then <b>Ctrl+C</b> to copy it to the clipboard, then middle mouse click on the new track location to paste.</li>
   <li>After this paste, subsequent <b>Ctrl+V</b> reverts to default behavior (paste after previous paste).</li>
   <li>Cross-track paste is allowed only once per <b>Ctrl+C</b> to prevent accidental duplication.</li>
 </ul>
@@ -244,9 +244,9 @@
 <h3>'Fruity' input method for trigger pop-up menu (middle mouse button)</h3>
 <ul>
   <li>Middle click on existing trigger: pop-up menu.</li>
-  <li><b>Ctrl</b> + left click on existing trigger: split at mouse location.</li>
-  <li><b>Ctrl</b> + left click off trigger: paste clipboard trigger to mouse location.</li>
-  <li><b>Ctrl</b> + middle click: paste clipboard trigger to mouse location.</li>
+  <li><b>Ctrl</b> + left mouse click on existing trigger: split at mouse location.</li>
+  <li><b>Ctrl</b> + left mouse click off trigger: paste clipboard trigger to mouse location.</li>
+  <li><b>Ctrl</b> + middle mouse click: paste clipboard trigger to mouse location.</li>
 </ul>
 
 <hr>
