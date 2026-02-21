@@ -48,7 +48,7 @@ set(ExternLibraries
     ${JACK_LINK_LIBRARIES}
     ${LIBLO_LINK_LIBRARIES}
     ${WEBKIT2GTK_LIBRARIES}
-    rt
+    ${RT_LIBRARY}
 )
 
 add_executable (seq42 ${ProgSources} seq42.cpp)

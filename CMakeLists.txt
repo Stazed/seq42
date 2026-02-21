@@ -63,13 +63,7 @@ endif()
 
 message(STATUS "Using WebKit2GTK ${WEBKIT2GTK_VERSION}")
 
-find_library (LIBRT rt)
-if (LIBRT)
-    message(STATUS "Found rt in ${LIBRT}")
-else (LIBRT)
-    message (FATAL_ERROR "rt required but not found")
-endif (LIBRT)
-
+find_library (RT_LIBRARY rt REQUIRED)
 
 if (EnableJackTransportSupport)
     pkg_check_modules (JACK REQUIRED jack>=0.115.6)
@@ -163,6 +157,7 @@ package_status(CAIROMM_FOUND       "Cairomm-1.0. . . . . . . . . . . . . . . . .
 package_status(PANGOMM_FOUND       "Pangomm-1.4. . . . . . . . . . . . . . . . . . . . . . .:"  )
 package_status(ATKMM_FOUND         "Atkmm-1.6. . . . . . . . . . . . . . . . . . . . . . . .:"  )
 package_status(WEBKIT2GTK_FOUND    "Webkit2GTK . . . . . . . . . . . . . . . . . . . . . . .:"  )
+package_status(RT_LIBRARY          "librt support. . . . . . . . . . . . . . . . . . . . . .:"  )
 
 if (EnableNSM)
     package_status(LIBLO_FOUND         "Liblo support. . . . . . . . . . . . . . . . . . . . . .:"  )
