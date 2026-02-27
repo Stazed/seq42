@@ -74,9 +74,9 @@ bool midibus_jack::enqueue_short(uint8_t b0, uint8_t b1, uint8_t b2, uint32_t sz
     return enqueue_bytes(tmp, sz);
 }
 
-void midibus_jack::enqueue_realtime(uint8_t status)
+bool midibus_jack::enqueue_realtime(uint8_t status)
 {
-    (void) enqueue_bytes(&status, 1);
+    return enqueue_bytes(&status, 1);
 }
 
 midibus_jack::midibus_jack(jack_client_t *client, const string &port_name, int a_id) :
@@ -271,25 +271,30 @@ void midibus_jack::clock(long a_tick)
     {
         long uptotick = a_tick;
 
-        if (uptotick > m_lasttick)
+        const long ticks_per_clock = c_ppqn / 24;
+
+        /*
+         * Backward reposition: snap immediately.
+         */
+        if (uptotick < m_lasttick)
         {
-            const long ticks_per_clock = c_ppqn / 24;
-
-            /*
-             * Detect transport reposition:
-             * If the jump exceeds a threshold, assume reposition
-             * rather than natural clock progression.
-             */
-            const long REPOSITION_THRESHOLD_TICKS =
-                ticks_per_clock * 96;  /* ~4 quarter notes */
-
+            m_lasttick = uptotick;
+        }
+        else if (uptotick > m_lasttick)
+        {
             long delta = uptotick - m_lasttick;
 
-            if (delta > REPOSITION_THRESHOLD_TICKS)
+            /*
+             * Detect large forward reposition.
+             * Threshold: ~4 quarter notes.
+             */
+            const long REPOSITION_THRESHOLD =
+                ticks_per_clock * 96;
+
+            if (delta > REPOSITION_THRESHOLD)
             {
                 /*
-                 * Suppress catch-up entirely.
-                 * Just realign to the new tick.
+                 * Suppress historical clock flood.
                  */
                 m_lasttick = uptotick;
             }
@@ -299,20 +304,51 @@ void midibus_jack::clock(long a_tick)
                 long new_clock  = uptotick  / ticks_per_clock;
                 long clocks_to_send = new_clock - prev_clock;
 
-                for (long i = 0; i < clocks_to_send; ++i)
-                    enqueue_realtime(0xF8);
+                /*
+                 * Hard cap per invocation.
+                 */
+                const long MAX_CLOCKS_PER_CALL = 256;
 
+                if (clocks_to_send > MAX_CLOCKS_PER_CALL)
+                    clocks_to_send = MAX_CLOCKS_PER_CALL;
+
+                /*
+                 * Ringbuffer pressure awareness.
+                 * Stop emitting if enqueue fails.
+                 */
+                long emitted = 0;
+                for (; emitted < clocks_to_send; ++emitted)
+                {
+                    if (!enqueue_realtime(0xF8))
+                        break;
+                }
+
+                /*
+                 * Advance only by what we actually emitted.
+                 */
+                m_lasttick =
+                    (prev_clock + emitted) * ticks_per_clock;
+
+                /*
+                 * If we were throttled by buffer pressure,
+                 * do not fast-forward. Catch-up continues
+                 * gradually on subsequent calls.
+                 */
+                if (emitted < clocks_to_send)
+                {
+                    unlock();
+                    return;
+                }
+
+                /*
+                 * If fully emitted within bounds,
+                 * align exactly to target.
+                 */
                 m_lasttick = uptotick;
             }
         }
-        else if (uptotick < m_lasttick)
-        {
-            /*
-             * Backward reposition: reset without emitting clocks.
-             */
-            m_lasttick = uptotick;
-        }
     }
+
     unlock();
 }
 

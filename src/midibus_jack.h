@@ -87,7 +87,7 @@ private:
 
     bool enqueue_bytes(const uint8_t *data, uint32_t sz);
     bool enqueue_short(uint8_t b0, uint8_t b1, uint8_t b2, uint32_t sz);
-    void enqueue_realtime(uint8_t status);
+    bool enqueue_realtime(uint8_t status);
 
 public:
     midibus_jack
