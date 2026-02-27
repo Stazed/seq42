@@ -269,25 +269,50 @@ void midibus_jack::clock(long a_tick)
 
     if (m_clock_type != e_clock_off)
     {
-        bool done = false;
         long uptotick = a_tick;
 
-        if (m_lasttick >= uptotick)
-            done = true;
-
-        while (!done)
+        if (uptotick > m_lasttick)
         {
-            m_lasttick++;
+            const long ticks_per_clock = c_ppqn / 24;
 
-            if (m_lasttick >= uptotick)
-                done = true;
+            /*
+             * Detect transport reposition:
+             * If the jump exceeds a threshold, assume reposition
+             * rather than natural clock progression.
+             */
+            const long REPOSITION_THRESHOLD_TICKS =
+                ticks_per_clock * 96;  /* ~4 quarter notes */
 
-            // 24 clocks per quarter note => one clock per (ppqn/24) ticks
-            if (m_lasttick % (c_ppqn / 24) == 0)
-                enqueue_realtime(0xF8); // MIDI Clock
+            long delta = uptotick - m_lasttick;
+
+            if (delta > REPOSITION_THRESHOLD_TICKS)
+            {
+                /*
+                 * Suppress catch-up entirely.
+                 * Just realign to the new tick.
+                 */
+                m_lasttick = uptotick;
+            }
+            else
+            {
+                long prev_clock = m_lasttick / ticks_per_clock;
+                long new_clock  = uptotick  / ticks_per_clock;
+                long clocks_to_send = new_clock - prev_clock;
+
+                for (long i = 0; i < clocks_to_send; ++i)
+                    enqueue_realtime(0xF8);
+
+                m_lasttick = uptotick;
+            }
+        }
+        else if (uptotick < m_lasttick)
+        {
+            /*
+             * Backward reposition: reset without emitting clocks.
+             */
+            m_lasttick = uptotick;
         }
     }
-
     unlock();
 }
 
