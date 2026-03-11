@@ -82,7 +82,7 @@ public:
     perfnames( perform *a_perf, mainwnd *a_main,
                Glib::RefPtr<Adjustment> a_vadjust   );
 protected:
-    bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr);
+    bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
 
 };
 
