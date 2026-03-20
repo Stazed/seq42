@@ -21,13 +21,18 @@
 #pragma once
 
 /* forward declarations*/
+
+#ifdef __WIN32__
+#include "midibus_portmidi.h"
+#endif
+
 #include "mastermidibus_iface.h"
+
+#ifdef HAVE_LIBASOUND
+
 class mastermidibus_alsa;
 class midibus_alsa;
 
-#ifndef HAVE_LIBASOUND
-#include "midibus_portmidi.h"
-#else
 #include <alsa/asoundlib.h>
 #include <alsa/seq_midi_event.h>
 
@@ -56,7 +61,6 @@ private:
     static int m_clock_mod;
 
     /* sequencer client handle */
-#if HAVE_LIBASOUND
     snd_seq_t * const m_seq;
 
     /* address of client */
@@ -65,7 +69,6 @@ private:
 
     const int m_local_addr_client;
     int m_local_addr_port;
-#endif
 
     /* id of queue */
     int m_queue;
@@ -85,7 +88,6 @@ private:
 
 public:
 
-#if HAVE_LIBASOUND
     /* constructor, client#, port#, sequencer,
        name of client, name of port */
     midibus_alsa( int a_localclient,
@@ -101,7 +103,6 @@ public:
              snd_seq_t  *a_seq,
              int a_id,
              int a_queue );
-#endif
 
 #ifdef __WIN32__
     midibus( char a_id, int a_queue );
@@ -143,7 +144,6 @@ public:
     friend class mastermidibus_alsa;
 
     /* address of client */
-#if HAVE_LIBASOUND
     int get_client(void)
     {
         return m_dest_addr_client;
@@ -152,7 +152,6 @@ public:
     {
         return m_dest_addr_port;
     };
-#endif
 
     static void set_clock_mod( int a_clock_mod );
     static int get_clock_mod();
@@ -163,9 +162,7 @@ class mastermidibus_alsa : public mastermidibus_iface
 private:
 
     /* sequencer client handle */
-#if HAVE_LIBASOUND
     snd_seq_t *m_alsa_seq;
-#endif
 
     int m_num_out_buses;
     int m_num_in_buses;
@@ -217,12 +214,10 @@ public:
 
     void init() override;
 
-#if HAVE_LIBASOUND
     snd_seq_t* get_alsa_seq( )
     {
         return m_alsa_seq;
     };
-#endif
 
     int get_num_out_buses() override;
     int get_num_in_buses() override;
@@ -311,4 +306,4 @@ public:
     bool get_input( unsigned char a_bus ) override;
 };
 
-#endif
+#endif  // HAVE_LIBASOUND

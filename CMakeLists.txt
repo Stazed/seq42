@@ -21,6 +21,12 @@ option (EnableMIDIControl "Enable MIDI transport control support" ON)
 option (EnableJackTransportSupport "Enable Jack transport control support" ON)
 option (EnableJackMidiSupport "Enable Jack MIDI port support" ON)
 
+if(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD")
+    message(STATUS "Building on FreeBSD")
+    set (EnableAlsaMidiSupport "OFF")
+else()
+    option (EnableAlsaMidiSupport "Enable Alsa MIDI port support" ON)
+endif()
 
 set(CMAKE_BUILD_TYPE "Release")
 
@@ -37,10 +43,12 @@ set (BuildOptionsDebug
 find_package (PkgConfig REQUIRED)
 
 #dependencies
-find_package (ALSA REQUIRED alsa>=1.0.17)
-if (ALSA_FOUND)
-    add_definitions(-D'HAVE_LIBASOUND=1')
-endif (ALSA_FOUND)
+if (EnableAlsaMidiSupport)
+    find_package (ALSA REQUIRED alsa>=1.0.17)
+    if (ALSA_FOUND)
+        add_definitions(-D'HAVE_LIBASOUND=1')
+    endif (ALSA_FOUND)
+endif()
 
 pkg_check_modules (GTKMM REQUIRED gtkmm-3.0)
 pkg_check_modules (SIGC REQUIRED sigc++-2.0)
@@ -168,6 +176,7 @@ message (STATUS                    "____________________ User Options___________
 package_status(EnableNSM           "NSM session support. . . . . . . . . . . . . . . . . . .:"  )
 package_status(EnableMIDIControl   "MIDI transport control . . . . . . . . . . . . . . . . .:"  )
 package_status(EnableJackTransportSupport   "Jack transport control . . . . . . . . . . . . . . . . .:"  )
+package_status(EnableAlsaMidiSupport        "Alsa MIDI support. . . . . . . . . . . . . . . . . . . .:"  )
 package_status(EnableJackMidiSupport        "Jack MIDI support. . . . . . . . . . . . . . . . . . . .:"  )
 
 message (STATUS)

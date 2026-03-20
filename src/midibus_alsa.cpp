@@ -22,10 +22,7 @@
 
 #ifdef HAVE_LIBASOUND
 #    include <sys/poll.h>
-#endif
 
-
-#ifdef HAVE_LIBASOUND
 midibus_alsa::midibus_alsa( int a_localclient,
                   int a_destclient,
                   int a_destport,
@@ -106,7 +103,6 @@ midibus_alsa::midibus_alsa( int a_localclient,
 
     m_name = tmp;
 }
-#endif
 
 #ifdef __WIN32__
 midibus_alsa::midibus( char a_id, int a_queue )
@@ -147,7 +143,6 @@ midibus_alsa::unlock( )
 
 bool midibus_alsa::init_out( )
 {
-#ifdef HAVE_LIBASOUND
     /* temp return */
     int ret;
 
@@ -183,13 +178,12 @@ bool midibus_alsa::init_out( )
                 m_dest_addr_client, m_dest_addr_port);
         return false;
     }
-#endif
+
     return true;
 }
 
 bool midibus_alsa::init_out_sub( )
 {
-#ifdef HAVE_LIBASOUND
     /* temp return */
     int ret;
 
@@ -210,13 +204,12 @@ bool midibus_alsa::init_out_sub( )
         printf( "snd_seq_create_simple_port(write) error\n");
         return false;
     }
-#endif
+
     return true;
 }
 
 bool midibus_alsa::init_in( )
 {
-#ifdef HAVE_LIBASOUND
     /* temp return */
     int ret;
     Glib::ustring tmp = global_client_name;
@@ -267,13 +260,12 @@ bool midibus_alsa::init_in( )
                 m_dest_addr_client, m_dest_addr_port);
         return false;
     }
-#endif
+
     return true;
 }
 
 bool midibus_alsa::init_in_sub( )
 {
-#ifdef HAVE_LIBASOUND
     /* temp return */
     int ret;
 
@@ -296,13 +288,12 @@ bool midibus_alsa::init_in_sub( )
         printf( "snd_seq_create_simple_port(write) error\n");
         return false;
     }
-#endif
+
     return true;
 }
 
 bool midibus_alsa::deinit_in( )
 {
-#ifdef HAVE_LIBASOUND
     /* temp return */
     int ret;
 
@@ -333,7 +324,7 @@ bool midibus_alsa::deinit_in( )
                 m_dest_addr_client, m_dest_addr_port);
         return false;
     }
-#endif
+
     return true;
 }
 
@@ -367,8 +358,6 @@ midibus_alsa::play( event *a_e24, unsigned char a_channel )
 {
     lock();
 
-#ifdef HAVE_LIBASOUND
-
     snd_seq_event_t ev;
 
     /* alsa midi parser */
@@ -400,7 +389,7 @@ midibus_alsa::play( event *a_e24, unsigned char a_channel )
 
     /* pump it into the queue */
     snd_seq_event_output(m_seq, &ev);
-#endif
+
     unlock();
 }
 
@@ -418,7 +407,7 @@ void
 midibus_alsa::sysex( event *a_e24 )
 {
     lock();
-#ifdef HAVE_LIBASOUND
+
     snd_seq_event_t ev;
 
     /* clear event */
@@ -453,7 +442,7 @@ midibus_alsa::sysex( event *a_e24 )
         usleep(80000);
         flush();
     }
-#endif
+
     unlock();
 }
 
@@ -462,16 +451,13 @@ void
 midibus_alsa::flush()
 {
     lock();
-#ifdef HAVE_LIBASOUND
     snd_seq_drain_output( m_seq );
-#endif
     unlock();
 }
 
 void
 midibus_alsa::init_clock( long a_tick )
 {
-#ifdef HAVE_LIBASOUND
     if ( m_clock_type == e_clock_pos && a_tick != 0)
     {
         continue_from( a_tick );
@@ -495,13 +481,11 @@ midibus_alsa::init_clock( long a_tick )
 
 
     }
-#endif
 }
 
 void
 midibus_alsa::continue_from( long a_tick )
 {
-#ifdef HAVE_LIBASOUND
     /* tell the device that we are going to start at a certain position */
     long pp16th = (c_ppqn / 4);
     long leftover = ( a_tick % pp16th );
@@ -552,14 +536,12 @@ midibus_alsa::continue_from( long a_tick )
         flush();
         snd_seq_event_output(m_seq, &ev);
     }
-#endif
 }
 
 /* gets it a runnin */
 void
 midibus_alsa::start()
 {
-#ifdef HAVE_LIBASOUND
     m_lasttick = -1;
 
     if ( m_clock_type != e_clock_off )
@@ -583,7 +565,6 @@ midibus_alsa::start()
         /* pump it into the queue */
         snd_seq_event_output(m_seq, &ev);
     }
-#endif
 }
 
 void
@@ -625,7 +606,6 @@ midibus_alsa::get_input( )
 void
 midibus_alsa::stop()
 {
-#ifdef HAVE_LIBASOUND
     m_lasttick = -1;
 
     if ( m_clock_type != e_clock_off )
@@ -649,7 +629,6 @@ midibus_alsa::stop()
         /* pump it into the queue */
         snd_seq_event_output(m_seq, &ev);
     }
-#endif
 }
 
 // generates midi clock
@@ -657,7 +636,6 @@ void
 midibus_alsa::clock( long a_tick )
 {
     lock();
-#ifdef HAVE_LIBASOUND
     if ( m_clock_type != e_clock_off )
     {
         bool done = false;
@@ -703,7 +681,7 @@ midibus_alsa::clock( long a_tick )
         /* and send out */
         flush();
     }
-#endif
+
     unlock();
 }
 
@@ -751,13 +729,13 @@ void
 mastermidibus_alsa::start()
 {
     lock();
-#ifdef HAVE_LIBASOUND
+
     /* start timer */
     snd_seq_start_queue( m_alsa_seq, m_queue, NULL );
 
     for ( int i=0; i < m_num_out_buses; i++ )
         m_buses_out[i]->start();
-#endif
+
     unlock();
 }
 
@@ -766,13 +744,13 @@ void
 mastermidibus_alsa::continue_from( long a_tick)
 {
     lock();
-#ifdef HAVE_LIBASOUND
+
     /* start timer */
     snd_seq_start_queue( m_alsa_seq, m_queue, NULL );
 
     for ( int i=0; i < m_num_out_buses; i++ )
         m_buses_out[i]->continue_from( a_tick );
-#endif
+
     unlock();
 }
 
@@ -795,14 +773,12 @@ mastermidibus_alsa::stop()
     for ( int i=0; i < m_num_out_buses; i++ )
         m_buses_out[i]->stop();
 
-
-#ifdef HAVE_LIBASOUND
     snd_seq_drain_output( m_alsa_seq );
     snd_seq_sync_output_queue( m_alsa_seq );
 
     /* start timer */
     snd_seq_stop_queue( m_alsa_seq, m_queue, NULL );
-#endif
+
     unlock();
 }
 
@@ -822,7 +798,7 @@ void
 mastermidibus_alsa::set_ppqn( int a_ppqn )
 {
     lock();
-#ifdef HAVE_LIBASOUND
+
     m_ppqn = a_ppqn;
 
     /* allocate tempo struct */
@@ -837,7 +813,7 @@ mastermidibus_alsa::set_ppqn( int a_ppqn )
 
     /* give tempo struct to the queue */
     snd_seq_set_queue_tempo( m_alsa_seq, m_queue, tempo );
-#endif
+
     unlock();
 }
 
@@ -845,7 +821,7 @@ void
 mastermidibus_alsa::set_bpm( double a_bpm )
 {
     lock();
-#ifdef HAVE_LIBASOUND
+
     m_bpm = a_bpm;
 
     /* allocate tempo struct */
@@ -859,7 +835,7 @@ mastermidibus_alsa::set_bpm( double a_bpm )
 
     /* give tempo struct to the queue */
     snd_seq_set_queue_tempo(m_alsa_seq, m_queue, tempo );
-#endif
+
     unlock();
 }
 
@@ -868,9 +844,7 @@ void
 mastermidibus_alsa::flush()
 {
     lock();
-#ifdef HAVE_LIBASOUND
     snd_seq_drain_output( m_alsa_seq );
-#endif
     unlock();
 }
 
@@ -905,7 +879,6 @@ m_swing_amount16(0)
         m_init_input[i] = false;
     }
 
-#ifdef HAVE_LIBASOUND
     /* open the sequencer client */
     int ret = snd_seq_open(&m_alsa_seq, "default",  SND_SEQ_OPEN_DUPLEX, 0);
 
@@ -921,14 +894,11 @@ m_swing_amount16(0)
 
     /* set up our clients queue */
     m_queue = snd_seq_alloc_queue( m_alsa_seq );
-
-#endif
 }
 
 void
 mastermidibus_alsa::init( )
 {
-#ifdef HAVE_LIBASOUND
     /* client info */
     snd_seq_client_info_t *cinfo;
     /* port info */
@@ -1097,7 +1067,6 @@ mastermidibus_alsa::init( )
     for ( int i=0; i<m_num_in_buses; i++ )
         set_input(i,m_init_input[i]);
 
-#endif
 #ifdef __WIN32__
 
     int num_buses = 16;
@@ -1151,8 +1120,7 @@ mastermidibus_alsa::~mastermidibus_alsa()
     
     delete m_bus_announce;
     delete[] m_poll_descriptors;
-    
-#ifdef HAVE_LIBASOUND
+
     snd_seq_event_t ev;
 
     /* kill timer */
@@ -1163,7 +1131,6 @@ mastermidibus_alsa::~mastermidibus_alsa()
 
     /* close client */
     snd_seq_close( m_alsa_seq );
-#endif
 }
 
 void
@@ -1341,11 +1308,11 @@ int
 mastermidibus_alsa::poll_for_midi( )
 {
     int ret = 0;
-#ifdef HAVE_LIBASOUND
+
     ret = poll( m_poll_descriptors,
                 m_num_poll_descriptors,
                 1000);
-#endif
+
     return ret;
 }
 
@@ -1355,10 +1322,7 @@ mastermidibus_alsa::is_more_input( )
     lock();
 
     int size=0;
-
-#ifdef HAVE_LIBASOUND
     size = snd_seq_event_input_pending(m_alsa_seq, 0);
-#endif
     unlock();
 
     return ( size > 0 );
@@ -1368,8 +1332,6 @@ void
 mastermidibus_alsa::port_start( int a_client, int a_port )
 {
     lock();
-
-#ifdef HAVE_LIBASOUND
 
     /* client info */
     snd_seq_client_info_t *cinfo;
@@ -1494,7 +1456,7 @@ mastermidibus_alsa::port_start( int a_client, int a_port )
         m_num_poll_descriptors,
         POLLIN
     );
-#endif
+
     unlock();
 }
 
@@ -1502,7 +1464,7 @@ void
 mastermidibus_alsa::port_exit( int a_client, int a_port )
 {
     lock();
-#ifdef HAVE_LIBASOUND
+
     for( int i=0; i< m_num_out_buses; i++ )
     {
         if( m_buses_out[i]->get_client() == a_client  &&
@@ -1520,7 +1482,7 @@ mastermidibus_alsa::port_exit( int a_client, int a_port )
             m_buses_in_active[i] = false;
         }
     }
-#endif
+
     unlock();
 }
 
@@ -1528,7 +1490,7 @@ bool
 mastermidibus_alsa::get_midi_event( event *a_in )
 {
     lock();
-#ifdef HAVE_LIBASOUND
+
     snd_seq_event_t *ev;
 
     bool sysex = false;
@@ -1637,8 +1599,6 @@ mastermidibus_alsa::get_midi_event( event *a_in )
 
     snd_midi_event_free( midi_ev );
 
-#endif
-
     unlock();
     return true;
 }
@@ -1691,3 +1651,5 @@ mastermidibus_alsa::dump_midi_input(event a_in)
             break;                                      // yes, so don't bother with remaining sequences.
     }
 }
+
+#endif  // HAVE_LIBASOUND

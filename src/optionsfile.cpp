@@ -143,8 +143,10 @@ optionsfile::parse( perform *a_perf, bool command_line )
         }
         else
         {
+#ifdef HAVE_LIBASOUND
             mastermidibus_alsa * m_alsa = static_cast<mastermidibus_alsa *>(a_perf->get_master_midi_bus( ));
             m_alsa->set_clock( bus, (clock_e) bus_on );
+#endif
         }
         next_data_line( &file );
     }
@@ -231,8 +233,10 @@ optionsfile::parse( perform *a_perf, bool command_line )
         }
         else
         {
+#ifdef HAVE_LIBASOUND
             mastermidibus_alsa * m_alsa = static_cast<mastermidibus_alsa *>(a_perf->get_master_midi_bus( ));
             m_alsa->set_input( bus, (bool) bus_on );
+#endif
         }
 
         next_data_line( &file );
@@ -251,14 +255,16 @@ optionsfile::parse( perform *a_perf, bool command_line )
     }
     else
     {
+#ifdef HAVE_LIBASOUND
         midibus_alsa::set_clock_mod(ticks);
+#endif
     }
-
+#ifdef HAVE_LIBASOUND
     /* manual alsa ports */
     line_after( &file, "[manual-alsa-ports]" );
     sscanf( m_line, "%ld", &flag );
     global_manual_alsa_ports = (bool) flag;
-
+#endif
     /* last used dir */
     line_after( &file, "[last-used-dir]" );
     //FIXME: check for a valid path is missing
@@ -441,7 +447,9 @@ optionsfile::write( perform *a_perf  )
     }
     else
     {
+#ifdef HAVE_LIBASOUND
         file << midibus_alsa::get_clock_mod() << "\n";
+#endif
     }
 
     /* bus input data */
@@ -457,14 +465,14 @@ optionsfile::write( perform *a_perf  )
                  (char) a_perf->get_master_midi_bus( )->get_input(i));
         file << outs << "\n";
     }
-
+#ifdef HAVE_LIBASOUND
     /* manual alsa ports */
     file << "\n\n\n[manual-alsa-ports]\n";
     file << "# This entry is invalid if using JACK MIDI backend.\n";
     file << "# Set to 1 if you want seq42 to create its own alsa ports and\n";
     file << "# not connect to other clients.\n";
     file << global_manual_alsa_ports << "\n";
-
+#endif
     /* interaction-method */
     int x = 0;
     file << "\n\n\n[interaction-method]\n";

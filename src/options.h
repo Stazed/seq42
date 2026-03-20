@@ -53,7 +53,9 @@ private:
 
     void input_callback( int a_bus, Button *a_button );
 #ifdef JACK_MIDI_SUPPORT
+#ifdef HAVE_LIBASOUND
     void backend_callback (Button * i_button);
+#endif
 #endif
     void transport_callback( button a_type, Button *a_button );
 
