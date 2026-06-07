@@ -61,10 +61,10 @@ pkg_check_modules (PANGOMM REQUIRED pangomm-1.4)
 pkg_check_modules (ATKMM REQUIRED atkmm-1.6)
 
 # Try WebKitGTK 4.1 first, then 4.0
-pkg_check_modules(WEBKIT2GTK QUIET webkit2gtk-4.1)
+pkg_check_modules(WEBKIT2GTK webkit2gtk-4.1)
 
 if (NOT WEBKIT2GTK_FOUND)
-    pkg_check_modules(WEBKIT2GTK QUIET webkit2gtk-4.0)
+    pkg_check_modules(WEBKIT2GTK webkit2gtk-4.0)
 endif()
 
 if (NOT WEBKIT2GTK_FOUND)
