@@ -148,11 +148,14 @@ perfnames::draw_track( int track )
             {
                 font_color = font::BLACK;
             }
+            
+            const gchar *value = g_getenv("GDK_DPI_SCALE");
+            gdouble dpi_scale = value ? g_ascii_strtod(value, NULL) : 1.0;
 
             p_font_renderer->render_string_on_drawable(5,
                                                        m_names_y * i + 2,
                                                        cr, str, font_color,
-                                                       c_default_horizontal_zoom,
+                                                       dpi_scale,
                                                        m_vertical_zoom);
 
             /* Track name */
@@ -163,7 +166,7 @@ perfnames::draw_track( int track )
             p_font_renderer->render_string_on_drawable(5,
                                                        m_names_y * i + (12 * m_vertical_zoom),
                                                        cr, name, font_color,
-                                                       c_default_horizontal_zoom,
+                                                       dpi_scale,
                                                        m_vertical_zoom);
 
             /* The Play, Mute, Solo buttons */

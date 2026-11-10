@@ -223,9 +223,18 @@ tempo::draw_background()
             cr->rectangle(tempo_marker + 5, 0, (strlen(str) * c_font_width), c_font_height + 1);
             cr->stroke_preserve();
             cr->fill();
+            
+            const gchar *value = g_getenv("GDK_DPI_SCALE");
+            gdouble dpi_scale = value ? g_ascii_strtod(value, NULL) : 1.0;
 
             /* print the BPM or [Stop] label in white */
-            p_font_renderer->render_string_on_drawable(tempo_marker + 5, (m_window_y * .5) - 8, cr, str, font::WHITE);
+            p_font_renderer->render_string_on_drawable(tempo_marker + 5,
+                    (m_window_y * .5) - 8,
+                    cr,
+                    str,
+                    font::WHITE,
+                    dpi_scale,
+                    dpi_scale);
         }
     }
 }
