@@ -108,6 +108,15 @@ endif (EnableNSM)
 
 # uninstall target
 if(NOT TARGET uninstall)
+    # This for package directories to be removed if empty
+    set(UNINSTALL_PACKAGE_ROOTS
+        "${CMAKE_INSTALL_PREFIX}/share/doc/seq42"
+    )
+
+    # Convert the list to the semicolon-delimited value used in the script.
+    string(REPLACE ";" "\\;" UNINSTALL_PACKAGE_ROOTS_ESCAPED
+           "${UNINSTALL_PACKAGE_ROOTS}")
+
     configure_file(
         "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
         "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
